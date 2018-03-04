@@ -1,4 +1,4 @@
-#!/usr/local/opt/python3/bin/python3.6
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
@@ -6,22 +6,23 @@ import setuptools
 
 
 with open('./README.rst', 'r') as file:
-    long_des = file.read()
+    long_desc = file.read()
 
 
 # set-up script for pip distribution
 setuptools.setup(
-    name = 'scripts',
-    version = '0.1.0',
+    name = 'jsdaily',
+    version = '0.1.2',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
     license = 'GNU General Public License v3 (GPLv3)',
+    keywords = 'daily utility script',
     description = 'Some useful daily utility scripts.',
     long_description = long_desc,
     python_requires = '>=3.4',
-    py_modules=['update', 'uninstall', 'reinstall', 'postinstall', 'dependency'],
-    entry_points={
+    py_modules = ['update', 'uninstall', 'reinstall', 'postinstall', 'dependency'],
+    entry_points = {
         'console_scripts': [
             'update = update:main',
             'uninstall = uninstall:main',
@@ -30,7 +31,19 @@ setuptools.setup(
             'dependency = dependency:main',
         ]
     },
-    classifiers=[
+    packages = setuptools.find_packages(exclude=['deprecated']),
+    package_data = {
+        '': [
+            'LICENSE.txt',
+            'README.md',
+            'README.rst',
+        ],
+        'libupdate': ['*.py', '*.sh'],
+        'libuninstall': ['*.py', '*.sh'],
+        'libprinstall': ['*.py', '*.sh'],
+        'libdependency': ['*.py', '*.sh'],
+    },
+    classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Environment :: MacOS X',
@@ -44,6 +57,11 @@ setuptools.setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: Implementation',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Unix Shell',
         'Topic :: Utilities',
     ]
 )
