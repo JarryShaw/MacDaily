@@ -10,6 +10,10 @@ import subprocess
 import time
 
 
+# change working directory
+os.chdir(os.path.dirname(__file__))
+
+
 # terminal display
 red = 'tput setaf 1'    # blush / red
 blue = 'tput setaf 14'  # blue

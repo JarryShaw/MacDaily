@@ -5,14 +5,14 @@
 import setuptools
 
 
-with open('./README.rst', 'r') as file:
+with open('./README.rst', 'r', encoding='utf-8') as file:
     long_desc = file.read()
 
 
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.1.2',
+    version = '0.1.3',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
@@ -20,7 +20,7 @@ setuptools.setup(
     keywords = 'daily utility script',
     description = 'Some useful daily utility scripts.',
     long_description = long_desc,
-    python_requires = '>=3.4',
+    python_requires = '>=3.6',
     py_modules = ['update', 'uninstall', 'reinstall', 'postinstall', 'dependency'],
     entry_points = {
         'console_scripts': [
@@ -54,8 +54,6 @@ setuptools.setup(
         'Operating System :: Unix',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation',

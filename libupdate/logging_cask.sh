@@ -49,12 +49,15 @@ if ( $arg_g ) ; then
     $logprefix brew cask outdated --quiet --greedy | $logcattee | $logsuffix
     echo >> $tmpfile
 else
-    # check for oudated packages " >> $tmpfile
-    version=$(brew cask info $cask | sed -n "s/$cask:\ \(.*\)/\1/p")
-    installed=$(find "/usr/local/Caskroom/$cask" -type d -maxdepth 1 -maxdepth 1 -name "$version")
-    if [[ -z $installed ]] ; then
-        $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/" | $logcattee | $logsuffix
-    fi
+    # check for oudated packages "
+    list=`brew cask list -1`
+    for cask in $list ; do
+        version=$(brew cask info $cask | sed -n "s/$cask:\ \(.*\)/\1/p")
+        installed=$(find "/usr/local/Caskroom/$cask" -type d -maxdepth 1 -maxdepth 1 -name "$version")
+        if [[ -z $installed ]] ; then
+            $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/" | $logcattee | $logsuffix
+        fi
+    done
 fi
 
 
