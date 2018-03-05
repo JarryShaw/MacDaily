@@ -71,13 +71,13 @@ def dependency_pip(args, *, file, date, retset=False):
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version or 1)
 
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_pip.sh', date, system, brew, cpython, pypy, version] + list(packages),
+            ['bash', './logging_pip.sh', date, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
+            ['bash', './dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
         )
 
     if retset:
@@ -110,13 +110,13 @@ def dependency_brew(args, *, file, date, retset=False):
             logfile.write('INF: No dependency showed.\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_brew.sh', date] + list(packages),
+            ['bash', './logging_brew.sh', date] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_brew.sh', date, tree] + list(packages)
+            ['bash', './dependency_brew.sh', date, tree] + list(packages)
         )
 
     return log if retset else dict(brew=log)

@@ -60,7 +60,7 @@ def update_apm(args, *, file, date, retset=False):
 
     if 'all' in packages:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_apm.sh', date],
+            ['bash', './logging_apm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.split())
@@ -70,7 +70,7 @@ def update_apm(args, *, file, date, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_apm.sh', date, quiet, verbose, outdated] + list(log)
+        ['bash', './update_apm.sh', date, quiet, verbose, outdated] + list(log)
     )
 
     if not args.quiet:
@@ -100,13 +100,13 @@ def update_pip(args, *, file, date, retset=False):
             str(args.cpython).lower(), str(args.pypy).lower(), str(args.version or 1)
 
     logging = subprocess.run(
-        ['bash', 'libupdate/logging_pip.sh', date, system, brew, cpython, pypy, version] + list(packages),
+        ['bash', './logging_pip.sh', date, system, brew, cpython, pypy, version] + list(packages),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     log = set(logging.stdout.decode().split())
 
     subprocess.run(
-        ['bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
+        ['bash', './update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
     )
 
     if not args.quiet:
@@ -137,12 +137,12 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
         os.system(f'echo "-*- $({blue})Homebrew$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', 'libupdate/renew_brew.sh', date, quiet, verbose, force, merge]
+        ['bash', './renew_brew.sh', date, quiet, verbose, force, merge]
     )
 
     if 'all' in packages:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_brew.sh', date],
+            ['bash', './logging_brew.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
@@ -152,7 +152,7 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_brew.sh', date, quiet, verbose, outdated] + list(log)
+        ['bash', './update_brew.sh', date, quiet, verbose, outdated] + list(log)
     )
 
     if cleanup:
@@ -166,7 +166,7 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', 'true', 'false', quiet, verbose, date]
+            ['bash', './cleanup.sh', 'true', 'false', quiet, verbose, date]
         )
 
     if not args.quiet:
@@ -203,7 +203,7 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
 
     if 'all' in packages:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_cask.sh', date, greedy],
+            ['bash', './logging_cask.sh', date, greedy],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
@@ -213,7 +213,7 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_cask.sh', date, quiet, verbose, force, greedy, outdated] + list(log)
+        ['bash', './update_cask.sh', date, quiet, verbose, force, greedy, outdated] + list(log)
     )
 
     if cleanup:
@@ -227,7 +227,7 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', date, 'false', 'true', quiet, verbose]
+            ['bash', './cleanup.sh', date, 'false', 'true', quiet, verbose]
         )
 
     if not args.quiet:
@@ -252,7 +252,7 @@ def update_appstore(args, *, file, date, retset=False):
         os.system(f'echo "-*- $({blue})App Store$({reset}) -*-"; echo ;')
 
     logging = subprocess.run(
-        ['bash', 'libupdate/logging_appstore.sh', date],
+        ['bash', './logging_appstore.sh', date],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if 'all' in packages:
@@ -263,7 +263,7 @@ def update_appstore(args, *, file, date, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_appstore.sh', date, quiet, verbose, outdated] + list(packages)
+        ['sudo', 'bash', './update_appstore.sh', date, quiet, verbose, outdated] + list(packages)
     )
 
     if not args.quiet:
@@ -294,7 +294,7 @@ def update_all(args, *, file, date):
         os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', 'libupdate/cleanup.sh', date, 'true', 'true', quiet, verbose]
+        ['bash', './cleanup.sh', date, 'true', 'true', quiet, verbose]
     )
 
     if not args.quiet:
