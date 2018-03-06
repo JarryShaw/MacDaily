@@ -93,7 +93,7 @@ function pipupdate {
             pprint="_sys3" ;;
         3)  # pip
             prefix="/usr/local/opt/python2/bin"
-            suffix=""
+            suffix="2"
             pprint="" ;;
         4)  # pip3
             prefix="/usr/local/opt/python3/bin"

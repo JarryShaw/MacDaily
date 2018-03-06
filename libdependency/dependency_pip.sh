@@ -131,7 +131,7 @@ function piplogging {
         3)  # pip
             python="/usr/local/opt/python2/bin/python2"
             prefix="/usr/local/opt/python2/bin"
-            suffix=""
+            suffix="2"
             pprint="" ;;
         4)  # pip3
             python="/usr/local/opt/python3/bin/python3"
