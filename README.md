@@ -29,7 +29,7 @@ Some useful daily utility scripts.
 
 ##### `update`
 
-&emsp; `update` is a package manager written in Python 3.6 and Bash 3.2, which automatically update all packages installed through ——
+&emsp; `update` is a package manager written in Python 3.6 and Bash 3.2, which automatically update all packages installed through --
 
   - `apm` -- Atom packages
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
@@ -96,7 +96,7 @@ optional arguments:
 
 2. `pip` -- Python packages
 
-&emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support update of following ——
+&emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support update of following --
 
  - Python 2.7/3.6 installed through Python official disk images
  - Python 2.7/3.6 installed through `brew install python/python3`
@@ -213,7 +213,7 @@ optional arguments:
 
 ##### `uninstall`
 
-&emsp; `uninstall` is a package manager written in Python 3.6 and Bash 3.2, which recursively and interactively uninstall packages installed through ——
+&emsp; `uninstall` is a package manager written in Python 3.6 and Bash 3.2, which recursively and interactively uninstall packages installed through --
 
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
@@ -255,7 +255,7 @@ $ uninstall --all
 
 1. `pip` -- Python packages
 
-&emsp; As there're several kinds and versions of Python complier, along wiht its `pip` package manager. Here, we support uninstall procedure in following ——
+&emsp; As there're several kinds and versions of Python complier, along wiht its `pip` package manager. Here, we support uninstall procedure in following --
 
  * Python 2.7/3.6 installed through Python official disk images
  * Python 2.7/3.6 installed through `brew install python/python3`
@@ -353,7 +353,7 @@ optional arguments:
 
 ##### `reinstall`
 
-&emsp; `reinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through ——
+&emsp; `reinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through --
 
   - `brew` -- [Homebrew](https://brew.sh) packages
   - `cask` -- [Caskroom](https://caskroom.github.io) applications
@@ -456,7 +456,7 @@ optional arguments:
 
 ##### `postinstall`
 
-&nbsp; `postinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through ——
+&nbsp; `postinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through --
 
   - `brew` -- [Homebrew](https://brew.sh) packages
 
@@ -500,7 +500,7 @@ $ postinstall --all
 
 ##### `dependency`
 
-&nbsp; `dependency` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively show dependencies of packages installed through ——
+&nbsp; `dependency` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively show dependencies of packages installed through --
 
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
@@ -537,7 +537,7 @@ $ dependency --all
 
 1. `pip` -- Python packages
 
-&emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support showing dependency of following ——
+&emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support showing dependency of following --
 
  - Python 2.7/3.6 installed through Python official disk images
  - Python 2.7/3.6 installed through `brew install python/python3`

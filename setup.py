@@ -5,14 +5,15 @@
 import setuptools
 
 
-with open('./README.rst', 'r', encoding='utf-8') as file:
+# README
+with open('./README.rst', 'r') as file:
     long_desc = file.read()
 
 
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.1.5',
+    version = '0.1.6',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',

@@ -49,7 +49,7 @@ Some useful daily utility scripts.
 ----------
 
  ``update`` is a package manager written in Python 3.6 and Bash 3.2,
-which automatically update all packages installed through ——
+which automatically update all packages installed through --
 
 -  ``apm`` -- Atom packages
 
@@ -70,7 +70,7 @@ And log files can be found in directory
 ``/Library/Logs/Scripts/update/``. The global man page for ``update``
 shows as below.
 
-.. code:: 
+.. code::
 
     $ update --help
     usage: update [-h] [-V] [-a] [-f] [-m] [-g] [-q] [-v] MODE ...
@@ -95,7 +95,7 @@ shows as below.
  As it shows, there are five modes in total (if these commands exists).
 To update all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ update
     $ update -a
@@ -107,7 +107,7 @@ To update all packages, you may use one of commands below.
 i.e. "Atom Package Manager". The man page for ``update apm`` shows as
 below.
 
-.. code:: 
+.. code::
 
     $ update apm --help
     usage: update apm [-h] [-a] [-p PKG] [-q] [-v]
@@ -129,7 +129,7 @@ name, ``update apm`` might give a trivial "did-you-mean" correction.
 1. ``pip`` -- Python packages
 
  As there\'re all kinds and versions of Python complier, along with its
-``pip`` package manager. Here, we support update of following ——
+``pip`` package manager. Here, we support update of following --
 
 -  Python 2.7/3.6 installed through Python official disk images
 
@@ -139,7 +139,7 @@ name, ``update apm`` might give a trivial "did-you-mean" correction.
 
 And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ update pip --help
     usage: update pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-q] [-v]
@@ -171,7 +171,7 @@ correction.
 
  The man page for ``update brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update brew --help
     usage: update brew [-h] [-a] [-p PKG] [-f] [-m] [-q] [-v]
@@ -199,7 +199,7 @@ name, ``update brew`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update cask  --help
     usage: update cask [-h] [-a] [-p PKG] [-f] [-g] [-q] [-v]
@@ -229,7 +229,7 @@ name, ``update cask`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update appstore`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update appstore --help
     usage: update appstore [-h] [-a] [-p PKG] [-q]
@@ -255,7 +255,7 @@ give a trivial "did-you-mean" correction.
 
  ``uninstall`` is a package manager written in Python 3.6 and Bash 3.2,
 which recursively and interactively uninstall packages installed through
-——
+--
 
 -  ``pip`` -- Python packages, in both version of 2.7 and 3.6, running
    under `CPython <https://www.python.org>`__ or
@@ -271,7 +271,7 @@ which recursively and interactively uninstall packages installed through
 ``/Library/Logs/Scripts/uninstall/``. The global man page for
 ``uninstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall --help
     usage: uninstall [-h] [-V] [-a] [-f] [-i] [-q] [-v] [-Y] MODE ...
@@ -298,7 +298,7 @@ which recursively and interactively uninstall packages installed through
 The default procedure when arguments omit is to stand alone. To
 uninstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ uninstall -a
     $ uninstall --all
@@ -307,7 +307,7 @@ uninstall all packages, you may use one of commands below.
 
  As there're several kinds and versions of Python complier, along wiht
 its ``pip`` package manager. Here, we support uninstall procedure in
-following ——
+following --
 
 -  Python 2.7/3.6 installed through Python official disk images
 
@@ -317,7 +317,7 @@ following ——
 
  And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall pip --help
     usage: uninstall pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-i] [-q]
@@ -355,7 +355,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall brew --help
     usage: uninstall brew [-h] [-a] [-p PKG] [-f] [-i] [-q] [-v] [-Y]
@@ -384,7 +384,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall cask --help
     usage: uninstall cask [-h] [-a] [-p PKG] [-f] [-q] [-v] [-Y]
@@ -413,7 +413,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  ``reinstall`` is a package manager written in Python 3.6 and Bash 3.2,
 which automatically and interactively reinstall packages installed
-through ——
+through --
 
 -  ``brew`` -- `Homebrew <https://brew.sh>`__ packages
 
@@ -424,7 +424,7 @@ through ——
 ``/Library/Logs/Scripts/reinstall/``. The global man page for
 ``reinstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall --help
     usage: reinstall [-h] [-V] [-a] [-s START] [-e START] [-f] [-q] [-v] MODE ...
@@ -454,7 +454,7 @@ through ——
 The default procedure when arguments omit is to stand alone. To
 reinstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ reinstall -a
     $ reinstall --all
@@ -463,7 +463,7 @@ reinstall all packages, you may use one of commands below.
 
  The man page for ``reinstall brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall brew --help
     usage: reinstall brew [-h] [-p PKG] [-s START] [-e START] [-f] [-q] [-v]
@@ -493,7 +493,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``reinstall cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall cask --help
     usage: reinstall cask [-h] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -525,7 +525,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  ``postinstall`` is a package manager written in Python 3.6 and Bash
 3.2, which automatically and interactively reinstall packages installed
-through ——
+through --
 
 -  ``brew`` -- `Homebrew <https://brew.sh>`__ packages
 
@@ -534,7 +534,7 @@ through ——
 ``/Library/Logs/Scripts/postinstall/``. The global man page for
 ``postinstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ postinstall --help
     usage: postinstall [-h] [-V] [-a] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -559,7 +559,7 @@ through ——
  As it shows, there is only one mode in total (if these commands
 exists). To postinstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ postinstall
     $ postinstall -a
@@ -577,7 +577,7 @@ correction.
 
  ``dependency`` is a package manager written in Python 3.6 and Bash 3.2,
 which automatically and interactively show dependencies of packages
-installed through ——
+installed through --
 
 -  ``pip`` -- Python packages, in both version of 2.7 and 3.6, running
    under `CPython <https://www.python.org>`__ or
@@ -591,7 +591,7 @@ installed through ——
 ``/Library/Logs/Scripts/dependency/``. The global man page for
 ``dependency`` shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency --help
     usage: dependency [-h] [-V] [-a] [-t] MODE ...
@@ -614,7 +614,7 @@ installed through ——
 The default procedure when arguments omit is to stand alone. To show
 dependency of all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ dependency -a
     $ dependency --all
@@ -623,7 +623,7 @@ dependency of all packages, you may use one of commands below.
 
  As there\'re all kinds and versions of Python complier, along with its
 ``pip`` package manager. Here, we support showing dependency of
-following ——
+following --
 
 -  Python 2.7/3.6 installed through Python official disk images
 
@@ -633,7 +633,7 @@ following ——
 
 And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency pip --help
     usage: dependency pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-t]
@@ -667,7 +667,7 @@ when using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``dependency brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency brew --help
     usage: dependency brew [-h] [-a] [-p PKG] [-t]

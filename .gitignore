@@ -2,6 +2,7 @@
 log/
 tmp/
 deprecated/
+LICENSE.txt
 
 # Created by https://www.gitignore.io/api/macos,python
 
