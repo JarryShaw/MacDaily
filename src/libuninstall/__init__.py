@@ -10,6 +10,9 @@ import subprocess
 import time
 
 
+__all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
+
+
 # change working directory
 os.chdir(os.path.dirname(__file__))
 
@@ -76,13 +79,13 @@ def uninstall_pip(args, *, file, date, retset=False):
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version or 1)
 
         logging = subprocess.run(
-            ['bash', './logging_pip.sh', date, system, brew, cpython, pypy, version, idep] + list(packages),
+            ['bash', 'libuninstall/logging_pip.sh', date, system, brew, cpython, pypy, version, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', './uninstall_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
+            ['bash', 'libuninstall/uninstall_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
         )
 
     if not args.quiet:
@@ -122,13 +125,13 @@ def uninstall_brew(args, *, file, date, cleanup=True, retset=False):
             logfile.write('INF: No uninstallation performed.\n')
     else:
         logging = subprocess.run(
-            ['bash', './logging_brew.sh', date, idep] + list(packages),
+            ['bash', 'libuninstall/logging_brew.sh', date, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', './uninstall_brew.sh', date, force, quiet, verbose, idep, yes] + list(packages)
+            ['bash', 'libuninstall/uninstall_brew.sh', date, force, quiet, verbose, idep, yes] + list(packages)
         )
 
     if not args.quiet:
@@ -170,13 +173,13 @@ def uninstall_cask(args, *, file, date, cleanup=True, retset=False):
             logfile.write('INF: No uninstallation performed.\n')
     else:
         logging = subprocess.run(
-            ['bash', './logging_cask.sh', date] + list(packages),
+            ['bash', 'libuninstall/logging_cask.sh', date] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', './uninstall_cask.sh', date, quiet, verbose, force] + list(packages)
+            ['bash', 'libuninstall/uninstall_cask.sh', date, quiet, verbose, force] + list(packages)
         )
 
     if not args.quiet:

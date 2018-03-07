@@ -4,15 +4,17 @@
 
 import argparse
 import datetime
-import libprinstall
 import os
 import pathlib
 import platform
 import sys
 
 
+from jsdaily.libprinstall import *
+
+
 # version string
-__version__ = '0.4.1'
+__version__ = '0.5.0'
 
 
 # terminal commands
@@ -87,7 +89,7 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    log = libprinstall.postinstall(args, file=logname, date=logdate)
+    log = postinstall(args, file=logname, date=logdate)
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Postinstall Logs$({reset}) -*-"; echo ;')
 

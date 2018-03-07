@@ -4,15 +4,17 @@
 
 import argparse
 import datetime
-import libupdate
 import os
 import pathlib
 import platform
 import sys
 
 
+from jsdaily.libupdate import *
+
+
 # version string
-__version__ = '0.6.2'
+__version__ = '0.7.0'
 
 
 # display mode names
@@ -27,12 +29,12 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libupdate.update_all(*args, **kwargs),
-    apm = lambda *args, **kwargs: libupdate.update_apm(*args, **kwargs),
-    pip = lambda *args, **kwargs: libupdate.update_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: libupdate.update_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: libupdate.update_cask(*args, **kwargs),
-    appstore = lambda *args, **kwargs: libupdate.update_appstore(*args, **kwargs),
+    all = lambda *args, **kwargs: update_all(*args, **kwargs),
+    apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
+    pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
+    appstore = lambda *args, **kwargs: update_appstore(*args, **kwargs),
 )
 
 

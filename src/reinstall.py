@@ -4,15 +4,17 @@
 
 import argparse
 import datetime
-import libprinstall
 import os
 import pathlib
 import platform
 import sys
 
 
+from jsdaily.libprinstall import *
+
+
 # version string
-__version__ = '0.4.1'
+__version__ = '0.5.0'
 
 
 # display mode names
@@ -24,9 +26,9 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libprinstall.reinstall_all(*args, **kwargs),
-    brew = lambda *args, **kwargs: libprinstall.reinstall_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: libprinstall.reinstall_cask(*args, **kwargs),
+    all = lambda *args, **kwargs: reinstall_all(*args, **kwargs),
+    brew = lambda *args, **kwargs: reinstall_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: reinstall_cask(*args, **kwargs),
 )
 
 

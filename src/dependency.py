@@ -4,15 +4,17 @@
 
 import argparse
 import datetime
-import libdependency
 import os
 import pathlib
 import platform
 import sys
 
 
+from jsdaily.libdependency import *
+
+
 # version string
-__version__ = '0.4.2'
+__version__ = '0.5.0'
 
 
 # display mode names
@@ -24,9 +26,9 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libdependency.dependency_all(*args, **kwargs),
-    pip = lambda *args, **kwargs: libdependency.dependency_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: libdependency.dependency_brew(*args, **kwargs),
+    all = lambda *args, **kwargs: dependency_all(*args, **kwargs),
+    pip = lambda *args, **kwargs: dependency_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: dependency_brew(*args, **kwargs),
 )
 
 

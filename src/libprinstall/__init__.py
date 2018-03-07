@@ -10,6 +10,9 @@ import subprocess
 import time
 
 
+__all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'postinstall']
+
+
 # change working directory
 os.chdir(os.path.dirname(__file__))
 
@@ -76,7 +79,7 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
             logfile.write('INF: No reinstallation performed.\n')
     else:
         logging = subprocess.run(
-            ['bash', './logging_brew.sh', date, 'reinstall', start, end] + list(packages),
+            ['bash', 'libprinstall/logging_brew.sh', date, 'reinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
@@ -87,7 +90,7 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
 
         if log:
             subprocess.run(
-                ['bash', './reinstall_brew.sh', date, quiet, verbose, force] + list(pkg)
+                ['bash', 'libprinstall/reinstall_brew.sh', date, quiet, verbose, force] + list(pkg)
             )
         else:
             if not args.quiet:
@@ -106,7 +109,7 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', './cleanup.sh', date, 'reinstall', 'true', 'false', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'false', quiet, verbose]
         )
 
     if not args.quiet:
@@ -143,7 +146,7 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
 
     if ('all' in packages) or (args.start is not None) or (args.end is not None):
         logging = subprocess.run(
-            ['bash', './logging_cask.sh', date, 'reinstall', start, end] + list(packages),
+            ['bash', 'libprinstall/logging_cask.sh', date, 'reinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
@@ -152,7 +155,7 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
 
     if log:
         subprocess.run(
-            ['bash', './reinstall_cask.sh', date, quiet, verbose] + list(log)
+            ['bash', 'libprinstall/reinstall_cask.sh', date, quiet, verbose] + list(log)
         )
     else:
         if not args.quiet:
@@ -171,7 +174,7 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', './cleanup.sh', date, 'reinstall', 'false', 'true', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'false', 'true', quiet, verbose]
         )
 
     if not args.quiet:
@@ -199,7 +202,7 @@ def reinstall_all(args, *, file, date):
         os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', './cleanup.sh', date, 'reinstall', 'true', 'true', quiet, verbose]
+        ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'true', quiet, verbose]
     )
 
     if not args.quiet:
@@ -232,7 +235,7 @@ def postinstall(args, *, file, date, cleanup=True):
 
     if ('all' in packages) or (args.start is not None) or (args.end is not None):
         logging = subprocess.run(
-            ['bash', './logging_brew.sh', date, 'postinstall', start, end] + list(packages),
+            ['bash', 'libprinstall/logging_brew.sh', date, 'postinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.replace(b'\x1b', b'').decode().split())
@@ -241,7 +244,7 @@ def postinstall(args, *, file, date, cleanup=True):
 
     if log:
         subprocess.run(
-            ['bash', './postinstall.sh', date, quiet, verbose] + list(log)
+            ['bash', 'libprinstall/postinstall.sh', date, quiet, verbose] + list(log)
         )
     else:
         if not args.quiet:
@@ -260,7 +263,7 @@ def postinstall(args, *, file, date, cleanup=True):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', './cleanup.sh', date, 'postinstall', 'true', 'false', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'postinstall', 'true', 'false', quiet, verbose]
         )
 
     if not args.quiet:

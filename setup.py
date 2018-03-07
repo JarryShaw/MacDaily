@@ -13,7 +13,7 @@ with open('./README.rst', 'r') as file:
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.1.6',
+    version = '0.2.0',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
@@ -22,27 +22,32 @@ setuptools.setup(
     description = 'Some useful daily utility scripts.',
     long_description = long_desc,
     python_requires = '>=3.6',
-    py_modules = ['update', 'uninstall', 'reinstall', 'postinstall', 'dependency'],
     entry_points = {
         'console_scripts': [
-            'update = update:main',
-            'uninstall = uninstall:main',
-            'reinstall = reinstall:main',
-            'postinstall = postinstall:main',
-            'dependency = dependency:main',
+            'update = jsdaily:update',
+            'uninstall = jsdaily:uninstall',
+            'reinstall = jsdaily:reinstall',
+            'postinstall = jsdaily:postinstall',
+            'dependency = jsdaily:dependency',
         ]
     },
-    packages = setuptools.find_packages(exclude=['deprecated']),
+    packages = [
+        'jsdaily',
+        'jsdaily.libupdate',
+        'jsdaily.libuninstall',
+        'jsdaily.libprinstall',
+        'jsdaily.libdependency',
+    ],
     package_data = {
         '': [
             'LICENSE.txt',
             'README.md',
             'README.rst',
         ],
-        'libupdate': ['*.py', '*.sh'],
-        'libuninstall': ['*.py', '*.sh'],
-        'libprinstall': ['*.py', '*.sh'],
-        'libdependency': ['*.py', '*.sh'],
+        'jsdaily.libupdate': ['*.py', '*.sh'],
+        'jsdaily.libuninstall': ['*.py', '*.sh'],
+        'jsdaily.libprinstall': ['*.py', '*.sh'],
+        'jsdaily.libdependency': ['*.py', '*.sh'],
     },
     classifiers = [
         'Development Status :: 5 - Production/Stable',
