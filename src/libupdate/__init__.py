@@ -13,10 +13,6 @@ import time
 __all__ = ['update_all', 'update_apm', 'update_pip', 'update_brew', 'update_cask', 'update_appstore']
 
 
-# change working directory
-os.chdir(os.path.dirname(__file__))
-
-
 # terminal display
 red = 'tput setaf 1'    # blush / red
 blue = 'tput setaf 14'  # blue

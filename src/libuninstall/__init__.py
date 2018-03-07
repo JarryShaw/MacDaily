@@ -13,10 +13,6 @@ import time
 __all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
 
 
-# change working directory
-os.chdir(os.path.dirname(__file__))
-
-
 # terminal display
 red = 'tput setaf 1'    # blush / red
 green = 'tput setaf 2'  # green
