@@ -66,10 +66,10 @@ fi
 # if verbose flag not set
 if ( $arg_v ) ; then
     verbose="--verbose"
-    cmd_v="-v"
+    # cmd_v="-v"
 else
     verbose=""
-    cmd_v=""
+    # cmd_v=""
 fi
 
 
@@ -84,8 +84,8 @@ if [ -e /Volumes/Jarry\ Shaw/ ] ; then
     # check if cache directory exists
     if [ -e $(brew --cache) ] ; then
         # move caches
-        $logprefix echo "+ cp -rf cache archive $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix cp -rf $cmd_v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ | $logcattee | $logsuffix
+        $logprefix echo "+ cp -rf -v cache archive $quiet" | $logcattee | $logsuffix
+        $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ | $logcattee | $logsuffix
         $logprefix echo | $logcattee | $logsuffix
     fi
 
@@ -98,8 +98,8 @@ if [ -e /Volumes/Jarry\ Shaw/ ] ; then
 
     # if brew flag set
     if ( $arg_brew ) ; then
-        $logprefix echo "+ brew cleanup $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix rm -rf $cmd_v $( brew --cache ) | $logcattee | $logsuffix
+        $logprefix echo "+ brew cleanup --verbose $quiet" | $logcattee | $logsuffix
+        $logprefix rm -rf -v $( brew --cache ) | $logcattee | $logsuffix
         $logprefix echo | $logcattee | $logsuffix
     fi
 fi

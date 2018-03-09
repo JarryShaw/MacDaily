@@ -8,13 +8,14 @@ import os
 import pathlib
 import platform
 import sys
+import zipfile
 
 
 from jsdaily.libuninstall import *
 
 
 # version string
-__version__ = '0.6.1'
+__version__ = '0.8.0'
 
 
 # display mode names
@@ -224,30 +225,46 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    log = MODE.get(args.mode or 'all')(args, file=logname, date=logdate)
-    if not args.quiet:
-        os.system(f'echo "-*- $({blue})Uninstall Logs$({reset}) -*-"; echo ;')
+    uninstall = MODE.get(args.mode or 'all')
+    log = uninstall(args, file=logname, date=logdate)
 
-        for mode in log:
-            name = NAME.get(mode, mode)
-            if log[mode] and all(log[mode]):
-                pkgs = ', '.join(log[mode])
-                comment = '' if args.idep else ' (including dependencies)'
-                os.system(f'echo "Uninstalled following {name} packages: $({red}){pkgs}$({reset}){comment}."; echo ;')
-            else:
-                os.system(f'echo "$({green})No package uninstalled in {name}.$({reset})"; echo ;')
+    filelist = list()
+    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/uninstall.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts/uninstall')
+        for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/uninstall'):
+            for filename in files:
+                filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
+                today = datetime.datetime.today()
+                delta = today - filedate
+                if delta > datetime.timedelta(7):
+                    absname = os.path.abspath(os.path.join(dirname, filename))
+                    zf.write(absname, filename)
+                    os.remove(absname)
+                    filelist.append(filename)
 
     mode = '-*- Uninstall Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
+        if not args.quiet:
+            os.system(f'echo "-*- $({blue})Uninstall Logs$({reset}) -*-"; echo ;')
+
         for mode in log:
             name = NAME.get(mode, mode)
             if log[mode] and all(log[mode]):
                 pkgs = ', '.join(log[mode])
                 comment = '' if args.idep else ' (including dependencies)'
                 logfile.write(f'LOG: Uninstalled following {name} packages: {pkgs}{comment}.\n')
+                if not args.quiet:
+                    os.system(f'echo "Uninstalled following {name} packages: $({red}){pkgs}$({reset}){comment}."; echo ;')
             else:
                 logfile.write(f'LOG: No package uninstalled in {name}.\n')
+                if not args.quiet:
+                    os.system(f'echo "$({green})No package uninstalled in {name}.$({reset})"; echo ;')
+
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: Archived following old logs: {files}\n')
         logfile.write('\n\n\n\n')
 
 

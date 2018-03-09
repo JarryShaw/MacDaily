@@ -8,13 +8,14 @@ import os
 import pathlib
 import platform
 import sys
+import zipfile
 
 
 from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '0.5.1'
+__version__ = '0.6.0'
 
 
 # terminal commands
@@ -90,23 +91,43 @@ def main():
             logfile.write(f'ARG: {key} = {value}\n')
 
     log = postinstall(args, file=logname, date=logdate)
-    if not args.quiet:
-        os.system(f'echo "-*- $({blue})Postinstall Logs$({reset}) -*-"; echo ;')
 
-        if log and all(log):
-            pkgs = ', '.join(log)
-            os.system(f'echo "Postinstalled following Homebrew packages: $({red}){pkgs}$({reset})."; echo ;')
-        else:
-            os.system(f'echo "$({green})No package postinstalled in Homebrew.$({reset})"; echo ;')
+    filelist = list()
+    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/postinstall.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts/postinstall')
+        for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/postinstall'):
+            for filename in files:
+                filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
+                today = datetime.datetime.today()
+                delta = today - filedate
+                if delta > datetime.timedelta(7):
+                    absname = os.path.abspath(os.path.join(dirname, filename))
+                    zf.write(absname, filename)
+                    os.remove(absname)
+                    filelist.append(filename)
 
     mode = '-*- Postinstall Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-        if log and all(log):
-            pkgs = ', '.join(log)
-            logfile.write(f'LOG: Postinstalled following Homebrew packages: {pkgs}.\n')
-        else:
-            logfile.write(f'LOG: No package postinstalled in Homebrew.\n')
+        if not args.quiet:
+            os.system(f'echo "-*- $({blue})Postinstall Logs$({reset}) -*-"; echo ;')
+
+        for mode in log:
+            name = NAME.get(mode, mode)
+            if log[mode] and all(log[mode]):
+                pkgs = ', '.join(log[mode])
+                logfile.write(f'LOG: Postinstalled following {name} packages: {pkgs}.\n')
+                if not args.quiet:
+                    os.system(f'echo "Postinstalled following {name} packages: $({red}){pkgs}$({reset})."; echo ;')
+            else:
+                logfile.write(f"LOG: No package postinstalled in {name}.\n")
+                if not args.quiet:
+                    os.system(f'echo "$({green})No package postinstalled in {name}.$({reset})"; echo ;')
+
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: Archived following old logs: {files}\n')
         logfile.write('\n\n\n\n')
 
 

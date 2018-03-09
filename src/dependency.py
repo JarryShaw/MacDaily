@@ -8,13 +8,14 @@ import os
 import pathlib
 import platform
 import sys
+import zipfile
 
 
 from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '0.5.1'
+__version__ = '0.7.0'
 
 
 # display mode names
@@ -149,10 +150,28 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    log = MODE.get(args.mode or 'all')(args, file=logname, date=logdate)
+    dependency = MODE.get(args.mode or 'all')
+    log = dependency(args, file=logname, date=logdate)
+
+    filelist = list()
+    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/dependency.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts/dependency')
+        for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/dependency'):
+            for filename in files:
+                filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
+                today = datetime.datetime.today()
+                delta = today - filedate
+                if delta > datetime.timedelta(7):
+                    absname = os.path.abspath(os.path.join(dirname, filename))
+                    zf.write(absname, filename)
+                    os.remove(absname)
+                    filelist.append(filename)
+
     mode = '-*- Dependency Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
+
         for mode in log:
             name = NAME.get(mode, mode)
             if log[mode] and all(log[mode]):
@@ -160,6 +179,10 @@ def main():
                 logfile.write(f'LOG: Showed dependencies of following {name} packages: {pkgs}.\n')
             else:
                 logfile.write(f'LOG: No dependencies showed in {name} packages.\n')
+
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: Archived following old logs: {files}\n')
         logfile.write('\n\n\n\n')
 
 
