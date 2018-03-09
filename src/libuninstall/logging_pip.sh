@@ -155,7 +155,7 @@ function piplogging {
             suffix="2"
             pprint="2"
             # link brewed python@2
-            brew link python@2 > /dev/null 2>&1 ;;
+            brew link python@2 --force > /dev/null 2>&1 ;;
         18)  # pip3
             prefix="/usr/local/opt/python@3/bin"
             suffix="3"
