@@ -90,7 +90,7 @@ def uninstall_pip(args, *, file, date, retset=False):
     return log if retset else dict(pip=log)
 
 
-def uninstall_brew(args, *, file, date, cleanup=True, retset=False):
+def uninstall_brew(args, *, file, date, retset=False):
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     force = str(args.force).lower()
@@ -136,7 +136,7 @@ def uninstall_brew(args, *, file, date, cleanup=True, retset=False):
     return log if retset else dict(brew=log)
 
 
-def uninstall_cask(args, *, file, date, cleanup=True, retset=False):
+def uninstall_cask(args, *, file, date, retset=False):
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     force = str(args.force).lower()

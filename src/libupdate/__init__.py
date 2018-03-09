@@ -165,7 +165,7 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', 'true', 'false', quiet, verbose, date]
+            ['bash', 'libupdate/cleanup.sh', date, 'true', 'false', quiet]
         )
 
     if not args.quiet:
@@ -226,7 +226,7 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', date, 'false', 'true', quiet, verbose]
+            ['bash', 'libupdate/cleanup.sh', date, 'false', 'true', quiet]
         )
 
     if not args.quiet:
@@ -293,7 +293,7 @@ def update_all(args, *, file, date):
         os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', 'libupdate/cleanup.sh', date, 'true', 'true', quiet, verbose]
+        ['bash', 'libupdate/cleanup.sh', date, 'true', 'true', quiet]
     )
 
     if not args.quiet:

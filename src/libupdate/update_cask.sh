@@ -85,10 +85,10 @@ function caskupdate {
         $logprefix echo "$cask requires update." | $logcattee | $logsuffix
         $reset
         sudo printf ""
-        $logprefix echo "++ brew cask uninstall --force $cask $verbose $quiet" | $logcattee | $logsuffix
+        $logprefix echo "++ brew cask uninstall $cask --force $verbose $quiet" | $logcattee | $logsuffix
         $logprefix brew cask uninstall --force $cask $verbose $quiet | $logcattee | $logsuffix
         sudo printf ""
-        $logprefix echo "++ brew cask install --force $cask $verbose $quiet" | $logcattee | $logsuffix
+        $logprefix echo "++ brew cask install $cask --force $verbose $quiet" | $logcattee | $logsuffix
         $logprefix brew cask install --force $cask $verbose $quiet | $logcattee | $logsuffix
         $logprefix echo | $logcattee | $logsuffix
     else

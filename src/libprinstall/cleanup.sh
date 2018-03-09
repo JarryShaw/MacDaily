@@ -14,7 +14,6 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #   3. Homebrew Flag
 #   4. Caskroom Flag
 #   5. Quiet Flag
-#   6. Verbose Flag
 ################################################################################
 
 
@@ -24,7 +23,7 @@ logmode=$2
 arg_brew=$3
 arg_cask=$4
 arg_q=$5
-arg_v=$6
+# arg_v=$6
 
 
 # log file prepare
@@ -65,19 +64,19 @@ else
 fi
 
 
-# if verbose flag not set
-if ( $arg_v ) ; then
-    verbose="--verbose"
-    # cmd_v="-v"
-else
-    verbose=""
-    # cmd_v=""
-fi
+# # if verbose flag not set
+# if ( $arg_v ) ; then
+#     verbose="--verbose"
+#     # cmd_v="-v"
+# else
+#     verbose=""
+#     # cmd_v=""
+# fi
 
 
 # brew prune
-$logprefix echo "+ brew prune $verbose $quiet" | $logcattee | $logsuffix
-$logprefix brew prune $verbose $quiet | $logcattee | $logsuffix
+$logprefix echo "+ brew prune --verbose $quiet" | $logcattee | $logsuffix
+$logprefix brew prune --verbose $quiet | $logcattee | $logsuffix
 $logprefix echo | $logcattee | $logsuffix
 
 
@@ -93,8 +92,8 @@ if [ -e /Volumes/Jarry\ Shaw/ ] ; then
 
     # if cask flag set
     if ( $arg_cask ) ; then
-        $logprefix echo "+ brew cask cleanup $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask cleanup $verbose | $logcattee | $logsuffix
+        $logprefix echo "+ brew cask cleanup --verbose $quiet" | $logcattee | $logsuffix
+        $logprefix brew cask cleanup --verbose | $logcattee | $logsuffix
         $logprefix echo | $logcattee | $logsuffix
     fi
 

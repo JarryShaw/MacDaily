@@ -105,7 +105,7 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'false', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'false', quiet]
         )
 
     if not args.quiet:
@@ -170,7 +170,7 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'false', 'true', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'false', 'true', quiet]
         )
 
     if not args.quiet:
@@ -198,7 +198,7 @@ def reinstall_all(args, *, file, date):
         os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'true', quiet, verbose]
+        ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'true', quiet]
     )
 
     if not args.quiet:
@@ -259,7 +259,7 @@ def postinstall(args, *, file, date, cleanup=True):
             os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
         subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'postinstall', 'true', 'false', quiet, verbose]
+            ['bash', 'libprinstall/cleanup.sh', date, 'postinstall', 'true', 'false', quiet]
         )
 
     if not args.quiet:
