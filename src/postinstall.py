@@ -15,7 +15,7 @@ from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 
 
 # terminal commands
@@ -64,7 +64,6 @@ def get_parser():
                         help=(
                             'Run in verbose mode, with detailed output information.'
                         ))
-
     return parser
 
 
@@ -93,19 +92,21 @@ def main():
     log = postinstall(args, file=logname, date=logdate)
 
     filelist = list()
-    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/postinstall.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
-        abs_src = os.path.abspath('/Library/Logs/Scripts/postinstall')
+    with zipfile.ZipFile('/Library/Logs/Scripts/archive.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts')
         for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/postinstall'):
             for filename in files:
+                if filename == '.DS_Store':
+                    continue
                 filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
                 today = datetime.datetime.today()
                 delta = today - filedate
                 if delta > datetime.timedelta(7):
                     absname = os.path.abspath(os.path.join(dirname, filename))
-                    zf.write(absname, filename)
+                    arcname = absname[len(abs_src) + 1:]
+                    zf.write(absname, arcname)
+                    filelist.append(arcname)
                     os.remove(absname)
-                    filelist.append(filename)
 
     mode = '-*- Postinstall Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:

@@ -15,7 +15,7 @@ from jsdaily.libuninstall import *
 
 
 # version string
-__version__ = '0.8.2'
+__version__ = '0.8.3'
 
 
 # display mode names
@@ -73,8 +73,11 @@ def get_parser():
                         dest='all', help=(
                             'Uninstall all packages installed through pip.'
                         ))
-    parser_pip.add_argument('-V', '--version', action='store', metavar='VER',
-                        dest='version', type=int, help=(
+    parser_pip.add_argument('-v', '--pyver', action='store', metavar='VER',
+                        choices=[
+                            1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
+                            3, 30, 31, 32, 33, 34, 35, 36, 37,
+                        ], dest='version', type=int, default=1, help=(
                             'Indicate packages in which version of pip will '
                             'be uninstalled.'
                         ))
@@ -229,19 +232,21 @@ def main():
     log = uninstall(args, file=logname, date=logdate)
 
     filelist = list()
-    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/uninstall.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
-        abs_src = os.path.abspath('/Library/Logs/Scripts/uninstall')
+    with zipfile.ZipFile('/Library/Logs/Scripts/archive.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts')
         for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/uninstall'):
             for filename in files:
+                if filename == '.DS_Store':
+                    continue
                 filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
                 today = datetime.datetime.today()
                 delta = today - filedate
                 if delta > datetime.timedelta(7):
                     absname = os.path.abspath(os.path.join(dirname, filename))
-                    zf.write(absname, filename)
+                    arcname = absname[len(abs_src) + 1:]
+                    zf.write(absname, arcname)
+                    filelist.append(arcname)
                     os.remove(absname)
-                    filelist.append(filename)
 
     mode = '-*- Uninstall Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:

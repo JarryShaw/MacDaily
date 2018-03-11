@@ -15,7 +15,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 
 # display mode names
@@ -99,8 +99,11 @@ def get_parser():
                         dest='all', help=(
                             'Update all packages installed through pip.'
                         ))
-    parser_pip.add_argument('-V', '--version', action='store', metavar='VER',
-                        dest='version', type=int, help=(
+    parser_pip.add_argument('-v', '--pyver', action='store', metavar='VER',
+                        choices=[
+                            1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
+                            3, 30, 31, 32, 33, 34, 35, 36, 37,
+                        ], dest='version', type=int, default=1, help=(
                             'Indicate which version of pip will be updated.'
                         ))
     parser_pip.add_argument('-s', '--system', action='store_true', default=False,
@@ -263,19 +266,21 @@ def main():
     log = update(args, file=logname, date=logdate)
 
     filelist = list()
-    pathlib.Path('/Library/Logs/Scripts/Archive').mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile('/Library/Logs/Scripts/Archive/update.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
-        abs_src = os.path.abspath('/Library/Logs/Scripts/update')
+    with zipfile.ZipFile('/Library/Logs/Scripts/archive.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+        abs_src = os.path.abspath('/Library/Logs/Scripts')
         for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/update'):
             for filename in files:
+                if filename == '.DS_Store':
+                    continue
                 filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
                 today = datetime.datetime.today()
                 delta = today - filedate
                 if delta > datetime.timedelta(7):
                     absname = os.path.abspath(os.path.join(dirname, filename))
-                    zf.write(absname, filename)
+                    arcname = absname[len(abs_src) + 1:]
+                    zf.write(absname, arcname)
+                    filelist.append(arcname)
                     os.remove(absname)
-                    filelist.append(filename)
 
     mode = '-*- Update Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
