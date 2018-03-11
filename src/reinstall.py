@@ -15,7 +15,7 @@ from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '0.6.4'
+__version__ = '0.6.5'
 
 
 # display mode names

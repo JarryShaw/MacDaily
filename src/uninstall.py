@@ -15,7 +15,7 @@ from jsdaily.libuninstall import *
 
 
 # version string
-__version__ = '0.8.4'
+__version__ = '0.8.5'
 
 
 # display mode names
@@ -73,7 +73,7 @@ def get_parser():
                         dest='all', help=(
                             'Uninstall all packages installed through pip.'
                         ))
-    parser_pip.add_argument('-v', '--pyver', action='store', metavar='VER',
+    parser_pip.add_argument('-V', '--pyver', action='store', metavar='VER',
                         choices=[
                             1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
                             3, 30, 31, 32, 33, 34, 35, 36, 37,

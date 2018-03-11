@@ -139,24 +139,32 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Caskroom$({reset}) -*-"; echo ;')
 
-    if ('all' in packages) or (args.start is not None) or (args.end is not None):
+    if 'null' in packages:
+        log = set()
+        if not args.quiet:
+            os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+        with open(file, 'a') as logfile:
+            logfile.write('INF: No reinstallation performed.\n')
+    else:
         logging = subprocess.run(
             ['bash', 'libprinstall/logging_cask.sh', date, 'reinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split())
-    else:
-        log = packages
+        if (args.start is not None) or (args.end is not None):
+            pkg = set(logging.stdout.decode().split())
+        else:
+            pkg = packages
 
-    if log:
-        subprocess.run(
-            ['bash', 'libprinstall/reinstall_cask.sh', date, quiet, verbose] + list(log)
-        )
-    else:
-        if not args.quiet:
-            os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
-        with open(file, 'a') as logfile:
-            logfile.write('INF: No reinstallation performed.\n')
+        if log:
+            subprocess.run(
+                ['bash', 'libprinstall/reinstall_cask.sh', date, quiet, verbose] + list(pkg)
+            )
+        else:
+            if not args.quiet:
+                os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+            with open(file, 'a') as logfile:
+                logfile.write('INF: No reinstallation performed.\n')
 
     if cleanup:
         mode = '-*- Cleanup -*-'.center(80, ' ')
