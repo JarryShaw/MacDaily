@@ -15,7 +15,7 @@ from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '0.6.3'
+__version__ = '0.6.4'
 
 
 # terminal commands
@@ -115,7 +115,6 @@ def main():
             os.system(f'echo "-*- $({blue})Postinstall Logs$({reset}) -*-"; echo ;')
 
         for mode in log:
-            name = NAME.get(mode, mode)
             if log[mode] and all(log[mode]):
                 pkgs = ', '.join(log[mode])
                 logfile.write(f'LOG: Postinstalled following {name} packages: {pkgs}.\n')

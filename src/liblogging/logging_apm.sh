@@ -22,8 +22,8 @@ echo "+ /bin/bash $0 $@" >> $logfile
 
 
 # find packages
-echo "++ apm list --no-color | sed \"s/\(.*\)*@.*/\1/\"" >> $logfile
-apm list --no-color | sed "s/\(.*\)*@.*/\1/" >> $logfile 2> /dev/null
+echo -e "++ apm list --bare | sed \"s/\(.*\)*@.*/INF: \1/\"" >> $logfile
+apm list --bare | sed "s/\(.*\)*@.*/INF: \1/" >> $logfile 2> /dev/null
 echo >> $logfile
 
 

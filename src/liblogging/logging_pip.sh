@@ -153,8 +153,8 @@ function piplogging {
     # if executive exits
     if [ -e $prefix/pip$suffix ] ; then
         # list packages
-        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/\1/\"" >> $logfile
-        $prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*)/\1/" >> $logfile 2> /dev/null
+        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
+        $prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*)/INF: \1/" >> $logfile 2> /dev/null
         echo >> $logfile
     else
         echo -e "pip$pprint: Not installed.\n" >> $logfile

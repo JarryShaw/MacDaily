@@ -15,7 +15,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 
 # mode actions
@@ -55,7 +55,7 @@ def get_parser():
                         ))
     parser.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'log applications and packages of all entries'
+                            'Log applications and packages of all entries.'
                         ))
     parser.add_argument('-v', '--pyver', action='store', metavar='VER',
                         choices=[
@@ -82,6 +82,10 @@ def get_parser():
                         dest='pypy', help=(
                             'Log pip packages on PyPy environment.'
                         ))
+    parser.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'Run in quiet mode, with no output information.'
+                        ))
     return parser
 
 
@@ -94,7 +98,7 @@ def main():
     args = parser.parse_args()
 
     if args.all:
-        modes = ['apm', 'pip', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
+        modes = ['apm', 'pip', 'brew', 'cask', 'macapp', 'appstore', 'dotapp']
     else:
         modes = args.mode
 

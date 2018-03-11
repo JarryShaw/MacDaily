@@ -22,8 +22,8 @@ echo "+ /bin/bash $0 $@" >> $logfile
 
 
 # find apps
-echo "++ find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\"" >> $logfile
-find /Applications -path "*Contents/_MASReceipt/receipt" -maxdepth 4 -print | sed "s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##" >> $logfile 2> /dev/null
+echo -e "++ find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\" | sed \"s/^/INF: \1/\"" >> $logfile
+find /Applications -path "*Contents/_MASReceipt/receipt" -maxdepth 4 -print | sed "s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##" | sed "s/^/INF: /" >> $logfile 2> /dev/null
 echo >> $logfile
 
 

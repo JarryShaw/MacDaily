@@ -652,7 +652,7 @@ positional arguments:
 optional arguments:
   -h, --help           show this help message and exit
   -V, --version        show program's version number and exit
-  -a, --all            log applications and packages of all entries
+  -a, --all            Log applications and packages of all entries.
   -v VER, --pyver VER  Indicate which version of pip will be logged.
   -s, --system         Log pip packages on system level, i.e. python installed
                        through official installer.
@@ -660,6 +660,7 @@ optional arguments:
                        through Homebrew.
   -c, --cpython        Log pip packages on CPython environment.
   -y, --pypy           Log pip packages on PyPy environment.
+  -q, --quiet          Run in quiet mode, with no output information.
 ```
 
 &emsp; As it shows, there are seven mode in total (if these commands exists), and you may call **multiple** modes at one time. The default procedure when arguments omit is to stand alone. To log all entries, you may use one of commands below.

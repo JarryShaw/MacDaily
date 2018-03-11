@@ -22,8 +22,8 @@ echo "+ /bin/bash $0 $@" >> $logfile
 
 
 # find packages
-echo "++ brew list" >> $logfile
-brew list >> $logfile 2> /dev/null
+echo -e "++ brew list | sed \"s/^/INF: /\"" >> $logfile
+brew list | sed "s/^/INF: /" >> $logfile 2> /dev/null
 echo >> $logfile
 
 

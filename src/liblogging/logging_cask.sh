@@ -22,8 +22,8 @@ echo "+ /bin/bash $0 $@" >> $logfile
 
 
 # find apps
-echo "++ brew cask list" >> $logfile
-brew cask list >> $logfile 2> /dev/null
+echo -e "++ brew cask list | sed \"s/^/INF: /\"" >> $logfile
+brew cask list | sed "s/^/INF: /" >> $logfile 2> /dev/null
 echo >> $logfile
 
 
