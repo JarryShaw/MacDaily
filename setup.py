@@ -13,7 +13,7 @@ with open('./README.rst', 'r') as file:
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.4.2',
+    version = '0.5.0',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
@@ -29,6 +29,7 @@ setuptools.setup(
             'reinstall = jsdaily:reinstall',
             'postinstall = jsdaily:postinstall',
             'dependency = jsdaily:dependency',
+            'logging = jsdaily:logging',
         ]
     },
     packages = [
@@ -37,6 +38,7 @@ setuptools.setup(
         'jsdaily.libuninstall',
         'jsdaily.libprinstall',
         'jsdaily.libdependency',
+        'jsdaily.liblogging',
     ],
     package_data = {
         '': [
@@ -48,6 +50,7 @@ setuptools.setup(
         'jsdaily.libuninstall': ['*.py', '*.sh'],
         'jsdaily.libprinstall': ['*.py', '*.sh'],
         'jsdaily.libdependency': ['*.py', '*.sh'],
+        'jsdaily.liblogging': ['*.py', '*.sh'],
     },
     classifiers = [
         'Development Status :: 5 - Production/Stable',

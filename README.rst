@@ -5,48 +5,84 @@ jsdaily
 
 Some useful daily utility scripts.
 
--  ```update`` <#update>`__
+-  `Installation <#header-n101>`__
 
-   -  `Atom <#update_apm>`__
+-  `Usage <#header-n110>`__
 
-   -  `Python <#update_pip>`__
+   -  ```update`` <#update>`__
 
-   -  `Homebrew <#update_brew>`__
+      -  `Atom <#update_apm>`__
 
-   -  `Caskroom <#update_cask>`__
+      -  `Python <#update_pip>`__
 
-   -  `App Store <#update_apptore>`__
+      -  `Homebrew <#update_brew>`__
 
--  ```uninstall`` <#uninstall>`__
+      -  `Caskroom <#update_cask>`__
 
-   -  `Python <#uninstall_pip>`__
+      -  `App Store <#update_apptore>`__
 
-   -  `Homebrew <#uninstall_brew>`__
+   -  ```uninstall`` <#uninstall>`__
 
-   -  `Caskroom <#uninstall_cask>`__
+      -  `Python <#uninstall_pip>`__
 
--  ```reinstall`` <#reinstall>`__
+      -  `Homebrew <#uninstall_brew>`__
 
-   -  `Homebrew <#reinstall_brew>`__
+      -  `Caskroom <#uninstall_cask>`__
 
-   -  `Caskroom <#reinstall_cask>`__
+   -  ```reinstall`` <#reinstall>`__
 
--  ```postinstall`` <#postinstall>`__
+      -  `Homebrew <#reinstall_brew>`__
 
-   -  `Homebrew <#postinstall_brew>`__
+      -  `Caskroom <#reinstall_cask>`__
 
--  ```dependency`` <#dependency>`__
+   -  ```postinstall`` <#postinstall>`__
 
-   -  `Python <#dependency_pip>`__
+      -  `Homebrew <#postinstall_brew>`__
 
-   -  `Homebrew <#dependency_brew>`__
+   -  ```dependency`` <#dependency>`__
+
+      -  `Python <#dependency_pip>`__
+
+      -  `Homebrew <#dependency_brew>`__
+
+   -  ```logging`` <#logging>`__
+
+      -  Atom
+
+      -  Python
+
+      -  Homebrew
+
+      -  Caskroom
+
+      -  App Store
+
+      -  Mac Applications
+
+      -  All Applications (``*.app``)
 
 --------------
 
-.. _header-n69:
+.. _header-n101:
+
+Installation
+------------
+
+    Note that ``jsdaily`` requires Python versions **since 3.6**
+
+.. code:: 
+
+    pip install jsdaily
+
+.. _header-n110:
+
+Usage
+-----
+
+.. _header-n113:
 
 ``update``
-----------
+~~~~~~~~~~
 
  ``update`` is a package manager written in Python 3.6 and Bash 3.2,
 which automatically update all packages installed through --
@@ -70,7 +106,7 @@ And log files can be found in directory
 ``/Library/Logs/Scripts/update/``. The global man page for ``update``
 shows as below.
 
-.. code::
+.. code:: 
 
     $ update --help
     usage: update [-h] [-V] [-a] [-f] [-m] [-g] [-q] [-v] MODE ...
@@ -95,7 +131,7 @@ shows as below.
  As it shows, there are five modes in total (if these commands exists).
 To update all packages, you may use one of commands below.
 
-.. code::
+.. code:: 
 
     $ update
     $ update -a
@@ -107,7 +143,7 @@ To update all packages, you may use one of commands below.
 i.e. "Atom Package Manager". The man page for ``update apm`` shows as
 below.
 
-.. code::
+.. code:: 
 
     $ update apm --help
     usage: update apm [-h] [-a] [-p PKG] [-q] [-v]
@@ -139,7 +175,7 @@ name, ``update apm`` might give a trivial "did-you-mean" correction.
 
 And the man page shows as below.
 
-.. code::
+.. code:: 
 
     $ update pip --help
     usage: update pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-q] [-v]
@@ -171,7 +207,7 @@ correction.
 
  The man page for ``update brew`` shows as below.
 
-.. code::
+.. code:: 
 
     $ update brew --help
     usage: update brew [-h] [-a] [-p PKG] [-f] [-m] [-q] [-v]
@@ -199,7 +235,7 @@ name, ``update brew`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update cask`` shows as below.
 
-.. code::
+.. code:: 
 
     $ update cask  --help
     usage: update cask [-h] [-a] [-p PKG] [-f] [-g] [-q] [-v]
@@ -229,7 +265,7 @@ name, ``update cask`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update appstore`` shows as below.
 
-.. code::
+.. code:: 
 
     $ update appstore --help
     usage: update appstore [-h] [-a] [-p PKG] [-q]
@@ -248,10 +284,10 @@ packages in Mac App Store or ``softwareupdate``. And when using ``-p``
 or ``--package``, if given wrong package name, ``update appstore`` might
 give a trivial "did-you-mean" correction.
 
-.. _header-n169:
+.. _header-n213:
 
 ``uninstall``
--------------
+~~~~~~~~~~~~~
 
  ``uninstall`` is a package manager written in Python 3.6 and Bash 3.2,
 which recursively and interactively uninstall packages installed through
@@ -271,7 +307,7 @@ which recursively and interactively uninstall packages installed through
 ``/Library/Logs/Scripts/uninstall/``. The global man page for
 ``uninstall`` shows as below.
 
-.. code::
+.. code:: 
 
     $ uninstall --help
     usage: uninstall [-h] [-V] [-a] [-f] [-i] [-q] [-v] [-Y] MODE ...
@@ -298,7 +334,7 @@ which recursively and interactively uninstall packages installed through
 The default procedure when arguments omit is to stand alone. To
 uninstall all packages, you may use one of commands below.
 
-.. code::
+.. code:: 
 
     $ uninstall -a
     $ uninstall --all
@@ -317,7 +353,7 @@ following --
 
  And the man page shows as below.
 
-.. code::
+.. code:: 
 
     $ uninstall pip --help
     usage: uninstall pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-i] [-q]
@@ -355,7 +391,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall brew`` shows as below.
 
-.. code::
+.. code:: 
 
     $ uninstall brew --help
     usage: uninstall brew [-h] [-a] [-p PKG] [-f] [-i] [-q] [-v] [-Y]
@@ -384,7 +420,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall cask`` shows as below.
 
-.. code::
+.. code:: 
 
     $ uninstall cask --help
     usage: uninstall cask [-h] [-a] [-p PKG] [-f] [-q] [-v] [-Y]
@@ -406,10 +442,10 @@ To uninstall all packages, use ``-a`` or ``--all`` option. And when
 using ``-p`` or ``--package``, if given wrong package name,
 ``uninstall cask`` might give a trivial “did-you-mean” correction.
 
-.. _header-n237:
+.. _header-n281:
 
 ``reinstall``
--------------
+~~~~~~~~~~~~~
 
  ``reinstall`` is a package manager written in Python 3.6 and Bash 3.2,
 which automatically and interactively reinstall packages installed
@@ -424,7 +460,7 @@ through --
 ``/Library/Logs/Scripts/reinstall/``. The global man page for
 ``reinstall`` shows as below.
 
-.. code::
+.. code:: 
 
     $ reinstall --help
     usage: reinstall [-h] [-V] [-a] [-s START] [-e START] [-f] [-q] [-v] MODE ...
@@ -454,7 +490,7 @@ through --
 The default procedure when arguments omit is to stand alone. To
 reinstall all packages, you may use one of commands below.
 
-.. code::
+.. code:: 
 
     $ reinstall -a
     $ reinstall --all
@@ -463,7 +499,7 @@ reinstall all packages, you may use one of commands below.
 
  The man page for ``reinstall brew`` shows as below.
 
-.. code::
+.. code:: 
 
     $ reinstall brew --help
     usage: reinstall brew [-h] [-p PKG] [-s START] [-e START] [-f] [-q] [-v]
@@ -493,7 +529,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``reinstall cask`` shows as below.
 
-.. code::
+.. code:: 
 
     $ reinstall cask --help
     usage: reinstall cask [-h] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -518,14 +554,14 @@ To reinstall all packages, use ``-a`` or ``--all`` option. And when
 using ``-p`` or ``--package``, if given wrong package name,
 ``reinstall cask`` might give a trivial “did-you-mean” correction.
 
-.. _header-n279:
+.. _header-n323:
 
 ``postinstall``
----------------
+~~~~~~~~~~~~~~~
 
  ``postinstall`` is a package manager written in Python 3.6 and Bash
-3.2, which automatically and interactively reinstall packages installed
-through --
+3.2, which automatically and interactively postinstall packages
+installed through --
 
 -  ``brew`` -- `Homebrew <https://brew.sh>`__ packages
 
@@ -534,7 +570,7 @@ through --
 ``/Library/Logs/Scripts/postinstall/``. The global man page for
 ``postinstall`` shows as below.
 
-.. code::
+.. code:: 
 
     $ postinstall --help
     usage: postinstall [-h] [-V] [-a] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -559,7 +595,7 @@ through --
  As it shows, there is only one mode in total (if these commands
 exists). To postinstall all packages, you may use one of commands below.
 
-.. code::
+.. code:: 
 
     $ postinstall
     $ postinstall -a
@@ -570,10 +606,10 @@ packages of Homebrew. And when using ``-p`` or ``--package``, if given
 wrong package name, ``postinstall`` might give a trivial "did-you-mean"
 correction.
 
-.. _header-n298:
+.. _header-n342:
 
 ``dependency``
---------------
+~~~~~~~~~~~~~~
 
  ``dependency`` is a package manager written in Python 3.6 and Bash 3.2,
 which automatically and interactively show dependencies of packages
@@ -591,7 +627,7 @@ installed through --
 ``/Library/Logs/Scripts/dependency/``. The global man page for
 ``dependency`` shows as below.
 
-.. code::
+.. code:: 
 
     $ dependency --help
     usage: dependency [-h] [-V] [-a] [-t] MODE ...
@@ -614,7 +650,7 @@ installed through --
 The default procedure when arguments omit is to stand alone. To show
 dependency of all packages, you may use one of commands below.
 
-.. code::
+.. code:: 
 
     $ dependency -a
     $ dependency --all
@@ -633,7 +669,7 @@ following --
 
 And the man page shows as below.
 
-.. code::
+.. code:: 
 
     $ dependency pip --help
     usage: dependency pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-t]
@@ -667,7 +703,7 @@ when using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``dependency brew`` shows as below.
 
-.. code::
+.. code:: 
 
     $ dependency brew --help
     usage: dependency brew [-h] [-a] [-p PKG] [-t]
@@ -687,3 +723,70 @@ nothing. To show dependency of all packages, use ``-a`` or ``--all``
 option. And when using ``-p`` or ``--package``, if given wrong package
 name, ``dependency brew`` might give a trivial “did-you-mean”
 correction.
+
+.. _header-n396:
+
+``logging``
+~~~~~~~~~~~
+
+ ``logging`` is a logging manager written in Python 3.6 and Bash 3.2,
+which automatically log all applications and/or packages installed
+through --
+
+-  ``apm`` -- Atom packages
+
+-  ``pip`` -- Python packages, in both version of 2.7 and 3.6, running
+   under `CPython <https://www.python.org>`__ or
+   `PyPy <https://pypy.org>`__ compiler, and installed through ``brew``
+   or official disk images
+
+-  ``brew`` -- `Homebrew <https://brew.sh>`__ packages
+
+-  ``cask`` -- `Caskroom <https://caskroom.github.io>`__ applications
+
+-  ``appstore`` -- Mac App Store or ``softwareupdate`` installed
+   applications
+
+-  ``macapp`` -- applications in ``/Applications`` folder
+
+-  ``dotapp`` -- all ``*.app`` files on this Mac, a.k.a.
+   ``/Volumes/Macintosh HD`` folder
+
+ You may install ``logging`` through ``pip`` of Python (versions 3.\*).
+And log files can be found in directory
+``/Library/Logs/Scripts/logging/``. The global man page for ``logging``
+shows as below.
+
+.. code:: 
+
+    $ logging --help
+    usage: logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [MODE [MODE ...]]
+
+    Application and Package Logging Manager
+
+    positional arguments:
+      MODE                 The name of logging mode, could be any from followings,
+                           apm, pip, brew, cask, dotapps, macapps, or appstore.
+
+    optional arguments:
+      -h, --help           show this help message and exit
+      -V, --version        show program's version number and exit
+      -a, --all            log applications and packages of all entries
+      -v VER, --pyver VER  Indicate which version of pip will be logged.
+      -s, --system         Log pip packages on system level, i.e. python installed
+                           through official installer.
+      -b, --brew           Log pip packages on Cellar level, i.e. python installed
+                           through Homebrew.
+      -c, --cpython        Log pip packages on CPython environment.
+      -y, --pypy           Log pip packages on PyPy environment.
+
+ As it shows, there are seven mode in total (if these commands exists),
+and you may call **multiple** modes at one time. The default procedure
+when arguments omit is to stand alone. To log all entries, you may use
+one of commands below.
+
+.. code:: 
+
+    $ logging -a
+    $ logging --all
+    $ logging apm pip brew cask dotapps macapps appstore

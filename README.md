@@ -2,28 +2,54 @@
 
 Some useful daily utility scripts.
 
-* [`update`](#update)
-    - [Atom](#update_apm)
-    - [Python](#update_pip)
-    - [Homebrew](#update_brew)
-    - [Caskroom](#update_cask)
-    - [App Store](#update_apptore)
-* [`uninstall`](#uninstall)
-    - [Python](#uninstall_pip)
-    - [Homebrew](#uninstall_brew)
-    - [Caskroom](#uninstall_cask)
-* [`reinstall`](#reinstall)
-    - [Homebrew](#reinstall_brew)
-    - [Caskroom](#reinstall_cask)
-* [`postinstall`](#postinstall)
-    - [Homebrew](#postinstall_brew)
-* [`dependency`](#dependency)
-    - [Python](#dependency_pip)
-    - [Homebrew](#dependency_brew)
+- [Installation](#installation)
+- [Usage](#usage)
+    * [`update`](#update)
+        - [Atom](#update_apm)
+        - [Python](#update_pip)
+        - [Homebrew](#update_brew)
+        - [Caskroom](#update_cask)
+        - [App Store](#update_apptore)
+    * [`uninstall`](#uninstall)
+        - [Python](#uninstall_pip)
+        - [Homebrew](#uninstall_brew)
+        - [Caskroom](#uninstall_cask)
+    * [`reinstall`](#reinstall)
+        - [Homebrew](#reinstall_brew)
+        - [Caskroom](#reinstall_cask)
+    * [`postinstall`](#postinstall)
+        - [Homebrew](#postinstall_brew)
+    * [`dependency`](#dependency)
+        - [Python](#dependency_pip)
+        - [Homebrew](#dependency_brew)
+    * [`logging`](#logging)
+        - Atom
+        - Python
+        - Homebrew
+        - Caskroom
+        - App Store
+        - Mac Applications
+        - All Applications (`*.app`)
 
 ---
 
 &nbsp;
+
+<a name="installation"> </a>
+
+### Installation
+
+ > Note that `jsdaily` requires Python versions __since 3.6__
+
+```
+pip install jsdaily
+```
+
+&nbsp;
+
+<a name="usage"> </a>
+
+### Usage
 
 <a name="update"> </a>
 
@@ -456,7 +482,7 @@ optional arguments:
 
 ##### `postinstall`
 
-&nbsp; `postinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through --
+&nbsp; `postinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively postinstall packages installed through --
 
   - `brew` -- [Homebrew](https://brew.sh) packages
 
@@ -594,3 +620,52 @@ optional arguments:
 ```
 
 &emsp; If arguments omit, `dependency brew` will stand alone, and do nothing. To show dependency of all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `dependency brew` might give a trivial “did-you-mean” correction.
+
+&nbsp;
+
+<a name="logging"> </a>
+
+##### `logging`
+
+&nbsp; `logging` is a logging manager written in Python 3.6 and Bash 3.2, which automatically log all applications and/or packages installed through --
+
+  - `apm` -- Atom packages
+  - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
+  - `brew` -- [Homebrew](https://brew.sh) packages
+  - `cask` -- [Caskroom](https://caskroom.github.io) applications
+  - `appstore` -- Mac App Store or `softwareupdate` installed applications
+  - `macapp` -- applications in `/Applications` folder
+  - `dotapp` -- all `*.app` files on this Mac, a.k.a. `/Volumes/Macintosh HD` folder
+
+&emsp; You may install `logging` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/logging/`. The global man page for `logging` shows as below.
+
+```
+$ logging --help
+usage: logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [MODE [MODE ...]]
+
+Application and Package Logging Manager
+
+positional arguments:
+  MODE                 The name of logging mode, could be any from followings,
+                       apm, pip, brew, cask, dotapps, macapps, or appstore.
+
+optional arguments:
+  -h, --help           show this help message and exit
+  -V, --version        show program's version number and exit
+  -a, --all            log applications and packages of all entries
+  -v VER, --pyver VER  Indicate which version of pip will be logged.
+  -s, --system         Log pip packages on system level, i.e. python installed
+                       through official installer.
+  -b, --brew           Log pip packages on Cellar level, i.e. python installed
+                       through Homebrew.
+  -c, --cpython        Log pip packages on CPython environment.
+  -y, --pypy           Log pip packages on PyPy environment.
+```
+
+&emsp; As it shows, there are seven mode in total (if these commands exists), and you may call **multiple** modes at one time. The default procedure when arguments omit is to stand alone. To log all entries, you may use one of commands below.
+
+```
+$ logging -a
+$ logging --all
+$ logging apm pip brew cask dotapps macapps appstore
+```
