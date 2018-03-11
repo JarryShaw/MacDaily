@@ -16,9 +16,9 @@ __all__ = ['update_all', 'update_apm', 'update_pip', 'update_brew', 'update_cask
 # terminal display
 red = 'tput setaf 1'    # blush / red
 blue = 'tput setaf 14'  # blue
-reset = 'tput sgr0'     # reset
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
+reset = 'tput sgr0'     # reset
 
 
 def _merge_packages(args):

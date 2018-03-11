@@ -3,7 +3,6 @@
 
 
 import os
-import re
 import shlex
 import shutil
 import subprocess
@@ -17,9 +16,9 @@ __all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
 red = 'tput setaf 1'    # blush / red
 green = 'tput setaf 2'  # green
 blue = 'tput setaf 14'  # blue
-reset = 'tput sgr0'     # reset
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
+reset = 'tput sgr0'     # reset
 
 
 def _merge_packages(args):

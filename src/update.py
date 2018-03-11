@@ -15,7 +15,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.9.3'
+__version__ = '0.9.4'
 
 
 # display mode names
@@ -99,7 +99,7 @@ def get_parser():
                         dest='all', help=(
                             'Update all packages installed through pip.'
                         ))
-    parser_pip.add_argument('-v', '--pyver', action='store', metavar='VER',
+    parser_pip.add_argument('-V', '--pyver', action='store', metavar='VER',
                         choices=[
                             1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
                             3, 30, 31, 32, 33, 34, 35, 36, 37,
