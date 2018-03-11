@@ -647,7 +647,7 @@ Application and Package Logging Manager
 
 positional arguments:
   MODE                 The name of logging mode, could be any from followings,
-                       apm, pip, brew, cask, dotapps, macapps, or appstore.
+                       apm, pip, brew, cask, dotapp, macapp, or appstore.
 
 optional arguments:
   -h, --help           show this help message and exit
@@ -667,5 +667,5 @@ optional arguments:
 ```
 $ logging -a
 $ logging --all
-$ logging apm pip brew cask dotapps macapps appstore
+$ logging apm pip brew cask dotapp macapp appstore
 ```

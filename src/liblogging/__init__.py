@@ -10,7 +10,7 @@ import subprocess
 import time
 
 
-__all__ = ['logging_apm', 'logging_appstore', 'logging_brew', 'logging_cask', 'logging_dotapps', 'logging_macapps', 'logging_pip']
+__all__ = ['logging_apm', 'logging_appstore', 'logging_brew', 'logging_cask', 'logging_dotapp', 'logging_macapp', 'logging_pip']
 
 
 def logging_apm(args, *, file):
@@ -37,14 +37,14 @@ def logging_cask(args, *, file):
         subprocess.run(['bash', 'liblogging/logging_cask.sh', file])
 
 
-def logging_dotapps(args, *, file):
+def logging_dotapp(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['sudo', '-H', 'bash', 'liblogging/logging_dotapps.sh', file])
+        subprocess.run(['sudo', '-H', 'bash', 'liblogging/logging_dotapp.sh', file])
 
 
-def logging_macapps(args, *, file):
+def logging_macapp(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['bash', 'liblogging/logging_macapps.sh', file])
+        subprocess.run(['bash', 'liblogging/logging_macapp.sh', file])
 
 
 def logging_pip(args, *, file):

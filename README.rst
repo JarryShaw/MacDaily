@@ -70,7 +70,7 @@ Installation
 
     Note that ``jsdaily`` requires Python versions **since 3.6**
 
-.. code:: 
+.. code::
 
     pip install jsdaily
 
@@ -106,7 +106,7 @@ And log files can be found in directory
 ``/Library/Logs/Scripts/update/``. The global man page for ``update``
 shows as below.
 
-.. code:: 
+.. code::
 
     $ update --help
     usage: update [-h] [-V] [-a] [-f] [-m] [-g] [-q] [-v] MODE ...
@@ -131,7 +131,7 @@ shows as below.
  As it shows, there are five modes in total (if these commands exists).
 To update all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ update
     $ update -a
@@ -143,7 +143,7 @@ To update all packages, you may use one of commands below.
 i.e. "Atom Package Manager". The man page for ``update apm`` shows as
 below.
 
-.. code:: 
+.. code::
 
     $ update apm --help
     usage: update apm [-h] [-a] [-p PKG] [-q] [-v]
@@ -175,7 +175,7 @@ name, ``update apm`` might give a trivial "did-you-mean" correction.
 
 And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ update pip --help
     usage: update pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-q] [-v]
@@ -207,7 +207,7 @@ correction.
 
  The man page for ``update brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update brew --help
     usage: update brew [-h] [-a] [-p PKG] [-f] [-m] [-q] [-v]
@@ -235,7 +235,7 @@ name, ``update brew`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update cask  --help
     usage: update cask [-h] [-a] [-p PKG] [-f] [-g] [-q] [-v]
@@ -265,7 +265,7 @@ name, ``update cask`` might give a trivial "did-you-mean" correction.
 
  The man page for ``update appstore`` shows as below.
 
-.. code:: 
+.. code::
 
     $ update appstore --help
     usage: update appstore [-h] [-a] [-p PKG] [-q]
@@ -307,7 +307,7 @@ which recursively and interactively uninstall packages installed through
 ``/Library/Logs/Scripts/uninstall/``. The global man page for
 ``uninstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall --help
     usage: uninstall [-h] [-V] [-a] [-f] [-i] [-q] [-v] [-Y] MODE ...
@@ -334,7 +334,7 @@ which recursively and interactively uninstall packages installed through
 The default procedure when arguments omit is to stand alone. To
 uninstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ uninstall -a
     $ uninstall --all
@@ -353,7 +353,7 @@ following --
 
  And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall pip --help
     usage: uninstall pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-i] [-q]
@@ -391,7 +391,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall brew --help
     usage: uninstall brew [-h] [-a] [-p PKG] [-f] [-i] [-q] [-v] [-Y]
@@ -420,7 +420,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``uninstall cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ uninstall cask --help
     usage: uninstall cask [-h] [-a] [-p PKG] [-f] [-q] [-v] [-Y]
@@ -460,7 +460,7 @@ through --
 ``/Library/Logs/Scripts/reinstall/``. The global man page for
 ``reinstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall --help
     usage: reinstall [-h] [-V] [-a] [-s START] [-e START] [-f] [-q] [-v] MODE ...
@@ -490,7 +490,7 @@ through --
 The default procedure when arguments omit is to stand alone. To
 reinstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ reinstall -a
     $ reinstall --all
@@ -499,7 +499,7 @@ reinstall all packages, you may use one of commands below.
 
  The man page for ``reinstall brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall brew --help
     usage: reinstall brew [-h] [-p PKG] [-s START] [-e START] [-f] [-q] [-v]
@@ -529,7 +529,7 @@ using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``reinstall cask`` shows as below.
 
-.. code:: 
+.. code::
 
     $ reinstall cask --help
     usage: reinstall cask [-h] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -570,7 +570,7 @@ installed through --
 ``/Library/Logs/Scripts/postinstall/``. The global man page for
 ``postinstall`` shows as below.
 
-.. code:: 
+.. code::
 
     $ postinstall --help
     usage: postinstall [-h] [-V] [-a] [-p PKG] [-s START] [-e START] [-q] [-v]
@@ -595,7 +595,7 @@ installed through --
  As it shows, there is only one mode in total (if these commands
 exists). To postinstall all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ postinstall
     $ postinstall -a
@@ -627,7 +627,7 @@ installed through --
 ``/Library/Logs/Scripts/dependency/``. The global man page for
 ``dependency`` shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency --help
     usage: dependency [-h] [-V] [-a] [-t] MODE ...
@@ -650,7 +650,7 @@ installed through --
 The default procedure when arguments omit is to stand alone. To show
 dependency of all packages, you may use one of commands below.
 
-.. code:: 
+.. code::
 
     $ dependency -a
     $ dependency --all
@@ -669,7 +669,7 @@ following --
 
 And the man page shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency pip --help
     usage: dependency pip [-h] [-a] [-V VER] [-s] [-b] [-c] [-y] [-p PKG] [-t]
@@ -703,7 +703,7 @@ when using ``-p`` or ``--package``, if given wrong package name,
 
  The man page for ``dependency brew`` shows as below.
 
-.. code:: 
+.. code::
 
     $ dependency brew --help
     usage: dependency brew [-h] [-a] [-p PKG] [-t]
@@ -757,7 +757,7 @@ And log files can be found in directory
 ``/Library/Logs/Scripts/logging/``. The global man page for ``logging``
 shows as below.
 
-.. code:: 
+.. code::
 
     $ logging --help
     usage: logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [MODE [MODE ...]]
@@ -766,7 +766,7 @@ shows as below.
 
     positional arguments:
       MODE                 The name of logging mode, could be any from followings,
-                           apm, pip, brew, cask, dotapps, macapps, or appstore.
+                           apm, pip, brew, cask, dotapp, macapp, or appstore.
 
     optional arguments:
       -h, --help           show this help message and exit
@@ -785,8 +785,8 @@ and you may call **multiple** modes at one time. The default procedure
 when arguments omit is to stand alone. To log all entries, you may use
 one of commands below.
 
-.. code:: 
+.. code::
 
     $ logging -a
     $ logging --all
-    $ logging apm pip brew cask dotapps macapps appstore
+    $ logging apm pip brew cask dotapp macapp appstore

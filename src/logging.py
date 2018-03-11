@@ -15,7 +15,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 # mode actions
@@ -24,8 +24,8 @@ MODE = dict(
     pip = lambda *args, **kwargs: logging_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: logging_brew(*args, **kwargs),
     cask = lambda *args, **kwargs: logging_cask(*args, **kwargs),
-    dotapps = lambda *args, **kwargs: logging_dotapps(*args, **kwargs),
-    macapps = lambda *args, **kwargs: logging_macapps(*args, **kwargs),
+    dotapp = lambda *args, **kwargs: logging_dotapp(*args, **kwargs),
+    macapp = lambda *args, **kwargs: logging_macapp(*args, **kwargs),
     appstore = lambda *args, **kwargs: logging_appstore(*args, **kwargs),
 )
 
@@ -94,7 +94,7 @@ def main():
     args = parser.parse_args()
 
     if args.all:
-        modes = ['apm', 'pip', 'brew', 'cask', 'dotapps', 'macapps', 'appstore']
+        modes = ['apm', 'pip', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
     else:
         modes = args.mode
 
@@ -103,7 +103,7 @@ def main():
         if logging is None:
             parser.print_usage()
             print(f"logging: error: argument MODE: invalid choice: '{logmode}'", end=' ')
-            print("(choose from 'apm', 'pip', 'brew', 'cask', 'dotapps', 'macapps', 'appstore')")
+            print("(choose from 'apm', 'pip', 'brew', 'cask', 'dotapp', 'macapp', 'appstore')")
             continue
 
         pathlib.Path(f'/Library/Logs/Scripts/logging/{logmode}').mkdir(parents=True, exist_ok=True)
