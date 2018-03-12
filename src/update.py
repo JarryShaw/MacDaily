@@ -15,7 +15,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.9.5'
+__version__ = '0.9.6'
 
 
 # display mode names

@@ -33,6 +33,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
+#   7. Daemon Flag
 ################################################################################
 
 
@@ -43,6 +44,7 @@ arg_b=$3
 arg_c=$4
 arg_y=$5
 arg_V=$6
+arg_d=$7
 
 
 # log current status
@@ -153,8 +155,8 @@ function piplogging {
     # if executive exits
     if [ -e $prefix/pip$suffix ] ; then
         # list packages
-        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
-        $prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*)/INF: \1/" >> $logfile 2> /dev/null
+        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\" $daemon" >> $logfile
+        $prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*)/INF: \1/" $daemon >> $logfile 2> /dev/null
         echo >> $logfile
     else
         echo -e "pip$pprint: Not installed.\n" >> $logfile
@@ -309,6 +311,14 @@ if ( $arg_y ) ; then
 fi
 
 
+# if daemon flag set
+if ( $arg_d ) ; then
+    daemon="&"
+else
+    daemon=""
+fi
+
+
 # call piplogging function according to modes
 list=( \
     [1]=$mode_pip_sys20 $mode_pip_sys21 $mode_pip_sys22 $mode_pip_sys23 $mode_pip_sys24 $mode_pip_sys25 $mode_pip_sys26 $mode_pip_sys27 \
@@ -320,6 +330,13 @@ for index in ${!list[*]} ; do
         piplogging $index
     fi
 done
+
+
+# relink brewed pythons
+brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
+brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
+brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
+brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
 
 
 # clear potential terminal buffer

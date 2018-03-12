@@ -15,7 +15,7 @@ from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '0.7.4'
+__version__ = '0.7.5'
 
 
 # display mode names

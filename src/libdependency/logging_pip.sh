@@ -431,5 +431,12 @@ done < $tmpfile
 rm -f $tmpfile
 
 
+# relink brewed pythons
+brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
+brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
+brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
+brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
+
+
 # clear potential terminal buffer
 sript -q /dev/null tput clear > /dev/null 2>&1

@@ -105,7 +105,7 @@ def update_pip(args, *, file, date, retset=False):
     log = set(logging.stdout.decode().split())
 
     subprocess.run(
-        ['bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
+        ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
     )
 
     if not args.quiet:

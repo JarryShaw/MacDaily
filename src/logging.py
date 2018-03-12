@@ -15,7 +15,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '0.3.6'
+__version__ = '0.4.0'
 
 
 # mode actions
@@ -85,6 +85,10 @@ def get_parser():
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
                             'Run in quiet mode, with no output information.'
+                        ))
+    parser.add_argument('-d', '--daemon', action='store_true', default=False,
+                        help=(
+                            'Run in daemon mode, i.e. running in the background.'
                         ))
     return parser
 

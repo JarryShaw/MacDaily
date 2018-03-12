@@ -75,7 +75,7 @@ def dependency_pip(args, *, file, date, retset=False):
         log = set(logging.stdout.decode().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
+            ['sudo', '-H', 'bash', 'libdependency/dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
         )
 
     if retset:

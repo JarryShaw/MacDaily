@@ -249,6 +249,7 @@ function piplogging {
         pipdeptree="/usr/local/bin/pipdeptree$pprint"
         if [ ! -e $pipdeptree ] ; then
             touch $pipdeptree
+            chmod 777 $pipdeptree
             echo "#!$python" >> $pipdeptree
             cat libdependency/pipdeptree.py >> $pipdeptree
         fi
@@ -523,6 +524,13 @@ done < $tmpfile
 
 # remove /tmp/log/dependency.log
 rm -f $tmpfile
+
+
+# relink brewed pythons
+brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
+brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
+brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
+brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
 
 
 # clear potential terminal buffer
