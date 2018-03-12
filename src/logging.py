@@ -86,10 +86,6 @@ def get_parser():
                         help=(
                             'Run in quiet mode, with no output information.'
                         ))
-    parser.add_argument('-d', '--daemon', action='store_true', default=False,
-                        help=(
-                            'Run in daemon mode, i.e. running in the background.'
-                        ))
     return parser
 
 

@@ -10,30 +10,20 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 # Parameter list:
 #   1. Log Name
-#   2. Daemon Flag
 ################################################################################
 
 
 # parameter assignment
 logfile=$1
-arg_d=$2
 
 
 # log current status
 echo "+ /bin/bash $0 $@" >> $logfile
 
 
-# if daemon flag set
-if ( $arg_d ) ; then
-    daemon="&"
-else
-    daemon=""
-fi
-
-
 # find packages
-echo -e "++ apm list --bare | sed \"s/\(.*\)*@.*/INF: \1/\" $daemon" >> $logfile
-apm list --bare | sed "s/\(.*\)*@.*/INF: \1/" $daemon >> $logfile 2> /dev/null
+echo -e "++ apm list --bare | sed \"s/\(.*\)*@.*/INF: \1/\"" >> $logfile
+apm list --bare 2> /dev/null | sed "s/\(.*\)*@.*/INF: \1/" >> $logfile
 echo >> $logfile
 
 

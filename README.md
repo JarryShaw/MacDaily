@@ -661,7 +661,6 @@ optional arguments:
   -c, --cpython        Log pip packages on CPython environment.
   -y, --pypy           Log pip packages on PyPy environment.
   -q, --quiet          Run in quiet mode, with no output information.
-  -d, --daemon         Run in daemon mode, i.e. running in the background.
 ```
 
 &emsp; As it shows, there are seven mode in total (if these commands exists), and you may call **multiple** modes at one time. The default procedure when arguments omit is to stand alone. To log all entries, you may use one of commands below.

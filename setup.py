@@ -13,7 +13,7 @@ with open('./README.rst', 'r') as file:
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.6.1',
+    version = '0.6.2',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',

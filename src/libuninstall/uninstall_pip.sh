@@ -114,13 +114,19 @@ function pipuninstall {
         $logprefix echo | $logcattee | $logsuffix
 
         for name in $list ; do
-            # check if package installed
-            flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
-            if [[ -nz $flag ]]; then
-                $logprefix echo "++ pip$pprint uninstall $name --yes $verbose $quiet" | $logcattee | $logsuffix
-                $logprefix $prefix/pip$suffix uninstall $name --yes $verbose $quiet | $logcattee | $logsuffix
-                $logprefix echo | $logcattee | $logsuffix
-            fi
+            case $name in
+                # keep fundamental packages
+                appdirs|pyparsing|six|packaging|setuptools|pip)
+                    : ;;
+                *)
+                    # check if package installed
+                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    if [[ -nz $flag ]]; then
+                        $logprefix echo "++ pip$pprint uninstall $name --yes $verbose $quiet" | $logcattee | $logsuffix
+                        $logprefix $prefix/pip$suffix uninstall $name --yes $verbose $quiet | $logcattee | $logsuffix
+                        $logprefix echo | $logcattee | $logsuffix
+                    fi ;;
+            esac
         done
     else
         # uninstall procedure
