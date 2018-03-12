@@ -113,7 +113,7 @@ function pipuninstall {
         list=`$prefix/pip$suffix show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"`
         for name in $arg_pkg ; do
             # check if package installed
-            flag=`$prefix/pip$suffix list --format legacy | awk "/^$name$/"`
+            flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
             if [[ -nz $flag ]]; then
                 $logprefix echo "++ pip$pprint uninstall $name --yes $verbose $quiet" | $logcattee | $logsuffix
                 $logprefix $prefix/pip$suffix uninstall $name --yes $verbose $quiet | $logcattee | $logsuffix
@@ -298,7 +298,7 @@ function piplogging {
                     : ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/pip$suffix list --format legacy | awk "/^$name$/"`
+                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         if ( $arg_Y ) ; then
                             pipuninstall $name $prefix $suffix $pprint

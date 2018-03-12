@@ -185,7 +185,7 @@ function piplogging {
                     echo >> $tmpfile ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/pip$suffix list --format legacy | awk "/^$name$/"`
+                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
                         $logprefix $prefix/pip$suffix show $name | grep "Name: " | sed "s/Name: //" | $logcattee | $logsuffix
