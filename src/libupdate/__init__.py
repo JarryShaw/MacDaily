@@ -108,6 +108,13 @@ def update_pip(args, *, file, date, retset=False):
         ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
     )
 
+    os.system('''   # relink brewed pythons
+        brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
+        brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
+        brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
+        brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
+    ''')
+
     if not args.quiet:
         os.system('tput clear')
     return log if retset else dict(pip=log)

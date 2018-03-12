@@ -58,7 +58,7 @@ arg_V=$6
 arg_q=$7
 arg_v=$8
 arg_Y=$9
-arg_i=$10
+arg_i=${10}
 arg_pkg=${*:11}
 
 
@@ -103,15 +103,17 @@ function pipuninstall {
     # log function call
     echo "+ pipuninstall $@" >> $tmpfile
 
-    # uninstall procedure
-    $logprefix echo "++ pip$pprint uninstall $arg_pkg --yes $verbose $quiet" | $logcattee | $logsuffix
-    $logprefix $prefix/pip$suffix uninstall $arg_pkg --yes $verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-
     # if ignore-dependencies flag not set
     if ( ! $arg_i ) ; then
+        # dependency list
         list=`$prefix/pip$suffix show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"`
-        for name in $arg_pkg ; do
+
+        # uninstall procedure
+        $logprefix echo "++ pip$pprint uninstall $arg_pkg --yes $verbose $quiet" | $logcattee | $logsuffix
+        $logprefix $prefix/pip$suffix uninstall $arg_pkg --yes $verbose $quiet | $logcattee | $logsuffix
+        $logprefix echo | $logcattee | $logsuffix
+
+        for name in $list ; do
             # check if package installed
             flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
             if [[ -nz $flag ]]; then
@@ -120,6 +122,11 @@ function pipuninstall {
                 $logprefix echo | $logcattee | $logsuffix
             fi
         done
+    else
+        # uninstall procedure
+        $logprefix echo "++ pip$pprint uninstall $arg_pkg --yes $verbose $quiet" | $logcattee | $logsuffix
+        $logprefix $prefix/pip$suffix uninstall $arg_pkg --yes $verbose $quiet | $logcattee | $logsuffix
+        $logprefix echo | $logcattee | $logsuffix
     fi
 }
 
@@ -230,27 +237,19 @@ function piplogging {
         17)  # pip2
             prefix="/usr/local/opt/python@2/bin"
             suffix="2"
-            pprint="2"
-            # link brewed python@2
-            brew link python@2 --force > /dev/null 2>&1 ;;
+            pprint="2" ;;
         18)  # pip3
             prefix="/usr/local/opt/python@3/bin"
             suffix="3"
-            pprint="3"
-            # link brewed python
-            brew link python > /dev/null 2>&1 ;;
+            pprint="3" ;;
         19)  # pip_pypy
             prefix="/usr/local/opt/pypy/bin"
             suffix="_pypy"
-            pprint="_pypy"
-            # link brewed pypy
-            brew link pypy > /dev/null 2>&1 ;;
+            pprint="_pypy" ;;
         20)  # pip_pypy3
             prefix="/usr/local/opt/pypy3/bin"
             suffix="_pypy3"
-            pprint="_pypy3"
-            # link brewed pypy3
-            brew link pypy3 > /dev/null 2>&1 ;;
+            pprint="_pypy3" ;;
     esac
 
     # if executive exits
@@ -264,7 +263,7 @@ function piplogging {
                     for pkg in $list ; do
                         case $pkg in
                             # keep fundamental packages
-                            pip|setuptools|wheel)
+                            appdirs|pyparsing|six|packaging|setuptools|pip)
                                 : ;;
                             *)
                                 if ( $arg_Y ) ; then
@@ -294,7 +293,7 @@ function piplogging {
                         esac
                     done ;;
                 # keep fundamental packages
-                pip|setuptools|wheel)
+                appdirs|pyparsing|six|packaging|setuptools|pip)
                     : ;;
                 *)
                     # check if package installed
@@ -612,13 +611,6 @@ done < $tmpfile
 
 # remove /tmp/log/uninstall.log
 rm -f $tmpfile
-
-
-# relink brewed pythons
-brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
-brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
-brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
-brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
 
 
 # clear potential terminal buffer

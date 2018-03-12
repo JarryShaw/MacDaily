@@ -165,27 +165,19 @@ function pipupdate {
         17)  # pip2
             prefix="/usr/local/opt/python@2/bin"
             suffix="2"
-            pprint="2"
-            # link brewed python@2
-            brew link python@2 --force > /dev/null 2>&1 ;;
+            pprint="2" ;;
         18)  # pip3
             prefix="/usr/local/opt/python@3/bin"
             suffix="3"
-            pprint="3"
-            # link brewed python
-            brew link python > /dev/null 2>&1 ;;
+            pprint="3" ;;
         19)  # pip_pypy
             prefix="/usr/local/opt/pypy/bin"
             suffix="_pypy"
-            pprint="_pypy"
-            # link brewed pypy
-            brew link pypy > /dev/null 2>&1 ;;
+            pprint="_pypy" ;;
         20)  # pip_pypy3
             prefix="/usr/local/opt/pypy3/bin"
             suffix="_pypy3"
-            pprint="_pypy3"
-            # link brewed pypy3
-            brew link pypy3 > /dev/null 2>&1 ;;
+            pprint="_pypy3" ;;
     esac
 
     # if executive exits
@@ -198,9 +190,13 @@ function pipupdate {
                     list=`$prefix/pip$suffix list --format legacy --not-required --outdate | sed "s/\(.*\)* (.*).*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
-                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
-                            $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
-                            $logprefix echo | $logcattee | $logsuffix
+                            case $pkg in
+                                cffi)
+                                    :
+                                *)
+                                    $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
+                                    $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
+                                    $logprefix echo | $logcattee | $logsuffix
                         done
                     else
                         $green
@@ -478,13 +474,6 @@ done < $tmpfile
 
 # remove /tmp/log/update.log
 rm -f $tmpfile
-
-
-# relink brewed pythons
-brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
-brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
-brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
-brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
 
 
 # clear potential terminal buffer

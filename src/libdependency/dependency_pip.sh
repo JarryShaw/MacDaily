@@ -217,30 +217,22 @@ function piplogging {
             python="/usr/local/opt/python@2/bin/python2"
             prefix="/usr/local/opt/python@2/bin"
             suffix="2"
-            pprint="2"
-            # link brewed python@2
-            brew link python@2 --force > /dev/null 2>&1 ;;
+            pprint="2" ;;
         18)  # pip3
             python="/usr/local/opt/python@3/bin/python3"
             prefix="/usr/local/opt/python@3/bin"
             suffix="3"
-            pprint="3"
-            # link brewed python
-            brew link python > /dev/null 2>&1 ;;
+            pprint="3" ;;
         19)  # pip_pypy
             python="/usr/local/opt/pypy/bin/pypy"
             prefix="/usr/local/opt/pypy/bin"
             suffix="_pypy"
-            pprint="_pypy"
-            # link brewed pypy
-            brew link pypy > /dev/null 2>&1 ;;
+            pprint="_pypy" ;;
         20)  # pip_pypy3
             python="/usr/local/opt/pypy3/bin/pyp3"
             prefix="/usr/local/opt/pypy3/bin"
             suffix="_pypy3"
-            pprint="_pypy3"
-            # link brewed pypy3
-            brew link pypy3 > /dev/null 2>&1 ;;
+            pprint="_pypy3" ;;
     esac
 
     # if tree flag set
@@ -524,13 +516,6 @@ done < $tmpfile
 
 # remove /tmp/log/dependency.log
 rm -f $tmpfile
-
-
-# relink brewed pythons
-brew unlink python@2 && brew link python@2 --force --overwrite > /dev/null 2>&1
-brew unlink python && brew link python --force --overwrite > /dev/null 2>&1
-brew unlink pypy && brew link pypy --force --overwrite > /dev/null 2>&1
-brew unlink pypy3 && brew link pypy3 --force --overwrite > /dev/null 2>&1
 
 
 # clear potential terminal buffer
