@@ -11,14 +11,10 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # relink brewed pythons
-brew unlink python@2 > /dev/null 2>&1
-brew unlink python > /dev/null 2>&1
-brew unlink pypy > /dev/null 2>&1
-brew unlink pypy3 > /dev/null 2>&1
-brew link python@2 --force --overwrite > /dev/null 2>&1
-brew link python --force --overwrite > /dev/null 2>&1
-brew link pypy --force --overwrite > /dev/null 2>&1
-brew link pypy3 --force --overwrite > /dev/null 2>&1
+brew link python@2 --force --overwrite
+brew link python --overwrite
+brew link pypy --overwrite
+brew link pypy3 --overwrite
 
 
 # clear potential terminal buffer

@@ -107,7 +107,10 @@ def update_pip(args, *, file, date, retset=False):
     subprocess.run(
         ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
     )
-    subprocess.run(['bash', 'libupdate/after_pip.sh'])
+    subprocess.run(
+        ['bash', 'libupdate/relink_pip.sh'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
     if not args.quiet:
         os.system('tput clear')

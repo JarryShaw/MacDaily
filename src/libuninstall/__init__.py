@@ -82,7 +82,10 @@ def uninstall_pip(args, *, file, date, retset=False):
         subprocess.run(
             ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
         )
-        subprocess.run(['bash', 'libuninstall/after_pip.sh'])
+        subprocess.run(
+            ['bash', 'libuninstall/relink_pip.sh'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
 
     if not args.quiet:
         time.sleep(5)

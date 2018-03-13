@@ -87,6 +87,10 @@ def logging_pip(args, *, file):
     subprocess.run(
         ['bash', 'liblogging/logging_pip.sh', file, system, brew, cpython, pypy, version]
     )
+    subprocess.run(
+        ['bash', 'liblogging/relink_pip.sh'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     if not args.quiet:
         os.system(f'''
             echo "logging: $({green})pip$({reset}): $({bold})Python$({reset}) packages logged in $({under}){file}$({reset})."

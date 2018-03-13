@@ -15,7 +15,7 @@ from jsdaily.libuninstall import *
 
 
 # version string
-__version__ = '0.8.9'
+__version__ = '0.8.10'
 
 
 # display mode names

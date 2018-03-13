@@ -190,14 +190,9 @@ function pipupdate {
                     list=`$prefix/pip$suffix list --format legacy --not-required --outdate | sed "s/\(.*\)* (.*).*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
-                            case $pkg in
-                                cffi)
-                                    : ;;
-                                *)
-                                    $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
-                                    $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
-                                    $logprefix echo | $logcattee | $logsuffix ;;
-                            esac
+                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
+                            $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
+                            $logprefix echo | $logcattee | $logsuffix ;;
                         done
                     else
                         $green

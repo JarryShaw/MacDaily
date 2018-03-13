@@ -77,7 +77,10 @@ def dependency_pip(args, *, file, date, retset=False):
         subprocess.run(
             ['sudo', '-H', 'bash', 'libdependency/dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
         )
-        subprocess.run(['bash', 'libdependency/after_pip.sh'])
+        subprocess.run(
+            ['bash', 'libdependency/relink_pip.sh'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
 
     if retset:
         time.sleep(5)
