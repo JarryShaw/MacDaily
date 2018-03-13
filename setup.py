@@ -2,7 +2,15 @@
 # -*- coding: utf-8 -*-
 
 
+import platform
 import setuptools
+import sys
+
+
+# check platform
+if platform.system() != 'Darwin':
+    print('Package "jsdaily" runs only on macOS.')
+    sys.exit(1)
 
 
 # README
@@ -13,7 +21,7 @@ with open('./README.rst', 'r') as file:
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.6.5',
+    version = '0.7.0.post3',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
