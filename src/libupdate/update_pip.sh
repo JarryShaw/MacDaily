@@ -192,7 +192,7 @@ function pipupdate {
                         for pkg in $list ; do
                             $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
                             $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
-                            $logprefix echo | $logcattee | $logsuffix ;;
+                            $logprefix echo | $logcattee | $logsuffix
                         done
                     else
                         $green
