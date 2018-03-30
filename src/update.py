@@ -15,7 +15,11 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.9.11'
+__version__ = '0.10.0'
+
+
+# today
+today = datetime.datetime.today()
 
 
 # display mode names
@@ -35,6 +39,7 @@ MODE = dict(
     pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
     cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
+    cleanup = lambda *args, **kwargs: update_cleanup(*args, **kwargs),
     appstore = lambda *args, **kwargs: update_appstore(*args, **kwargs),
 )
 
@@ -53,228 +58,288 @@ under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
 
 
+# error handling class
+class UnsupoortedOS(RuntimeError):
+    def __init__(self, message, *args, **kwargs):
+        sys.tracebacklimit = 0
+        super().__init__(message, *args, **kwargs)
+
+
 def get_parser():
-    parser = argparse.ArgumentParser(prog='update', description=(
-        'Automatic Package Update Manager'
-    ))
-    parser.add_argument('-V', '--version', action='version',
-                        version='{}'.format(__version__))
-    parser.add_argument('-a', '--all', action='store_true', default=False,
-                        dest='all', help=(
-                            'Update all packages installed through pip, '
-                            'Homebrew, and App Store.'
+    parser = argparse.ArgumentParser(prog='jsupdate', description=(
+                    'Automatic Package Update Manager'
+                ), usage=(
+                    'jsupdate [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
+                ))
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-a', '--all', action='append_const', const='all',
+                        dest='mode', help=(
+                            'update all packages installed through pip, '
+                            'Homebrew, and App Store'
                         ))
+
+    parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--cask', action='append_const', const='cask', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--cleanup', action='append_const', const='cleanup', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--appstore', action='append_const', const='appstore', dest='mode', help=argparse.SUPPRESS)
+
+    parser.add_argument('--no-apm', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-cask', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-cleanup', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-appstore', action='store_true', default=False, help=argparse.SUPPRESS)
+
     subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
                         dest='mode', help=(
-                            'Update outdated packages installed through '
+                            'update outdated packages installed through '
                             'a specified method, e.g.: apm, pip, brew, '
-                            'cask, or appstore.'
+                            'cask, appstore, or alternatively and simply, '
+                            'cleanup'
                         ))
 
     parser_apm = subparser.add_parser('apm', description=(
-                            'Update installed Atom packages.'
+                            'Update Installed Atom Packages'
+                        ), usage=(
+                            'jsupdate apm [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_apm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'Update all packages installed through apm.'
+                            'update all packages installed through apm'
                         ))
     parser_apm.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
-                            'Name of packages to be updated, default is all.'
+                            'name of packages to be updated, default is all'
                         ))
     parser_apm.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
     parser_apm.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
-                            'Run in verbose mode, with detailed output information.'
+                            'run in verbose mode, with detailed output information'
                         ))
-    # parser_apm.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
 
     parser_pip = subparser.add_parser('pip', description=(
-                            'Update installed Python packages.'
+                            'Update Installed Python Packages'
+                        ), usage=(
+                            'jsupdate pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
-    parser_pip.add_argument('-a', '--all', action='store_true', default=True,
+    parser_pip.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'Update all packages installed through pip.'
+                            'update all packages installed through pip'
                         ))
-    parser_pip.add_argument('-V', '--pyver', action='store', metavar='VER',
+    parser_pip.add_argument('-V', '--python_version', action='store', metavar='VER',
                         choices=[
                             1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
-                            3, 30, 31, 32, 33, 34, 35, 36, 37,
-                        ], dest='version', type=int, default=1, help=(
-                            'Indicate which version of pip will be updated.'
+                            0, 3, 30, 31, 32, 33, 34, 35, 36, 37,
+                        ], dest='version', type=int, default=0, help=(
+                            'indicate which version of pip will be updated'
                         ))
     parser_pip.add_argument('-s', '--system', action='store_true', default=False,
                         dest='system', help=(
-                            'Update pip packages on system level, i.e. python '
-                            'installed through official installer.'
+                            'update pip packages on system level, i.e. python '
+                            'installed through official installer'
                         ))
     parser_pip.add_argument('-b', '--brew', action='store_true', default=False,
                         dest='brew', help=(
-                            'Update pip packages on Cellar level, i.e. python '
-                            'installed through Homebrew.'
+                            'update pip packages on Cellar level, i.e. python '
+                            'installed through Homebrew'
                         ))
     parser_pip.add_argument('-c', '--cpython', action='store_true', default=False,
                         dest='cpython', help=(
-                            'Update pip packages on CPython environment.'
+                            'update pip packages on CPython environment'
                         ))
     parser_pip.add_argument('-y', '--pypy', action='store_true', default=False,
                         dest='pypy', help=(
-                            'Update pip packages on PyPy environment.'
+                            'update pip packages on PyPy environment'
                         ))
     parser_pip.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
-                            'Name of packages to be updated, default is all.'
+                            'name of packages to be updated, default is all'
                         ))
     parser_pip.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
     parser_pip.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
-                            'Run in verbose mode, with detailed output information.'
+                            'run in verbose mode, with detailed output information'
                         ))
-    # parser_pip.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
 
     parser_brew = subparser.add_parser('brew', description=(
-                            'Update installed Homebrew packages.'
+                            'Update Installed Homebrew Packages'
+                        ), usage=(
+                            'jsupdate brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'Update all packages installed through Homebrew.'
+                            'update all packages installed through Homebrew'
                         ))
     parser_brew.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
-                            'Name of packages to be updated, default is all.'
+                            'name of packages to be updated, default is all'
                         ))
     parser_brew.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
-                            'Use "--force" when running `brew update`.'
+                            'use "--force" when running `brew update`'
                         ))
     parser_brew.add_argument('-m', '--merge', action='store_true', default=False,
                         help=(
-                            'Use "--merge" when running `brew update`.'
+                            'use "--merge" when running `brew update`'
                         ))
     parser_brew.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
     parser_brew.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
-                            'Run in verbose mode, with detailed output information.'
+                            'run in verbose mode, with detailed output information'
                         ))
-    # parser_brew.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
+    parser_brew.add_argument('--no-cleanup', action='store_false', default=True,
+                        dest='nocleanup', help=(
+                            'do not remove caches & downloads'
+                        ))
 
     parser_cask = subparser.add_parser('cask', description=(
-                            'Update installed Caskroom packages.'
+                            'Update Installed Caskroom Packages'
+                        ), usage=(
+                            'jsupdate cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'Update all packages installed through Caskroom.'
+                            'update all packages installed through Caskroom'
                         ))
     parser_cask.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
-                            'Name of packages to be updated, default is all.'
+                            'name of packages to be updated, default is all'
                         ))
     parser_cask.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
-                            'Use "--force" when running `brew cask upgrade`.'
+                            'use "--force" when running `brew cask upgrade`'
                         ))
     parser_cask.add_argument('-g', '--greedy', action='store_true', default=False,
                         help=(
-                            'Use "--greedy" when running `brew cask outdated`, '
-                            'and directly run `brew cask upgrade --greedy`.'
+                            'use "--greedy" when running `brew cask outdated`, '
+                            'and directly run `brew cask upgrade --greedy`'
                         ))
     parser_cask.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
     parser_cask.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
-                            'Run in verbose mode, with detailed output information.'
+                            'run in verbose mode, with detailed output information'
                         ))
-    # parser_cask.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
+    parser_cask.add_argument('--no-cleanup', action='store_false', default=True,
+                        dest='nocleanup', help=(
+                            'do not remove caches & downloads'
+                        ))
+
+    parser_cleanup = subparser.add_parser('cleanup', description=(
+                            'Cleanup Caches & Downloads'
+                        ), usage=(
+                            'jsupdate cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                        ))
+    parser_cleanup.add_argument('--no-brew', dest='brew', action='store_false', default=True,
+                        help=(
+                            'do not remove Homebrew caches & downloads'
+                        ))
+    parser_cleanup.add_argument('--no-cask', dest='cask', action='store_false', default=True,
+                        help=(
+                            'do not remove Caskroom caches & downloads'
+                        ))
+    parser_cleanup.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'run in quiet mode, with no output information'
+                        ))
 
     parser_appstore = subparser.add_parser('appstore', description=(
-                            'Update installed App Store packages.'
+                            'Update installed App Store packages'
+                        ), usage=(
+                            'jsupdate appstore [-h] [-q] [-a] [-p PKG]'
                         ))
     parser_appstore.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'Update all packages installed through App Store.'
+                            'update all packages installed through App Store'
                         ))
     parser_appstore.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
-                            'Name of packages to be updated, default is all.'
+                            'name of packages to be updated, default is all'
                         ))
     parser_appstore.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
-    # parser_appstore.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
 
     parser.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
-                            'Run in force mode, only for Homebrew or Caskroom.'
+                            'run in force mode, only for Homebrew or Caskroom'
                         ))
     parser.add_argument('-m', '--merge', action='store_true', default=False,
                         help=(
-                            'Run in merge mode, only for Homebrew.'
+                            'run in merge mode, only for Homebrew'
                         ))
     parser.add_argument('-g', '--greedy', action='store_true', default=False,
                         help=(
-                            'Run in greedy mode, only for Caskroom.'
+                            'run in greedy mode, only for Caskroom'
                         ))
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
-                            'Run in quiet mode, with no output information.'
+                            'run in quiet mode, with no output information'
                         ))
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
-                            'Run in verbose mode, with detailed output information.'
+                            'run in verbose mode, with detailed output information'
                         ))
-    # parser.add_argument('extra', metavar='MODE', nargs='*', help='Other commands.')
 
     return parser
 
 
 def main():
     if platform.system() != 'Darwin':
-        os.system(f'echo "Script $({under})update$({reset}) runs only on $({bold})$({red})macOS$({reset})."')
-        sys.exit(1)
+        raise UnsupoortedOS('update: script runs only on macOS')
 
-    # sys.argv.insert(1, '--all')
     parser = get_parser()
     args = parser.parse_args()
+
+    if args.mode is None:
+        parser.print_help()
+        return
 
     pathlib.Path('/tmp/log').mkdir(parents=True, exist_ok=True)
     pathlib.Path('/Library/Logs/Scripts/update').mkdir(parents=True, exist_ok=True)
 
-    logdate = datetime.date.strftime(datetime.datetime.today(), '%y%m%d')
+    logdate = datetime.date.strftime(today, '%y%m%d')
     logname = f'/Library/Logs/Scripts/update/{logdate}.log'
 
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(datetime.datetime.today(), '%+').center(80, '—'))
+        logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
         logfile.write(f'\n\nCMD: {python} {program}')
         logfile.write(f'\n\n{mode}\n\n')
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    update = MODE.get(args.mode or 'all')
-    log = update(args, file=logname, date=logdate)
+    for mode in args.mode:
+        update = MODE.get(mode)
+        log = update(args, file=logname, date=logdate)
 
+    arcfile = '/Library/Logs/Scripts/archive.zip'
     filelist = list()
-    with zipfile.ZipFile('/Library/Logs/Scripts/archive.zip', 'a', zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
         abs_src = os.path.abspath('/Library/Logs/Scripts')
         for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/update'):
             for filename in files:
                 if filename == '.DS_Store':
                     continue
-                filedate = datetime.datetime.strptime(filename.split('.')[0], '%y%m%d')
-                today = datetime.datetime.today()
-                delta = today - filedate
+                name, ext = os.path.splitext(filename)
+                if ext != '.log':
+                    continue
+                ctime = datetime.datetime.strptime(name, '%y%m%d')
+                delta = today - ctime
                 if delta > datetime.timedelta(7):
                     absname = os.path.abspath(os.path.join(dirname, filename))
                     arcname = absname[len(abs_src) + 1:]
@@ -291,18 +356,24 @@ def main():
         for mode in log:
             name = NAME.get(mode, mode)
             if log[mode] and all(log[mode]):
-                pkgs = ', '.join(log[mode])
+                pkgs = f', '.join(log[mode])
                 logfile.write(f'LOG: Updated following {name} packages: {pkgs}.\n')
                 if not args.quiet:
-                    os.system(f'echo "Updated following {name} packages: $({red}){pkgs}$({reset})."; echo ;')
+                    pkgs_coloured = f'$({reset}), $({red})'.join(log[mode])
+                    os.system(f'echo "update: $({green}){mode}$({reset}): '
+                              f'updated following $({bold}){name}$({reset}) packages: $({red}){pkgs_coloured}$({reset})"')
             else:
                 logfile.write(f"LOG: No package updated in {name}.\n")
                 if not args.quiet:
-                    os.system(f'echo "$({green})No package updated in {name}.$({reset})"; echo ;')
+                    os.system(f'echo "update: $({green}){mode}$({reset}): '
+                              f'no package updated in $({bold}){name}$({reset})"')
 
         if filelist:
             files = ', '.join(filelist)
             logfile.write(f'LOG: Archived following old logs: {files}\n')
+            if not args.quiet:
+                os.system(f'echo "update: $({green})cleanup$({reset}): '
+                          f'ancient logs archived into $({under}){arcfile}$({reset})"')
         logfile.write('\n\n\n\n')
 
 

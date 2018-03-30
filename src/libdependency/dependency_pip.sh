@@ -21,6 +21,7 @@ reset="tput sgr0"       # reset
 #   4. CPython Flag
 #   5. PyPy Flag
 #   6. Version
+#       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
 #       |-> 20 : Python 2.0.*
@@ -115,7 +116,7 @@ function pipdependency {
             $logprefix echo | $logcattee | $logsuffix
         fi
     else
-        $logprefix echo "++ pip$pprint show $arg_pkg | grep \"Requires: \" | sed \"s/Requires: //\" | sed \"s/,//g\" | tr \" \" \"\n\"" | $logcattee | $logsuffix
+        $logprefix echo "++ pip$pprint deps $arg_pkg" | $logcattee | $logsuffix
         $logprefix $prefix/pip$suffix show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | tr " " "\n" | $logcattee | $logsuffix
         $logprefix echo | $logcattee | $logsuffix
     fi
@@ -249,6 +250,7 @@ function piplogging {
 
     # if executive exits
     if [ -e $prefix/pip$suffix ] ; then
+        showed=true
         for name in $arg_pkg ; do
             # All or Specified Packages
             case $name in
@@ -286,6 +288,10 @@ function piplogging {
         echo -e "pip$pprint: Not installed.\n" >> $tmpfile
     fi
 }
+
+
+# showed flag
+showed=false
 
 
 # preset all mode bools
@@ -446,6 +452,18 @@ for index in ${!list[*]} ; do
         piplogging $index
     fi
 done
+
+
+# if no pip showed
+if ( ! $( \
+    $mode_pip_sys20 && $mode_pip_sys21 && $mode_pip_sys22 && $mode_pip_sys23 && $mode_pip_sys24 && $mode_pip_sys25 && $mode_pip_sys26 && $mode_pip_sys27 && \
+    $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
+    $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $showed \
+    ) ) ; then
+    $green
+    $logprefix echo "No dependency showed." | $logcattee | $logsuffix
+    $reset
+fi
 
 
 # read /tmp/log/dependency.log line by line then migrate to log file

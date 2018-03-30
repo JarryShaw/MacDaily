@@ -10,7 +10,10 @@ import subprocess
 import time
 
 
-__all__ = ['update_all', 'update_apm', 'update_pip', 'update_brew', 'update_cask', 'update_appstore']
+__all__ = [
+    'update_all', 'update_apm', 'update_pip', 'update_brew',
+    'update_cask', 'update_cleanup', 'update_appstore'
+]
 
 
 # terminal display
@@ -33,22 +36,45 @@ def _merge_packages(args):
                     packages = {'all'}
                     allflag = True; break
                 packages = packages.union(set(list_))
-    else:
+    elif 'all' in args.mode:
         packages = {'all'}
+    else:
+        packages = {'null'}
     return packages
 
 
+def update_cleanup(args, *, file, date, brew=False, cask=False):
+    brew = str(brew if 'brew' in args else args.brew).lower()
+    cask = str(cask if 'cask' in args else args.cask).lower()
+    quiet = str(args.quiet).lower()
+
+    mode = '-*- Cleanup -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+
+    if not args.quiet:
+        os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
+
+    subprocess.run(
+        ['bash', 'libupdate/cleanup.sh', date, brew, cask, quiet]
+    )
+
+    if not args.quiet:
+        time.sleep(5)
+        os.system('tput clear')
+
+
 def update_apm(args, *, file, date, retset=False):
+    if shutil.which('apm') is None:
+        os.system(f'''
+                echo "update: $({red})apm$({reset}): command not found";
+                echo "You may download Atom from $({under})https://atom.io$({reset}).";
+        ''')
+        return set() if retset else dict(apm=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     packages = _merge_packages(args)
-
-    if shutil.which('apm') is None:
-        os.system(f'''
-                echo "$({red})apm$({reset}): Command not found.";
-                echo "You may download Atom from $({under})https://atom.io$({reset})."
-        ''')
-        return set() if retset else dict(apm=set())
 
     mode = '-*- Atom -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -62,7 +88,7 @@ def update_apm(args, *, file, date, retset=False):
             ['bash', 'libupdate/logging_apm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.split())
+        log = set(logging.stdout.decode().split())
         outdated = 'true' if logging.stdout.decode() else 'false'
     else:
         log = packages
@@ -90,7 +116,7 @@ def update_pip(args, *, file, date, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Python$({reset}) -*-"; echo ;')
 
-    flag = True if args.mode is None else (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
+    flag = (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
     if ('all' in packages and flag) or args.package is not None:
         system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
     else:
@@ -113,24 +139,25 @@ def update_pip(args, *, file, date, retset=False):
     )
 
     if not args.quiet:
+        time.sleep(5)
         os.system('tput clear')
     return log if retset else dict(pip=log)
 
 
 def update_brew(args, *, file, date, cleanup=True, retset=False):
+    if shutil.which('brew') is None:
+        os.system(f'''
+                echo "update: $({red})brew$({reset}): command not found";
+                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
+                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset});
+        ''')
+        return set() if retset else dict(brew=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     force = str(args.force).lower()
     merge = str(args.merge).lower()
     packages = _merge_packages(args)
-
-    if shutil.which('brew') is None:
-        os.system(f'''
-                echo "$({red})brew$({reset}): Command not found.";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:"
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
-        ''')
-        return set() if retset else dict(brew=set())
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -158,44 +185,32 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
         ['bash', 'libupdate/update_brew.sh', date, quiet, verbose, outdated] + list(log)
     )
 
-    if cleanup:
-        mode = '-*- Cleanup -*-'.center(80, ' ')
-        with open(file, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
-            os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-        subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', date, 'true', 'false', quiet]
-        )
-
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, brew=True)
     return log if retset else dict(brew=log)
 
 
 def update_cask(args, *, file, date, cleanup=True, retset=False):
-    quiet = str(args.quiet).lower()
-    verbose = str(args.verbose).lower()
-    force = str(args.force).lower()
-    greedy = str(args.greedy).lower()
-    packages = _merge_packages(args)
-
     testing = subprocess.run(
         shlex.split('brew cask'),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if testing.returncode:
         os.system(f'''
-                echo "$({red})cask$({reset}): Command not found.";
+                echo "update: $({red})cask$({reset}): command not found";
                 echo "You may find Caskroom on $({under})https://caskroom.github.io$({reset}), or install Caskroom through following command:"
                 echo $({bold})'brew tap caskroom/cask'$({reset})
         ''')
         return set() if retset else dict(cask=set())
+
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    force = str(args.force).lower()
+    greedy = str(args.greedy).lower()
+    packages = _merge_packages(args)
 
     mode = '-*- Caskroom -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -219,33 +234,22 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
         ['bash', 'libupdate/update_cask.sh', date, quiet, verbose, force, greedy, outdated] + list(log)
     )
 
-    if cleanup:
-        mode = '-*- Cleanup -*-'.center(80, ' ')
-        with open(file, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
-            os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-        subprocess.run(
-            ['bash', 'libupdate/cleanup.sh', date, 'false', 'true', quiet]
-        )
-
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, cask=True)
     return log if retset else dict(cask=log)
 
 
 def update_appstore(args, *, file, date, retset=False):
+    if shutil.which('softwareupdate') is None:
+        os.system(f'echo "update: $({red})appstore$({reset}): command not found"')
+        return set() if retset else dict(appstore=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     packages = _merge_packages(args)
-
-    if shutil.which('softwareupdate') is None:
-        return set() if retset else dict(appstore=set())
 
     mode = '-*- App Store -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -260,7 +264,7 @@ def update_appstore(args, *, file, date, retset=False):
     )
     if 'all' in packages:
         log = set(re.split('[\n\r]', logging.stdout.decode().strip()))
-        outdated = 'true' if logging.stdout.decode() else 'false'
+        outdated = 'true' if log else 'false'
     else:
         log = packages
         outdated = 'true'
@@ -276,31 +280,17 @@ def update_appstore(args, *, file, date, retset=False):
 
 
 def update_all(args, *, file, date):
-    quiet = str(args.quiet).lower()
-    verbose = str(args.verbose).lower()
-
     log = dict(
-        apm = update_apm(args, retset=True, file=file, date=date),
-        pip = update_pip(args, retset=True, file=file, date=date),
-        brew = update_brew(args, cleanup=False, retset=True, file=file, date=date),
-        cask = update_cask(args, cleanup=False, retset=True, file=file, date=date),
-        appstore = update_appstore(args, retset=True, file=file, date=date),
+        apm = set(),
+        pip = set(),
+        brew = set(),
+        cask = set(),
+        appstore = set(),
     )
+    for mode in ('apm', 'pip', 'brew', 'cask', 'appstore'):
+        if not args.__getattribute__(f'no_{mode}'):
+            log[mode] = eval(f'update_{mode}')(args, retset=True, file=file, date=date)
 
-    mode = '-*- Cleanup -*-'.center(80, ' ')
-    with open(file, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
-        os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-    subprocess.run(
-        ['bash', 'libupdate/cleanup.sh', date, 'true', 'true', quiet]
-    )
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
+    if not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, brew=True, cask=True)
     return log

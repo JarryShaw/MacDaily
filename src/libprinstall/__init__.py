@@ -9,7 +9,7 @@ import subprocess
 import time
 
 
-__all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'postinstall']
+__all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'reinstall_cleanup']
 
 
 # terminal display
@@ -34,30 +34,54 @@ def _merge_packages(args, *, mode):
                     allflag = True; break
                 packages = packages.union(set(list_))
     elif mode == 'reinstall':
-        if args.all:
+        if 'all' in args.mode:
             packages = {'all'}
         else:
             packages = {'null'}
     else:   # 'postinstall'
-        packages = {'all'}
+        if args.all:
+            packages = {'all'}
+        else:
+            packages = {'null'}
     return packages
 
 
+def reinstall_cleanup(args, *, file, date, mode, brew=False, cask=False):
+    brew = str(brew if 'brew' in args else args.brew).lower()
+    cask = str(cask if 'cask' in args else args.cask).lower()
+    quiet = str(args.quiet).lower()
+
+    mode = '-*- Cleanup -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+
+    if not args.quiet:
+        os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
+
+    subprocess.run(
+        ['bash', 'libupdate/cleanup.sh', date, mode, brew, cask, quiet]
+    )
+
+    if not args.quiet:
+        time.sleep(5)
+        os.system('tput clear')
+
+
 def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
+    if shutil.which('brew') is None:
+        os.system(f'''
+                echo "reinstall: $({red})brew$({reset}): command not found";
+                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:"
+                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
+        ''')
+        return set() if retset else dict(brew=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     force = str(args.force).lower()
     start = str(args.start).lower()
     end = str(args.end).lower()
     packages = _merge_packages(args, mode='reinstall')
-
-    if shutil.which('brew') is None:
-        os.system(f'''
-                echo "$({red})brew$({reset}): Command not found.";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:"
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
-        ''')
-        return set() if retset else dict(brew=set())
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -69,7 +93,7 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
     if 'null' in packages:
         log = set()
         if not args.quiet:
-            os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "reinstall: $({green})brew$({reset}): no reinstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No reinstallation performed.\n')
     else:
@@ -89,48 +113,36 @@ def reinstall_brew(args, *, file, date, cleanup=True, retset=False):
             )
         else:
             if not args.quiet:
-                os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+                os.system(f'echo "reinstall: $({green})brew$({reset}): no reinstallation performed"')
             with open(file, 'a') as logfile:
                 logfile.write('INF: No reinstallation performed.\n')
-
-    if cleanup:
-        mode = '-*- Cleanup -*-'.center(80, ' ')
-        with open(file, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
-            os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-        subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'false', quiet]
-        )
 
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        reinstall_cleanup(args, file=file, date=date, brew=True, mode='reinstall')
     return log if retset else dict(brew=log)
 
 
 def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
-    quiet = str(args.quiet).lower()
-    verbose = str(args.verbose).lower()
-    start = str(args.start).lower()
-    end = str(args.end).lower()
-    packages = _merge_packages(args, mode='reinstall')
-
     testing = subprocess.run(
         shlex.split('brew cask'),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if testing.returncode:
         os.system(f'''
-                echo "$({red})cask$({reset}): Command not found.";
+                echo "reinstall: $({red})cask$({reset}): command not found";
                 echo "You may find Caskroom on $({under})https://caskroom.github.io$({reset}), or install Caskroom through following command:"
                 echo $({bold})'brew tap caskroom/cask'$({reset})
         ''')
         return set() if retset else dict(cask=set())
+
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    start = str(args.start).lower()
+    end = str(args.end).lower()
+    packages = _merge_packages(args, mode='reinstall')
 
     mode = '-*- Caskroom -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -142,7 +154,7 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
     if 'null' in packages:
         log = set()
         if not args.quiet:
-            os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "reinstall: $({green})brew$({reset}): no reinstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No reinstallation performed.\n')
     else:
@@ -162,72 +174,46 @@ def reinstall_cask(args, *, file, date, cleanup=True, retset=False):
             )
         else:
             if not args.quiet:
-                os.system(f'echo "$({green})No reinstallation performed.$({reset})"; echo ;')
+                os.system(f'echo "reinstall: $({green})brew$({reset}): no reinstallation performed"')
             with open(file, 'a') as logfile:
                 logfile.write('INF: No reinstallation performed.\n')
-
-    if cleanup:
-        mode = '-*- Cleanup -*-'.center(80, ' ')
-        with open(file, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
-            os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-        subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'false', 'true', quiet]
-        )
 
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        reinstall_cleanup(args, file=file, date=date, cask=True, mode='reinstall')
     return log if retset else dict(cask=log)
 
 
 def reinstall_all(args, *, file, date):
-    quiet = str(args.quiet).lower()
-    verbose = str(args.verbose).lower()
-
     log = dict(
-        brew = reinstall_brew(args, cleanup=False, retset=True, file=file, date=date),
-        cask = reinstall_cask(args, cleanup=False, retset=True, file=file, date=date),
+        brew = set(),
+        cask = set(),
     )
+    for mode in ('brew', 'cask'):
+        if not args.__getattribute__(f'no_{mode}'):
+            log[mode] = eval(f'reinstall_{mode}')(args, retset=True, file=file, date=date)
 
-    mode = '-*- Cleanup -*-'.center(80, ' ')
-    with open(file, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
-        os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-    subprocess.run(
-        ['bash', 'libprinstall/cleanup.sh', date, 'reinstall', 'true', 'true', quiet]
-    )
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
+    if not args.no_cleanup:
+        reinstall_cleanup(args, file=file, date=date, brew=True, cask=True)
     return log
 
 
-def postinstall(args, *, file, date, cleanup=True):
+def postinstall(args, *, file, date):
+    if shutil.which('brew') is None:
+        os.system(f'''
+                echo "postinstall: $({red})brew$({reset}): command not found";
+                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:"
+                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
+        ''')
+        return set() if retset else dict(brew=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     start = str(args.start).lower()
     end = str(args.end).lower()
     packages = _merge_packages(args, mode='postinstall')
-
-    if shutil.which('brew') is None:
-        os.system(f'''
-                echo "$({red})brew$({reset}): Command not found.";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:"
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
-        ''')
-        return set() if retset else dict(brew=set())
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -251,25 +237,13 @@ def postinstall(args, *, file, date, cleanup=True):
         )
     else:
         if not args.quiet:
-            os.system(f'echo "$({green})No postinstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "postinstall: $({green})brew$({reset}): no postinstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No postinstallation performed.\n')
-
-    if cleanup:
-        mode = '-*- Cleanup -*-'.center(80, ' ')
-        with open(file, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
-            os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
-
-        subprocess.run(
-            ['bash', 'libprinstall/cleanup.sh', date, 'postinstall', 'true', 'false', quiet]
-        )
 
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not args.no_cleanup:
+        reinstall_cleanup(args, file=file, date=date, brew=True, mode='postinstall')
     return log

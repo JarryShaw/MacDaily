@@ -15,6 +15,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #   4. CPython Flag
 #   5. PyPy Flag
 #   6. Version
+#       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
 #       |-> 20 : Python 2.0.*

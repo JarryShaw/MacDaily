@@ -73,9 +73,11 @@ fi
 
 
 # brew prune
-$logprefix echo "+ brew prune --verbose $quiet" | $logcattee | $logsuffix
-$logprefix brew prune --verbose $quiet | $logcattee | $logsuffix
-$logprefix echo | $logcattee | $logsuffix
+if ( $arg_brew || $arg_cask ) ; then
+    $logprefix echo "+ brew prune --verbose $quiet" | $logcattee | $logsuffix
+    $logprefix brew prune --verbose $quiet | $logcattee | $logsuffix
+    $logprefix echo | $logcattee | $logsuffix
+fi
 
 
 # archive caches if hard disk attached

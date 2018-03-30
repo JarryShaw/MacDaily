@@ -8,7 +8,10 @@ import shutil
 import subprocess
 
 
-__all__ = ['logging_apm', 'logging_appstore', 'logging_brew', 'logging_cask', 'logging_dotapp', 'logging_macapp', 'logging_pip']
+__all__ = [
+    'logging_apm', 'logging_pip', 'logging_brew', 'logging_cask',
+    'logging_dotapp', 'logging_macapp', 'logging_appstore',
+]
 
 
 # terminal display
@@ -25,6 +28,8 @@ def logging_apm(args, *, file):
             os.system(f'''
                 echo "logging: $({green})apm$({reset}): $({bold})Atom$({reset}) packges logged in $({under}){file}$({reset})."
             ''')
+    else:
+        os.system(f'echo "logging: $({red})apm$({reset}): command not found"')
 
 
 def logging_appstore(args, *, file):
@@ -43,6 +48,8 @@ def logging_brew(args, *, file):
             os.system(f'''
                 echo "logging: $({green})brew$({reset}): $({bold})Homebrew$({reset}) packges logged in $({under}){file}$({reset})."
             ''')
+    else:
+        os.system(f'echo "logging: $({red}brew$({reset}): command not found"')
 
 
 def logging_cask(args, *, file):
@@ -56,6 +63,8 @@ def logging_cask(args, *, file):
             os.system(f'''
                 echo "logging: $({green})cask$({reset}): $({bold})Caskroom$({reset}) applications logged in $({under}){file}$({reset})."
             ''')
+    else:
+        os.system(f'echo "logging: $({red})cask$({reset}): command not found"')
 
 
 def logging_dotapp(args, *, file):
@@ -65,6 +74,8 @@ def logging_dotapp(args, *, file):
             os.system(f'''
                 echo "logging: $({green})dotapp$({reset}): All applications ($({bold})*.app$({reset})) logged in $({under}){file}$({reset})."
             ''')
+    else:
+        os.system(f'echo "logging: $({red})dotapp$({reset}): command not found"')
 
 
 def logging_macapp(args, *, file):
@@ -74,6 +85,8 @@ def logging_macapp(args, *, file):
             os.system(f'''
                 echo "logging: $({green})macapp$({reset}): Applications installed in $({bold})/Application$({reset}) folder logged in $({under}){file}$({reset})."
             ''')
+    else:
+        os.system(f'echo "logging: $({red})macapp$({reset}): command not found"')
 
 
 def logging_pip(args, *, file):

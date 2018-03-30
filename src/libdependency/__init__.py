@@ -37,7 +37,7 @@ def _merge_packages(args):
                     packages = {'null'}
                     nullflag = True; break
                 packages = packages.union(set(list_))
-    elif args.all:
+    elif 'all' in args.mode:
         packages = {'all'}
     else:
         packages = {'null'}
@@ -56,11 +56,11 @@ def dependency_pip(args, *, file, date, retset=False):
     os.system(f'echo "-*- $({blue})Python$({reset}) -*-"; echo ;')
     if 'null' in packages:
         log = set()
-        os.system(f'echo "$({green})No dependency showed.$({reset})"; echo ;')
+        os.system(f'echo "dependency: $({green})pip$({reset}): no dependency showed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No dependency showed.\n')
     else:
-        flag = True if args.mode is None else (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
+        flag = (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
         if ('all' in packages and flag) or args.package is not None:
             system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
         else:
@@ -89,16 +89,16 @@ def dependency_pip(args, *, file, date, retset=False):
 
 
 def dependency_brew(args, *, file, date, retset=False):
-    tree = str(args.tree).lower()
-    packages = _merge_packages(args)
-
     if shutil.which('brew') is None:
         os.system(f'''
-                echo "$({red})brew$({reset}): Command not found.";
+                echo "dependency: $({red})brew$({reset}): command not found";
                 echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
                 echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
         ''')
         return set() if retset else dict(brew=set())
+
+    tree = str(args.tree).lower()
+    packages = _merge_packages(args)
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -107,7 +107,7 @@ def dependency_brew(args, *, file, date, retset=False):
     os.system(f'echo "-*- $({blue})Homebrew$({reset}) -*-"; echo ;')
     if 'null' in packages:
         log = set()
-        os.system(f'echo "$({green})No dependency showed.$({reset})"; echo ;')
+        os.system(f'echo "dependency: $({green})pip$({reset}): no dependency showed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No dependency showed.\n')
     else:
@@ -124,9 +124,12 @@ def dependency_brew(args, *, file, date, retset=False):
     return log if retset else dict(brew=log)
 
 
-def dependency_all(args, *, file, date, retset=False):
+def dependency_all(args, *, file, date):
     log = dict(
-        pip = dependency_pip(args, retset=True, file=file, date=date),
-        brew = dependency_brew(args, retset=True, file=file, date=date),
+        pip = set(),
+        brew = set(),
     )
+    for mode in ('pip', 'brew'):
+        if not args.__getattribute__(f'no_{mode}'):
+            log[mode] = eval(f'dependency_{mode}')(args, retset=True, file=file, date=date)
     return log

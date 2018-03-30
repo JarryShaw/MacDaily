@@ -21,7 +21,7 @@ with open('./README.rst', 'r') as file:
 # set-up script for pip distribution
 setuptools.setup(
     name = 'jsdaily',
-    version = '0.7.0.post3',
+    version = '0.7.1.dev1',
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
     url = 'https://github.com/JarryShaw/jsdaily/',
@@ -35,12 +35,12 @@ setuptools.setup(
     },
     entry_points = {
         'console_scripts': [
-            'update = jsdaily:update',
-            'uninstall = jsdaily:uninstall',
-            'reinstall = jsdaily:reinstall',
-            'postinstall = jsdaily:postinstall',
-            'dependency = jsdaily:dependency',
-            'logging = jsdaily:logging',
+            'jsupdate = jsdaily:update',
+            'jsuninstall = jsdaily:uninstall',
+            'jsreinstall = jsdaily:reinstall',
+            'jspostinstall = jsdaily:postinstall',
+            'jsdeps = jsdaily:dependency',
+            'jslogging = jsdaily:logging',
         ]
     },
     packages = [

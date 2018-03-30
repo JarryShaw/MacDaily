@@ -15,6 +15,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #   4. CPython Flag
 #   5. PyPy Flag
 #   6. Version
+#       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
 #       |-> 20 : Python 2.0.*
@@ -152,6 +153,7 @@ function piplogging {
 
     # if executive exits
     if [ -e $prefix/pip$suffix ] ; then
+        logged=true
         # list packages
         echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
         $prefix/pip$suffix list --format legacy 2> /dev/null | sed "s/\(.*\)* (.*)/INF: \1/" >> $logfile
@@ -160,6 +162,10 @@ function piplogging {
         echo -e "pip$pprint: Not installed.\n" >> $logfile
     fi
 }
+
+
+# logged flag
+logged=false
 
 
 # preset all mode bools
@@ -320,6 +326,18 @@ for index in ${!list[*]} ; do
         piplogging $index
     fi
 done
+
+
+# if no pip logged
+if ( ! $( \
+    $mode_pip_sys20 && $mode_pip_sys21 && $mode_pip_sys22 && $mode_pip_sys23 && $mode_pip_sys24 && $mode_pip_sys25 && $mode_pip_sys26 && $mode_pip_sys27 && \
+    $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
+    $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $logged \
+    ) ) ; then
+    $green
+    $logprefix echo "No package logged." | $logcattee | $logsuffix
+    $reset
+fi
 
 
 # clear potential terminal buffer

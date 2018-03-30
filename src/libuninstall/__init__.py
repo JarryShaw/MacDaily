@@ -37,7 +37,7 @@ def _merge_packages(args):
                     packages = {'null'}
                     nullflag = True; break
                 packages = packages.union(set(list_))
-    elif args.all:
+    elif 'all' in args.mode:
         packages = {'all'}
     else:
         packages = {'null'}
@@ -61,11 +61,11 @@ def uninstall_pip(args, *, file, date, retset=False):
     if 'null' in packages:
         log = set()
         if not args.quiet:
-            os.system(f'echo "$({green})No uninstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "uninstall: $({green})pip$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No uninstallation performed.\n')
     else:
-        flag = True if args.mode is None else (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
+        flag = (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
         if ('all' in packages and flag) or args.package is not None:
             system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
         else:
@@ -94,20 +94,20 @@ def uninstall_pip(args, *, file, date, retset=False):
 
 
 def uninstall_brew(args, *, file, date, retset=False):
+    if shutil.which('brew') is None:
+        os.system(f'''
+                echo "uninstall: $({red})brew$({reset}): command not found";
+                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
+                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset});
+        ''')
+        return set() if retset else dict(brew=set())
+
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     force = str(args.force).lower()
     yes = str(args.yes).lower()
     idep = str(args.idep).lower()
     packages = _merge_packages(args)
-
-    if shutil.which('brew') is None:
-        os.system(f'''
-                echo "$({red})brew$({reset}): Command not found.";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
-        ''')
-        return set() if retset else dict(brew=set())
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -119,7 +119,7 @@ def uninstall_brew(args, *, file, date, retset=False):
     if 'null' in packages:
         log = set()
         if not args.quiet:
-            os.system(f'echo "$({green})No uninstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "uninstall: $({green})brew$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No uninstallation performed.\n')
     else:
@@ -140,22 +140,25 @@ def uninstall_brew(args, *, file, date, retset=False):
 
 
 def uninstall_cask(args, *, file, date, retset=False):
-    quiet = str(args.quiet).lower()
-    verbose = str(args.verbose).lower()
-    force = str(args.force).lower()
-    packages = _merge_packages(args)
-
     testing = subprocess.run(
         shlex.split('brew cask'),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if testing.returncode:
         os.system(f'''
-                echo "$({red})cask$({reset}): Command not found.";
+                echo "uninstall: $({red})cask$({reset}): command not found";
                 echo "You may find Caskroom on $({under})https://caskroom.github.io$({reset}), or install Caskroom through following command:";
                 echo $({bold})'brew tap caskroom/cask'$({reset})
         ''')
+        if not args.quiet:
+            time.sleep(5)
+            os.system('tput clear')
         return set() if retset else dict(cask=set())
+
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    force = str(args.force).lower()
+    packages = _merge_packages(args)
 
     mode = '-*- Caskroom -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
@@ -167,7 +170,7 @@ def uninstall_cask(args, *, file, date, retset=False):
     if 'null' in packages:
         log = set()
         if not args.quiet:
-            os.system(f'echo "$({green})No uninstallation performed.$({reset})"; echo ;')
+            os.system(f'echo "uninstall: $({green})cask$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
             logfile.write('INF: No uninstallation performed.\n')
     else:
@@ -189,8 +192,11 @@ def uninstall_cask(args, *, file, date, retset=False):
 
 def uninstall_all(args, *, file, date):
     log = dict(
-        pip = uninstall_pip(args, retset=True, file=file, date=date),
-        brew = uninstall_brew(args, retset=True, file=file, date=date),
-        cask = uninstall_cask(args, retset=True, file=file, date=date),
+        pip = set(),
+        brew = set(),
+        cask = set(),
     )
+    for mode in ('pip', 'brew', 'cask'):
+        if not args.__getattribute__(f'no_{mode}'):
+            log[mode] = eval(f'uninstall_{mode}')(args, retset=True, file=file, date=date)
     return log
