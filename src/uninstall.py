@@ -258,6 +258,8 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
+    if isinstance(args.mode, str):
+        args.mode = [args.mode]
     for mode in args.mode:
         uninstall = MODE.get(mode)
         log = uninstall(args, file=logname, date=logdate)

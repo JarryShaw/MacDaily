@@ -90,7 +90,7 @@ def logging_macapp(args, *, file):
 
 
 def logging_pip(args, *, file):
-    if (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy))):
+    if args.all or (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy))):
         system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
     else:
         system, brew, cpython, pypy, version = \

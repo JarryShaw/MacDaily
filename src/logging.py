@@ -58,11 +58,8 @@ def get_parser():
         'Application & Package Logging Manager'
     ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('-a', '--all', action='append_const', dest='mode',
-                        const=[
-                            'apm', 'pip', 'brew', 'cask',
-                            'dotapp', 'macapp', 'appstore',
-                        ], help=(
+    parser.add_argument('-a', '--all', action='store_true', dest='all', default=False,
+                        help=(
                             'log applications and packages of all entries'
                         ))
 
@@ -145,10 +142,12 @@ def main():
             modes += mode
         else:
             modeds.append(mode)
+    if args.all:
+        modes += ['apm', 'pip', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
 
     arcflag = False
     arcfile = '/Library/Logs/Scripts/archive.zip'
-    for logmode in modes:
+    for logmode in set(modes):
         pathlib.Path(f'/Library/Logs/Scripts/logging/{logmode}').mkdir(parents=True, exist_ok=True)
         logdate = datetime.date.strftime(today, '%y%m%d')
         logname = f'/Library/Logs/Scripts/logging/{logmode}/{logdate}.log'

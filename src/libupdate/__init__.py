@@ -116,7 +116,7 @@ def update_pip(args, *, file, date, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Python$({reset}) -*-"; echo ;')
 
-    flag = (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
+    flag = ('all' in args.mode) or args.all or (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
     if ('all' in packages and flag) or args.package is not None:
         system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
     else:

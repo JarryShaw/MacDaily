@@ -84,7 +84,8 @@ def get_parser():
     subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
                         dest='mode', help=(
                             'reinstall packages installed through a '
-                            'specified method, e.g.: brew or cask'
+                            'specified method, e.g.: brew or cask, or '
+                            'alternatively and simply, cleanup'
                         ))
 
     parser_brew = subparser.add_parser('brew', description=(
@@ -224,6 +225,8 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
+    if isinstance(args.mode, str):
+        args.mode = [args.mode]
     for mode in args.mode:
         reinstall = MODE.get(mode)
         log = reinstall(args, file=logname, date=logdate)

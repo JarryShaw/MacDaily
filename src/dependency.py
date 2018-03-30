@@ -179,6 +179,8 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
+    if isinstance(args.mode, str):
+        args.mode = [args.mode]
     for mode in args.mode:
         dependency = MODE.get(mode)
         log = dependency(args, file=logname, date=logdate)
