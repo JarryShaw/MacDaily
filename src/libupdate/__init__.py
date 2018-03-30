@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import json
 import os
 import re
 import shlex
@@ -11,8 +12,8 @@ import time
 
 
 __all__ = [
-    'update_all', 'update_apm', 'update_pip', 'update_brew',
-    'update_cask', 'update_cleanup', 'update_appstore'
+    'update_all', 'update_apm', 'update_npm', 'update_pip',
+    'update_brew', 'update_cask', 'update_cleanup', 'update_appstore'
 ]
 
 
@@ -102,6 +103,48 @@ def update_apm(args, *, file, date, retset=False):
         time.sleep(5)
         os.system('tput clear')
     return log if retset else dict(apm=log)
+
+
+def update_npm(args, *, file, date, retset=False):
+    if shutil.which('npm') is None:
+        os.system(f'''
+                echo "update: $({red})npm$({reset}): command not found";
+                echo "You may download Node.js from $({under})https://nodejs.org/$({reset}).";
+        ''')
+        return set() if retset else dict(apm=set())
+
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    packages = _merge_packages(args)
+
+    mode = '-*- Node.js -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+
+    if not args.quiet:
+        os.system(f'echo "-*- $({blue})Node.js$({reset}) -*-"; echo ;')
+
+    if 'all' in packages:
+        logging = subprocess.run(
+            ['bash', 'libupdate/logging_npm.sh', date],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        stdout = json.loads(logging.stdout.decode())
+        log = set(stdout.keys())
+        pkg = { f'{name}@{value["wanted"]}' for name, value in stdout.items() }
+        outdated = 'true' if stdout else 'false'
+    else:
+        log = pkg = packages
+        outdated = 'true'
+
+    subprocess.run(
+        ['bash', 'libupdate/update_npm.sh', date, quiet, verbose, outdated] + list(pkg)
+    )
+
+    if not args.quiet:
+        time.sleep(5)
+        os.system('tput clear')
+    return log if retset else dict(npm=log)
 
 
 def update_pip(args, *, file, date, retset=False):
@@ -282,12 +325,13 @@ def update_appstore(args, *, file, date, retset=False):
 def update_all(args, *, file, date):
     log = dict(
         apm = set(),
+        npm = set(),
         pip = set(),
         brew = set(),
         cask = set(),
         appstore = set(),
     )
-    for mode in ('apm', 'pip', 'brew', 'cask', 'appstore'):
+    for mode in ('apm', 'npm', 'pip', 'brew', 'cask', 'appstore'):
         if not args.__getattribute__(f'no_{mode}'):
             log[mode] = eval(f'update_{mode}')(args, retset=True, file=file, date=date)
 

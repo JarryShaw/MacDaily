@@ -11,11 +11,12 @@ import sys
 import zipfile
 
 
-from jsdaily.libupdate import *
+from libupdate import *
+# from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.10.1'
+__version__ = '0.10.2'
 
 
 # today
@@ -25,6 +26,7 @@ today = datetime.datetime.today()
 # display mode names
 NAME = dict(
     apm = 'Atom',
+    npm = 'Node.js',
     pip = 'Python',
     brew = 'Homebrew',
     cask = 'Caskroom',
@@ -36,6 +38,7 @@ NAME = dict(
 MODE = dict(
     all = lambda *args, **kwargs: update_all(*args, **kwargs),
     apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
+    npm = lambda *args, **kwargs: update_npm(*args, **kwargs),
     pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
     cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
@@ -79,6 +82,7 @@ def get_parser():
                         ))
 
     parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--npm', action='append_const', const='npm', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--cask', action='append_const', const='cask', dest='mode', help=argparse.SUPPRESS)
@@ -86,6 +90,7 @@ def get_parser():
     parser.add_argument('--appstore', action='append_const', const='appstore', dest='mode', help=argparse.SUPPRESS)
 
     parser.add_argument('--no-apm', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-npm', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-cask', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -118,6 +123,28 @@ def get_parser():
                             'run in quiet mode, with no output information'
                         ))
     parser_apm.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help=(
+                            'run in verbose mode, with detailed output information'
+                        ))
+
+    parser_npm = subparser.add_parser('npm', description=(
+                            'Update Installed Node.js Packages'
+                        ), usage=(
+                            'jsupdate npm [-h] [-qv] [-a] [-p PKG]'
+                        ))
+    parser_npm.add_argument('-a', '--all', action='store_true', default=False,
+                        dest='all', help=(
+                            'update all packages installed through apm'
+                        ))
+    parser_npm.add_argument('-p', '--package', metavar='PKG', action='append',
+                        dest='package', help=(
+                            'name of packages to be updated, default is all'
+                        ))
+    parser_npm.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'run in quiet mode, with no output information'
+                        ))
+    parser_npm.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
