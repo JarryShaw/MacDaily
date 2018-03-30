@@ -47,8 +47,8 @@ def _merge_packages(args, *, mode):
 
 
 def reinstall_cleanup(args, *, file, date, mode, brew=False, cask=False):
-    brew = str(brew if 'brew' in args else args.brew).lower()
-    cask = str(cask if 'cask' in args else args.cask).lower()
+    brew = str((not args.brew) if (mode == 'reinstall' and 'cleanup' in args.mode) else brew).lower()
+    cask = str((not args.cask) if (mode == 'reinstall' and 'cleanup' in args.mode) else cask).lower()
     quiet = str(args.quiet).lower()
 
     mode = '-*- Cleanup -*-'.center(80, ' ')

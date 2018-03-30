@@ -44,8 +44,8 @@ def _merge_packages(args):
 
 
 def update_cleanup(args, *, file, date, brew=False, cask=False):
-    brew = str(brew if 'brew' in args else args.brew).lower()
-    cask = str(cask if 'cask' in args else args.cask).lower()
+    brew = str((not args.brew) if 'cleanup' in args.mode else brew).lower()
+    cask = str((not args.cask) if 'cleanup' in args.mode else cask).lower()
     quiet = str(args.quiet).lower()
 
     mode = '-*- Cleanup -*-'.center(80, ' ')
