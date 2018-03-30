@@ -82,7 +82,7 @@ else
 
     # update procedure
     for name in $arg_pkg ; do
-        flag=`apm list --bare --no-color | sed "s/@.*//" | awk "/^$arg_pkg$/"`
+        flag=`apm list --bare --no-color | sed "s/@.*//" | awk "/^$name$/"`
         if [[ -nz $flag ]] ; then
             # ask for confirmation
             while true ; do
@@ -91,8 +91,8 @@ else
                 # check answer
                 case $answer in
                     [yY]*)
-                        $logprefix echo "+ apm upgrade $arg_pkg $verbose $quiet" | $logcattee | $logsuffix
-                        $logprefix apm upgrade $arg_pkg $verbose $quiet -y | $logcattee | $logsuffix
+                        $logprefix echo "+ apm upgrade $name $verbose $quiet" | $logcattee | $logsuffix
+                        $logprefix apm upgrade $name $verbose $quiet -y | $logcattee | $logsuffix
                         $logprefix echo | $logcattee | $logsuffix
                         break ;;
                     [nN]*)
@@ -106,11 +106,11 @@ else
             done
         else
             $blush
-            $logprefix echo "Error: No Atom package names $arg_pkg installed." | $logcattee | $logsuffix
+            $logprefix echo "Error: No Atom package names $name installed." | $logcattee | $logsuffix
             $reset
 
             # did you mean
-            dym=`apm list --bare --no-color | sed "s/@.*//" | grep $arg_pkg | xargs | sed "s/ /, /g"`
+            dym=`apm list --bare --no-color | sed "s/@.*//" | grep $name | xargs | sed "s/ /, /g"`
             if [[ -nz $dym ]] ; then
                 $logprefix echo "Did you mean any of the following packages: $dym?" | $logcattee | $logsuffix
             fi

@@ -125,6 +125,7 @@ def update_npm(args, *, file, date, retset=False):
         os.system(f'echo "-*- $({blue})Node.js$({reset}) -*-"; echo ;')
 
     if 'all' in packages:
+        all = 'true'
         logging = subprocess.run(
             ['bash', 'libupdate/logging_npm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -134,11 +135,12 @@ def update_npm(args, *, file, date, retset=False):
         pkg = { f'{name}@{value["wanted"]}' for name, value in stdout.items() }
         outdated = 'true' if stdout else 'false'
     else:
+        all = 'false'
         log = pkg = packages
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_npm.sh', date, quiet, verbose, outdated] + list(pkg)
+        ['bash', 'libupdate/update_npm.sh', date, all, quiet, verbose, outdated] + list(pkg)
     )
 
     if not args.quiet:

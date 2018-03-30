@@ -16,20 +16,22 @@ reset="tput sgr0"       # reset
 #
 # Parameter list:
 #   1. Log Date
-#   2. Quiet Flag
-#   3. Verbose Flag
-#   4. Outdated Flag
-#   5. Package
+#   2. All Flag
+#   3. Quiet Flag
+#   4. Verbose Flag
+#   5. Outdated Flag
+#   6. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_q=$2
-arg_v=$3
-arg_o=$4
-arg_pkg=${*:5}
+arg_a=$2
+arg_q=$3
+arg_v=$4
+arg_o=$5
+arg_pkg=${*:6}
 
 
 # log file prepare
@@ -82,10 +84,14 @@ else
 
     # update procedure
     for name in $arg_pkg ; do
-        flag=`npm list --global --parseable | sed "s/.*\///" | awk "/^$arg_pkg$/"`
+        if ( $arg_a ) ; then
+            flag=$name
+        else
+            flag=`npm list --global --parseable | sed "s/.*\///" | awk "/^$name$/"`
+        fi
         if [[ -nz $flag ]] ; then
-            $logprefix echo "+ npm install $arg_pkg --global $verbose $quiet" | $logcattee | $logsuffix
-            $logprefix npm install $arg_pkg --global $verbose $quiet | $logcattee | $logsuffix
+            $logprefix echo "+ npm install $name --global $verbose $quiet" | $logcattee | $logsuffix
+            $logprefix npm install $name --global $verbose $quiet | $logcattee | $logsuffix
             $logprefix echo | $logcattee | $logsuffix
         else
             $blush

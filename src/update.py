@@ -11,12 +11,11 @@ import sys
 import zipfile
 
 
-from libupdate import *
-# from jsdaily.libupdate import *
+from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.10.2'
+__version__ = '0.10.3'
 
 
 # today
