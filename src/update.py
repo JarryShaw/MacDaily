@@ -15,7 +15,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.10.3'
+__version__ = '0.10.4'
 
 
 # today
@@ -25,6 +25,7 @@ today = datetime.datetime.today()
 # display mode names
 NAME = dict(
     apm = 'Atom',
+    gem = 'Ruby',
     npm = 'Node.js',
     pip = 'Python',
     brew = 'Homebrew',
@@ -37,6 +38,7 @@ NAME = dict(
 MODE = dict(
     all = lambda *args, **kwargs: update_all(*args, **kwargs),
     apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
+    gem = lambda *args, **kwargs: update_gem(*args, **kwargs),
     npm = lambda *args, **kwargs: update_npm(*args, **kwargs),
     pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
@@ -76,11 +78,12 @@ def get_parser():
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
                         dest='mode', help=(
-                            'update all packages installed through pip, '
-                            'Homebrew, and App Store'
+                            'update all packages installed through Atom, pip '
+                            'RubyGem, Node.js, Homebrew, App Store, and etc'
                         ))
 
     parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--gem', action='append_const', const='gem', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--npm', action='append_const', const='npm', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
@@ -89,6 +92,7 @@ def get_parser():
     parser.add_argument('--appstore', action='append_const', const='appstore', dest='mode', help=argparse.SUPPRESS)
 
     parser.add_argument('--no-apm', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-gem', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-npm', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -126,6 +130,28 @@ def get_parser():
                             'run in verbose mode, with detailed output information'
                         ))
 
+    parser_gem = subparser.add_parser('gem', description=(
+                            'Update Installed Ruby Packages'
+                        ), usage=(
+                            'jsupdate gem [-h] [-qv] [-a] [-p PKG]'
+                        ))
+    parser_gem.add_argument('-a', '--all', action='store_true', default=False,
+                        dest='all', help=(
+                            'update all packages installed through gem'
+                        ))
+    parser_gem.add_argument('-p', '--package', metavar='PKG', action='append',
+                        dest='package', help=(
+                            'name of packages to be updated, default is all'
+                        ))
+    parser_gem.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'run in quiet mode, with no output information'
+                        ))
+    parser_gem.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help=(
+                            'run in verbose mode, with detailed output information'
+                        ))
+
     parser_npm = subparser.add_parser('npm', description=(
                             'Update Installed Node.js Packages'
                         ), usage=(
@@ -133,7 +159,7 @@ def get_parser():
                         ))
     parser_npm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
-                            'update all packages installed through apm'
+                            'update all packages installed through npm'
                         ))
     parser_npm.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
@@ -268,6 +294,18 @@ def get_parser():
                             'Cleanup Caches & Downloads'
                         ), usage=(
                             'jsupdate cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                        ))
+    parser_cleanup.add_argument('--no-gem', dest='gem', action='store_false', default=True,
+                        help=(
+                            'do not remove Ruby caches & downloads'
+                        ))
+    parser_cleanup.add_argument('--no-npm', dest='npm', action='store_false', default=True,
+                        help=(
+                            'do not remove Node.js caches & downloads'
+                        ))
+    parser_cleanup.add_argument('--no-pip', dest='pip', action='store_false', default=True,
+                        help=(
+                            'do not remove Python caches & downloads'
                         ))
     parser_cleanup.add_argument('--no-brew', dest='brew', action='store_false', default=True,
                         help=(

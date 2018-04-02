@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import collections
 import json
 import os
 import re
@@ -12,7 +13,7 @@ import time
 
 
 __all__ = [
-    'update_all', 'update_apm', 'update_npm', 'update_pip',
+    'update_all', 'update_apm', 'update_npm', 'update_gem', 'update_pip',
     'update_brew', 'update_cask', 'update_cleanup', 'update_appstore'
 ]
 
@@ -44,9 +45,12 @@ def _merge_packages(args):
     return packages
 
 
-def update_cleanup(args, *, file, date, brew=False, cask=False):
-    brew = str((not args.brew) if 'cleanup' in args.mode else brew).lower()
-    cask = str((not args.cask) if 'cleanup' in args.mode else cask).lower()
+def update_cleanup(args, *, file, date, gem=False, npm=False, pip=False, brew=False, cask=False):
+    gem = str((not args.gem) if 'cleanup' in args.mode else bool(gem)).lower()
+    npm = str((not args.npm) if 'cleanup' in args.mode else bool(npm)).lower()
+    pip = str((not args.pip) if 'cleanup' in args.mode else bool(pip)).lower()
+    brew = str((not args.brew) if 'cleanup' in args.mode else bool(brew)).lower()
+    cask = str((not args.cask) if 'cleanup' in args.mode else bool(cask)).lower()
     quiet = str(args.quiet).lower()
 
     mode = '-*- Cleanup -*-'.center(80, ' ')
@@ -57,7 +61,7 @@ def update_cleanup(args, *, file, date, brew=False, cask=False):
         os.system(f'echo "-*- $({blue})Cleanup$({reset}) -*-"; echo ;')
 
     subprocess.run(
-        ['bash', 'libupdate/cleanup.sh', date, brew, cask, quiet]
+        ['bash', 'libupdate/cleanup.sh', date, gem, npm, pip, brew, cask, quiet]
     )
 
     if not args.quiet:
@@ -105,6 +109,48 @@ def update_apm(args, *, file, date, retset=False):
     return log if retset else dict(apm=log)
 
 
+def update_gem(args, *, file, date, retset=False):
+    if shutil.which('gem') is None:
+        os.system(f'''
+                echo "update: $({red})gem$({reset}): command not found";
+                echo "You may download Atom from $({under})https://atom.io$({reset}).";
+        ''')
+        return set() if retset else dict(gem=set())
+
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    packages = _merge_packages(args)
+
+    mode = '-*- Ruby -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+
+    if not args.quiet:
+        os.system(f'echo "-*- $({blue})Ruby$({reset}) -*-"; echo ;')
+
+    if 'all' in packages:
+        logging = subprocess.run(
+            ['bash', 'libupdate/logging_gem.sh', date],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        log = set(logging.stdout.decode().split())
+        outdated = 'true' if logging.stdout.decode() else 'false'
+    else:
+        log = packages
+        outdated = 'true'
+
+    subprocess.run(
+        ['sudo', '-H', 'bash', 'libupdate/update_gem.sh', date, quiet, verbose, outdated] + list(log)
+    )
+
+    if not args.quiet:
+        time.sleep(5)
+        os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, gem=True)
+    return log if retset else dict(apm=log)
+
+
 def update_npm(args, *, file, date, retset=False):
     if shutil.which('npm') is None:
         os.system(f'''
@@ -130,9 +176,10 @@ def update_npm(args, *, file, date, retset=False):
             ['bash', 'libupdate/logging_npm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        stdout = json.loads(logging.stdout.decode())
-        log = set(stdout.keys())
-        pkg = { f'{name}@{value["wanted"]}' for name, value in stdout.items() }
+        stdout = logging.stdout.decode()
+        stdict = json.loads(stdout) if stdout else dict()
+        log = set(stdict.keys())
+        pkg = { f'{name}@{value["wanted"]}' for name, value in stdict.items() }
         outdated = 'true' if stdout else 'false'
     else:
         all = 'false'
@@ -146,6 +193,8 @@ def update_npm(args, *, file, date, retset=False):
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, npm=True)
     return log if retset else dict(npm=log)
 
 
@@ -186,6 +235,8 @@ def update_pip(args, *, file, date, retset=False):
     if not args.quiet:
         time.sleep(5)
         os.system('tput clear')
+    if not retset and not args.no_cleanup:
+        update_cleanup(args, file=file, date=date, pip=True)
     return log if retset else dict(pip=log)
 
 
@@ -325,18 +376,14 @@ def update_appstore(args, *, file, date, retset=False):
 
 
 def update_all(args, *, file, date):
-    log = dict(
-        apm = set(),
-        npm = set(),
-        pip = set(),
-        brew = set(),
-        cask = set(),
-        appstore = set(),
-    )
-    for mode in ('apm', 'npm', 'pip', 'brew', 'cask', 'appstore'):
+    log = collections.defaultdict(set)
+    for mode in ('apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'):
         if not args.__getattribute__(f'no_{mode}'):
             log[mode] = eval(f'update_{mode}')(args, retset=True, file=file, date=date)
 
     if not args.no_cleanup:
-        update_cleanup(args, file=file, date=date, brew=True, cask=True)
+        update_cleanup(
+            args, file=file, date=date,
+            gem=log['gem'], npm=log['npm'], pip=log['pip'], brew=log['brew'], cask=log['cask'],
+        )
     return log

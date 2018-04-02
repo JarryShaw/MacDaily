@@ -5,29 +5,31 @@
 sript -q /dev/null tput clear > /dev/null 2>&1
 
 
+# preset terminal output colours
+blush="tput setaf 1"    # blush / red
+green="tput setaf 2"    # green
+reset="tput sgr0"       # reset
+
+
 ################################################################################
-# Clean up caches.
+# Check Ruby updates.
 #
-# Parameter List:
+# Parameter list:
 #   1. Log Date
-#   2. Ruby Flag
-#   3. Node.js Flag
-#   4. Python Flag
-#   5. Homebrew Flag
-#   6. Caskroom Flag
-#   7. Quiet Flag
+#   2. Quiet Flag
+#   3. Verbose Flag
+#   4. Outdated Flag
+#   5. Package
+#       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_gem=$2
-arg_npm=$3
-arg_pip=$4
-arg_brew=$5
-arg_cask=$6
-arg_q=$7
-# arg_v=$5
+arg_q=$2
+arg_v=$3
+arg_o=$4
+arg_pkg=${*:5}
 
 
 # log file prepare
@@ -58,89 +60,50 @@ else
 fi
 
 
-# if quiet flag set
-if ( $arg_q ) ; then
-    quiet="--quiet"
-    cmd_q="-q"
+# if no outdated packages found
+if ( ! $arg_o ) ; then
+    $green
+    $logprefix echo "All packages have been up-to-date." | $logcattee | $logsuffix
+    $reset
 else
-    quiet=""
-    cmd_q=""
-fi
-
-
-# # if verbose flag not set
-# if ( $arg_v ) ; then
-#     verbose="--verbose"
-#     # cmd_v="-v"
-# else
-#     verbose=""
-#     # cmd_v=""
-# fi
-
-
-# gem cleanup
-if ( $arg_gem ) ; then
-    $logprefix echo "+ sudo -H gem cleanup --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H gem cleanup --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-fi
-
-
-# npm dedupe & cache clean
-if ( $arg_npm ) ; then
-    $logprefix echo "+ sudo -H npm dedupe --global --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H npm dedupe --global --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-
-    $logprefix echo "+ sudo -H npm cache clean --force --global --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H npm cache clean --force --global --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-fi
-
-
-# pip cleanup
-if ( $arg_pip ) ; then
-    $logprefix echo "+ sudo -H pip cleanup --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H rm -rf -v ~/Library/Caches/pip $cmd_q | $logcattee | $logsuffix
-    $logprefix sudo -H rm -rf -v /var/root/Library/Caches/pip $cmd_q | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-fi
-
-
-# brew prune
-if ( $arg_brew || $arg_cask ) ; then
-    $logprefix echo "+ brew prune --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix brew prune --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
-fi
-
-
-# archive caches if hard disk attached
-if [ -e /Volumes/Jarry\ Shaw/ ] ; then
-    # check if cache directory exists
-    if [ -e $(brew --cache) ] ; then
-        # move caches
-        $logprefix echo "+ cp -rf -v cache archive $quiet" | $logcattee | $logsuffix
-        $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+    # if quiet flag set
+    if ( $arg_q ) ; then
+        quiet="--quiet"
+    else
+        quiet=""
     fi
 
-    # if cask flag set
-    if ( $arg_cask ) ; then
-        $logprefix echo "+ brew cask cleanup --verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask cleanup --verbose | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+    # if verbose flag set
+    if ( $arg_v ) ; then
+        verbose="--verbose"
+    else
+        verbose=""
     fi
 
-    # if brew flag set
-    if ( $arg_brew ) ; then
-        $logprefix echo "+ brew cleanup --verbose $quiet" | $logcattee | $logsuffix
-        $logprefix rm -rf -v $( brew --cache ) | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
-    fi
+    # update procedure
+    for name in $arg_pkg ; do
+        flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
+        if [[ -nz $flag ]] ; then
+            $logprefix echo "+ sudo -H gem update $name $verbose $quiet" | $logcattee | $logsuffix
+            $logprefix sudo -H gem update $name $verbose $quiet | $logcattee | $logsuffix
+            $logprefix echo | $logcattee | $logsuffix
+        else
+            $blush
+            $logprefix echo "Error: No Ruby package names $arg_pkg installed." | $logcattee | $logsuffix
+            $reset
+
+            # did you mean
+            dym=`gem list | sed "s/\(.*\)* (.*)/\1/" | grep $arg_pkg | xargs | sed "s/ /, /g"`
+            if [[ -nz $dym ]] ; then
+                $logprefix echo "Did you mean any of the following packages: $dym?" | $logcattee | $logsuffix
+            fi
+            $logprefix echo | $logcattee | $logsuffix
+        fi
+    done
 fi
 
 
+# read /tmp/log/update.log line by line then migrate to log file
 while read -r line ; do
     # plus `+` proceeds in line
     if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then

@@ -175,20 +175,20 @@ function piplogging {
     esac
 
     # if executive exits
-    if [ -e $prefix/pip$suffix ] ; then
+    if [ -e $prefix/python$suffix ] ; then
         # check for outdated packages
         for name in $arg_pkg ; do
             case $name in
                 all)
                     echo -e "++ pip$pprint list --format legacy --outdate | sed \"s/\(.*\)* (.*).*/\1/\"" >> $tmpfile
-                    $logprefix $prefix/pip$suffix list --format legacy --outdate | sed "s/\(.*\)* (.*).*/\1/" | $logcattee | $logsuffix
+                    $logprefix $prefix/python$suffix -m pip list --format legacy --outdate | sed "s/\(.*\)* (.*).*/\1/" | $logcattee | $logsuffix
                     echo >> $tmpfile ;;
                 *)
                     # check if package installed
                     flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
-                        $logprefix $prefix/pip$suffix show $name | grep "Name: " | sed "s/Name: //" | $logcattee | $logsuffix
+                        $logprefix $prefix/python$suffix -m pip show $name | grep "Name: " | sed "s/Name: //" | $logcattee | $logsuffix
                         echo >> $tmpfile
                     else
                         echo -e "Error: No pip$pprint package names $name installed.\n" >> $tmpfile

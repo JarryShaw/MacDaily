@@ -182,7 +182,7 @@ function pipupdate {
     esac
 
     # if executive exits
-    if [ -e $prefix/pip$suffix ] ; then
+    if [ -e $prefix/python$suffix ] ; then
         updated=true
         for name in $arg_pkg ; do
             # All or Specified Packages
@@ -193,7 +193,7 @@ function pipupdate {
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
                             $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
-                            $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
+                            $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
                             $logprefix echo | $logcattee | $logsuffix
                         done
                     else
@@ -206,7 +206,7 @@ function pipupdate {
                     flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet" | $logcattee | $logsuffix
-                        $logprefix $prefix/pip$suffix install --upgrade --no-cache-dir $name $verbose $quiet | $logcattee | $logsuffix
+                        $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet | $logcattee | $logsuffix
                         $logprefix echo | $logcattee | $logsuffix
                     else
                         $blush
