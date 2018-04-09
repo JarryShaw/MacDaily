@@ -68,9 +68,8 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-logsuffix="grep ^.*$"
+logprefix="script -aq $tmpfile"
+# logsuffix="grep ^.*$"
 
 
 # pip logging function usage:
@@ -181,14 +180,14 @@ function piplogging {
             case $name in
                 all)
                     echo -e "++ pip$pprint list --format legacy --outdate | sed \"s/\(.*\)* (.*).*/\1/\"" >> $tmpfile
-                    $logprefix $prefix/python$suffix -m pip list --format legacy --outdate | sed "s/\(.*\)* (.*).*/\1/" | $logcattee | $logsuffix
+                    $logprefix $prefix/python$suffix -m pip list --format legacy --outdate | sed "s/\(.*\)* (.*).*/\1/"
                     echo >> $tmpfile ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
-                        $logprefix $prefix/python$suffix -m pip show $name | grep "Name: " | sed "s/Name: //" | $logcattee | $logsuffix
+                        $logprefix $prefix/python$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
                         echo >> $tmpfile
                     else
                         echo -e "Error: No pip$pprint package names $name installed.\n" >> $tmpfile
@@ -373,8 +372,14 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
+        # if this is a warning
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

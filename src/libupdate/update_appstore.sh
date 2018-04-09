@@ -18,8 +18,9 @@ reset="tput sgr0"       # reset
 #   1. Log Date
 #   2. Quiet Flag
 #   3. Verbose Flag
-#   4. Outdated Flag
-#   5. Package
+#   4. Restart Flag
+#   5. Outdated Flag
+#   6. Package
 #       ............
 ################################################################################
 
@@ -28,8 +29,9 @@ reset="tput sgr0"       # reset
 logdate=$1
 arg_q=$2
 arg_v=$3
-arg_o=$4
-arg_pkg=${*:5}
+arg_r=$4
+arg_o=$5
+arg_pkg=${*:6}
 
 
 # log file prepare
@@ -51,8 +53,7 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
+logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -63,7 +64,7 @@ fi
 # if no outdated packages found
 if ( ! $arg_o ) ; then
     $green
-    $logprefix echo "All packages have been up-to-date." | $logcattee | $logsuffix
+    $logprefix echo "update: appstore: all applications have been up-to-date" | $logsuffix
     $reset
 else
     # if quiet flag set
@@ -73,31 +74,53 @@ else
         quiet=""
     fi
 
+    # if restart flag set
+    if ( $arg_r ) ; then
+        restart="--restart"
+    else
+        restart=""
+    fi
+
     # update procedure
     for name in $arg_pkg ; do
         # All or Specified Packages
         case $name in
             all)
-                $logprefix echo "+ softwareupdate --install --no-scan --all $verbose $quiet" | $logcattee | $logsuffix
-                $logprefix sudo -H softwareupdate --install --no-scan --all $verbose $quiet | $logcattee | $logsuffix
-                $logprefix echo | $logcattee | $logsuffix ;;
+                if ( $arg_q ) ; then
+                    $logprefix echo "+ softwareupdate --install --no-scan --all $restart $verbose $quiet" > /dev/null 2>&1
+                    sudo $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet > /dev/null 2>&1
+                    $logprefix echo > /dev/null 2>&1
+                else
+                    $logprefix echo "+ softwareupdate --install --no-scan --all $restart $verbose $quiet"
+                    sudo $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet
+                    $logprefix echo
+                fi ;;
             *)
                 installed="find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\""
                 flag=`$installed | sed "s/.app//" | awk "/^$name$/"`
                 if [[ -nz $flag ]] ; then
-                    $logprefix echo "+ softwareupdate --install --no-scan $name $verbose $quiet" | $logcattee | $logsuffix
-                    $logprefix sudo -H softwareupdate --install --no-scan $name $verbose $quiet | $logcattee | $logsuffix
-                    $logprefix echo | $logcattee | $logsuffix
+                    if ( $arg_q ) ; then
+                        $logprefix echo "+ softwareupdate --install --no-scan $name $restart $verbose $quiet" > /dev/null 2>&1
+                        sudo $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet > /dev/null 2>&1
+                        $logprefix echo > /dev/null 2>&1
+                    else
+                        $logprefix echo "+ softwareupdate --install --no-scan $name $restart $verbose $quiet"
+                        sudo $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet
+                        $logprefix echo
+                    fi
                 else
                     $blush
-                    $logprefix echo "Error: No application names $name installed." | $logcattee | $logsuffix
+                    $logprefix echo "update: appstore: no application names $name installed" | $logsuffix
                     $reset
 
                     # did you mean
                     dym=`$installed | sed "s/.app//" | grep $name | xargs | sed "s/ /, /g"`
                     if [[ -nz $dym ]] ; then
-                        $logprefix echo "Did you mean any of the following applications: $dym?" | $logcattee | $logsuffix
+                        $blush
+                        $logprefix echo "update: appstore: did you mean any of the following applications: $dym?" | $logsuffix
+                        $reset
                     fi
+                    $logprefix echo | $logsuffix
                 fi ;;
         esac
     done
@@ -116,8 +139,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

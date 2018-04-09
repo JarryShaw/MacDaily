@@ -27,7 +27,7 @@ arg_pip=$4
 arg_brew=$5
 arg_cask=$6
 arg_q=$7
-# arg_v=$5
+# arg_v=$8
 
 
 # log file prepare
@@ -49,8 +49,7 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
+logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -80,38 +79,67 @@ fi
 
 # gem cleanup
 if ( $arg_gem ) ; then
-    $logprefix echo "+ sudo -H gem cleanup --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H gem cleanup --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
+    if ( $arg_q ) ; then
+        $logprefix echo "+ gem cleanup --verbose $quiet" > /dev/null 2>&1
+        sudo $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
+        $logprefix echo > /dev/null 2>&1
+    else
+        $logprefix echo "+ gem cleanup --verbose $quiet"
+        sudo $logprefix gem cleanup --verbose $quiet
+        $logprefix echo
+    fi
 fi
 
 
 # npm dedupe & cache clean
 if ( $arg_npm ) ; then
-    $logprefix echo "+ sudo -H npm dedupe --global --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H npm dedupe --global --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
+    if ( $arg_q ) ; then
+        $logprefix echo "+ npm dedupe --global --verbose $quiet" > /dev/null 2>&1
+        sudo $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
+        $logprefix echo > /dev/null 2>&1
 
-    $logprefix echo "+ sudo -H npm cache clean --force --global --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H npm cache clean --force --global --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
+        $logprefix echo "+ npm cache clean --force --global --verbose $quiet" > /dev/null 2>&1
+        sudo $logprefix npm cache clean --force --global --verbose $quiet > /dev/null 2>&1
+        $logprefix echo > /dev/null 2>&1
+    else
+        $logprefix echo "+ npm dedupe --global --verbose $quiet"
+        sudo $logprefix npm dedupe --global --verbose $quiet
+        $logprefix echo
+
+        $logprefix echo "+ npm cache clean --force --global --verbose $quiet"
+        sudo $logprefix npm cache clean --force --global --verbose $quiet
+        $logprefix echo
+    fi
 fi
 
 
 # pip cleanup
 if ( $arg_pip ) ; then
-    $logprefix echo "+ sudo -H pip cleanup --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix sudo -H rm -rf -v ~/Library/Caches/pip $cmd_q | $logcattee | $logsuffix
-    $logprefix sudo -H rm -rf -v /var/root/Library/Caches/pip $cmd_q | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
+    if ( $arg_q ) ; then
+        $logprefix echo "+ pip cleanup --verbose $quiet" > /dev/null 2>&1
+        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip > /dev/null 2>&1
+        sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip > /dev/null 2>&1
+        $logprefix echo > /dev/null 2>&1
+    else
+        $logprefix echo "+ pip cleanup --verbose $quiet"
+        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip
+        sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip
+        $logprefix echo
+    fi
 fi
 
 
 # brew prune
 if ( $arg_brew || $arg_cask ) ; then
-    $logprefix echo "+ brew prune --verbose $quiet" | $logcattee | $logsuffix
-    $logprefix brew prune --verbose $quiet | $logcattee | $logsuffix
-    $logprefix echo | $logcattee | $logsuffix
+    if ( $arg_q ) ; then
+        $logprefix echo "+ brew prune --verbose $quiet" > /dev/null 2>&1
+        $logprefix brew prune --verbose $quiet > /dev/null 2>&1
+        $logprefix echo > /dev/null 2>&1
+    else
+        $logprefix echo "+ brew prune --verbose $quiet"
+        $logprefix brew prune --verbose $quiet
+        $logprefix echo
+    fi
 fi
 
 
@@ -120,23 +148,41 @@ if [ -e /Volumes/Jarry\ Shaw/ ] ; then
     # check if cache directory exists
     if [ -e $(brew --cache) ] ; then
         # move caches
-        $logprefix echo "+ cp -rf -v cache archive $quiet" | $logcattee | $logsuffix
-        $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+        if ( $arg_q ) ; then
+            $logprefix echo "+ cp -rf -v cache archive $quiet" > /dev/null 2>&1
+            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ > /dev/null 2>&1
+            $logprefix echo > /dev/null 2>&1
+        else
+            $logprefix echo "+ cp -rf -v cache archive $quiet"
+            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/
+            $logprefix echo
+        fi
     fi
 
     # if cask flag set
     if ( $arg_cask ) ; then
-        $logprefix echo "+ brew cask cleanup --verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask cleanup --verbose | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+        if ( $arg_q ) ; then
+            $logprefix echo "+ brew cask cleanup --verbose $quiet" > /dev/null 2>&1
+            $logprefix brew cask cleanup --verbose > /dev/null 2>&1
+            $logprefix echo > /dev/null 2>&1
+        else
+            $logprefix echo "+ brew cask cleanup --verbose $quiet"
+            $logprefix brew cask cleanup --verbose
+            $logprefix echo
+        fi
     fi
 
     # if brew flag set
     if ( $arg_brew ) ; then
-        $logprefix echo "+ brew cleanup --verbose $quiet" | $logcattee | $logsuffix
-        $logprefix rm -rf -v $( brew --cache ) | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+        if ( $arg_q ) ; then
+            $logprefix echo "+ brew cleanup --verbose $quiet" > /dev/null 2>&1
+            $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
+            $logprefix echo > /dev/null 2>&1
+        else
+            $logprefix echo "+ brew cleanup --verbose $quiet"
+            $logprefix rm -rf -v $( brew --cache )
+            $logprefix echo
+        fi
     fi
 fi
 
@@ -152,8 +198,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

@@ -44,13 +44,12 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-if ( $arg_q ) ; then
-    logsuffix="grep ^$"
-else
-    logsuffix="grep ^.*$"
-fi
+logprefix="script -aq $tmpfile"
+# if ( $arg_q ) ; then
+#     logsuffix="grep ^$"
+# else
+#     logsuffix="grep ^.*$"
+# fi
 
 
 # if verbose flag set
@@ -77,9 +76,15 @@ fi
 
 
 # renew brew status
-$logprefix echo "+ brew update $force $merge $verbose" | $logcattee | $logsuffix
-$logprefix brew update $force $merge $verbose | $logcattee | $logsuffix
-$logprefix echo | $logcattee | $logsuffix
+if ( $arg_q ) ; then
+    $logprefix echo "+ brew update $force $merge $verbose" > /dev/null 2>&1
+    $logprefix brew update $force $merge $verbose > /dev/null 2>&1
+    $logprefix echo > /dev/null 2>&1
+else
+    $logprefix echo "+ brew update $force $merge $verbose"
+    $logprefix brew update $force $merge $verbose
+    $logprefix echo
+fi
 
 
 # read /tmp/log/update.log line by line then migrate to log file
@@ -94,8 +99,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

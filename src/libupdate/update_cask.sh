@@ -55,8 +55,7 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
+logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -64,46 +63,10 @@ else
 fi
 
 
-# following function of Caskroom upgrade cblushits to
-#     @Atais from <apple.stackexchange.com>
-#
-# caskroom update function usage:
-#   caskupdate cask
-function caskupdate {
-    # parameter assignment
-    local cask=$1
-
-    # log function call
-    echo "+ caskupdate $@" >> $tmpfile
-
-    # check for versions
-    version=$(brew cask info $cask | sed -n "s/$cask:\ \(.*\)/\1/p")
-    installed=$(find "/usr/local/Caskroom/$cask" -type d -maxdepth 1 -maxdepth 1 -name "$version")
-
-    if [[ -z $installed ]] ; then
-        $blush
-        $logprefix echo "$cask requires update." | $logcattee | $logsuffix
-        $reset
-        sudo printf ""
-        $logprefix echo "++ brew cask uninstall $cask --force $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask uninstall --force $cask $verbose $quiet | $logcattee | $logsuffix
-        sudo printf ""
-        $logprefix echo "++ brew cask install $cask --force $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask install --force $cask $verbose $quiet | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
-    else
-        $green
-        $logprefix echo "$cask is up-to-date." | $logcattee | $logsuffix
-        $reset
-        $logprefix echo | $logcattee | $logsuffix
-    fi
-}
-
-
 # if no outdated packages found
 if ( ! $arg_o ) ; then
     $green
-    $logprefix echo "All packages have been up-to-date." | $logcattee | $logsuffix
+    $logprefix echo "update: cask: all Casks have been up-to-date" | $logsuffix
     $reset
 else
     # if quiet flag set
@@ -129,26 +92,38 @@ else
 
     # if greedy flag set
     if ( $arg_g ) ; then
-        $logprefix echo "+ brew cask upgrade --greedy $force $verbose $quiet" | $logcattee | $logsuffix
-        $logprefix brew cask upgrade --greedy $verbose $forc $quiet | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+        $logprefix echo "+ brew cask upgrade --greedy $force $verbose $quiet"
+        $logprefix brew cask upgrade --greedy $verbose $forc $quiet
+        $logprefix echo
     else
         # update procedure
         for name in $arg_pkg ; do
             flag=`brew cask list -1 | awk "/^$name$/"`
             if [[ -nz $flag ]] ; then
-                caskupdate $name
+                if ( $arg_q ) ; then
+                    $logprefix echo "+ brew cask upgrade $name $verbose $quiet" > /dev/null 2>&1
+                    $logprefix brew cask uninstall --force $name $verbose $quiet > /dev/null 2>&1
+                    $logprefix brew cask install --force $name $verbose $quiet > /dev/null 2>&1
+                    $logprefix echo > /dev/null 2>&1
+                else
+                    $logprefix echo "+ brew cask upgrade $name $verbose $quiet"
+                    $logprefix brew cask uninstall --force $name $verbose $quiet
+                    $logprefix brew cask install --force $name $verbose $quiet
+                    $logprefix echo
+                fi
             else
                 $blush
-                $logprefix echo "Error: No available formula with the name $name." | $logcattee | $logsuffix
+                $logprefix echo "update: cask: no Cask names $name installed" | $logsuffix
                 $reset
 
                 # did you mean
                 dym=`brew cask list -1 | grep $name | xargs | sed "s/ /, /g"`
                 if [[ -nz $dym ]] ; then
-                    $logprefix echo "Did you mean any of the following casks: $dym?" | $logcattee | $logsuffix
+                    $blush
+                    $logprefix echo "update: appstore: did you mean any of the following Casks: $dym?" | $logsuffix
+                    $reset
                 fi
-                $logprefix echo | $logcattee | $logsuffix
+                $logprefix echo
             fi
         done
     fi
@@ -167,8 +142,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

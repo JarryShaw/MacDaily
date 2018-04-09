@@ -51,8 +51,7 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
+logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -63,7 +62,7 @@ fi
 # if no outdated packages found
 if ( ! $arg_o ) ; then
     $green
-    $logprefix echo "All packages have been up-to-date." | $logcattee | $logsuffix
+    $logprefix echo "update: gem: all gems have been up-to-date" | $logsuffix
     $reset
 else
     # if quiet flag set
@@ -84,20 +83,28 @@ else
     for name in $arg_pkg ; do
         flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
         if [[ -nz $flag ]] ; then
-            $logprefix echo "+ sudo -H gem update $name $verbose $quiet" | $logcattee | $logsuffix
-            $logprefix sudo -H gem update $name $verbose $quiet | $logcattee | $logsuffix
-            $logprefix echo | $logcattee | $logsuffix
+            if ( $arg_q ) ; then
+                $logprefix echo "+ gem update $name $verbose $quiet" > /dev/null 2>&1
+                sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
+                $logprefix echo > /dev/null 2>&1
+            else
+                $logprefix echo "+ gem update $name $verbose $quiet"
+                sudo $logprefix gem update $name $verbose $quiet
+                $logprefix echo
+            fi
         else
             $blush
-            $logprefix echo "Error: No Ruby package names $arg_pkg installed." | $logcattee | $logsuffix
+            $logprefix echo "update: gem: no gem names $name installed" | $logsuffix
             $reset
 
             # did you mean
             dym=`gem list | sed "s/\(.*\)* (.*)/\1/" | grep $arg_pkg | xargs | sed "s/ /, /g"`
             if [[ -nz $dym ]] ; then
-                $logprefix echo "Did you mean any of the following packages: $dym?" | $logcattee | $logsuffix
+                $blush
+                $logprefix echo "update: appstore: did you mean any of the following gems: $dym?" | $logsuffix
+                $reset
             fi
-            $logprefix echo | $logcattee | $logsuffix
+            $logprefix echo | $logsuffix
         fi
     done
 fi
@@ -115,8 +122,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

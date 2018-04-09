@@ -88,7 +88,7 @@ def update_apm(args, *, file, date, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Atom$({reset}) -*-"; echo ;')
 
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', 'libupdate/logging_apm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -113,7 +113,7 @@ def update_gem(args, *, file, date, retset=False):
     if shutil.which('gem') is None:
         os.system(f'''
                 echo "update: $({red})gem$({reset}): command not found";
-                echo "You may download Atom from $({under})https://atom.io$({reset}).";
+                echo "update: $({red})gem$({reset}): You may download Atom from $({under})https://atom.io$({reset}).";
         ''')
         return set() if retset else dict(gem=set())
 
@@ -128,7 +128,7 @@ def update_gem(args, *, file, date, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Ruby$({reset}) -*-"; echo ;')
 
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', 'libupdate/logging_gem.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -140,7 +140,7 @@ def update_gem(args, *, file, date, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', '-H', 'bash', 'libupdate/update_gem.sh', date, quiet, verbose, outdated] + list(log)
+        ['sudo', 'bash', 'libupdate/update_gem.sh', date, quiet, verbose, outdated] + list(log)
     )
 
     if not args.quiet:
@@ -170,13 +170,18 @@ def update_npm(args, *, file, date, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Node.js$({reset}) -*-"; echo ;')
 
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         all = 'true'
         logging = subprocess.run(
             ['bash', 'libupdate/logging_npm.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        stdout = logging.stdout.decode()
+        start = logging.stdout.find(b'{')
+        end = logging.stdout.rfind(b'}')
+        if start == -1 or end == -1:
+            stdout = str()
+        else:
+            stdout = logging.stdout[start:end+1].decode()
         stdict = json.loads(stdout) if stdout else dict()
         log = set(stdict.keys())
         pkg = { f'{name}@{value["wanted"]}' for name, value in stdict.items() }
@@ -187,7 +192,7 @@ def update_npm(args, *, file, date, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_npm.sh', date, all, quiet, verbose, outdated] + list(pkg)
+        ['sudo', 'bash', 'libupdate/update_npm.sh', date, all, quiet, verbose, outdated] + list(pkg)
     )
 
     if not args.quiet:
@@ -266,7 +271,7 @@ def update_brew(args, *, file, date, cleanup=True, retset=False):
         ['bash', 'libupdate/renew_brew.sh', date, quiet, verbose, force, merge]
     )
 
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', 'libupdate/logging_brew.sh', date],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -315,7 +320,7 @@ def update_cask(args, *, file, date, cleanup=True, retset=False):
     if not args.quiet:
         os.system(f'echo "-*- $({blue})Caskroom$({reset}) -*-"; echo ;')
 
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', 'libupdate/logging_cask.sh', date, greedy],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -345,6 +350,7 @@ def update_appstore(args, *, file, date, retset=False):
 
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
+    restart = str(args.restart).lower()
     packages = _merge_packages(args)
 
     mode = '-*- App Store -*-'.center(80, ' ')
@@ -366,7 +372,7 @@ def update_appstore(args, *, file, date, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_appstore.sh', date, quiet, verbose, outdated] + list(packages)
+        ['sudo', 'bash', 'libupdate/update_appstore.sh', date, quiet, verbose, restart, outdated] + list(packages)
     )
 
     if not args.quiet:

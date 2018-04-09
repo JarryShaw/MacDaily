@@ -38,24 +38,24 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-logsuffix="grep ^.*$"
+logprefix="script -aq $tmpfile"
+# logsuffix="grep ^.*$"
 
 
 # if greedy flag set
 if ( $arg_g ) ; then
     echo -e "+ brew cask outdated --quiet --greedy" >> $tmpfile
-    $logprefix brew cask outdated --quiet --greedy | $logcattee | $logsuffix
+    $logprefix brew cask outdated --quiet --greedy
     echo >> $tmpfile
 else
-    # check for oudated packages "
+    # following algorithm of Caskroom upgrade cblushits to
+    #     @Atais from <apple.stackexchange.com>
     list=`brew cask list -1`
     for cask in $list ; do
         version=$(brew cask info $cask | sed -n "s/$cask:\ \(.*\)/\1/p")
         installed=$(find "/usr/local/Caskroom/$cask" -type d -maxdepth 1 -maxdepth 1 -name "$version")
         if [[ -z $installed ]] ; then
-            $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/" | $logcattee | $logsuffix
+            $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/"
         fi
     done
 fi
@@ -73,8 +73,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

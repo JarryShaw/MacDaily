@@ -79,8 +79,7 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 # log commands
 # usage: $logprefix [command] | logcattee | logsuffix
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
+logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -189,41 +188,55 @@ function pipupdate {
             case $name in
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                    list=`$prefix/pip$suffix list --format legacy --not-required --outdate | sed "s/\(.*\)* (.*).*/\1/"`
+                    list=`$prefix/python$suffix -m pip list --format legacy --outdate --not-required | sed "s/\(.*\)* (.*).*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
-                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" | $logcattee | $logsuffix
-                            $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet | $logcattee | $logsuffix
-                            $logprefix echo | $logcattee | $logsuffix
+                            if ( $arg_q ) ; then
+                                $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" > /dev/null 2>&1
+                                sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
+                                $logprefix echo > /dev/null 2>&1
+                            else
+                                $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet"
+                                sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet
+                                $logprefix echo
+                            fi
                         done
                     else
                         $green
-                        $logprefix echo "All pip$pprint packages have been up-to-date." | $logcattee | $logsuffix
+                        $logprefix echo "update: pip: all pip$pprint packages have been up-to-date" | $logsuffix
                         $reset
-                        $logprefix echo | $logcattee | $logsuffix
+                        $logprefix echo | $logsuffix
                     fi ;;
                 *)
-                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
-                        $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet" | $logcattee | $logsuffix
-                        $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet | $logcattee | $logsuffix
-                        $logprefix echo | $logcattee | $logsuffix
+                        if ( $arg_q ) ; then
+                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet" > /dev/null 2>&1
+                            sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
+                            $logprefix echo > /dev/null 2>&1
+                        else
+                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet"
+                            sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet
+                            $logprefix echo
+                        fi
                     else
                         $blush
-                        $logprefix echo "Error: No pip$pprint package names $name installed." | $logcattee | $logsuffix
+                        $logprefix echo "update: pip: no pip$pprint package names $name installed" | $logsuffix
                         $reset
 
                         # did you mean
-                        dym=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | grep $name | xargs | sed "s/ /, /g"`
+                        dym=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | grep $name | xargs | sed "s/ /, /g"`
                         if [[ -nz $dym ]] ; then
-                            $logprefix echo "Did you mean any of the following packages: $dym?" | $logcattee | $logsuffix
+                            $blush
+                            $logprefix echo "update: pip: did you mean any of the following packages: $dym?" | $logsuffix
+                            $reset
                         fi
-                        $logprefix echo | $logcattee | $logsuffix
+                        $logprefix echo | $logsuffix
                     fi ;;
             esac
         done
     else
-        echo -e "pip$pprint: Not installed.\n" >> $tmpfile
+        echo -e "pip$pprint not installed.\n" >> $tmpfile
     fi
 }
 
@@ -415,7 +428,7 @@ if ( ! $( \
     $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $updated \
     ) ) ; then
     $green
-    $logprefix echo "All packages have been up-to-date." | $logcattee | $logsuffix
+    $logprefix echo "All packages have been up-to-date." | $logsuffix
     $reset
 fi
 
@@ -432,8 +445,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content

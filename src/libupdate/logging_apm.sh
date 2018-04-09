@@ -36,14 +36,13 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-logsuffix="grep ^.*$"
+logprefix="script -aq $tmpfile"
+# logsuffix="grep ^.*$"
 
 
 # check for oudated packages
 echo -e "+ apm update --list --no-color | grep -e \"->\" | sed \"s/.* \(.*\)* .* -> .*/\1/\"" >> $tmpfile
-$logprefix apm update --list --no-color | grep -e "->" | sed "s/.* \(.*\)* .* -> .*/\1/" | $logcattee | $logsuffix
+$logprefix apm update --list --no-color | grep -e "->" | sed "s/.* \(.*\)* .* -> .*/\1/"
 echo >> $tmpfile
 
 
@@ -59,8 +58,11 @@ while read -r line ; do
         echo "$line" | sed "y/-/+/" >> $logfile
     # colon `:` in line
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
+        # if this is a update logging message
+        if [[ $line =~ ^(update: )(.*)$ ]] ; then
+            echo "LOG: $line"
         # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
+        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
             prefix="WAR"
             # log content
