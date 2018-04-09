@@ -15,7 +15,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.10.4'
+__version__ = '0.11.0'
 
 
 # today
@@ -333,6 +333,10 @@ def get_parser():
                         dest='package', help=(
                             'name of packages to be updated, default is all'
                         ))
+    parser_appstore.add_argument('-r', '--restart', action='store_true', default=False,
+                        dest='restart', help=(
+                            'automatically restart if necessary'
+                        ))
     parser_appstore.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
                             'run in quiet mode, with no output information'
@@ -349,6 +353,10 @@ def get_parser():
     parser.add_argument('-g', '--greedy', action='store_true', default=False,
                         help=(
                             'run in greedy mode, only for Caskroom'
+                        ))
+    parser.add_argument('-r', '--restart', action='store_true', default=False,
+                        dest='restart', help=(
+                            'automatically restart if necessary, only for App Store'
                         ))
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(

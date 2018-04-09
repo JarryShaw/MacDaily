@@ -5,12 +5,12 @@
 import os
 
 
-from jsdaily.update import main as update
-from jsdaily.uninstall import main as uninstall
-from jsdaily.reinstall import main as reinstall
-from jsdaily.postinstall import main as postinstall
-from jsdaily.dependency import main as dependency
-from jsdaily.logging import main as logging
+from jsdaily.jsupdate import main as update
+from jsdaily.jsuninstall import main as uninstall
+from jsdaily.jsreinstall import main as reinstall
+from jsdaily.jspostinstall import main as postinstall
+from jsdaily.jsdependency import main as dependency
+from jsdaily.jslogging import main as logging
 
 
 __all__ = ['update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging']
