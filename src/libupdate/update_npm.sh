@@ -130,7 +130,7 @@ while read -r line ; do
     elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
         # if this is a update logging message
         if [[ $line =~ ^(update: )(.*)$ ]] ; then
-            echo "LOG: $line"
+            echo "LOG: $line" >> $logfile
         # if this is a warning
         elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
             # log tag
