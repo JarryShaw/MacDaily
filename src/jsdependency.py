@@ -1,9 +1,9 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import datetime
+import libdependency
 import os
 import pathlib
 import platform
@@ -11,11 +11,8 @@ import sys
 import zipfile
 
 
-from jsdaily.libdependency import *
-
-
 # version string
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 
 
 # today
@@ -31,9 +28,9 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: dependency_all(*args, **kwargs),
-    pip = lambda *args, **kwargs: dependency_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: dependency_brew(*args, **kwargs),
+    all = lambda *args, **kwargs: libdependency.dependency_all(*args, **kwargs),
+    pip = lambda *args, **kwargs: libdependency.dependency_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: libdependency.dependency_brew(*args, **kwargs),
 )
 
 
@@ -49,13 +46,6 @@ blue = 'tput setaf 14'  # blue
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
-
-
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
 
 
 def get_parser():
@@ -154,12 +144,9 @@ def get_parser():
     return parser
 
 
-def main():
-    if platform.system() != 'Darwin':
-        raise UnsupoortedOS('dependency: script runs only on macOS')
-
+def main(argv=None):
     parser = get_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.mode is None:
         parser.print_help()

@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
@@ -7,9 +6,6 @@ import shlex
 import shutil
 import subprocess
 import time
-
-
-__all__ = ['dependency_all', 'dependency_pip', 'dependency_brew']
 
 
 # terminal display

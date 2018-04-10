@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
@@ -7,9 +6,6 @@ import shlex
 import shutil
 import subprocess
 import time
-
-
-__all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'reinstall_cleanup']
 
 
 # terminal display

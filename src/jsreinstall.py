@@ -1,9 +1,9 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import datetime
+import libprinstall
 import os
 import pathlib
 import platform
@@ -11,11 +11,8 @@ import sys
 import zipfile
 
 
-from jsdaily.libprinstall import *
-
-
 # version string
-__version__ = '0.7.1'
+__version__ = '0.7.2'
 
 
 # today
@@ -31,10 +28,10 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: reinstall_all(*args, **kwargs),
-    brew = lambda *args, **kwargs: reinstall_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: reinstall_cask(*args, **kwargs),
-    cleanup = lambda *args, **kwargs: reinstall_cleanup(*args, **kwargs),
+    all = lambda *args, **kwargs: libprinstall.reinstall_all(*args, **kwargs),
+    brew = lambda *args, **kwargs: libprinstall.reinstall_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: libprinstall.reinstall_cask(*args, **kwargs),
+    cleanup = lambda *args, **kwargs: libprinstall.reinstall_cleanup(*args, **kwargs),
 )
 
 
@@ -50,13 +47,6 @@ blue = 'tput setaf 14'  # blue
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
-
-
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
 
 
 def get_parser():
@@ -200,12 +190,9 @@ def get_parser():
     return parser
 
 
-def main():
-    if platform.system() != 'Darwin':
-        raise UnsupoortedOS('jsreinstall: script runs only on macOS')
-
+def main(argv=None):
     parser = get_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.mode is None:
         parser.print_help()

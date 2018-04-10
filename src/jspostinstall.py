@@ -1,9 +1,9 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import datetime
+import libprinstall
 import os
 import pathlib
 import platform
@@ -11,11 +11,8 @@ import sys
 import zipfile
 
 
-from jsdaily.libprinstall import postinstall
-
-
 # version string
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 
 
 # today
@@ -34,13 +31,6 @@ blue = 'tput setaf 14'  # blue
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
-
-
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
 
 
 def get_parser():
@@ -85,12 +75,9 @@ def get_parser():
     return parser
 
 
-def main():
-    if platform.system() != 'Darwin':
-        raise UnsupoortedOS('postinstall: script runs only on macOS')
-
+def main(argv=None):
     parser = get_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.package is None:
         parser.print_help()
@@ -110,7 +97,7 @@ def main():
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    log = postinstall(args, file=logname, date=logdate)
+    log = libprinstall.postinstall(args, file=logname, date=logdate)
 
     arcfile = '/Library/Logs/Scripts/archive.zip'
     filelist = list()

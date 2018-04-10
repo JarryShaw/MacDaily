@@ -1,9 +1,9 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import datetime
+import liblogging
 import os
 import pathlib
 import platform
@@ -12,11 +12,8 @@ import tarfile
 import zipfile
 
 
-from jsdaily.liblogging import *
-
-
 # version string
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 
 # today
@@ -25,13 +22,13 @@ today = datetime.datetime.today()
 
 # mode actions
 MODE = dict(
-    apm = lambda *args, **kwargs: logging_apm(*args, **kwargs),
-    pip = lambda *args, **kwargs: logging_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: logging_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: logging_cask(*args, **kwargs),
-    dotapp = lambda *args, **kwargs: logging_dotapp(*args, **kwargs),
-    macapp = lambda *args, **kwargs: logging_macapp(*args, **kwargs),
-    appstore = lambda *args, **kwargs: logging_appstore(*args, **kwargs),
+    apm = lambda *args, **kwargs: liblogging.logging_apm(*args, **kwargs),
+    pip = lambda *args, **kwargs: liblogging.logging_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: liblogging.logging_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: liblogging.logging_cask(*args, **kwargs),
+    dotapp = lambda *args, **kwargs: liblogging.logging_dotapp(*args, **kwargs),
+    macapp = lambda *args, **kwargs: liblogging.logging_macapp(*args, **kwargs),
+    appstore = lambda *args, **kwargs: liblogging.logging_appstore(*args, **kwargs),
 )
 
 
@@ -44,13 +41,6 @@ program = ' '.join(sys.argv)    # arguments
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
-
-
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
 
 
 def get_parser():
@@ -122,12 +112,9 @@ def get_parser():
     return parser
 
 
-def main():
-    if platform.system() != 'Darwin':
-        raise UnsupoortedOS('logging: script runs only on macOS')
-
+def main(argv=None):
     parser = get_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.mode is None:
         parser.print_help()

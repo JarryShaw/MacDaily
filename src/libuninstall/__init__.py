@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
@@ -7,9 +6,6 @@ import shlex
 import shutil
 import subprocess
 import time
-
-
-__all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
 
 
 # terminal display

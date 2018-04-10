@@ -1,9 +1,9 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import argparse
 import datetime
+import libupdate
 import os
 import pathlib
 import platform
@@ -11,11 +11,8 @@ import sys
 import zipfile
 
 
-from jsdaily.libupdate import *
-
-
 # version string
-__version__ = '0.11.2'
+__version__ = '0.11.3'
 
 
 # today
@@ -36,15 +33,15 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: update_all(*args, **kwargs),
-    apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
-    gem = lambda *args, **kwargs: update_gem(*args, **kwargs),
-    npm = lambda *args, **kwargs: update_npm(*args, **kwargs),
-    pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
-    cleanup = lambda *args, **kwargs: update_cleanup(*args, **kwargs),
-    appstore = lambda *args, **kwargs: update_appstore(*args, **kwargs),
+    all = lambda *args, **kwargs: libupdate.update_all(*args, **kwargs),
+    apm = lambda *args, **kwargs: libupdate.update_apm(*args, **kwargs),
+    gem = lambda *args, **kwargs: libupdate.update_gem(*args, **kwargs),
+    npm = lambda *args, **kwargs: libupdate.update_npm(*args, **kwargs),
+    pip = lambda *args, **kwargs: libupdate.update_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: libupdate.update_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: libupdate.update_cask(*args, **kwargs),
+    cleanup = lambda *args, **kwargs: libupdate.update_cleanup(*args, **kwargs),
+    appstore = lambda *args, **kwargs: libupdate.update_appstore(*args, **kwargs),
 )
 
 
@@ -60,13 +57,6 @@ blue = 'tput setaf 14'  # blue
 bold = 'tput bold'      # bold
 under = 'tput smul'     # underline
 reset = 'tput sgr0'     # reset
-
-
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
 
 
 def get_parser():
@@ -370,12 +360,9 @@ def get_parser():
     return parser
 
 
-def main():
-    if platform.system() != 'Darwin':
-        raise UnsupoortedOS('update: script runs only on macOS')
-
+def main(argv=None):
     parser = get_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.mode is None:
         parser.print_help()

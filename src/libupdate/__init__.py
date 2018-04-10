@@ -12,12 +12,6 @@ import subprocess
 import time
 
 
-__all__ = [
-    'update_all', 'update_apm', 'update_npm', 'update_gem', 'update_pip',
-    'update_brew', 'update_cask', 'update_cleanup', 'update_appstore'
-]
-
-
 # terminal display
 red = 'tput setaf 1'    # blush / red
 blue = 'tput setaf 14'  # blue
@@ -364,7 +358,7 @@ def update_appstore(args, *, file, date, retset=False):
         ['bash', 'libupdate/logging_appstore.sh', date],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
-    if 'all' in packages:
+    if 'all' in packages or args.all:
         log = set(re.split('[\n\r]', logging.stdout.decode().strip()))
         outdated = 'true' if log else 'false'
     else:
