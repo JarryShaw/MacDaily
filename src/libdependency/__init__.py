@@ -8,6 +8,9 @@ import subprocess
 import time
 
 
+__all__ = ['dependency_all', 'dependency_pip', 'dependency_brew']
+
+
 # terminal display
 red = 'tput setaf 1'    # blush / red
 green = 'tput setaf 2'  # green

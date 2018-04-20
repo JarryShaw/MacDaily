@@ -40,9 +40,10 @@ reset="tput sgr0"       # reset
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   7. Quiet Flag
-#   8. Verbose Flag
-#   9. Package
+#   7. Yes Flag
+#   8. Quiet Flag
+#   9. Verbose Flag
+#  10. Package
 #       ............
 ################################################################################
 
@@ -54,9 +55,10 @@ arg_b=$3
 arg_c=$4
 arg_y=$5
 arg_V=$6
-arg_q=$7
-arg_v=$8
-arg_pkg=${*:9}
+arg_Y=$7
+arg_q=$8
+arg_v=$9
+arg_pkg=${*:10}
 
 
 # log file prepare
@@ -87,6 +89,40 @@ else
 fi
 
 
+# pip fix broken function usage
+#   pip_fixbroken pip-prefix pip-suffix pip-pprint packages
+function pip_fixbroken {
+    # parameter assignment
+    local prefix=$1
+    local suffix=$2
+    local pprint=$3
+    local arg_pkg=${*:4}
+
+    # log function call
+    echo "+ pip_fixbroken $@" >> $tmpfile
+
+    # reinstall broken dependencies
+    for pkg in $arg_pkg ; do
+        if ( $arg_q ) ; then
+            $logprefix echo "++ pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet" > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet > /dev/null 2>&1
+            $logprefix echo > /dev/null 2>&1
+        else
+            $logprefix echo "++ pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet"
+            sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet
+            $logprefix echo
+        fi
+    done
+
+    # inform if broken dependencies fixed
+    $green
+    $logprefix echo "update: pip: all broken pip$pprint dependencies fixed" | $logsuffix
+    $reset
+}
+
+
 # pip update function usage:
 #   pipupdate mode
 function pipupdate {
@@ -100,104 +136,104 @@ function pipupdate {
     case $mode in
         1)  # pip2.0
             prefix="/Library/Frameworks/Python.framework/Versions/2.0/bin"
-            suffix="2.0"
+            suffix="python2.0"
             pprint="2.0" ;;
         2)  # pip2.1
             prefix="/Library/Frameworks/Python.framework/Versions/2.1/bin"
-            suffix="2.1"
+            suffix="python2.1"
             pprint="2.1" ;;
         3)  # pip2.2
             prefix="/Library/Frameworks/Python.framework/Versions/2.2/bin"
-            suffix="2.2"
+            suffix="python2.2"
             pprint="2.2" ;;
         4)  # pip2.3
             prefix="/Library/Frameworks/Python.framework/Versions/2.3/bin"
-            suffix="2.3"
+            suffix="python2.3"
             pprint="2.3" ;;
         5)  # pip2.4
             prefix="/Library/Frameworks/Python.framework/Versions/2.4/bin"
-            suffix="2.4"
+            suffix="python2.4"
             pprint="2.4" ;;
         6)  # pip2.5
             prefix="/Library/Frameworks/Python.framework/Versions/2.5/bin"
-            suffix="2.5"
+            suffix="python2.5"
             pprint="2.5" ;;
         7)  # pip2.6
             prefix="/Library/Frameworks/Python.framework/Versions/2.6/bin"
-            suffix="2.6"
+            suffix="python2.6"
             pprint="2.6" ;;
         8)  # pip2.7
             prefix="/Library/Frameworks/Python.framework/Versions/2.7/bin"
-            suffix="2.7"
+            suffix="python2.7"
             pprint="2.7" ;;
         9)  # pip3.0
             prefix="/Library/Frameworks/Python.framework/Versions/3.0/bin"
-            suffix="3.0"
+            suffix="python3.0"
             pprint="3.0" ;;
         10)  # pip3.1
             prefix="/Library/Frameworks/Python.framework/Versions/3.1/bin"
-            suffix="3.1"
+            suffix="python3.1"
             pprint="3.1" ;;
         11)  # pip3.2
             prefix="/Library/Frameworks/Python.framework/Versions/3.2/bin"
-            suffix="3.2"
+            suffix="python3.2"
             pprint="3.2" ;;
         12)  # pip3.3
             prefix="/Library/Frameworks/Python.framework/Versions/3.3/bin"
-            suffix="3.3"
+            suffix="python3.3"
             pprint="3.3" ;;
         13)  # pip3.4
             prefix="/Library/Frameworks/Python.framework/Versions/3.4/bin"
-            suffix="3.4"
+            suffix="python3.4"
             pprint="3.4" ;;
         14)  # pip3.5
             prefix="/Library/Frameworks/Python.framework/Versions/3.5/bin"
-            suffix="3.5"
+            suffix="python3.5"
             pprint="3.5" ;;
         15)  # pip3.6
             prefix="/Library/Frameworks/Python.framework/Versions/3.6/bin"
-            suffix="3.6"
+            suffix="python3.6"
             pprint="3.6" ;;
         16)  # pip3.7
             prefix="/Library/Frameworks/Python.framework/Versions/3.7/bin"
-            suffix="3.7"
+            suffix="python3.7"
             pprint="3.7" ;;
         17)  # pip2
             prefix="/usr/local/opt/python@2/bin"
-            suffix="2"
+            suffix="python2"
             pprint="2" ;;
         18)  # pip3
             prefix="/usr/local/opt/python@3/bin"
-            suffix="3"
+            suffix="python3"
             pprint="3" ;;
         19)  # pip_pypy
             prefix="/usr/local/opt/pypy/bin"
-            suffix="_pypy"
+            suffix="pypy"
             pprint="_pypy" ;;
         20)  # pip_pypy3
             prefix="/usr/local/opt/pypy3/bin"
-            suffix="_pypy3"
+            suffix="pypy3"
             pprint="_pypy3" ;;
     esac
 
     # if executive exits
-    if [ -e $prefix/python$suffix ] ; then
+    if [ -e $prefix/$suffix ] ; then
         updated=true
         for name in $arg_pkg ; do
             # All or Specified Packages
             case $name in
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                    list=`$prefix/python$suffix -m pip list --format legacy --outdate --not-required | sed "s/\(.*\)* (.*).*/\1/"`
+                    list=`$prefix/$suffix -m pip list --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
                             if ( $arg_q ) ; then
                                 $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" > /dev/null 2>&1
-                                sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
+                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
                                 $logprefix echo > /dev/null 2>&1
                             else
                                 $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet"
-                                sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet
+                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet
                                 $logprefix echo
                             fi
                         done
@@ -208,15 +244,15 @@ function pipupdate {
                         $logprefix echo | $logsuffix
                     fi ;;
                 *)
-                    flag=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         if ( $arg_q ) ; then
                             $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet" > /dev/null 2>&1
-                            sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
+                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
                             $logprefix echo > /dev/null 2>&1
                         else
                             $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet"
-                            sudo -H $logprefix $prefix/python$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet
+                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet
                             $logprefix echo
                         fi
                     else
@@ -225,7 +261,7 @@ function pipupdate {
                         $reset
 
                         # did you mean
-                        dym=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | grep $name | xargs | sed "s/ /, /g"`
+                        dym=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs | sed "s/ /, /g"`
                         if [[ -nz $dym ]] ; then
                             $blush
                             $logprefix echo "update: pip: did you mean any of the following packages: $dym?" | $logsuffix
@@ -235,6 +271,35 @@ function pipupdate {
                     fi ;;
             esac
         done
+
+        # fix broken package dependencies
+        required=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
+        if [[ -nz $required ]]; then
+            $blush
+            $logprefix echo "update: pip: dependency pip$pprint packages found broken: $required" | $logsuffix
+            $reset
+            if ( $arg_Y ) ; then
+                pip_fixbroken $prefix $suffix $pprint $required
+            else
+                while true ; do
+                    read -p "Would you like to reinstall? (y/N)" yn
+                    case $yn in
+                        [Yy]* )
+                            $logprefix echo | $logsuffix
+                            pip_fixbroken $prefix $suffix $pprint $required
+                            break ;;
+                        [Nn]* )
+                            $blush
+                            $logprefix echo "update: pip: broken dependencies remain" | $logsuffix
+                            $reset
+                            break ;;
+                        * )
+                            echo "Invalid choice." ;;
+                    esac
+                done
+            fi
+            $logprefix echo | $logsuffix
+        fi
     else
         echo -e "pip$pprint not installed.\n" >> $tmpfile
     fi

@@ -7,6 +7,12 @@ import shutil
 import subprocess
 
 
+__all__ = [
+    'logging_apm', 'logging_pip', 'logging_brew', 'logging_cask',
+    'logging_dotapp', 'logging_macapp', 'logging_appstore',
+]
+
+
 # terminal display
 green = 'tput setaf 2'  # green
 bold = 'tput bold'      # bold

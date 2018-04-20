@@ -3,12 +3,13 @@
 
 import argparse
 import datetime
-import libdependency
 import os
 import pathlib
 import platform
 import sys
 import zipfile
+
+from jsdaily.libdependency import *
 
 
 # version string
@@ -28,9 +29,9 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libdependency.dependency_all(*args, **kwargs),
-    pip = lambda *args, **kwargs: libdependency.dependency_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: libdependency.dependency_brew(*args, **kwargs),
+    all = lambda *args, **kwargs: dependency_all(*args, **kwargs),
+    pip = lambda *args, **kwargs: dependency_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: dependency_brew(*args, **kwargs),
 )
 
 

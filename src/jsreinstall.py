@@ -3,12 +3,13 @@
 
 import argparse
 import datetime
-import libprinstall
 import os
 import pathlib
 import platform
 import sys
 import zipfile
+
+from jsdaily.libprinstall import *
 
 
 # version string
@@ -28,10 +29,10 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libprinstall.reinstall_all(*args, **kwargs),
-    brew = lambda *args, **kwargs: libprinstall.reinstall_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: libprinstall.reinstall_cask(*args, **kwargs),
-    cleanup = lambda *args, **kwargs: libprinstall.reinstall_cleanup(*args, **kwargs),
+    all = lambda *args, **kwargs: reinstall_all(*args, **kwargs),
+    brew = lambda *args, **kwargs: reinstall_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: reinstall_cask(*args, **kwargs),
+    cleanup = lambda *args, **kwargs: reinstall_cleanup(*args, **kwargs),
 )
 
 

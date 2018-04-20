@@ -3,13 +3,14 @@
 
 import argparse
 import datetime
-import liblogging
 import os
 import pathlib
 import platform
 import sys
 import tarfile
 import zipfile
+
+from jsdaily.liblogging import *
 
 
 # version string
@@ -22,13 +23,13 @@ today = datetime.datetime.today()
 
 # mode actions
 MODE = dict(
-    apm = lambda *args, **kwargs: liblogging.logging_apm(*args, **kwargs),
-    pip = lambda *args, **kwargs: liblogging.logging_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: liblogging.logging_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: liblogging.logging_cask(*args, **kwargs),
-    dotapp = lambda *args, **kwargs: liblogging.logging_dotapp(*args, **kwargs),
-    macapp = lambda *args, **kwargs: liblogging.logging_macapp(*args, **kwargs),
-    appstore = lambda *args, **kwargs: liblogging.logging_appstore(*args, **kwargs),
+    apm = lambda *args, **kwargs: logging_apm(*args, **kwargs),
+    pip = lambda *args, **kwargs: logging_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: logging_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: logging_cask(*args, **kwargs),
+    dotapp = lambda *args, **kwargs: logging_dotapp(*args, **kwargs),
+    macapp = lambda *args, **kwargs: logging_macapp(*args, **kwargs),
+    appstore = lambda *args, **kwargs: logging_appstore(*args, **kwargs),
 )
 
 

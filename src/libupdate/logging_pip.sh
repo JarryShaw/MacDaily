@@ -85,109 +85,109 @@ function piplogging {
     case $mode in
         1)  # pip2.0
             prefix="/Library/Frameworks/Python.framework/Versions/2.0/bin"
-            suffix="2.0"
+            suffix="python2.0"
             pprint="2.0" ;;
         2)  # pip2.1
             prefix="/Library/Frameworks/Python.framework/Versions/2.1/bin"
-            suffix="2.1"
+            suffix="python2.1"
             pprint="2.1" ;;
         3)  # pip2.2
             prefix="/Library/Frameworks/Python.framework/Versions/2.2/bin"
-            suffix="2.2"
+            suffix="python2.2"
             pprint="2.2" ;;
         4)  # pip2.3
             prefix="/Library/Frameworks/Python.framework/Versions/2.3/bin"
-            suffix="2.3"
+            suffix="python2.3"
             pprint="2.3" ;;
         5)  # pip2.4
             prefix="/Library/Frameworks/Python.framework/Versions/2.4/bin"
-            suffix="2.4"
+            suffix="python2.4"
             pprint="2.4" ;;
         6)  # pip2.5
             prefix="/Library/Frameworks/Python.framework/Versions/2.5/bin"
-            suffix="2.5"
+            suffix="python2.5"
             pprint="2.5" ;;
         7)  # pip2.6
             prefix="/Library/Frameworks/Python.framework/Versions/2.6/bin"
-            suffix="2.6"
+            suffix="python2.6"
             pprint="2.6" ;;
         8)  # pip2.7
             prefix="/Library/Frameworks/Python.framework/Versions/2.7/bin"
-            suffix="2.7"
+            suffix="python2.7"
             pprint="2.7" ;;
         9)  # pip3.0
             prefix="/Library/Frameworks/Python.framework/Versions/3.0/bin"
-            suffix="3.0"
+            suffix="python3.0"
             pprint="3.0" ;;
         10)  # pip3.1
             prefix="/Library/Frameworks/Python.framework/Versions/3.1/bin"
-            suffix="3.1"
+            suffix="python3.1"
             pprint="3.1" ;;
         11)  # pip3.2
             prefix="/Library/Frameworks/Python.framework/Versions/3.2/bin"
-            suffix="3.2"
+            suffix="python3.2"
             pprint="3.2" ;;
         12)  # pip3.3
             prefix="/Library/Frameworks/Python.framework/Versions/3.3/bin"
-            suffix="3.3"
+            suffix="python3.3"
             pprint="3.3" ;;
         13)  # pip3.4
             prefix="/Library/Frameworks/Python.framework/Versions/3.4/bin"
-            suffix="3.4"
+            suffix="python3.4"
             pprint="3.4" ;;
         14)  # pip3.5
             prefix="/Library/Frameworks/Python.framework/Versions/3.5/bin"
-            suffix="3.5"
+            suffix="python3.5"
             pprint="3.5" ;;
         15)  # pip3.6
             prefix="/Library/Frameworks/Python.framework/Versions/3.6/bin"
-            suffix="3.6"
+            suffix="python3.6"
             pprint="3.6" ;;
         16)  # pip3.7
             prefix="/Library/Frameworks/Python.framework/Versions/3.7/bin"
-            suffix="3.7"
+            suffix="python3.7"
             pprint="3.7" ;;
         17)  # pip2
             prefix="/usr/local/opt/python@2/bin"
-            suffix="2"
+            suffix="python2"
             pprint="2"
             # link brewed python@2
             brew link python@2 --force > /dev/null 2>&1 ;;
         18)  # pip3
             prefix="/usr/local/opt/python@3/bin"
-            suffix="3"
+            suffix="python3"
             pprint="3"
             # link brewed python
             brew link python > /dev/null 2>&1 ;;
         19)  # pip_pypy
             prefix="/usr/local/opt/pypy/bin"
-            suffix="_pypy"
+            suffix="pypy"
             pprint="_pypy"
             # link brewed pypy
             brew link pypy > /dev/null 2>&1 ;;
         20)  # pip_pypy3
             prefix="/usr/local/opt/pypy3/bin"
-            suffix="_pypy3"
+            suffix="pypy3"
             pprint="_pypy3"
             # link brewed pypy3
             brew link pypy3 > /dev/null 2>&1 ;;
     esac
 
     # if executive exits
-    if [ -e $prefix/python$suffix ] ; then
+    if [ -e $prefix/$suffix ] ; then
         # check for outdated packages
         for name in $arg_pkg ; do
             case $name in
                 all)
-                    echo -e "++ pip$pprint list --format legacy --outdate | sed \"s/\(.*\)* (.*).*/\1/\"" >> $tmpfile
-                    $logprefix $prefix/python$suffix -m pip list --format legacy --outdate | sed "s/\(.*\)* (.*).*/\1/"
+                    echo -e "++ pip$pprint list --format freeze --outdated | sed \"s/\(.*\)*==.*/\1/\"" >> $tmpfile
+                    $logprefix $prefix/$suffix -m pip list --format freeze --outdate 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
                     echo >> $tmpfile ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/python$suffix -m pip list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
-                        $logprefix $prefix/python$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
+                        $logprefix $prefix/$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
                         echo >> $tmpfile
                     else
                         echo -e "Error: No pip$pprint package names $name installed.\n" >> $tmpfile

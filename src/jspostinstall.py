@@ -3,12 +3,13 @@
 
 import argparse
 import datetime
-import libprinstall
 import os
 import pathlib
 import platform
 import sys
 import zipfile
+
+from jsdaily.libprinstall import postinstall
 
 
 # version string
@@ -97,7 +98,7 @@ def main(argv=None):
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
-    log = libprinstall.postinstall(args, file=logname, date=logdate)
+    log = postinstall(args, file=logname, date=logdate)
 
     arcfile = '/Library/Logs/Scripts/archive.zip'
     filelist = list()

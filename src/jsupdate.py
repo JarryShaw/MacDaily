@@ -3,12 +3,13 @@
 
 import argparse
 import datetime
-import libupdate
 import os
 import pathlib
 import platform
 import sys
 import zipfile
+
+from jsdaily.libupdate import *
 
 
 # version string
@@ -33,15 +34,15 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libupdate.update_all(*args, **kwargs),
-    apm = lambda *args, **kwargs: libupdate.update_apm(*args, **kwargs),
-    gem = lambda *args, **kwargs: libupdate.update_gem(*args, **kwargs),
-    npm = lambda *args, **kwargs: libupdate.update_npm(*args, **kwargs),
-    pip = lambda *args, **kwargs: libupdate.update_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: libupdate.update_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: libupdate.update_cask(*args, **kwargs),
-    cleanup = lambda *args, **kwargs: libupdate.update_cleanup(*args, **kwargs),
-    appstore = lambda *args, **kwargs: libupdate.update_appstore(*args, **kwargs),
+    all = lambda *args, **kwargs: update_all(*args, **kwargs),
+    apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
+    gem = lambda *args, **kwargs: update_gem(*args, **kwargs),
+    npm = lambda *args, **kwargs: update_npm(*args, **kwargs),
+    pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
+    cleanup = lambda *args, **kwargs: update_cleanup(*args, **kwargs),
+    appstore = lambda *args, **kwargs: update_appstore(*args, **kwargs),
 )
 
 
@@ -202,6 +203,10 @@ def get_parser():
                         dest='package', help=(
                             'name of packages to be updated, default is all'
                         ))
+    parser_pip.add_argument('-Y', '--yes', action='store_true', default=False,
+                        dest='yes', help=(
+                            'yes for all selections'
+                        ))
     parser_pip.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
                             'run in quiet mode, with no output information'
@@ -347,6 +352,10 @@ def get_parser():
     parser.add_argument('-r', '--restart', action='store_true', default=False,
                         dest='restart', help=(
                             'automatically restart if necessary, only for App Store'
+                        ))
+    parser.add_argument('-Y', '--yes', action='store_true', default=False,
+                        dest='yes', help=(
+                            'yes for all selections, only for pip'
                         ))
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(

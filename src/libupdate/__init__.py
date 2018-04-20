@@ -12,6 +12,12 @@ import subprocess
 import time
 
 
+__all__ = [
+    'update_all', 'update_apm', 'update_npm', 'update_gem', 'update_pip',
+    'update_brew', 'update_cask', 'update_cleanup', 'update_appstore'
+]
+
+
 # terminal display
 red = 'tput setaf 1'    # blush / red
 blue = 'tput setaf 14'  # blue
@@ -32,7 +38,7 @@ def _merge_packages(args):
                     packages = {'all'}
                     allflag = True; break
                 packages = packages.union(set(list_))
-    elif 'all' in args.mode:
+    elif 'all' in args.mode or args.all:
         packages = {'all'}
     else:
         packages = {'null'}
@@ -200,6 +206,7 @@ def update_npm(args, *, file, date, retset=False):
 def update_pip(args, *, file, date, retset=False):
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
+    yes = str(args.yes).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Python -*-'.center(80, ' ')
@@ -224,7 +231,7 @@ def update_pip(args, *, file, date, retset=False):
     log = set(logging.stdout.decode().split())
 
     subprocess.run(
-        ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose] + list(packages)
+        ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', date, system, brew, cpython, pypy, version, yes, quiet, verbose] + list(packages)
     )
     subprocess.run(
         ['bash', 'libupdate/relink_pip.sh'],

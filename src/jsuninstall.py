@@ -3,7 +3,6 @@
 
 import argparse
 import datetime
-import libuninstall
 import os
 import pathlib
 import platform
@@ -11,7 +10,7 @@ import sys
 import zipfile
 
 
-from jsdaily. import *
+from jsdaily.libuninstall import *
 
 
 # version string
@@ -32,10 +31,10 @@ NAME = dict(
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: libuninstall.uninstall_all(*args, **kwargs),
-    pip = lambda *args, **kwargs: libuninstall.uninstall_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: libuninstall.uninstall_brew(*args, **kwargs),
-    cask = lambda *args, **kwargs: libuninstall.uninstall_cask(*args, **kwargs),
+    all = lambda *args, **kwargs: uninstall_all(*args, **kwargs),
+    pip = lambda *args, **kwargs: uninstall_pip(*args, **kwargs),
+    brew = lambda *args, **kwargs: uninstall_brew(*args, **kwargs),
+    cask = lambda *args, **kwargs: uninstall_cask(*args, **kwargs),
 )
 
 

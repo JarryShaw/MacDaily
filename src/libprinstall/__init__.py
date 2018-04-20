@@ -8,6 +8,9 @@ import subprocess
 import time
 
 
+__all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'reinstall_cleanup']
+
+
 # terminal display
 red = 'tput setaf 1'    # blush / red
 green = 'tput setaf 2'  # green

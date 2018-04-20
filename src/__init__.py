@@ -2,15 +2,24 @@
 
 
 import argparse
-import jsupdate
-import jsuninstall
-import jsreinstall
-import jspostinstall
-import jsdependency
-import jslogging
+import os
 import platform
 import re
 import sys
+
+from jsdaily.jsupdate import main as update
+from jsdaily.jsuninstall import main as uninstall
+from jsdaily.jsreinstall import main as reinstall
+from jsdaily.jspostinstall import main as postinstall
+from jsdaily.jsdependency import main as dependency
+from jsdaily.jslogging import main as logging
+
+
+__all__ = ['main']
+
+
+# change working directory
+os.chdir(os.path.dirname(__file__))
 
 
 # version string
@@ -58,17 +67,17 @@ def main():
 
     argv = sys.argv[2:]
     if args.command in ('update', 'up', 'upgrade'):
-        jsupdate.main(argv)
+        update(argv)
     elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
-        jsuninstall.main(argv)
+        uninstall(argv)
     elif args.command in ('reinstall', 're'):
-        jsreinstall.main(argv)
+        reinstall(argv)
     elif args.command in ('postinstall', 'post', 'ps'):
-        jspostinstall.main(argv)
+        postinstall(argv)
     elif args.command in ('dependency', 'deps'):
-        jsdependency.main(argv)
+        dependency(argv)
     elif args.command in ('logging', 'log'):
-        jslogging.main(argv)
+        logging(argv)
     else:
         parser.print_help()
 
