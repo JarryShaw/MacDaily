@@ -445,6 +445,8 @@ def main(argv=None):
             logfile.write(f'LOG: archived following old logs: {files}\n')
             if not args.quiet:
                 print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcfile}{reset}')
+
+        if not args.quiet:  print()
         logfile.write('\n\n\n\n')
 
 
