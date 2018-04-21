@@ -8,7 +8,7 @@ import sys
 
 # check platform
 if platform.system() != 'Darwin':
-    print('Package "jsdaily" runs only on macOS.')
+    print('error: package "jsdaily" runs only on macOS')
     sys.exit(1)
 
 
@@ -18,7 +18,7 @@ with open('./README.rst', 'r') as file:
 
 
 # version
-__version__ = '0.9.3rc8'
+__version__ = '1.0.0.dev1'
 
 
 # set-up script for pip distribution

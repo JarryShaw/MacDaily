@@ -6,6 +6,7 @@ import datetime
 import os
 import pathlib
 import platform
+import subprocess
 import sys
 import zipfile
 
@@ -13,7 +14,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '0.11.3'
+__version__ = '1.0.0'
 
 
 # today
@@ -52,12 +53,12 @@ program = ' '.join(sys.argv)    # arguments
 
 
 # terminal display
-red = 'tput setaf 1'    # blush / red
-green = 'tput setaf 2'  # green
-blue = 'tput setaf 14'  # blue
-bold = 'tput bold'      # bold
-under = 'tput smul'     # underline
-reset = 'tput sgr0'     # reset
+reset  = '\033[0m'      # reset
+bold   = '\033[1m'      # bold
+under  = '\033[4m'      # underline
+red    = '\033[91m'     # bright red foreground
+green  = '\033[92m'     # bright green foreground
+blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
@@ -183,12 +184,12 @@ def get_parser():
                         ))
     parser_pip.add_argument('-s', '--system', action='store_true', default=False,
                         dest='system', help=(
-                            'update pip packages on system level, i.e. python '
+                            'update pip packages on system level, i.e. Python '
                             'installed through official installer'
                         ))
     parser_pip.add_argument('-b', '--brew', action='store_true', default=False,
                         dest='brew', help=(
-                            'update pip packages on Cellar level, i.e. python '
+                            'update pip packages on Cellar level, i.e. Python '
                             'installed through Homebrew'
                         ))
     parser_pip.add_argument('-c', '--cpython', action='store_true', default=False,
@@ -421,31 +422,34 @@ def main(argv=None):
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
         if not args.quiet:
-            os.system(f'echo "-*- $({blue})Update Logs$({reset}) -*-"; echo ;')
+            print(f'\n-*- {blue}Update Logs{reset} -*-\n')
 
         for mode in log:
             name = NAME.get(mode, mode)
             if log[mode] and all(log[mode]):
                 pkgs = f', '.join(log[mode])
-                logfile.write(f'LOG: Updated following {name} packages: {pkgs}.\n')
+                logfile.write(f'LOG: updated following {name} packages: {pkgs}\n')
                 if not args.quiet:
-                    pkgs_coloured = f'$({reset}), $({red})'.join(log[mode])
-                    os.system(f'echo "update: $({green}){mode}$({reset}): '
-                              f'updated following $({bold}){name}$({reset}) packages: $({red}){pkgs_coloured}$({reset})"')
+                    pkgs_coloured = f'{reset}, {red}'.join(log[mode])
+                    print(
+                        f'update: {green}{mode}{reset}: '
+                        f'updated following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'
+                    )
             else:
-                logfile.write(f"LOG: No package updated in {name}.\n")
+                logfile.write(f"LOG: no package updated in {name}\n")
                 if not args.quiet:
-                    os.system(f'echo "update: $({green}){mode}$({reset}): '
-                              f'no package updated in $({bold}){name}$({reset})"')
+                    print(f'update: {green}{mode}{reset}: no package updated in {bold}{name}{reset}')
 
         if filelist:
             files = ', '.join(filelist)
-            logfile.write(f'LOG: Archived following old logs: {files}\n')
+            logfile.write(f'LOG: archived following old logs: {files}\n')
             if not args.quiet:
-                os.system(f'echo "update: $({green})cleanup$({reset}): '
-                          f'ancient logs archived into $({under}){arcfile}$({reset})"')
+                print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcfile}{reset}')
         logfile.write('\n\n\n\n')
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        subprocess.run(['bash', 'libupdate/aftermath.sh', datetime.date.strftime(today, '%y%m%d'), 'true'])

@@ -5,10 +5,12 @@
 sript -q /dev/null tput clear > /dev/null 2>&1
 
 
-# preset terminal output colours
-blush="tput setaf 1"    # blush / red
-green="tput setaf 2"    # green
-reset="tput sgr0"       # reset
+# terminal display
+reset="\033[0m"         # reset
+bold="\033[1m"          # bold
+red="\033[91m"          # bright red foreground
+green="\033[92m"        # bright green foreground
+yellow="\033[93m"       # bright yellow foreground
 
 
 ################################################################################
@@ -103,23 +105,19 @@ function pip_fixbroken {
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
+        $logprefix printf "++ ${bold}pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix echo "++ pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet" > /dev/null 2>&1
             sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet > /dev/null 2>&1
             sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet > /dev/null 2>&1
-            $logprefix echo > /dev/null 2>&1
         else
-            $logprefix echo "++ pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet"
             sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet
             sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet
-            $logprefix echo
         fi
+        $logprefix echo | $logsuffix
     done
 
     # inform if broken dependencies fixed
-    $green
-    $logprefix echo "update: pip: all broken pip$pprint dependencies fixed" | $logsuffix
-    $reset
+    $logprefix printf "update: ${green}pip${reset}: all broken ${bold}pip$pprint${reset} dependencies fixed\n" | $logsuffix
 }
 
 
@@ -227,45 +225,35 @@ function pipupdate {
                     list=`$prefix/$suffix -m pip list --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
+                            $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
-                                $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet" > /dev/null 2>&1
                                 sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
-                                $logprefix echo > /dev/null 2>&1
                             else
-                                $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet"
                                 sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet
-                                $logprefix echo
                             fi
+                            $logprefix echo | $logsuffix
                         done
                     else
-                        $green
-                        $logprefix echo "update: pip: all pip$pprint packages have been up-to-date" | $logsuffix
-                        $reset
-                        $logprefix echo | $logsuffix
+                        $logprefix printf "update: ${green}pip${reset}: all ${bold}pip$pprint packages${reset} have been up-to-date\n\n" | $logsuffix
                     fi ;;
                 *)
                     flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
+                        $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet" > /dev/null 2>&1
                             sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
-                            $logprefix echo > /dev/null 2>&1
                         else
-                            $logprefix echo "++ pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet"
                             sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet
-                            $logprefix echo
                         fi
+                        $logprefix echo | $logsuffix
                     else
-                        $blush
-                        $logprefix echo "update: pip: no pip$pprint package names $name installed" | $logsuffix
-                        $reset
+                        $logprefix printf "update: ${yellow}pip${reset}: no pip$pprint package names $name installed\n" | $logsuffix
 
                         # did you mean
-                        dym=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs | sed "s/ /, /g"`
-                        if [[ -nz $dym ]] ; then
-                            $blush
-                            $logprefix echo "update: pip: did you mean any of the following packages: $dym?" | $logsuffix
-                            $reset
+                        tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
+                        if [[ -nz $tmp ]] ; then
+                            dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
+                            $logprefix printf "update: ${yellow}pip${reset}: did you mean any of the following packages: ${red}$dym${reset}?\n" | $logsuffix
                         fi
                         $logprefix echo | $logsuffix
                     fi ;;
@@ -273,35 +261,33 @@ function pipupdate {
         done
 
         # fix broken package dependencies
-        required=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
-        if [[ -nz $required ]]; then
-            $blush
-            $logprefix echo "update: pip: dependency pip$pprint packages found broken: $required" | $logsuffix
-            $reset
-            if ( $arg_Y ) ; then
-                pip_fixbroken $prefix $suffix $pprint $required
+        tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
+        if [[ -nz $tmparg ]]; then
+            broken=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmparg`
+            $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: ${red}$broken${reset}\n" | $logsuffix
+            if ( $arg_Y || $arg_q ) ; then
+                $logprefix echo | $logsuffix
+                pip_fixbroken $prefix $suffix $pprint $broken
             else
                 while true ; do
                     read -p "Would you like to reinstall? (y/N)" yn
                     case $yn in
                         [Yy]* )
                             $logprefix echo | $logsuffix
-                            pip_fixbroken $prefix $suffix $pprint $required
+                            pip_fixbroken $prefix $suffix $pprint $tmparg
                             break ;;
                         [Nn]* )
-                            $blush
-                            $logprefix echo "update: pip: broken dependencies remain" | $logsuffix
-                            $reset
+                            $logprefix printf "update: ${red}pip${reset}: broken dependencies remain\n" | $logsuffix
                             break ;;
                         * )
-                            echo "Invalid choice." ;;
+                            printf "update: ${red}pip${reset}: invalid choice\n" ;;
                     esac
                 done
             fi
             $logprefix echo | $logsuffix
         fi
     else
-        echo -e "pip$pprint not installed.\n" >> $tmpfile
+        printf "update: pip: pip$pprint not installed.\n\n" >> $tmpfile
     fi
 }
 
@@ -492,79 +478,12 @@ if ( ! $( \
     $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
     $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $updated \
     ) ) ; then
-    $green
-    $logprefix echo "All packages have been up-to-date." | $logsuffix
-    $reset
+    $logprefix printf "update: ${green}pip${reset}: no package updated in Python\n" | $logsuffix
 fi
 
 
-# read /tmp/log/update.log line by line then migrate to log file
-while read -r line ; do
-    # plus `+` proceeds in line
-    if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then
-        # add "+" in the beginning, then write to /Library/Logs/Scripts/update/logdate.log
-        echo "+$line" >> $logfile
-    # minus `-` proceeds in line
-    elif [[ $line =~ ^(-\ )(.*)$ ]] ; then
-        # replace "-" with "+", then write to /Library/Logs/Scripts/update/logdate.log
-        echo "$line" | sed "y/-/+/" >> $logfile
-    # colon `:` in line
-    elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
-        # if this is a update logging message
-        if [[ $line =~ ^(update: )(.*)$ ]] ; then
-            echo "LOG: $line" >> $logfile
-        # if this is a warning
-        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
-            # log tag
-            prefix="WAR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/warning: //"`
-        # if this is an error
-        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(error:\ )(.*)$ ]] ; then
-            # log tag
-            prefix="ERR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/error: //"`
-        # if this is asking for password
-        elif [[ $line =~ ^(Password:)(.*) ]] ; then
-            # log tag
-            prefix="PWD"
-            # log content
-            suffix="content hidden due to security reasons"
-        # otherwise, extract its own tag
-        else
-            # log tag
-            prefix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/\(.*\)*:\ .*/\1/" | cut -c 1-3 | tr "[:lower:]" "[:upper:]"`
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/.*:\ \(.*\)*.*/\1/"`
-        fi
-        # write to /Library/Logs/Scripts/update/logdate.log
-        echo "$prefix: $suffix" >> $logfile
-    # colourised `[??m` line
-    elif [[ $line =~ ^(.*)(\[[0-9][0-9]*m)(.*)$ ]] ; then
-        # error (red/[31m) line
-        if [[ $line =~ ^(.*)(\[31m)(.*)$ ]] ; then
-            # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate.log
-            echo "ERR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # warning (yellow/[33m)
-        elif [[ $line =~ ^(.*)(\[33m)(.*)$ ]] ; then
-            # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate.log
-            echo "WAR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # other colourised line
-        else
-            # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate.log
-            echo "INF: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        fi
-    # empty / blank line
-    elif [[ $line =~ ^([[:space:]]*)$ ]] ; then
-        # directlywrite to /Library/Logs/Scripts/update/logdate.log
-        echo $line >> $logfile
-    # non-empty line
-    else
-        # add `OUT` tag, remove special characters and discard flushed lines then write to /Library/Logs/Scripts/update/logdate.log
-        echo "OUT: $line" | sed "s/\[\?[0-9][0-9]*[a-zA-Z]//g" | sed "/\[[A-Z]/d" | sed "/##*\ \ *.*%/d" >> $logfile
-    fi
-done < $tmpfile
+# aftermath works
+bash libupdate/aftermath.sh $logdate
 
 
 # remove /tmp/log/update.log
