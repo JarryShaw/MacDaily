@@ -5,10 +5,12 @@
 sript -q /dev/null tput clear > /dev/null 2>&1
 
 
-# preset terminal output colours
-blush="tput setaf 1"    # blush / red
-green="tput setaf 2"    # green
-reset="tput sgr0"       # reset
+# terminal display
+reset="\033[0m"         # reset
+bold="\033[1m"          # bold
+red="\033[91m"          # bright red foreground
+green="\033[92m"        # bright green foreground
+yellow="\033[93m"       # bright yellow foreground
 
 
 ################################################################################
@@ -16,11 +18,12 @@ reset="tput sgr0"       # reset
 #
 # Parameter list:
 #   1. Log Date
-#   2. System Flag
-#   3. Cellar Flag
-#   4. CPython Flag
-#   5. PyPy Flag
-#   6. Version
+#   2. Log Time
+#   3. System Flag
+#   4. Cellar Flag
+#   5. CPython Flag
+#   6. PyPy Flag
+#   7. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -48,17 +51,18 @@ reset="tput sgr0"       # reset
 
 # parameter assignment
 logdate=$1
-arg_s=$2
-arg_b=$3
-arg_c=$4
-arg_y=$5
-arg_V=$6
-arg_t=$7
-arg_pkg=${*:8}
+logtime=$2
+arg_s=$3
+arg_b=$4
+arg_c=$5
+arg_y=$6
+arg_V=$7
+arg_t=$8
+arg_pkg=${*:9}
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/dependency/$logdate.log"
+logfile="/Library/Logs/Scripts/dependency/$logdate/$logtime.log"
 tmpfile="/tmp/log/dependency.log"
 
 
@@ -76,21 +80,18 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-# usage: $logprefix [command] | logcattee | logsuffix
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-logsuffix="grep ^.*$"
+logprefix="script -aq $tmpfile"
+# logsuffix="grep ^.*$"
 
 
 # pip dependency function usage:
-#   pipdependency package python pip-suffix pip-suffix pip-pprint
+#   pipdependency package pip-suffix pip-suffix pip-pprint
 function pipdependency {
     # parameter assignment
     local arg_pkg=$1
-    local python=$2
-    local prefix=$3
-    local suffix=$4
-    local pprint=$5
+    local prefix=$2
+    local suffix=$3
+    local pprint=$4
 
     # log function call
     echo "+ pipdependency $@" >> $tmpfile
@@ -98,27 +99,24 @@ function pipdependency {
     # if tree flag set
     if ( $arg_t ) ; then
         # check if `pipdeptree` installed
-        if $python -m pipdeptree > /dev/null 2>&1 ; then
+        if $prefix/$suffix -m pipdeptree > /dev/null ; then
             case $arg_pkg in
                 all)
-                    $logprefix echo "++ pipdeptree$pprint" | $logcattee | $logsuffix
-                    $logprefix pipdeptree$pprint | $logcattee | $logsuffix
-                    $logprefix echo | $logcattee | $logsuffix ;;
+                    $logprefix printf "++ ${bold}pipdeptree$pprint${reset}\n"
+                    $logprefix pipdeptree$pprint
+                    $logprefix echo ;;
                 *)
-                    $logprefix echo "++ pipdeptree$pprint -p $arg_pkg" | $logcattee | $logsuffix
-                    $logprefix pipdeptree$pprint -p $arg_pkg | $logcattee | $logsuffix
-                    $logprefix echo | $logcattee | $logsuffix ;;
+                    $logprefix printf "++ ${bold}pipdeptree$pprint -p $arg_pkg${reset}\n"
+                    $logprefix pipdeptree$pprint -p $arg_pkg
+                    $logprefix echo ;;
             esac
         else
-            $blush
-            $logprefix echo "Error: Package pipdeptree not installed on pip$pprint." | $logcattee | $logsuffix
-            $reset
-            $logprefix echo | $logcattee | $logsuffix
+            $logprefix printf "dependency: ${red}pip${reset}: package ${red}pipdeptree${reset} not installed on ${bold}pip$pprint${reset}\n"
         fi
     else
-        $logprefix echo "++ pip$pprint deps $arg_pkg" | $logcattee | $logsuffix
-        $logprefix $prefix/pip$suffix show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | tr " " "\n" | $logcattee | $logsuffix
-        $logprefix echo | $logcattee | $logsuffix
+        $logprefix ecprintfho "++ ${bold}pip$pprint deps $arg_pkg${reset}\n"
+        $logprefix $prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | tr " " "\t"
+        $logprefix echo
     fi
 }
 
@@ -135,105 +133,93 @@ function piplogging {
     # make prefix & suffix of pip
     case $mode in
         1)  # pip2.0
-            python="/Library/Frameworks/Python.framework/Versions/2.0/bin/python2.0"
             prefix="/Library/Frameworks/Python.framework/Versions/2.0/bin"
-            suffix="2.0"
+            suffix="python2.0"
             pprint="2.0" ;;
-            2)  # pip2.1
-            python="/Library/Frameworks/Python.framework/Versions/2.1/bin/python2.1"
+        2)  # pip2.1
             prefix="/Library/Frameworks/Python.framework/Versions/2.1/bin"
-            suffix="2.1"
+            suffix="python2.1"
             pprint="2.1" ;;
         3)  # pip2.2
-            python="/Library/Frameworks/Python.framework/Versions/2.2/bin/python2.2"
             prefix="/Library/Frameworks/Python.framework/Versions/2.2/bin"
-            suffix="2.2"
+            suffix="python2.2"
             pprint="2.2" ;;
         4)  # pip2.3
-            python="/Library/Frameworks/Python.framework/Versions/2.3/bin/python2.3"
             prefix="/Library/Frameworks/Python.framework/Versions/2.3/bin"
-            suffix="2.3"
+            suffix="python2.3"
             pprint="2.3" ;;
         5)  # pip2.4
-            python="/Library/Frameworks/Python.framework/Versions/2.4/bin/python2.4"
             prefix="/Library/Frameworks/Python.framework/Versions/2.4/bin"
-            suffix="2.4"
+            suffix="python2.4"
             pprint="2.4" ;;
         6)  # pip2.5
-            python="/Library/Frameworks/Python.framework/Versions/2.5/bin/python2.5"
             prefix="/Library/Frameworks/Python.framework/Versions/2.5/bin"
-            suffix="2.5"
+            suffix="python2.5"
             pprint="2.5" ;;
         7)  # pip2.6
-            python="/Library/Frameworks/Python.framework/Versions/2.6/bin/python2.6"
             prefix="/Library/Frameworks/Python.framework/Versions/2.6/bin"
-            suffix="2.6"
+            suffix="python2.6"
             pprint="2.6" ;;
         8)  # pip2.7
-            python="/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7"
             prefix="/Library/Frameworks/Python.framework/Versions/2.7/bin"
-            suffix="2.7"
+            suffix="python2.7"
             pprint="2.7" ;;
         9)  # pip3.0
-            python="/Library/Frameworks/Python.framework/Versions/3.0/bin/python3.0"
             prefix="/Library/Frameworks/Python.framework/Versions/3.0/bin"
-            suffix="3.0"
+            suffix="python3.0"
             pprint="3.0" ;;
         10)  # pip3.1
-            python="/Library/Frameworks/Python.framework/Versions/3.1/bin/python3.1"
             prefix="/Library/Frameworks/Python.framework/Versions/3.1/bin"
-            suffix="3.1"
+            suffix="python3.1"
             pprint="3.1" ;;
         11)  # pip3.2
-            python="/Library/Frameworks/Python.framework/Versions/3.2/bin/python3.2"
             prefix="/Library/Frameworks/Python.framework/Versions/3.2/bin"
-            suffix="3.2"
+            suffix="python3.2"
             pprint="3.2" ;;
         12)  # pip3.3
-            python="/Library/Frameworks/Python.framework/Versions/3.3/bin/python3.3"
             prefix="/Library/Frameworks/Python.framework/Versions/3.3/bin"
-            suffix="3.3"
+            suffix="python3.3"
             pprint="3.3" ;;
         13)  # pip3.4
-            python="/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4"
             prefix="/Library/Frameworks/Python.framework/Versions/3.4/bin"
-            suffix="3.4"
+            suffix="python3.4"
             pprint="3.4" ;;
         14)  # pip3.5
-            python="/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5"
             prefix="/Library/Frameworks/Python.framework/Versions/3.5/bin"
-            suffix="3.5"
+            suffix="python3.5"
             pprint="3.5" ;;
         15)  # pip3.6
-            python="/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6"
             prefix="/Library/Frameworks/Python.framework/Versions/3.6/bin"
-            suffix="3.6"
+            suffix="python3.6"
             pprint="3.6" ;;
         16)  # pip3.7
-            python="/Library/Frameworks/Python.framework/Versions/3.7/bin/python3.7"
             prefix="/Library/Frameworks/Python.framework/Versions/3.7/bin"
-            suffix="3.7"
+            suffix="python3.7"
             pprint="3.7" ;;
         17)  # pip2
-            python="/usr/local/opt/python@2/bin/python2"
             prefix="/usr/local/opt/python@2/bin"
-            suffix="2"
-            pprint="2" ;;
+            suffix="python2"
+            pprint="2"
+            # link brewed python@2
+            brew link python@2 --force > /dev/null 2>&1 ;;
         18)  # pip3
-            python="/usr/local/opt/python@3/bin/python3"
             prefix="/usr/local/opt/python@3/bin"
-            suffix="3"
-            pprint="3" ;;
+            suffix="python3"
+            pprint="3"
+            # link brewed python
+            brew link python > /dev/null 2>&1 ;;
         19)  # pip_pypy
-            python="/usr/local/opt/pypy/bin/pypy"
             prefix="/usr/local/opt/pypy/bin"
-            suffix="_pypy"
-            pprint="_pypy" ;;
+            suffix="pypy"
+            pprint="_pypy"
+            # link brewed pypy
+            brew link pypy > /dev/null 2>&1 ;;
         20)  # pip_pypy3
-            python="/usr/local/opt/pypy3/bin/pyp3"
             prefix="/usr/local/opt/pypy3/bin"
-            suffix="_pypy3"
-            pprint="_pypy3" ;;
+            suffix="pypy3"
+            pprint="_pypy3"
+            # link brewed pypy3
+            brew link pypy3 > /dev/null 2>&1 ;;
     esac
 
     # if tree flag set
@@ -244,12 +230,12 @@ function piplogging {
             touch $pipdeptree
             chmod 777 $pipdeptree
             echo "#!$python" >> $pipdeptree
-            cat libdependency/pipdeptree.py >> $pipdeptree
+            cat ./libdependency/pipdeptree.py >> $pipdeptree
         fi
     fi
 
     # if executive exits
-    if [ -e $prefix/pip$suffix ] ; then
+    if [ -e $prefix/$suffix ] ; then
         showed=true
         for name in $arg_pkg ; do
             # All or Specified Packages
@@ -260,32 +246,31 @@ function piplogging {
                         list="all"
                     else
                         # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                        list=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/"`
+                        list=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     fi
 
                     for pkg in $list ; do
-                        pipdependency $pkg $python $prefix $suffix $pprint
+                        pipdependency $pkg $prefix $suffix $pprint
                     done ;;
                 *)
-                    flag=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
-                        pipdependency $name $python $prefix $suffix $pprint
+                        pipdependency $name $prefix $suffix $pprint
                     else
-                        $blush
-                        $logprefix echo "Error: No pip$pprint package names $name installed." | $logcattee | $logsuffix
-                        $reset
+                        $logprefix printf "dependency: ${yellow}pip${reset}: no pip$pprint package names $name installed\n"
 
                         # did you mean
-                        dym=`$prefix/pip$suffix list --format legacy | sed "s/\(.*\)* (.*).*/\1/" | grep $name | xargs | sed "s/ /, /g"`
-                        if [[ -nz $dym ]] ; then
-                            $logprefix echo "Did you mean any of the following packages: $dym?" | $logcattee | $logsuffix
+                        tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
+                        if [[ -nz $tmp ]] ; then
+                            dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
+                            $logprefix printf "dependency: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n"
                         fi
-                        $logprefix echo | $logcattee | $logsuffix
+                        $logprefix echo
                     fi ;;
             esac
         done
     else
-        echo -e "pip$pprint: Not installed.\n" >> $tmpfile
+        printf "dependency: pip: pip$pprint not installed.\n\n" >> $tmpfile
     fi
 }
 
@@ -460,76 +445,12 @@ if ( ! $( \
     $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
     $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $showed \
     ) ) ; then
-    $green
-    $logprefix echo "No dependency showed." | $logcattee | $logsuffix
-    $reset
+    $logprefix printf "dependency: ${green}pip${reset}: no ${bold}packages${reset} uninstalled in Python\n\n" | $logsuffix
 fi
 
 
-# read /tmp/log/dependency.log line by line then migrate to log file
-while read -r line ; do
-    # plus `+` proceeds in line
-    if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then
-        # add "+" in the beginning, then write to /Library/Logs/Scripts/dependency/logdate.log
-        echo "+$line" >> $logfile
-    # minus `-` proceeds in line
-    elif [[ $line =~ ^(-\ )(.*)$ ]] ; then
-        # replace "-" with "+", then write to /Library/Logs/Scripts/dependency/logdate.log
-        echo "$line" | sed "y/-/+/" >> $logfile
-    # colon `:` in line
-    elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
-        # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
-            # log tag
-            prefix="WAR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/warning: //"`
-        # if this is an error
-        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(error:\ )(.*)$ ]] ; then
-            # log tag
-            prefix="ERR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/error: //"`
-        # if this is asking for password
-        elif [[ $line =~ ^(Password:)(.*) ]] ; then
-            # log tag
-            prefix="PWD"
-            # log content
-            suffix="content hidden due to security reasons"
-        # otherwise, extract its own tag
-        else
-            # log tag
-            prefix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/\(.*\)*:\ .*/\1/" | cut -c 1-3 | tr "[:lower:]" "[:upper:]"`
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/.*:\ \(.*\)*.*/\1/"`
-        fi
-        # write to /Library/Logs/Scripts/dependency/logdate.log
-        echo "$prefix: $suffix" >> $logfile
-    # colourised `[??m` line
-    elif [[ $line =~ ^(.*)(\[[0-9][0-9]*m)(.*)$ ]] ; then
-        # error (red/[31m) line
-        if [[ $line =~ ^(.*)(\[31m)(.*)$ ]] ; then
-            # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/dependency/logdate.log
-            echo "ERR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # warning (yellow/[33m)
-        elif [[ $line =~ ^(.*)(\[33m)(.*)$ ]] ; then
-            # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/dependency/logdate.log
-            echo "WAR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # other colourised line
-        else
-            # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/dependency/logdate.log
-            echo "INF: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        fi
-    # empty / blank line
-    elif [[ $line =~ ^([[:space:]]*)$ ]] ; then
-        # directlywrite to /Library/Logs/Scripts/dependency/logdate.log
-        echo $line >> $logfile
-    # non-empty line
-    else
-        # add `OUT` tag, remove special characters and discard flushed lines then write to /Library/Logs/Scripts/dependency/logdate.log
-        echo "OUT: $line" | sed "s/\[\?[0-9][0-9]*[a-zA-Z]//g" | sed "/\[[A-Z]/d" | sed "/##*\ \ *.*%/d" >> $logfile
-    fi
-done < $tmpfile
+# aftermath works
+bash ./libdependency/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/dependency.log

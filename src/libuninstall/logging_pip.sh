@@ -185,7 +185,7 @@ function piplogging {
             case $name in
                 all)
                     echo -e "++ pip$pprint list --format freeze | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> $tmpfile
-                    $logprefix $prefix/$suffix -m list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | $logsuffix
+                    $logprefix $prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
                     echo >> $tmpfile ;;
                 *)
                     # check if package installed
@@ -198,7 +198,7 @@ function piplogging {
                         # if ignore-dependencies flag not set
                         if ( ! $arg_i ) ; then
                             echo -e "++ pip$pprint show $name | grep \"Requires: \" | sed \"s/Requires: //\" | sed \"s/,//g\"" >> $tmpfile
-                            $logprefix $prefix/$suffix -m pip show $name | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | $logsuffix
+                            $logprefix $prefix/$suffix -m pip show $name | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"
                             echo >> $tmpfile
                         fi
                     else
@@ -207,7 +207,7 @@ function piplogging {
             esac
         done
     else
-        echo -e "$prefix/$suffix: no such file or directory\n" >> $tmpfile
+        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> $tmpfile
     fi
 }
 

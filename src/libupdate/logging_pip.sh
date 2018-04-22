@@ -197,7 +197,7 @@ function piplogging {
             esac
         done
     else
-        echo -e "$prefix/$suffix: no such file or directory\n" >> $tmpfile
+        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> $tmpfile
     fi
 }
 

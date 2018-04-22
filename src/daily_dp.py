@@ -13,7 +13,7 @@ from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '0.8.1'
+__version__ = '1.0.0'
 
 
 # today
@@ -41,12 +41,12 @@ program = ' '.join(sys.argv)    # arguments
 
 
 # terminal display
-red = 'tput setaf 1'    # blush / red
-green = 'tput setaf 2'  # green
-blue = 'tput setaf 14'  # blue
-bold = 'tput bold'      # bold
-under = 'tput smul'     # underline
-reset = 'tput sgr0'     # reset
+reset  = '\033[0m'      # reset
+bold   = '\033[1m'      # bold
+under  = '\033[4m'      # underline
+red    = '\033[91m'     # bright red foreground
+green  = '\033[92m'     # bright green foreground
+blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
@@ -146,73 +146,135 @@ def get_parser():
 
 
 def main(argv=None):
-    parser = get_parser()
-    args = parser.parse_args(argv)
+    try:
+        parser = get_parser()
+        args = parser.parse_args(argv)
 
-    if args.mode is None:
-        parser.print_help()
-        return
+        if args.mode is None:
+            parser.print_help()
+            return
 
-    pathlib.Path('/tmp/log').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('/Library/Logs/Scripts/dependency').mkdir(parents=True, exist_ok=True)
+        tmpdir = '/tmp/log'
+        logdir = '/Library/Logs/Scripts/dependency'
+        arcdir = '/Library/Logs/Scripts/archive/dependency'
+        tardir = '/Library/Logs/Scripts/tarfile/dependency'
 
-    logdate = datetime.date.strftime(today, '%y%m%d')
-    logname = f'/Library/Logs/Scripts/dependency/{logdate}.log'
+        logdate = datetime.date.strftime(today, '%y%m%d')
+        logtime = datetime.date.strftime(today, '%H%M%S')
+        logname = f'{logdir}/{logdate}/{logtime}.log'
 
-    mode = '-*- Arguments -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
-        for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
+        pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(tardir).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(tmpdir).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
 
-    if isinstance(args.mode, str):
-        args.mode = [args.mode]
-    for mode in args.mode:
-        dependency = MODE.get(mode)
-        log = dependency(args, file=logname, date=logdate)
+        mode = '-*- Arguments -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
+            logfile.write(f'\n\nCMD: {python} {program}')
+            logfile.write(f'\n\n{mode}\n\n')
+            for key, value in args.__dict__.items():
+                logfile.write(f'ARG: {key} = {value}\n')
 
-    arcfile = '/Library/Logs/Scripts/archive.zip'
-    filelist = list()
-    with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
-        abs_src = os.path.abspath('/Library/Logs/Scripts')
-        for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/dependency'):
-            for filename in files:
-                if filename == '.DS_Store':
-                    continue
-                name, ext = os.path.splitext(filename)
-                if ext != '.log':
-                    continue
-                ctime = datetime.datetime.strptime(name, '%y%m%d')
-                delta = today - ctime
-                if delta > datetime.timedelta(7):
-                    absname = os.path.abspath(os.path.join(dirname, filename))
-                    arcname = absname[len(abs_src) + 1:]
-                    zf.write(absname, arcname)
+        if isinstance(args.mode, str):
+            args.mode = [args.mode]
+        for mode in args.mode:
+            dependency = MODE.get(mode)
+            log = dependency(args, file=logname, date=logdate, time=logtime)
+
+        filelist = list()
+        for subdir in os.listdir(logdir):
+            if subdir == '.DS_Store':
+                continue
+            absdir = os.path.join(logdir, subdir)
+            if not os.path.isdir(absdir):
+                continue
+            if subdir != logdate:
+                tarname = f'{arcdir}/{subdir}.tar.gz'
+                with tarfile.open(tarname, 'w:gz') as tf:
+                    abs_src = os.path.abspath(absdir)
+                    for dirname, subdirs, files in os.walk(absdir):
+                        for filename in files:
+                            if filename == '.DS_Store':
+                                continue
+                            name, ext = os.path.splitext(filename)
+                            if ext != '.log':
+                                continue
+                            absname = os.path.abspath(os.path.join(dirname, filename))
+                            arcname = absname[len(abs_src) + 1:]
+                            tf.add(absname, arcname)
+                            filelist.append(arcname)
+                    shutil.rmtree(absdir)
+
+        ctime = datetime.datetime.fromtimestamp(os.stat(arcdir).st_birthtime)
+        delta = today - ctime
+        if delta > datetime.timedelta(7):
+            arcdate = datetime.date.strftime(ctime, '%y%m%d')
+            tarname = f'{tardir}/{arcdate}-{logdate}.tar.bz'
+            with tarfile.open(tarname, 'w:bz2') as tf:
+                abs_src = os.path.abspath(arcdir)
+                for dirname, subdirs, files in os.walk(arcdir):
+                    for filename in files:
+                        if filename == '.DS_Store':
+                            continue
+                        name, ext = os.path.splitext(filename)
+                        if ext != '.gz':
+                            continue
+                        absname = os.path.abspath(os.path.join(dirname, filename))
+                        arcname = absname[len(abs_src) + 1:]
+                        tf.add(absname, arcname)
+                        filelist.append(arcname)
+                shutil.rmtree(arcdir)
+
+        ctime = datetime.datetime.fromtimestamp(os.stat('/Library/Logs/Scripts/tarfile').st_birthtime)
+        delta = today - ctime
+        if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
+            arcdate = datetime.date.strftime(ctime, '%y%m%d')
+            tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
+            with tarfile.open(tarname, 'w:xz') as tf:
+                abs_src = os.path.abspath('/Library/Logs/Scripts/tarfile')
+                for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/tarfile'):
+                    for filename in files:
+                        if filename == '.DS_Store':
+                            continue
+                        name, ext = os.path.splitext(filename)
+                        if ext != '.bz':
+                            continue
+                        absname = os.path.abspath(os.path.join(dirname, filename))
+                        arcname = absname[len(abs_src) + 1:]
+                        tf.add(absname, arcname)
+                        filelist.append(arcname)
+                shutil.rmtree('/Library/Logs/Scripts/tarfile')
+
+            dskpath = pathlib.Path('/Volumes/Jarry Shaw/')
+            if dskpath.exists() and dskpath.is_dir():
+                arcfile = '/Volumes/Jarry Shaw/Developers/archive.zip'
+                with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
+                    arcname = os.path.split(tarname)[1]
+                    zf.write(tarname, arcname)
                     filelist.append(arcname)
-                    os.remove(absname)
+                    os.remove(tarname)
 
-    mode = '-*- Dependency Logs -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
+        mode = '-*- Dependency Logs -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(f'\n\n{mode}\n\n')
 
-        for mode in log:
-            name = NAME.get(mode, mode)
-            if log[mode] and all(log[mode]):
-                pkgs = f', '.join(log[mode])
-                logfile.write(f'LOG: Showed dependencies of following {name} packages: {pkgs}.\n')
-            else:
-                logfile.write(f'LOG: No dependencies showed in {name} packages.\n')
+            for mode in log:
+                name = NAME.get(mode)
+                if name is None:    continue
+                if log[mode] and all(log[mode]):
+                    pkgs = f', '.join(log[mode])
+                    logfile.write(f'LOG: showed dependencies of following {name} packages: {pkgs}\n')
+                else:
+                    logfile.write(f'LOG: no dependencies showed in {name} packages\n')
 
-        if filelist:
-            files = ', '.join(filelist)
-            logfile.write(f'LOG: Archived following old logs: {files}\n')
-            if not args.quiet:
-                os.system(f'echo "dependency: $({green})cleanup$({reset}): '
-                          f'ancient logs archived into $({under}){arcfile}$({reset})"')
-        logfile.write('\n\n\n\n')
-
+            if filelist:
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following old logs: {files}\n')
+    except KeyboardInterrupt:
+        logdate = datetime.date.strftime(today, '%y%m%d')
+        logtime = datetime.date.strftime(today, '%H%M%S')
+        subprocess.run(['bash', 'libdependency/aftermath.sh', logdate, logtime, 'true'])
 
 if __name__ == '__main__':
     sys.exit(main())

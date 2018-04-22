@@ -86,7 +86,7 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew cask list $name > /dev/null 2>&1 ; then
+            if brew cask list $name > /dev/null ; then
                 echo -e "+ brew cask info $name | grep  \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
                 $logprefix brew cask info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
                 echo >> $tmpfile

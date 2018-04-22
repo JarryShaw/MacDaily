@@ -85,7 +85,7 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew list --versions $name > /dev/null 2&>1 ; then
+            if brew list --versions $name > /dev/null ; then
                 echo -e "+ brew desc $name | sed -e \"s/\[1m//\" | grep \"$name: \" | sed \"s/\(.*\)*:.*/\1/\"" >> $tmpfile
                 $logprefix brew desc $name | sed -e "s/\[1m//" | grep "$name: " | sed "s/\(.*\)*:.*/\1/"
                 echo >> $tmpfile

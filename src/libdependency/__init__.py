@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
 
 
+import collections
+import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
-import time
 
 
 __all__ = ['dependency_all', 'dependency_pip', 'dependency_brew']
 
 
 # terminal display
-red = 'tput setaf 1'    # blush / red
-green = 'tput setaf 2'  # green
-blue = 'tput setaf 14'  # blue
-bold = 'tput bold'      # bold
-under = 'tput smul'     # underline
-reset = 'tput sgr0'     # reset
+reset  = '\033[0m'      # reset
+bold   = '\033[1m'      # bold
+under  = '\033[4m'      # underline
+flash  = '\033[5m'      # flash
+red    = '\033[91m'     # bright red foreground
+blue   = '\033[96m'     # bright blue foreground
+blush  = '\033[101m'    # bright red background
+purple = '\033[104m'    # bright purple background
 
 
 def _merge_packages(args):
@@ -36,64 +40,59 @@ def _merge_packages(args):
                     packages = {'null'}
                     nullflag = True; break
                 packages = packages.union(set(list_))
-    elif 'all' in args.mode:
+    elif 'all' in args.mode or args.all:
         packages = {'all'}
     else:
         packages = {'null'}
     return packages
 
 
-def dependency_pip(args, *, file, date, retset=False):
+def dependency_pip(args, *, file, date, time, retset=False):
     tree = str(args.tree).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Python -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
+    print(f'\n-*- {blue}Python{reset} -*-\n')
 
-
-    os.system(f'echo "-*- $({blue})Python$({reset}) -*-"; echo ;')
     if 'null' in packages:
         log = set()
-        os.system(f'echo "dependency: $({green})pip$({reset}): no dependency showed"')
         with open(file, 'a') as logfile:
-            logfile.write('INF: No dependency showed.\n')
+            logfile.write('INF: no dependency showed\n')
+        print(f'dependency: {green}pip{reset}: no dependency showed\n')
     else:
-        flag = ('all' in args.mode) or args.all or (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
-        if ('all' in packages and flag) or args.package is not None:
+        flag = not ('pip' in args.mode and any((args.version, args.system, args.brew, args.cpython, args.pypy)))
+        if flag and packages:
             system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
         else:
             system, brew, cpython, pypy, version = \
                 str(args.system).lower(), str(args.brew).lower(), \
-                str(args.cpython).lower(), str(args.pypy).lower(), str(args.version or 1)
+                str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_pip.sh', date, system, brew, cpython, pypy, version] + list(packages),
+            ['bash', 'libdependency/logging_pip.sh', date, time, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split())
+        log = set(logging.stdout.decode().split().split())
 
         subprocess.run(
-            ['sudo', '-H', 'bash', 'libdependency/dependency_pip.sh', date, system, brew, cpython, pypy, version, tree] + list(packages)
+            ['bash', 'libdependency/dependency_pip.sh', date, time, system, brew, cpython, pypy, version, tree] + list(packages)
         )
         subprocess.run(
             ['bash', 'libdependency/relink_pip.sh'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-
-    if retset:
-        time.sleep(5)
-        os.system('tput clear')
     return log if retset else dict(pip=log)
 
 
 def dependency_brew(args, *, file, date, retset=False):
     if shutil.which('brew') is None:
-        os.system(f'''
-                echo "dependency: $({red})brew$({reset}): command not found";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset})
-        ''')
+        print(
+            f'dependency: {blush}{flash}brew{reset}: command not found\n'
+            f'dependency: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+        )
         return set() if retset else dict(brew=set())
 
     tree = str(args.tree).lower()
@@ -102,33 +101,29 @@ def dependency_brew(args, *, file, date, retset=False):
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
+    print(f'\n-*- {blue}Homebrew{reset} -*-\n')
 
-    os.system(f'echo "-*- $({blue})Homebrew$({reset}) -*-"; echo ;')
     if 'null' in packages:
         log = set()
-        os.system(f'echo "dependency: $({green})pip$({reset}): no dependency showed"')
         with open(file, 'a') as logfile:
-            logfile.write('INF: No dependency showed.\n')
+            logfile.write('INF: no dependency showed\n')
+        print(f'dependency: ${green}brew${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_brew.sh', date] + list(packages),
+            ['bash', 'libdependency/logging_brew.sh', date, time] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split())
+        log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_brew.sh', date, tree] + list(packages)
+            ['bash', 'libdependency/dependency_brew.sh', date, time, tree] + list(packages)
         )
-
     return log if retset else dict(brew=log)
 
 
-def dependency_all(args, *, file, date):
-    log = dict(
-        pip = set(),
-        brew = set(),
-    )
+def dependency_all(args, *, file, date, time):
+    log = collections.defaultdict(set)
     for mode in ('pip', 'brew'):
         if not args.__getattribute__(f'no_{mode}'):
-            log[mode] = eval(f'dependency_{mode}')(args, retset=True, file=file, date=date)
+            log[mode] = eval(f'dependency_{mode}')(args, retset=True, file=file, date=date, time=time)
     return log
