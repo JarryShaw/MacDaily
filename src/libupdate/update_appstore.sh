@@ -111,7 +111,7 @@ else
                     tmp=`$installed | sed "s/.app//" | grep $name | xargs`
                     if [[ -nz $tmp ]] ; then
                         dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                        $logprefix printf "update: ${yellow}appstore${reset}: did you mean any of the following applications: ${red}$dym${reset}?\n" | $logsuffix
+                        $logprefix printf "update: ${yellow}appstore${reset}: did you mean any of the following applications: $dym?\n" | $logsuffix
                     fi
                     $logprefix echo | $logsuffix
                 fi ;;

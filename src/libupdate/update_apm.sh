@@ -97,7 +97,7 @@ else
             tmp=`apm list --bare --no-color | sed "s/@.*//" | grep $name | xargs`
             if [[ -nz $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                $logprefix printf "update: ${yellow}apm${reset}: did you mean any of the following packages: ${red}$dym${reset}?\n" | $logsuffix
+                $logprefix printf "update: ${yellow}apm${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
             fi
             $logprefix echo | $logsuffix
         fi

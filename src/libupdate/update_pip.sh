@@ -253,7 +253,7 @@ function pipupdate {
                         tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
                         if [[ -nz $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                            $logprefix printf "update: ${yellow}pip${reset}: did you mean any of the following packages: ${red}$dym${reset}?\n" | $logsuffix
+                            $logprefix printf "update: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
                         fi
                         $logprefix echo | $logsuffix
                     fi ;;
@@ -263,8 +263,8 @@ function pipupdate {
         # fix broken package dependencies
         tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
         if [[ -nz $tmparg ]]; then
-            broken=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmparg`
-            $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: ${red}$broken${reset}\n" | $logsuffix
+            broken=`python -c "print('${red}' + '${reset}, ${red}'.join([ item.split('==')[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
+            $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: $broken\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then
                 $logprefix echo | $logsuffix
                 pip_fixbroken $prefix $suffix $pprint $broken

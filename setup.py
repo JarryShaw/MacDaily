@@ -18,7 +18,7 @@ with open('./README.rst', 'r') as file:
 
 
 # version
-__version__ = '1.0.0.dev1'
+__version__ = '1.0.0.a1'
 
 
 # set-up script for pip distribution
@@ -38,7 +38,7 @@ setuptools.setup(
     },
     entry_points = {
         'console_scripts': [
-            'jsdaily = jsdaily.main',
+            'jsdaily = jsdaily:daily',
         ]
     },
     packages = [

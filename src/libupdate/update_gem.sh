@@ -97,7 +97,7 @@ else
             tmp=`gem list | sed "s/\(.*\)* (.*)/\1/" | grep $arg_pkg | xargs`
             if [[ -nz $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                $logprefix printf "update: ${yellow}gem${reset}: did you mean any of the following gems: ${red}$dym${reset}\n?" | $logsuffix
+                $logprefix printf "update: ${yellow}gem${reset}: did you mean any of the following gems: $dym\n?" | $logsuffix
             fi
             $logprefix echo | $logsuffix
         fi

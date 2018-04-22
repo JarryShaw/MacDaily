@@ -120,7 +120,7 @@ else
                 tmp=`brew cask list -1 | grep $name | xargs`
                 if [[ -nz $tmp ]] ; then
                     dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                    $logprefix printf "update: ${yellow}cask${reset}: did you mean any of the following Casks: ${red}$dym${reset}?\n" | $logsuffix
+                    $logprefix printf "update: ${yellow}cask${reset}: did you mean any of the following Casks: $dym?\n" | $logsuffix
                 fi
                 $logprefix echo | $logsuffix
             fi

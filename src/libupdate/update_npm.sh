@@ -103,7 +103,7 @@ else
             tmp=`npm list --global --parseable | sed "s/.*\///" | grep $arg_pkg | xargs`
             if [[ -nz $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                $logprefix printf "update: ${yellow}npm${reset}: did you mean any of the following node modules: ${red}$dym${reset}?\n" | $logsuffix
+                $logprefix printf "update: ${yellow}npm${reset}: did you mean any of the following node modules: $dym?\n" | $logsuffix
             fi
             $logprefix echo | $logsuffix
         fi

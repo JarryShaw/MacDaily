@@ -371,87 +371,87 @@ def get_parser():
 
 
 def main(argv=None):
-    parser = get_parser()
-    args = parser.parse_args(argv)
+    try:
+        parser = get_parser()
+        args = parser.parse_args(argv)
 
-    if args.mode is None:
-        parser.print_help()
-        return
+        if args.mode is None:
+            parser.print_help()
+            return
 
-    pathlib.Path('/tmp/log').mkdir(parents=True, exist_ok=True)
-    pathlib.Path('/Library/Logs/Scripts/update').mkdir(parents=True, exist_ok=True)
+        pathlib.Path('/tmp/log').mkdir(parents=True, exist_ok=True)
+        pathlib.Path('/Library/Logs/Scripts/update').mkdir(parents=True, exist_ok=True)
 
-    logdate = datetime.date.strftime(today, '%y%m%d')
-    logname = f'/Library/Logs/Scripts/update/{logdate}.log'
+        logdate = datetime.date.strftime(today, '%y%m%d')
+        logname = f'/Library/Logs/Scripts/update/{logdate}.log'
 
-    mode = '-*- Arguments -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
-        for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
+        mode = '-*- Arguments -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
+            logfile.write(f'\n\nCMD: {python} {program}')
+            logfile.write(f'\n\n{mode}\n\n')
+            for key, value in args.__dict__.items():
+                logfile.write(f'ARG: {key} = {value}\n')
 
-    if isinstance(args.mode, str):
-        args.mode = [args.mode]
-    for mode in args.mode:
-        update = MODE.get(mode)
-        log = update(args, file=logname, date=logdate)
+        if isinstance(args.mode, str):
+            args.mode = [args.mode]
+        for mode in args.mode:
+            update = MODE.get(mode)
+            log = update(args, file=logname, date=logdate)
 
-    arcfile = '/Library/Logs/Scripts/archive.zip'
-    filelist = list()
-    with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
-        abs_src = os.path.abspath('/Library/Logs/Scripts')
-        for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/update'):
-            for filename in files:
-                if filename == '.DS_Store':
-                    continue
-                name, ext = os.path.splitext(filename)
-                if ext != '.log':
-                    continue
-                ctime = datetime.datetime.strptime(name, '%y%m%d')
-                delta = today - ctime
-                if delta > datetime.timedelta(7):
-                    absname = os.path.abspath(os.path.join(dirname, filename))
-                    arcname = absname[len(abs_src) + 1:]
-                    zf.write(absname, arcname)
-                    filelist.append(arcname)
-                    os.remove(absname)
+        arcfile = '/Library/Logs/Scripts/archive.zip'
+        filelist = list()
+        with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
+            abs_src = os.path.abspath('/Library/Logs/Scripts')
+            for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/update'):
+                for filename in files:
+                    if filename == '.DS_Store':
+                        continue
+                    name, ext = os.path.splitext(filename)
+                    if ext != '.log':
+                        continue
+                    ctime = datetime.datetime.strptime(name, '%y%m%d')
+                    delta = today - ctime
+                    if delta > datetime.timedelta(7):
+                        absname = os.path.abspath(os.path.join(dirname, filename))
+                        arcname = absname[len(abs_src) + 1:]
+                        zf.write(absname, arcname)
+                        filelist.append(arcname)
+                        os.remove(absname)
 
-    mode = '-*- Update Logs -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
-        if not args.quiet:
-            print(f'\n-*- {blue}Update Logs{reset} -*-\n')
-
-        for mode in log:
-            name = NAME.get(mode, mode)
-            if log[mode] and all(log[mode]):
-                pkgs = f', '.join(log[mode])
-                logfile.write(f'LOG: updated following {name} packages: {pkgs}\n')
-                if not args.quiet:
-                    pkgs_coloured = f'{reset}, {red}'.join(log[mode])
-                    print(
-                        f'update: {green}{mode}{reset}: '
-                        f'updated following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'
-                    )
-            else:
-                logfile.write(f"LOG: no package updated in {name}\n")
-                if not args.quiet:
-                    print(f'update: {green}{mode}{reset}: no package updated in {bold}{name}{reset}')
-
-        if filelist:
-            files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following old logs: {files}\n')
+        mode = '-*- Update Logs -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(f'\n\n{mode}\n\n')
             if not args.quiet:
-                print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcfile}{reset}')
+                print(f'\n-*- {blue}Update Logs{reset} -*-\n')
 
-        if not args.quiet:  print()
-        logfile.write('\n\n\n\n')
+            for mode in log:
+                name = NAME.get(mode, mode)
+                if log[mode] and all(log[mode]):
+                    pkgs = f', '.join(log[mode])
+                    logfile.write(f'LOG: updated following {name} packages: {pkgs}\n')
+                    if not args.quiet:
+                        pkgs_coloured = f'{reset}, {red}'.join(log[mode])
+                        print(
+                            f'update: {green}{mode}{reset}: '
+                            f'updated following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'
+                        )
+                else:
+                    logfile.write(f"LOG: no package updated in {name}\n")
+                    if not args.quiet:
+                        print(f'update: {green}{mode}{reset}: no package updated in {bold}{name}{reset}')
+
+            if filelist:
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following old logs: {files}\n')
+                if not args.quiet:
+                    print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcfile}{reset}')
+
+            if not args.quiet:  print()
+            logfile.write('\n\n\n\n')
+    except KeyboardInterrupt:
+        subprocess.run(['bash', 'libupdate/aftermath.sh', datetime.date.strftime(today, '%y%m%d'), 'true'])
 
 
 if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        subprocess.run(['bash', 'libupdate/aftermath.sh', datetime.date.strftime(today, '%y%m%d'), 'true'])
+    sys.exit(main())
