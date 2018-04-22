@@ -10,24 +10,26 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #
 # Parameter List
 #   1. Log Date
-#   2. Log Mode
-#   3. Start Package
-#   4. End Package
-#   5. Package
+#   2. Log Time
+#   3. Log Mode
+#   4. Start Package
+#   5. End Package
+#   6. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-logmode=$2
-arg_s=$3
-arg_e=$4
-arg_pkg=${*:5}
+logtime=$2
+logmode=$3
+arg_s=$4
+arg_e=$5
+arg_pkg=${*:6}
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/$logmode/$logdate.log"
+logfile="/Library/Logs/Scripts/$logmode/$logdate/$logtime.log"
 tmpfile="/tmp/log/$logmode.log"
 
 
@@ -45,9 +47,8 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-logprefix="script -q /dev/null"
-logcattee="tee -a $tmpfile"
-logsuffix="grep ^.*$"
+logprefix="script -aq $tmpfile"
+# logsuffix="grep ^.*$"
 
 
 # if start package set
@@ -79,87 +80,25 @@ for name in $arg_pkg ; do
             for pkg in $list ; do
                 if [[ $pkg > $start ]] && [[ $pkg < $end ]] ; then
                     echo -e "+ brew cask info $pkg | grep  \"$pkg: \" | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
-                    $logprefix brew cask info $pkg | grep "$pkg: " | sed "s/\(.*\)*: .*/\1/" | $logcattee | $logsuffix
+                    $logprefix brew cask info $pkg | grep "$pkg: " | sed "s/\(.*\)*: .*/\1/"
                     echo >> $tmpfile
                 fi
             done ;;
         *)
             # check if package installed
-            if brew cask list --versions $name > /dev/null 2>&1 ; then
+            if brew cask list $name > /dev/null 2>&1 ; then
                 echo -e "+ brew cask info $name | grep  \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
-                $logprefix brew cask info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/" | $logcattee | $logsuffix
+                $logprefix brew cask info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
                 echo >> $tmpfile
             else
-                echo -e "Error: No available formula with the name \"$name\"\n" >> $tmpfile
+                echo -e "Error: no Cask names $name installed" >> $tmpfile
             fi ;;
     esac
 done
 
 
-# read /tmp/log/logmode.log line by line then migrate to log file
-while read -r line ; do
-    # plus `+` proceeds in line
-    if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then
-        # add "+" in the beginning, then write to /Library/Logs/Scripts/logmode/logdate.log
-        echo "+$line" >> $logfile
-    # minus `-` proceeds in line
-    elif [[ $line =~ ^(-\ )(.*)$ ]] ; then
-        # replace "-" with "+", then write to /Library/Logs/Scripts/logmode/logdate.log
-        echo "$line" | sed "y/-/+/" >> $logfile
-    # colon `:` in line
-    elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
-        # if this is a warning
-        if [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(warning:\ )(.*) ]] ; then
-            # log tag
-            prefix="WAR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/warning: //"`
-        # if this is an error
-        elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^([[:alnum:]][[:alnum:]]*:\ )(.*)(error:\ )(.*)$ ]] ; then
-            # log tag
-            prefix="ERR"
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/error: //"`
-        # if this is asking for password
-        elif [[ $line =~ ^(Password:)(.*) ]] ; then
-            # log tag
-            prefix="PWD"
-            # log content
-            suffix="content hidden due to security reasons"
-        # otherwise, extract its own tag
-        else
-            # log tag
-            prefix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/\(.*\)*:\ .*/\1/" | cut -c 1-3 | tr "[:lower:]" "[:upper:]"`
-            # log content
-            suffix=`echo $line | sed "s/\[[0-9][0-9]*m//g" | sed "s/.*:\ \(.*\)*.*/\1/"`
-        fi
-        # write to /Library/Logs/Scripts/logmode/logdate.log
-        echo "$prefix: $suffix" >> $logfile
-    # colourised `[??m` line
-    elif [[ $line =~ ^(.*)(\[[0-9][0-9]*m)(.*)$ ]] ; then
-        # error (red/[31m) line
-        if [[ $line =~ ^(.*)(\[31m)(.*)$ ]] ; then
-            # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/logmode/logdate.log
-            echo "ERR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # warning (yellow/[33m)
-        elif [[ $line =~ ^(.*)(\[33m)(.*)$ ]] ; then
-            # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/logmode/logdate.log
-            echo "WAR: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        # other colourised line
-        else
-            # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/logmode/logdate.log
-            echo "INF: $line" | sed "s/\[[0-9][0-9]*m//g" >> $logfile
-        fi
-    # empty / blank line
-    elif [[ $line =~ ^([[:space:]]*)$ ]] ; then
-        # directlywrite to /Library/Logs/Scripts/logmode/logdate.log
-        echo $line >> $logfile
-    # non-empty line
-    else
-        # add `OUT` tag, remove special characters and discard flushed lines then write to /Library/Logs/Scripts/logmode/logdate.log
-        echo "OUT: $line" | sed "s/\[\?[0-9][0-9]*[a-zA-Z]//g" | sed "/\[[A-Z]/d" | sed "/##*\ \ *.*%/d" >> $logfile
-    fi
-done < $tmpfile
+# aftermath works
+bash ./libprinstall/aftermath.sh $logdate $logtime $logmode
 
 
 # remove /tmp/log/logmode.log

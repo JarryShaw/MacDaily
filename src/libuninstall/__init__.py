@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
 
+import collections
 import os
 import shlex
 import shutil
 import subprocess
-import time
 
 
 __all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
 
 
 # terminal display
-red = 'tput setaf 1'    # blush / red
-green = 'tput setaf 2'  # green
-blue = 'tput setaf 14'  # blue
-bold = 'tput bold'      # bold
-under = 'tput smul'     # underline
-reset = 'tput sgr0'     # reset
+reset  = '\033[0m'      # reset
+bold   = '\033[1m'      # bold
+under  = '\033[4m'      # underline
+flash  = '\033[5m'      # flash
+red    = '\033[91m'     # bright red foreground
+blue   = '\033[96m'     # bright blue foreground
+blush  = '\033[101m'    # bright red background
+purple = '\033[104m'    # bright purple background
 
 
 def _merge_packages(args):
@@ -36,14 +38,14 @@ def _merge_packages(args):
                     packages = {'null'}
                     nullflag = True; break
                 packages = packages.union(set(list_))
-    elif 'all' in args.mode:
+    elif 'all' in args.mode or args.all:
         packages = {'all'}
     else:
         packages = {'null'}
     return packages
 
 
-def uninstall_pip(args, *, file, date, retset=False):
+def uninstall_pip(args, *, file, date, time, retset=False, flag=False):
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     yes = str(args.yes).lower()
@@ -53,52 +55,49 @@ def uninstall_pip(args, *, file, date, retset=False):
     mode = '-*- Python -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-
     if not args.quiet:
-        os.system(f'echo "-*- $({blue})Python$({reset}) -*-"; echo ;')
+        if flag:    print()
+        print(f'-*- {blue}Python{reset} -*-\n')
 
     if 'null' in packages:
         log = set()
-        if not args.quiet:
-            os.system(f'echo "uninstall: $({green})pip$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
-            logfile.write('INF: No uninstallation performed.\n')
+            logfile.write('INF: no uninstallation performed\n')
+        if not args.quiet:
+            print(f'uninstall: ${green}pip${reset}: no uninstallation performed\n')
     else:
-        flag = ('all' in args.mode) or args.all or (args.version == 1 or not any((args.system, args.brew, args.cpython, args.pypy)))
-        if ('all' in packages and flag) or args.package is not None:
+        flag = not ('pip' in args.mode and any((args.version, args.system, args.brew, args.cpython, args.pypy)))
+        if flag and packages:
             system, brew, cpython, pypy, version = 'true', 'true', 'true', 'true', '1'
         else:
             system, brew, cpython, pypy, version = \
                 str(args.system).lower(), str(args.brew).lower(), \
-                str(args.cpython).lower(), str(args.pypy).lower(), str(args.version or 1)
+                str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_pip.sh', date, system, brew, cpython, pypy, version, idep] + list(packages),
+            ['bash', 'libuninstall/logging_pip.sh', date, time, system, brew, cpython, pypy, version, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split())
+        log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', date, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
+            ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', date, time, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
         )
         subprocess.run(
             ['bash', 'libuninstall/relink_pip.sh'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
+    if not args.quiet:  print()
     return log if retset else dict(pip=log)
 
 
-def uninstall_brew(args, *, file, date, retset=False):
+def uninstall_brew(args, *, file, date, time, retset=False):
     if shutil.which('brew') is None:
-        os.system(f'''
-                echo "uninstall: $({red})brew$({reset}): command not found";
-                echo "You may find Homebrew on $({under})https://brew.sh$({reset}), or install Homebrew through following command:";
-                echo $({bold})'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'$({reset});
-        ''')
+        print(
+            f'uninstall: {blush}{flash}brew{reset}: command not found\n'
+            f'uninstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+        )
         return set() if retset else dict(brew=set())
 
     quiet = str(args.quiet).lower()
@@ -111,47 +110,40 @@ def uninstall_brew(args, *, file, date, retset=False):
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-
     if not args.quiet:
-        os.system(f'echo "-*- $({blue})Homebrew$({reset}) -*-"; echo ;')
+        print(f'-*- {blue}Homebrew{reset} -*-\n')
 
     if 'null' in packages:
         log = set()
-        if not args.quiet:
-            os.system(f'echo "uninstall: $({green})brew$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
-            logfile.write('INF: No uninstallation performed.\n')
+            logfile.write('INF: no uninstallation performed\n')
+        if not args.quiet:
+            print(f'uninstall: ${green}brew${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_brew.sh', date, idep] + list(packages),
+            ['bash', 'libuninstall/logging_brew.sh', date, time, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split())
+        log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libuninstall/uninstall_brew.sh', date, force, quiet, verbose, idep, yes] + list(packages)
+            ['bash', 'libuninstall/uninstall_brew.sh', date, time, force, quiet, verbose, idep, yes] + list(packages)
         )
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
+    if not args.quiet:  print()
     return log if retset else dict(brew=log)
 
 
-def uninstall_cask(args, *, file, date, retset=False):
+def uninstall_cask(args, *, file, date, time, retset=False):
     testing = subprocess.run(
         shlex.split('brew cask'),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if testing.returncode:
-        os.system(f'''
-                echo "uninstall: $({red})cask$({reset}): command not found";
-                echo "You may find Caskroom on $({under})https://caskroom.github.io$({reset}), or install Caskroom through following command:";
-                echo $({bold})'brew tap caskroom/cask'$({reset})
-        ''')
-        if not args.quiet:
-            time.sleep(5)
-            os.system('tput clear')
+        print(
+            f'uninstall: {blush}{flash}cask{reset}: command not found\n'
+            f'uninstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
+            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n'
+        )
         return set() if retset else dict(cask=set())
 
     quiet = str(args.quiet).lower()
@@ -162,40 +154,32 @@ def uninstall_cask(args, *, file, date, retset=False):
     mode = '-*- Caskroom -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-
     if not args.quiet:
-        os.system(f'echo "-*- $({blue})Caskroom$({reset}) -*-"; echo ;')
+        print(f'-*- {blue}Caskroom{reset} -*-\n')
 
     if 'null' in packages:
         log = set()
-        if not args.quiet:
-            os.system(f'echo "uninstall: $({green})cask$({reset}): no uninstallation performed"')
         with open(file, 'a') as logfile:
-            logfile.write('INF: No uninstallation performed.\n')
+            logfile.write('INF: no uninstallation performed\n')
+        if not args.quiet:
+            print(f'uninstall: ${green}cask${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_cask.sh', date] + list(packages),
+            ['bash', 'libuninstall/logging_cask.sh', date, time] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split())
+        log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libuninstall/uninstall_cask.sh', date, quiet, verbose, force] + list(packages)
+            ['bash', 'libuninstall/uninstall_cask.sh', date, time, quiet, verbose, force] + list(packages)
         )
-
-    if not args.quiet:
-        time.sleep(5)
-        os.system('tput clear')
+    if not args.quiet:  print()
     return log if retset else dict(cask=log)
 
 
-def uninstall_all(args, *, file, date):
-    log = dict(
-        pip = set(),
-        brew = set(),
-        cask = set(),
-    )
+def uninstall_all(args, *, file, date, time):
+    log = collections.defaultdict(set)
     for mode in ('pip', 'brew', 'cask'):
         if not args.__getattribute__(f'no_{mode}'):
-            log[mode] = eval(f'uninstall_{mode}')(args, retset=True, file=file, date=date)
+            log[mode] = eval(f'uninstall_{mode}')(args, retset=True, file=file, date=date, time=time)
     return log

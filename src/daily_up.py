@@ -487,7 +487,7 @@ def main(argv=None):
         with open(logname, 'a') as logfile:
             logfile.write(f'\n\n{mode}\n\n')
             if not args.quiet:
-                print(f'\n-*- {blue}Update Logs{reset} -*-\n')
+                print(f'-*- {blue}Update Logs{reset} -*-\n')
 
             for mode in log:
                 name = NAME.get(mode)
@@ -512,7 +512,9 @@ def main(argv=None):
                 if not args.quiet:
                     print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
     except KeyboardInterrupt:
-        subprocess.run(['bash', 'libupdate/aftermath.sh', datetime.date.strftime(today, '%y%m%d'), 'true'])
+        logdate = datetime.date.strftime(today, '%y%m%d')
+        logtime = datetime.date.strftime(today, '%H%M%S')
+        subprocess.run(['bash', 'libupdate/aftermath.sh', logdate, logtime, 'true'])
 
 
 if __name__ == '__main__':

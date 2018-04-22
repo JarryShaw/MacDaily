@@ -192,12 +192,12 @@ function piplogging {
                         $logprefix $prefix/$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
                         echo >> $tmpfile
                     else
-                        echo -e "Error: No pip$pprint package names $name installed.\n" >> $tmpfile
+                        echo -e "Error: no pip$pprint package names $name installed\n" >> $tmpfile
                     fi ;;
             esac
         done
     else
-        echo -e "$prefix/pip$suffix: No such file or directory.\n" >> $tmpfile
+        echo -e "$prefix/$suffix: no such file or directory\n" >> $tmpfile
     fi
 }
 

@@ -67,7 +67,7 @@ fi
 
 # if no outdated packages found
 if ( ! $arg_o ) ; then
-    $logprefix printf "update: ${green}npm${reset}: all ${bold}node modules${reset} have been up-to-date\n" | $logsuffix
+    $logprefix printf "update: ${green}npm${reset}: all ${bold}node modules${reset} have been up-to-date\n\n" | $logsuffix
 else
     # if quiet flag set
     if ( $arg_q ) ; then

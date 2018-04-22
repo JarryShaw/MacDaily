@@ -84,7 +84,6 @@ echo "- /bin/bash $0 $@" >> $tmpfile
 
 
 # log commands
-# usage: $logprefix [command] | logcattee | logsuffix
 logprefix="script -aq $tmpfile"
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
@@ -480,7 +479,7 @@ if ( ! $( \
     $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
     $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $updated \
     ) ) ; then
-    $logprefix printf "update: ${green}pip${reset}: no package updated in Python\n" | $logsuffix
+    $logprefix printf "update: ${green}pip${reset}: no ${bold}packages${reset} updated in Python\n\n" | $logsuffix
 fi
 
 

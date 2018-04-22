@@ -65,7 +65,7 @@ fi
 
 # if no outdated packages found
 if ( ! $arg_o ) ; then
-    $logprefix printf "update: ${green}brew${reset}: all ${bold}formulae${reset} have been up-to-date\n" | $logsuffix
+    $logprefix printf "update: ${green}brew${reset}: all ${bold}formulae${reset} have been up-to-date\n\n" | $logsuffix
 else
     # if quiet flag set
     if ( $arg_q ) ; then
