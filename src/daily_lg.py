@@ -2,10 +2,13 @@
 
 
 import argparse
+import calendar
 import datetime
 import os
 import pathlib
 import platform
+import shutil
+import subprocess
 import sys
 import tarfile
 import zipfile
@@ -14,7 +17,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '0.5.1'
+__version__ = '1.0.0'
 
 
 # today
@@ -24,6 +27,8 @@ today = datetime.datetime.today()
 # mode actions
 MODE = dict(
     apm = lambda *args, **kwargs: logging_apm(*args, **kwargs),
+    gem = lambda *args, **kwargs: logging_gem(*args, **kwargs),
+    npm = lambda *args, **kwargs: logging_npm(*args, **kwargs),
     pip = lambda *args, **kwargs: logging_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: logging_brew(*args, **kwargs),
     cask = lambda *args, **kwargs: logging_cask(*args, **kwargs),
@@ -39,9 +44,12 @@ program = ' '.join(sys.argv)    # arguments
 
 
 # terminal display
-bold = 'tput bold'      # bold
-under = 'tput smul'     # underline
-reset = 'tput sgr0'     # reset
+reset  = '\033[0m'      # reset
+bold   = '\033[1m'      # bold
+under  = '\033[4m'      # underline
+red    = '\033[91m'     # bright red foreground
+green  = '\033[92m'     # bright green foreground
+blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
@@ -55,7 +63,9 @@ def get_parser():
                         ))
 
     parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--gem', action='append_const', const='gem', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--npm', action='append_const', const='npm', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--cask', action='append_const', const='cask', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--dotapp', action='append_const', const='dotapp', dest='mode', help=argparse.SUPPRESS)
@@ -63,7 +73,9 @@ def get_parser():
     parser.add_argument('--appstore', action='append_const', const='appstore', dest='mode', help=argparse.SUPPRESS)
 
     parser.add_argument('--no-apm', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-gem', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-npm', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-cask', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-dotapp', action='store_true', default=False, help=argparse.SUPPRESS)
@@ -72,12 +84,12 @@ def get_parser():
 
     parser.add_argument('mode', action='append', metavar='MODE', nargs='*',
                         choices=[
-                            [], 'apm', 'pip', 'brew', 'cask',
-                            'dotapp', 'macapp', 'appstore',
+                            [], 'apm', 'gem', 'pip', 'npm', 'brew',
+                            'cask', 'dotapp', 'macapp', 'appstore',
                         ], help=(
                             'name of logging mode, could be any from '
-                            'followings, apm, pip, brew, cask, dotapp, '
-                            'macapp, or appstore'
+                            'followings, apm, gem, pip, npm, brew, cask, '
+                            'dotapp, macapp, or appstore'
                         ))
 
     parser.add_argument('-v', '--python_version', action='store', metavar='VER',
@@ -114,71 +126,136 @@ def get_parser():
 
 
 def main(argv=None):
-    parser = get_parser()
-    args = parser.parse_args(argv)
+    try:
+        parser = get_parser()
+        args = parser.parse_args(argv)
 
-    if args.mode is None:
-        parser.print_help()
-        return
+        modes = list()
+        for mode in args.mode:
+            if isinstance(mode, str):   modeds.append(mode)
+            else:                       modes += mode
+        if args.all:
+            modes += ['apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
+        args.mode = set(modes) or None
 
-    print(args)
-    return
+        if args.mode is None:
+            parser.print_help()
+            return
 
-    modes = list()
-    for mode in args.mode:
-        if isinstance(mode, list):
-            modes += mode
-        else:
-            modeds.append(mode)
-    if args.all:
-        modes += ['apm', 'pip', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
+        tmpdir = '/tmp/log'
+        pathlib.Path(tmpdir).mkdir(parents=True, exist_ok=True)
 
-    arcflag = False
-    arcfile = '/Library/Logs/Scripts/archive.zip'
-    for logmode in set(modes):
-        pathlib.Path(f'/Library/Logs/Scripts/logging/{logmode}').mkdir(parents=True, exist_ok=True)
         logdate = datetime.date.strftime(today, '%y%m%d')
-        logname = f'/Library/Logs/Scripts/logging/{logmode}/{logdate}.log'
+        logtime = datetime.date.strftime(today, '%H%M%S')
 
-        with open(logname, 'a') as logfile:
-            logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
-            logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
-            for key, value in args.__dict__.items():
-                logfile.write(f'ARG: {key} = {value}\n')
-            logfile.write('\n\n')
+        arcflag = False
+        for logmode in args.mode:
+            if args.__getattribute__(f'no_{logmode}'):
+                continue
 
-        logging = MODE.get(logmode)
-        log = logging(args, file=logname, date=logdate)
+            logdir = f'/Library/Logs/Scripts/logging/{logmode}'
+            arcdir = f'/Library/Logs/Scripts/archive/logging/{logmode}'
+            tardir = f'/Library/Logs/Scripts/tarfile/logging/{logmode}'
 
-        filelist = list()
-        with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
-            abs_src = os.path.abspath('/Library/Logs/Scripts')
-            for dirname, subdirs, files in os.walk(f'/Library/Logs/Scripts/logging/{logmode}'):
-                for filename in files:
-                    if filename == '.DS_Store':
-                        continue
-                    name, ext = os.path.splitext(filename)
-                    if ext != '.log':
-                        continue
-                    ctime = datetime.datetime.strptime(name, '%y%m%d')
-                    delta = today - ctime
-                    if delta > datetime.timedelta(7):
+            logname = f'{logdir}/{logdate}/{logtime}.log'
+
+            pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
+            pathlib.Path(tardir).mkdir(parents=True, exist_ok=True)
+            pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
+
+            with open(logname, 'a') as logfile:
+                logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
+                logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
+                for key, value in args.__dict__.items():
+                    logfile.write(f'ARG: {key} = {value}\n')
+                logfile.write('\n\n')
+
+            logging = MODE.get(logmode)
+            log = logging(args, file=logname)
+
+            filelist = list()
+            for subdir in os.listdir(logdir):
+                if subdir == '.DS_Store':
+                    continue
+                absdir = os.path.join(logdir, subdir)
+                if not os.path.isdir(absdir):
+                    continue
+                if subdir != logdate:
+                    tarname = f'{arcdir}/{subdir}.tar.gz'
+                    with tarfile.open(tarname, 'w:gz') as tf:
+                        abs_src = os.path.abspath(absdir)
+                        for dirname, subdirs, files in os.walk(absdir):
+                            for filename in files:
+                                if filename == '.DS_Store':
+                                    continue
+                                name, ext = os.path.splitext(filename)
+                                if ext != '.log':
+                                    continue
+                                absname = os.path.abspath(os.path.join(dirname, filename))
+                                arcname = absname[len(abs_src) + 1:]
+                                tf.add(absname, arcname)
+                                filelist.append(arcname)
+                        shutil.rmtree(absdir)
+
+            ctime = datetime.datetime.fromtimestamp(os.stat(arcdir).st_birthtime)
+            delta = today - ctime
+            if delta > datetime.timedelta(7):
+                arcdate = datetime.date.strftime(ctime, '%y%m%d')
+                tarname = f'{tardir}/{arcdate}-{logdate}.tar.bz'
+                with tarfile.open(tarname, 'w:bz2') as tf:
+                    abs_src = os.path.abspath(arcdir)
+                    for dirname, subdirs, files in os.walk(arcdir):
+                        for filename in files:
+                            if filename == '.DS_Store':
+                                continue
+                            name, ext = os.path.splitext(filename)
+                            if ext != '.gz':
+                                continue
+                            absname = os.path.abspath(os.path.join(dirname, filename))
+                            arcname = absname[len(abs_src) + 1:]
+                            tf.add(absname, arcname)
+                            filelist.append(arcname)
+                    shutil.rmtree(arcdir)
+
+            with open(logname, 'a') as logfile:
+                if filelist:
+                    arcflag = True
+                    files = ', '.join(filelist)
+                    logfile.write(f'LOG: archived following old logs: {files}\n')
+
+        ctime = datetime.datetime.fromtimestamp(os.stat('/Library/Logs/Scripts/tarfile').st_birthtime)
+        delta = today - ctime
+        if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
+            arcdate = datetime.date.strftime(ctime, '%y%m%d')
+            tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
+            with tarfile.open(tarname, 'w:xz') as tf:
+                abs_src = os.path.abspath('/Library/Logs/Scripts/tarfile')
+                for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/tarfile'):
+                    for filename in files:
+                        if filename == '.DS_Store':
+                            continue
+                        name, ext = os.path.splitext(filename)
+                        if ext != '.bz':
+                            continue
                         absname = os.path.abspath(os.path.join(dirname, filename))
                         arcname = absname[len(abs_src) + 1:]
-                        zf.write(absname, arcname)
-                        filelist.append(arcname)
-                        os.remove(absname)
+                        tf.add(absname, arcname)
+                shutil.rmtree('/Library/Logs/Scripts/tarfile')
 
-        with open(logname, 'a') as logfile:
-            if filelist:
-                arcflag = True
-                files = ', '.join(filelist)
-                logfile.write(f'LOG: Archived following old logs: {files}\n')
-            logfile.write('\n\n\n\n')
+            dskpath = pathlib.Path('/Volumes/Jarry Shaw/')
+            if dskpath.exists() and dskpath.is_dir():
+                arcfile = '/Volumes/Jarry Shaw/Developers/archive.zip'
+                with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
+                    arcname = os.path.split(tarname)[1]
+                    zf.write(tarname, arcname)
+                    os.remove(tarname)
 
-    if arcflag and not args.quiet:
-        os.system(f'echo "logging: $({green})cleanup$({reset}): '
-                  f'ancient logs archived into $({under}){arcfile}$({reset})"')
+        if arcflag and not args.quiet:
+            print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}/Library/Logs/Scripts/archive/logging{reset}')
+    except KeyboardInterrupt:
+        logdate = datetime.date.strftime(today, '%y%m%d')
+        logtime = datetime.date.strftime(today, '%H%M%S')
+        subprocess.run(['bash', 'liblogging/aftermath.sh', logdate, logtime, 'true'])
 
 
 if __name__ == '__main__':

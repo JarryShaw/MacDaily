@@ -235,5 +235,5 @@ def postinstall(args, *, file, date):
 
     if not args.quiet:  print()
     if not args.no_cleanup:
-        reinstall_cleanup(args, file=file, date=date, time=time brew=True, mode='postinstall')
+        reinstall_cleanup(args, file=file, date=date, time=time, brew=True, mode='postinstall')
     return log

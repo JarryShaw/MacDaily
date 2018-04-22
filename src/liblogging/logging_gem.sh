@@ -6,7 +6,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 ################################################################################
-# Log packages installed through Homebrew.
+# Log Ruby gems.
 
 # Parameter list:
 #   1. Log Name
@@ -15,16 +15,15 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 # parameter assignment
 logfile=$1
-arg_d=$2
 
 
 # log current status
 echo "+ /bin/bash $0 $@" >> $logfile
 
 
-# find packages
-echo -e "++ brew leaves | sed \"s/^/INF: /\"" >> $logfile
-brew leaves 2> /dev/null | sed "s/^/INF: /" >> $logfile
+# find apps
+echo -e "++ gem list | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
+gem list 2>/dev/null | sed "s/\(.*\)* (.*)/INF: \1/" >> $logfile
 echo >> $logfile
 
 

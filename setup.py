@@ -24,7 +24,7 @@ with open('./README.rst', 'r') as file:
 
 
 # version
-__version__ = '1.0.0.b1'
+__version__ = '1.0.0b2'
 
 
 # set-up script for pip distribution
