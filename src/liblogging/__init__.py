@@ -8,8 +8,8 @@ import subprocess
 
 
 __all__ = [
-    'logging_apm', 'logging_pip', 'logging_brew', 'logging_cask',
-    'logging_dotapp', 'logging_macapp', 'logging_appstore',
+    'logging_apm', 'logging_gem', 'logging_pip', 'logging_npm',
+    'logging_brew', 'logging_cask', 'logging_dotapp', 'logging_macapp', 'logging_appstore',
 ]
 
 
@@ -123,7 +123,7 @@ def logging_pip(args, *, file):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         if not args.quiet:
-            prints(f'logging: {green}pip{reset}: {bold}Python{reset} packages logged in {under}{file}{reset}')
+            print(f'logging: {green}pip{reset}: {bold}Python{reset} packages logged in {under}{file}{reset}')
     else:
         if not args.quiet:
             print(f'logging: {red}pip{reset}: command not found')
