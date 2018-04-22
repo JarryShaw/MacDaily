@@ -18,26 +18,28 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Log Date
-#   2. All Flag
-#   3. Quiet Flag
-#   4. Verbose Flag
-#   5. Outdated Flag
-#   6. Package
+#   2. Log Time
+#   3. All Flag
+#   4. Quiet Flag
+#   5. Verbose Flag
+#   6. Outdated Flag
+#   7. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_a=$2
-arg_q=$3
-arg_v=$4
-arg_o=$5
-arg_pkg=${*:6}
+logtime=$2
+arg_a=$3
+arg_q=$4
+arg_v=$5
+arg_o=$6
+arg_pkg=${*:7}
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -45,7 +47,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -112,7 +114,7 @@ fi
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log

@@ -6,10 +6,16 @@ import setuptools
 import sys
 
 
+# error handling class
+class UnsupoortedOS(RuntimeError):
+    def __init__(self, message, *args, **kwargs):
+        sys.tracebacklimit = 0
+        super().__init__(message, *args, **kwargs)
+
+
 # check platform
 if platform.system() != 'Darwin':
-    print('error: package "jsdaily" runs only on macOS')
-    sys.exit(1)
+    raise UnsupoortedOS('jsdaily: script runs only on macOS')
 
 
 # README
@@ -18,7 +24,7 @@ with open('./README.rst', 'r') as file:
 
 
 # version
-__version__ = '1.0.0.a1'
+__version__ = '1.0.0.a3'
 
 
 # set-up script for pip distribution

@@ -15,28 +15,30 @@ bold="\033[1m"          # bold
 #
 # Parameter List:
 #   1. Log Date
-#   2. Ruby Flag
-#   3. Node.js Flag
-#   4. Python Flag
-#   5. Homebrew Flag
-#   6. Caskroom Flag
-#   7. Quiet Flag
+#   2. Log Time
+#   3. Ruby Flag
+#   4. Node.js Flag
+#   5. Python Flag
+#   6. Homebrew Flag
+#   7. Caskroom Flag
+#   8. Quiet Flag
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_gem=$2
-arg_npm=$3
-arg_pip=$4
-arg_brew=$5
-arg_cask=$6
-arg_q=$7
-# arg_v=$8
+logtime=$2
+arg_gem=$3
+arg_npm=$4
+arg_pip=$5
+arg_brew=$6
+arg_cask=$7
+arg_q=$8
+# arg_v=$9
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -44,7 +46,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -179,7 +181,7 @@ fi
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log

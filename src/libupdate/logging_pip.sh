@@ -10,11 +10,12 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #
 # Parameter list:
 #   1. Log Date
-#   2. System Flag
-#   3. Cellar Flag
-#   4. CPython Flag
-#   5. PyPy Flag
-#   6. Version
+#   2. Log Time
+#   3. System Flag
+#   4. Cellar Flag
+#   5. CPython Flag
+#   6. PyPy Flag
+#   7. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -34,23 +35,24 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   7. Package
+#   8. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_s=$2
-arg_b=$3
-arg_c=$4
-arg_y=$5
-arg_V=$6
-arg_pkg=${*:7}
+logtime=$2
+arg_s=$3
+arg_b=$4
+arg_c=$5
+arg_y=$6
+arg_V=$7
+arg_pkg=${*:8}
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -58,7 +60,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -361,7 +363,7 @@ done
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log

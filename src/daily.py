@@ -64,7 +64,7 @@ def get_parser():
 
 def main():
     if platform.system() != 'Darwin':
-        raise UnsupoortedOS('update: script runs only on macOS')
+        raise UnsupoortedOS('jsdaily: script runs only on macOS')
 
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:2])

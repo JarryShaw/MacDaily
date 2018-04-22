@@ -10,17 +10,19 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #
 # Parameter List
 #   1. Log Date
-#   2. Greedy Flag
+#   2. Log Time
+#   3. Greedy Flag
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_g=$2
+logtime=$2
+arg_g=$3
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -28,7 +30,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -62,7 +64,7 @@ fi
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log

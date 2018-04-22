@@ -15,23 +15,25 @@ bold="\033[1m"          # bold
 #
 # Parameter list:
 #   1. Log Date
-#   2. Quiet Flag
-#   3. Verbose Flag
-#   4. Force Flag
-#   5. Merge Flag
+#   2. Log Time
+#   3. Quiet Flag
+#   4. Verbose Flag
+#   5. Force Flag
+#   6. Merge Flag
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_q=$2
-arg_v=$3
-arg_f=$4
-arg_m=$5
+logtime=$2
+arg_q=$3
+arg_v=$4
+arg_f=$5
+arg_m=$6
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -39,7 +41,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -91,7 +93,7 @@ $logprefix echo | $logsuffix
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log

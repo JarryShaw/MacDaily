@@ -18,11 +18,12 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Log Date
-#   2. System Flag
-#   3. Cellar Flag
-#   4. CPython Flag
-#   5. PyPy Flag
-#   6. Version
+#   2. Log Time
+#   3. System Flag
+#   4. Cellar Flag
+#   5. CPython Flag
+#   6. PyPy Flag
+#   7. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -42,29 +43,30 @@ yellow="\033[93m"       # bright yellow foreground
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   7. Yes Flag
-#   8. Quiet Flag
-#   9. Verbose Flag
-#  10. Package
+#   8. Yes Flag
+#   9. Quiet Flag
+#  10. Verbose Flag
+#  11. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 logdate=$1
-arg_s=$2
-arg_b=$3
-arg_c=$4
-arg_y=$5
-arg_V=$6
-arg_Y=$7
-arg_q=$8
-arg_v=$9
-arg_pkg=${*:10}
+logtime=$2
+arg_s=$3
+arg_b=$4
+arg_c=$5
+arg_y=$6
+arg_V=$7
+arg_Y=$8
+arg_q=$9
+arg_v=${10}
+arg_pkg=${*:11}
 
 
 # log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate.log"
+logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
 tmpfile="/tmp/log/update.log"
 
 
@@ -72,7 +74,7 @@ tmpfile="/tmp/log/update.log"
 rm -f $tmpfile
 
 
-# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate.log
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
 touch $logfile
 touch $tmpfile
 
@@ -483,7 +485,7 @@ fi
 
 
 # aftermath works
-bash libupdate/aftermath.sh $logdate
+bash ./libupdate/aftermath.sh $logdate $logtime
 
 
 # remove /tmp/log/update.log
