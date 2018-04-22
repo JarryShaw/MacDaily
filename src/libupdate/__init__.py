@@ -48,11 +48,11 @@ def _merge_packages(args):
 
 
 def update_cleanup(args, *, file, date, time, gem=False, npm=False, pip=False, brew=False, cask=False, retset=False):
-    gem = str(args.gem if 'cleanup' in args.mode else bool(gem)).lower()
-    npm = str(args.npm if 'cleanup' in args.mode else bool(npm)).lower()
-    pip = str(args.pip if 'cleanup' in args.mode else bool(pip)).lower()
-    brew = str(args.brew if 'cleanup' in args.mode else bool(brew)).lower()
-    cask = str(args.cask if 'cleanup' in args.mode else bool(cask)).lower()
+    gem = str(args.gem if 'cleanup' in args.mode else gem).lower()
+    npm = str(args.npm if 'cleanup' in args.mode else npm).lower()
+    pip = str(args.pip if 'cleanup' in args.mode else pip).lower()
+    brew = str(args.brew if 'cleanup' in args.mode else brew).lower()
+    cask = str(args.cask if 'cleanup' in args.mode else cask).lower()
     quiet = str(args.quiet).lower()
 
     mode = '-*- Cleanup -*-'.center(80, ' ')
@@ -355,12 +355,11 @@ def update_appstore(args, *, file, date, time, retset=False):
 def update_all(args, *, file, date, time):
     log = collections.defaultdict(set)
     for mode in ('apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'):
+        locals()[mode] = False
         if not args.__getattribute__(f'no_{mode}'):
+            locals()[mode] = True
             log[mode] = eval(f'update_{mode}')(args, retset=True, file=file, date=date, time=time)
 
     if not args.no_cleanup:
-        update_cleanup(
-            args, file=file, date=date, time=time, retset=True,
-            gem=log['gem'], npm=log['npm'], pip=log['pip'], brew=log['brew'], cask=log['cask'],
-        )
+        update_cleanup(args, file=file, date=date, time=time, retset=True, gem=gem, npm=npm, pip=pip, brew=brew, cask=cask)
     return log

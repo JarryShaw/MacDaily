@@ -52,8 +52,8 @@ def _merge_packages(args, *, mode):
 
 
 def reinstall_cleanup(args, *, file, date, time, mode, brew=False, cask=False):
-    brew = str(args.brew if (mode == 'reinstall' and 'cleanup' in args.mode) else bool(brew)).lower()
-    cask = str(args.cask if (mode == 'reinstall' and 'cleanup' in args.mode) else bool(cask)).lower()
+    brew = str(args.brew if (mode == 'reinstall' and 'cleanup' in args.mode) else brew).lower()
+    cask = str(args.cask if (mode == 'reinstall' and 'cleanup' in args.mode) else cask).lower()
     quiet = str(args.quiet).lower()
 
     mode = '-*- Cleanup -*-'.center(80, ' ')
@@ -185,11 +185,13 @@ def reinstall_cask(args, *, file, date, time, cleanup=True, retset=False):
 def reinstall_all(args, *, file, date):
     log = collections.defaultdict(set)
     for mode in ('brew', 'cask'):
+        locals()[mode] = False
         if not args.__getattribute__(f'no_{mode}'):
+            locals()[mode] = True
             log[mode] = eval(f'reinstall_{mode}')(args, retset=True, file=file, date=date, time=time)
 
     if not args.no_cleanup:
-        reinstall_cleanup(args, file=file, date=date, time=time, retset=True, brew=log['brew'], cask=log['cask'])
+        update_cleanup(args, file=file, date=date, time=time, retset=True, brew=brew, cask=cask)
     return log
 
 
