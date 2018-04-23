@@ -17,7 +17,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 # today
@@ -511,7 +511,7 @@ def main(argv=None):
                 logfile.write(f'LOG: archived following old logs: {files}\n')
                 if not args.quiet:
                     print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
-    except KeyboardInterrupt:
+    except KeyboardInterrupt, PermissionError:
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
         subprocess.run(['bash', 'libupdate/aftermath.sh', logdate, logtime, 'true'])
