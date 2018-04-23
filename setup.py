@@ -19,12 +19,12 @@ if platform.system() != 'Darwin':
 
 
 # README
-with open('./README.rst', 'r') as file:
+with open('./README.md', 'r') as file:
     long_desc = file.read()
 
 
 # version
-__version__ = '1.0.3.post2'
+__version__ = '1.0.3.post3'
 
 
 # set-up script for pip distribution
@@ -38,6 +38,7 @@ setuptools.setup(
     keywords = 'daily utility script',
     description = 'Some useful daily utility scripts.',
     long_description = long_desc,
+    long_description_content_type='text/markdown',
     python_requires = '>=3.6',
     extras_require = {
         'pipdeptree': ['pipdeptree']
