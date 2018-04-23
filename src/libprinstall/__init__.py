@@ -185,9 +185,9 @@ def reinstall_cask(args, *, file, date, time, cleanup=True, retset=False):
 def reinstall_all(args, *, file, date):
     log = collections.defaultdict(set)
     for mode in ('brew', 'cask'):
-        locals()[mode] = False
+        globals()[mode] = False
         if not args.__getattribute__(f'no_{mode}'):
-            locals()[mode] = True
+            globals()[mode] = True
             log[mode] = eval(f'reinstall_{mode}')(args, retset=True, file=file, date=date, time=time)
 
     if not args.no_cleanup:

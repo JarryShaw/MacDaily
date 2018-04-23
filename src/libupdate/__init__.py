@@ -355,9 +355,9 @@ def update_appstore(args, *, file, date, time, retset=False):
 def update_all(args, *, file, date, time):
     log = collections.defaultdict(set)
     for mode in ('apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'):
-        locals()[mode] = False
+        globals()[mode] = False
         if not args.__getattribute__(f'no_{mode}'):
-            locals()[mode] = True
+            globals()[mode] = True
             log[mode] = eval(f'update_{mode}')(args, retset=True, file=file, date=date, time=time)
 
     if not args.no_cleanup:
