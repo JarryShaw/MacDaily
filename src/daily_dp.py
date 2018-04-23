@@ -17,7 +17,7 @@ from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 # today
@@ -275,7 +275,7 @@ def main(argv=None):
             if filelist:
                 files = ', '.join(filelist)
                 logfile.write(f'LOG: archived following old logs: {files}\n')
-    except KeyboardInterrupt, PermissionError:
+    except (KeyboardInterrupt, PermissionError):
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
         subprocess.run(['bash', 'libdependency/aftermath.sh', logdate, logtime, 'true'])

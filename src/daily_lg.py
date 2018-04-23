@@ -17,7 +17,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 # today
@@ -252,7 +252,7 @@ def main(argv=None):
 
         if arcflag and not args.quiet:
             print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}/Library/Logs/Scripts/archive/logging{reset}')
-    except KeyboardInterrupt, PermissionError:
+    except (KeyboardInterrupt, PermissionError):
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
         subprocess.run(['bash', 'liblogging/aftermath.sh', logdate, logtime, 'true'])
