@@ -161,7 +161,7 @@ def update_npm(args, *, file, date, time, cleanup=True, retset=False):
         print(f'-*- {blue}Node.js{reset} -*-\n')
 
     if 'all' in packages or args.all:
-        all = 'true'
+        allflag = 'true'
         logging = subprocess.run(
             ['bash', 'libupdate/logging_npm.sh', date, time],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -177,12 +177,12 @@ def update_npm(args, *, file, date, time, cleanup=True, retset=False):
         pkg = { f'{name}@{value["wanted"]}' for name, value in stdict.items() }
         outdated = 'true' if log and all(log) else 'false'
     else:
-        all = 'false'
+        allflag = 'false'
         log = pkg = packages
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_npm.sh', date, time, all, quiet, verbose, outdated] + list(pkg)
+        ['sudo', 'bash', 'libupdate/update_npm.sh', date, time, allflag, quiet, verbose, outdated] + list(pkg)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
