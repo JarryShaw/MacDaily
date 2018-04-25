@@ -17,7 +17,7 @@ from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 # today
@@ -54,11 +54,13 @@ blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='jsdeps', description=(
-        'Trivial Package Dependency Manager'
-    ), usage=(
-        'jsdeps [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
-    ))
+    parser = argparse.ArgumentParser(prog='dependency', description=(
+                    'Trivial Package Dependency Manager'
+                ), usage=(
+                    'jsdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
+                ), epilog=(
+                    'aliases: dependency, deps, dp'
+                ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
                         dest='mode', help=(
@@ -81,7 +83,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Show Dependencies of Python Packages'
                         ), usage=(
-                            'jsdeps pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'jsdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(
@@ -125,7 +127,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Show Dependencies of Homebrew Packages'
                         ), usage=(
-                            'jsdeps brew [-h] [-t] [-a] [-p PKG]'
+                            'jsdaily dependency brew [-h] [-t] [-a] [-p PKG]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(

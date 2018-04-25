@@ -4,26 +4,30 @@ Some useful daily utility scripts.
 
 - [Installation](#installation)
 - [Usage](#usage)
-    * [`jsupdate`](#update)
+    * [`update`](#update)
         - [Atom](#update_apm)
+        - [Ruby](#update_gem)
+        - [Node.js](#update_npm)
         - [Python](#update_pip)
         - [Homebrew](#update_brew)
         - [Caskroom](#update_cask)
         - [App Store](#update_apptore)
-    * [`jsuninstall`](#uninstall)
+    * [`uninstall`](#uninstall)
         - [Python](#uninstall_pip)
         - [Homebrew](#uninstall_brew)
         - [Caskroom](#uninstall_cask)
-    * [`jsreinstall`](#reinstall)
+    * [`reinstall`](#reinstall)
         - [Homebrew](#reinstall_brew)
         - [Caskroom](#reinstall_cask)
-    * [`jspostinstall`](#postinstall)
+    * [`postinstall`](#postinstall)
         - [Homebrew](#postinstall_brew)
-    * [`jsdeps`](#dependency)
+    * [`dependency`](#dependency)
         - [Python](#dependency_pip)
         - [Homebrew](#dependency_brew)
-    * [`jslogging`](#logging)
+    * [`logging`](#logging)
         - Atom
+        - Ruby
+        - Node.js
         - Python
         - Homebrew
         - Caskroom
@@ -41,8 +45,17 @@ Some useful daily utility scripts.
 
  > Note that `jsdaily` requires Python versions __since 3.6__
 
+&emsp; Simply run the following to install the latest from PyPI:
+
 ```
-pip install jsdaily
+$ pip install jsdaily
+```
+
+&emsp; Or install from the git repository:
+
+```
+$ git clone https://github.com/JarryShaw/jsdaily.git
+$ python setup.py install
 ```
 
 &nbsp;
@@ -53,57 +66,63 @@ pip install jsdaily
 
 <a name="update"> </a>
 
-##### `jsupdate`
+##### `update`
 
-&emsp; `jsupdate` is a package manager written in Python 3.6 and Bash 3.2, which automatically update all packages installed through --
+&emsp; `update` is a package manager written in Python 3.6 and Bash 3.2, which automatically update all packages installed through --
 
   - `apm` -- Atom packages
+  - `gem` -- Ruby gems
+  - `npm` -- Node.js modules
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
   - `cask` -- [Caskroom](https://caskroom.github.io) applications
   - `appstore` -- Mac App Store or `softwareupdate` installed applications
 
-&emsp; You may install `jsupdate` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/update/`. The global man page for `jsupdate` shows as below.
+&emsp; You may find log files in directory `/Library/Logs/Scripts/update/`. The global man page for `update` shows as below.
 
 ```
-$ jsupdate --help
-usage: jsupdate [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ...
+$ jsdaily update -h
+usage: jsdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ...
 
 Automatic Package Update Manager
 
 optional arguments:
   -h, --help     show this help message and exit
   -V, --version  show program's version number and exit
-  -a, --all      update all packages installed through pip, Homebrew, and App
-                 Store
+  -a, --all      update all packages installed through Atom, pip, RubyGem,
+                 Node.js, Homebrew, App Store, and etc
   -f, --force    run in force mode, only for Homebrew or Caskroom
   -m, --merge    run in merge mode, only for Homebrew
   -g, --greedy   run in greedy mode, only for Caskroom
+  -r, --restart  automatically restart if necessary, only for App Store
+  -Y, --yes      yes for all selections, only for pip
   -q, --quiet    run in quiet mode, with no output information
   -v, --verbose  run in verbose mode, with detailed output information
 
 mode selection:
   MODE           update outdated packages installed through a specified
-                 method, e.g.: apm, pip, brew, cask, appstore, or
-                 alternatively and simply, cleanup
+                 method, e.g.: apm, gem, npm, pip, brew, cask, appstore,
+                 or alternatively and simply, cleanup
+
+aliases: update, up, upgrade
 ```
 
-&emsp; As it shows, there are five modes in total (if these commands exists). To update all packages, you may use one of commands below.
+&emsp; As it shows, there are seven modes in total (if these commands exists). To update all packages, you may use one of commands below.
 
 ```
-$ jsupdate -a
-$ jsupdate --all
+$ jsdaily update -a
+$ jsdaily update --all
 ```
 
 <a name="update_apm"> </a>
 
 1. `apm` -- Atom packages
 
-&emsp; [Atom](https://atom.io) provides a package manager called `apm`, i.e. "Atom Package Manager". The man page for `jsupdate apm` shows as below.
+&emsp; [Atom](https://atom.io) provides a package manager called `apm`, i.e. "Atom Package Manager". The man page for `jsdaily update apm` shows as below.
 
 ```
-$ jsupdate apm --help
-usage: jsupdate apm [-h] [-qv] [-a] [-p PKG]
+$ jsdaily update apm --help
+usage: jsdaily update apm [-h] [-qv] [-a] [-p PKG]
 
 Update Installed Atom Packages
 
@@ -116,23 +135,74 @@ optional arguments:
   -v, --verbose         run in verbose mode, with detailed output information
 ```
 
-&emsp; If arguments omit, `jsupdate apm` will __NOT__ update outdated packages of Atom. And when using `-p` or `--package`, if given wrong package name, `jsupdate apm` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily update apm` will __NOT__ update outdated packages of Atom. And when using `-p` or `--package`, if given wrong package name, `jsdaily update apm` might give a trivial "did-you-mean" correction.
+
+<a name="update_gem"> </a>
+
+2. `gem` -- Ruby packages
+
+&emsp; `Ruby` provides a package manager called `gem`, which may be refered to
+
+ - `/usr/bin/gem` -- system built-in RubyGem
+ - `/usr/local/bin/gem` -- brewed or installed through other methods by user
+
+The man page for `jsdaily update gem` shows as below.
+
+```
+$ jsdaily update gem --help
+usage: jsdaily update gem [-h] [-qv] [-a] [-p PKG]
+
+Update Installed Ruby Packages
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             update all packages installed through gem
+  -p PKG, --package PKG
+                        name of packages to be updated, default is all
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with detailed output information
+```
+
+&emsp; If arguments omit, `jsdaily update gem` will __NOT__ update outdated packages of Ruby. And when using `-p` or `--package`, if given wrong package name, `jsdaily update gem` might give a trivial "did-you-mean" correction.
+
+<a name="update_npm"> </a>
+
+3. `npm` -- Node.js packages
+
+&emsp; `Node.js` provides a package manager called `npm`, i.e. "Node.js Package Manger". The man page for `jsdaily update npm` shows as below.
+
+```
+$ jsdaily update npm --help
+usage: jsdaily update npm [-h] [-qv] [-a] [-p PKG]
+
+Update Installed Node.js Packages
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             update all packages installed through gem
+  -p PKG, --package PKG
+                        name of packages to be updated, default is all
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with detailed output information
+```
+
+&emsp; If arguments omit, `jsdaily update npm` will __NOT__ update outdated packages of Ruby. And when using `-p` or `--package`, if given wrong package name, `jsdaily update npm` might give a trivial "did-you-mean" correction.
 
 <a name="update_pip"> </a>
 
-2. `pip` -- Python packages
+4. `pip` -- Python packages
 
 &emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support update of following --
 
- - Python 2.7/3.6 installed through Python official disk images
+ - Python 2.\*/3.\* installed through Python official disk images
  - Python 2.7/3.6 installed through `brew install python@2/python`
  - PyPy 2.7/3.5 installed through `brew install pypy/pypy3`
 
 And the man page shows as below.
 
 ```
-$ jsupdate pip --help
-usage: jsupdate pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]
+$ jsdaily update pip --help
+usage: jsdaily update pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]
 
 Update Installed Python Packages
 
@@ -153,17 +223,17 @@ optional arguments:
   -v, --verbose         run in verbose mode, with detailed output information
 ```
 
-&emsp; If arguments omit, `jsupdate pip` will __NOT__ update outdated packages in all copies of Python. And when using `-p` or `--package`, if given wrong package name, `jsupdate pip` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily update pip` will __NOT__ update outdated packages in all copies of Python. And when using `-p` or `--package`, if given wrong package name, `jsdaily update pip` might give a trivial "did-you-mean" correction.
 
 <a name="update_brew"> </a>
 
-3. `brew` -- Homebrew packages
+5. `brew` -- Homebrew packages
 
-&emsp; The man page for `jsupdate brew` shows as below.
+&emsp; The man page for `jsdaily update brew` shows as below.
 
 ```
-$ jsupdate brew --help
-usage: jsupdate brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]
+$ jsdaily update brew --help
+usage: jsdaily update brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]
 
 Update Installed Homebrew Packages
 
@@ -181,17 +251,17 @@ optional arguments:
 
 &emsp; Note that, arguments `-f` and `--force`, `-m` and `--merge` are using only for `brew update` command.
 
-&emsp; If arguments omit, `jsupdate brew` will __NOT__ update outdated packages of Homebrew. And when using `-p` or `--package`, if given wrong package name, `jsupdate brew` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily update brew` will __NOT__ update outdated packages of Homebrew. And when using `-p` or `--package`, if given wrong package name, `jsdaily update brew` might give a trivial "did-you-mean" correction.
 
 <a name="update_cask"> </a>
 
-4. `cask` -- Caskrooom packages
+6. `cask` -- Caskrooom packages
 
-&emsp; The man page for `jsupdate cask` shows as below.
+&emsp; The man page for `jsdaily update cask` shows as below.
 
 ```
-$ jsupdate cask --help
-usage: jsupdate cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]
+$ jsdaily update cask --help
+usage: jsdaily update cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]
 
 Update Installed Caskroom Packages
 
@@ -208,19 +278,19 @@ optional arguments:
   --no-cleanup          do not remove caches & downloads
 ```
 
-&emsp; Note that, arguments `-f` and `--force`, `-g` and `--greedy` are using only for `brew cask upgrade` command. And when latter given, `jsupdate` will directly run `brew cask upgrade --greedy`.
+&emsp; Note that, arguments `-f` and `--force`, `-g` and `--greedy` are using only for `brew cask upgrade` command. And when latter given, `jsdaily update` will directly run `brew cask upgrade --greedy`.
 
-&emsp; If arguments omit, `jsupdate cask` will __NOT__ update outdated packages of Caskroom. And when using `-p` or `--package`, if given wrong package name, `jsupdate cask` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily update cask` will __NOT__ update outdated packages of Caskroom. And when using `-p` or `--package`, if given wrong package name, `jsdaily update cask` might give a trivial "did-you-mean" correction.
 
 <a name="update_appstore"> </a>
 
-5. `appstore` -- Mac App Store packages
+7. `appstore` -- Mac App Store packages
 
-&emsp; The man page for `jsupdate appstore` shows as below.
+&emsp; The man page for `jsdaily update appstore` shows as below.
 
 ```
-$ jsupdate appstore --help
-usage: jsupdate appstore [-h] [-q] [-a] [-p PKG]
+$ jsdaily update appstore --help
+usage: jsdaily update appstore [-h] [-q] [-a] [-p PKG]
 
 Update installed App Store packages
 
@@ -232,26 +302,26 @@ optional arguments:
   -q, --quiet           run in quiet mode, with no output information
 ```
 
-&emsp; If arguments omit, `jsupdate appstore` will __NOT__ update outdated packages in Mac App Store or `softwareupdate`. And when using `-p` or `--package`, if given wrong package name, `jsupdate appstore` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily update appstore` will __NOT__ update outdated packages in Mac App Store or `softwareupdate`. And when using `-p` or `--package`, if given wrong package name, `jsdaily update appstore` might give a trivial "did-you-mean" correction.
 
 
 &nbsp;
 
 <a name="uninstall"> </a>
 
-##### `jsuninstall`
+##### `uninstall`
 
-&emsp; `jsuninstall` is a package manager written in Python 3.6 and Bash 3.2, which recursively and interactively uninstall packages installed through --
+&emsp; `jsdaily uninstall` is a package manager written in Python 3.6 and Bash 3.2, which recursively and interactively uninstall packages installed through --
 
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
   - `cask` -- [Caskroom](https://caskroom.github.io) applications
 
-&emsp; You may install `jsuninstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/uninstall/`. The global man page for `jsuninstall` shows as below.
+&emsp; You may install `jsdaily uninstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/uninstall/`. The global man page for `jsdaily uninstall` shows as below.
 
 ```
-$ jsuninstall --help
-usage: jsuninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ...
+$ jsdaily uninstall --help
+usage: jsdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ...
 
 Package Recursive Uninstall Manager
 
@@ -270,13 +340,15 @@ optional arguments:
 mode selection:
   MODE                  uninstall given packages installed through a specified
                         method, e.g.: pip, brew or cask
+
+aliases: uninstall, remove, rm, r, un
 ```
 
 &emsp; As it shows, there are three modes in total (if these commands exists). The default procedure when arguments omit is to stand alone. To uninstall all packages, you may use one of commands below.
 
 ```
-$ jsuninstall -a
-$ jsuninstall --all
+$ jsdaily uninstall -a
+$ jsdaily uninstall --all
 ```
 
 <a name="uninstall_pip"> </a>
@@ -285,15 +357,15 @@ $ jsuninstall --all
 
 &emsp; As there're several kinds and versions of Python complier, along wiht its `pip` package manager. Here, we support uninstall procedure in following --
 
- * Python 2.7/3.6 installed through Python official disk images
+ * Python 2.\*/3.\* installed through Python official disk images
  * Python 2.7/3.6 installed through `brew install python@2/python`
  * PyPy 2.7/3.5 installed through `brew install pypy/pypy3`
 
 &emsp; And the man page shows as below.
 
 ```
-$ jsuninstall pip --help
-usage: jsuninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]
+$ jsdaily uninstall pip --help
+usage: jsdaily uninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]
 
 Uninstall Installed Python Packages
 
@@ -319,17 +391,17 @@ optional arguments:
   -Y, --yes             yes for all selections
 ```
 
-&emsp; If arguments omit, `jsuninstall pip` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsuninstall pip` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily uninstall pip` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily uninstall pip` might give a trivial “did-you-mean” correction.
 
 <a name="uninstall_brew"> </a>
 
 2. `brew` – Homebrew packages
 
-&emsp; The man page for `jsuninstall brew` shows as below.
+&emsp; The man page for `jsdaily uninstall brew` shows as below.
 
 ```
-$ jsuninstall brew --help
-usage: jsuninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]
+$ jsdaily uninstall brew --help
+usage: jsdaily uninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]
 
 Uninstall Installed Homebrew Packages
 
@@ -347,17 +419,17 @@ optional arguments:
   -Y, --yes             yes for all selections
 ```
 
-&emsp; If arguments omit, `jsuninstall brew` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsuninstall brew` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily uninstall brew` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily uninstall brew` might give a trivial “did-you-mean” correction.
 
 <a name="uninstall_cask"> </a>
 
 3. `cask` – Caskrooom packages
 
-&emsp; The man page for `jsuninstall cask` shows as below.
+&emsp; The man page for `jsdaily uninstall cask` shows as below.
 
 ```
-$ jsuninstall cask --help
-usage: jsuninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]
+$ jsdaily uninstall cask --help
+usage: jsdaily uninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]
 
 Uninstall Installed Caskroom Packages
 
@@ -372,24 +444,24 @@ optional arguments:
   -Y, --yes             yes for all selections
 ```
 
-&emsp; If arguments omit, `jsuninstall cask` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsuninstall cask` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily uninstall cask` will stand alone, and do nothing. To uninstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily uninstall cask` might give a trivial “did-you-mean” correction.
 
 &nbsp;
 
 <a name="reinstall"> </a>
 
-##### `jsreinstall`
+##### `reinstall`
 
-&emsp; `jsreinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through --
+&emsp; `jsdaily reinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively reinstall packages installed through --
 
   - `brew` -- [Homebrew](https://brew.sh) packages
   - `cask` -- [Caskroom](https://caskroom.github.io) applications
 
-&emsp; You may install `jsreinstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/reinstall/`. The global man page for `jsreinstall` shows as below.
+&emsp; You may install `jsdaily reinstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/reinstall/`. The global man page for `jsdaily reinstall` shows as below.
 
 ```
-$ jsreinstall --help
-usage: jsreinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ...
+$ jsdaily reinstall --help
+usage: jsdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ...
 
 Homebrew Package Reinstall Manager
 
@@ -412,24 +484,26 @@ mode selection:
   MODE                  reinstall packages installed through a specified
                         method, e.g.: brew or cask, or alternatively and
                         simply, cleanup
+
+aliases: reinstall, re
 ```
 
 &emsp; As it shows, there are two modes in total (if these commands exists). The default procedure when arguments omit is to stand alone. To reinstall all packages, you may use one of commands below.
 
 ```
-$ jsreinstall -a
-$ jsreinstall --all
+$ jsdaily reinstall -a
+$ jsdaily reinstall --all
 ```
 
 <a name="reinstall_brew"> </a>
 
 1. `brew` – Homebrew packages
 
-&emsp; The man page for `jsreinstall brew` shows as below.
+&emsp; The man page for `jsdaily reinstall brew` shows as below.
 
 ```
-$ jsreinstall brew --help
-usage: jsreinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ...
+$ jsdaily reinstall brew --help
+usage: jsdaily reinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ...
 
 Reinstall Homebrew Packages
 
@@ -449,17 +523,17 @@ optional arguments:
   -v, --verbose         run in verbose mode, with detailed output information
 ```
 
-&emsp; If arguments omit, `jsreinstall brew` will stand alone, and do nothing. To reinstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsreinstall brew` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily reinstall brew` will stand alone, and do nothing. To reinstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily reinstall brew` might give a trivial “did-you-mean” correction.
 
 <a name="reinstall_cask"> </a>
 
 2. `cask` – Caskrooom packages
 
-&emsp; The man page for `jsreinstall cask` shows as below.
+&emsp; The man page for `jsdaily reinstall cask` shows as below.
 
 ```
-$ jsreinstall cask --help
-usage: jsreinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ...
+$ jsdaily reinstall cask --help
+usage: jsdaily reinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ...
 
 Reinstall Caskroom Packages
 
@@ -478,23 +552,23 @@ optional arguments:
   -v, --verbose         run in verbose mode, with detailed output information
 ```
 
-&emsp; If arguments omit, `jsreinstall cask` will stand alone, and do nothing. To reinstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsreinstall cask` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily reinstall cask` will stand alone, and do nothing. To reinstall all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily reinstall cask` might give a trivial “did-you-mean” correction.
 
 &nbsp;
 
 <a name="postinstall"> </a>
 
-##### `jspostinstall`
+##### `postinstall`
 
-&nbsp; `jspostinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively postinstall packages installed through --
+&nbsp; `jsdaily postinstall` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively postinstall packages installed through --
 
   - `brew` -- [Homebrew](https://brew.sh) packages
 
-&emsp; You may install `jspostinstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/postinstall/`. The global man page for `jspostinstall` shows as below.
+&emsp; You may install `jsdaily postinstall` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/postinstall/`. The global man page for `jsdaily postinstall` shows as below.
 
 ```
-$ jspostinstall --help
-usage: jspostinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup]
+$ jsdaily postinstall --help
+usage: jsdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup]
 
 Homebrew Package Postinstall Manager
 
@@ -513,33 +587,35 @@ optional arguments:
   -q, --quiet           run in quiet mode, with no output information
   -v, --verbose         run in verbose mode, with detailed output information
   --no-cleanup          do not remove postinstall caches & downloads
+
+aliases: postinstall, post, ps
 ```
 
 &emsp; As it shows, there is only one mode in total (if these commands exists). To postinstall all packages, you may use one of commands below.
 
 ```
-$ jspostinstall -a
-$ jspostinstall --all
+$ jsdaily postinstall -a
+$ jsdaily postinstall --all
 ```
 
 <a name="postinstall_brew"> </a>
 
-&emsp; If arguments omit, `jspostinstall` will postinstall all installed packages of Homebrew. And when using `-p` or `--package`, if given wrong package name, `jspostinstall` might give a trivial "did-you-mean" correction.
+&emsp; If arguments omit, `jsdaily postinstall` will postinstall all installed packages of Homebrew. And when using `-p` or `--package`, if given wrong package name, `jsdaily postinstall` might give a trivial "did-you-mean" correction.
 
 <a name="dependency"> </a>
 
-##### `jsdeps`
+##### `dependency`
 
-&nbsp; `jsdeps` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively show dependencies of packages installed through --
+&nbsp; `jsdaily dependency` is a package manager written in Python 3.6 and Bash 3.2, which automatically and interactively show dependencies of packages installed through --
 
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
 
-&emsp; You may install `jsdeps` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/dependency/`. The global man page for `jsdeps` shows as below.
+&emsp; You may install `jsdaily dependency` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/dependency/`. The global man page for `jsdaily dependency` shows as below.
 
 ```
-$ jsdeps --help
-usage: jsdeps [-hV] [-t] [-a] [--[no-]MODE] MODE ...
+$ jsdaily dependency --help
+usage: jsdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ...
 
 Trivial Package Dependency Manager
 
@@ -554,13 +630,15 @@ optional arguments:
 mode selection:
   MODE           show dependencies of packages installed through a specified
                  method, e.g.: pip or brew
+
+aliases: dependency, deps, dp
 ```
 
 &emsp; As it shows, there are two mode in total (if these commands exists). The default procedure when arguments omit is to stand alone. To show dependency of all packages, you may use one of commands below.
 
 ```
-$ jsdeps -a
-$ jsdeps --all
+$ jsdaily dependency -a
+$ jsdaily dependency --all
 ```
 
 <a name="dependency_pip"> </a>
@@ -576,8 +654,8 @@ $ jsdeps --all
 And the man page shows as below.
 
 ```
-$ jsdeps pip --help
-usage: jsdeps pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]
+$ jsdaily dependency pip --help
+usage: jsdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]
 
 Show Dependencies of Python Packages
 
@@ -600,17 +678,17 @@ optional arguments:
                         `pipdeptree`
 ```
 
-&emsp; If arguments omit, `jsdeps pip` will stand alone, and do nothing. To show dependency of all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdeps pip` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily dependency pip` will stand alone, and do nothing. To show dependency of all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily dependency pip` might give a trivial “did-you-mean” correction.
 
 <a name="dependency_brew"> </a>
 
 2. `brew` – Homebrew packages
 
-&emsp; The man page for `jsdeps brew` shows as below.
+&emsp; The man page for `jsdaily dependency brew` shows as below.
 
 ```
-$ jsdeps brew --help
-usage: jsdeps brew [-h] [-t] [-a] [-p PKG]
+$ jsdaily dependency brew --help
+usage: jsdaily dependency brew [-h] [-t] [-a] [-p PKG]
 
 Show Dependencies of Homebrew Packages
 
@@ -623,17 +701,19 @@ optional arguments:
   -t, --tree            show dependencies as a tree
 ```
 
-&emsp; If arguments omit, `jsdeps brew` will stand alone, and do nothing. To show dependency of all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdeps brew` might give a trivial “did-you-mean” correction.
+&emsp; If arguments omit, `jsdaily dependency brew` will stand alone, and do nothing. To show dependency of all packages, use `-a` or `--all` option. And when using `-p` or `--package`, if given wrong package name, `jsdaily dependency brew` might give a trivial “did-you-mean” correction.
 
 &nbsp;
 
 <a name="logging"> </a>
 
-##### `jslogging`
+##### `logging`
 
-&nbsp; `jslogging` is a logging manager written in Python 3.6 and Bash 3.2, which automatically log all applications and/or packages installed through --
+&nbsp; `jsdaily logging` is a logging manager written in Python 3.6 and Bash 3.2, which automatically log all applications and/or packages installed through --
 
   - `apm` -- Atom packages
+  - `gem` -- Ruby packages
+  - `npm` -- Node.js modules
   - `pip` -- Python packages, in both version of 2.7 and 3.6, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images
   - `brew` -- [Homebrew](https://brew.sh) packages
   - `cask` -- [Caskroom](https://caskroom.github.io) applications
@@ -641,11 +721,11 @@ optional arguments:
   - `macapp` -- applications in `/Applications` folder
   - `dotapp` -- all `*.app` files on this Mac, a.k.a. `/Volumes/Macintosh HD` folder
 
-&emsp; You may install `jslogging` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/logging/`. The global man page for `jslogging` shows as below.
+&emsp; You may install `jsdaily logging` through `pip` of Python (versions 3.\*). And log files can be found in directory `/Library/Logs/Scripts/logging/`. The global man page for `jsdaily logging` shows as below.
 
 ```
-$ jslogging --help
-usage: logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [-q]
+$ jsdaily logging --help
+usage: jsdaily logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [-q]
                [MODE [MODE ...]]
 
 Application & Package Logging Manager
@@ -667,12 +747,14 @@ optional arguments:
   -c, --cpython         log pip packages on CPython environment
   -y, --pypy            log pip packages on PyPy environment
   -q, --quiet           run in quiet mode, with no output information
+
+aliases: logging, log, lg
 ```
 
 &emsp; As it shows, there are seven mode in total (if these commands exists), and you may call **multiple** modes at one time. The default procedure when arguments omit is to stand alone. To log all entries, you may use one of commands below.
 
 ```
-$ jslogging -a
-$ jslogging --all
-$ jslogging apm pip brew cask dotapp macapp appstore
+$ jsdaily logging -a
+$ jsdaily logging --all
+$ jsdaily logging apm gem npm pip brew cask dotapp macapp appstore
 ```

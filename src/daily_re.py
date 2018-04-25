@@ -17,7 +17,7 @@ from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 # today
@@ -55,10 +55,12 @@ blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='jsreinstall', description=(
+    parser = argparse.ArgumentParser(prog='reinstall', description=(
                     'Homebrew Package Reinstall Manager'
                 ), usage=(
-                    'jsreinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ... '
+                    'jsdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ... '
+                ), epilog=(
+                    'aliases: reinstall, re'
                 ))
     parser.add_argument('-V', '--version', action='version',
                         version='{}'.format(__version__))
@@ -86,7 +88,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Reinstall Homebrew Packages'
                         ), usage=(
-                            'jsreinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ... '
+                            'jsdaily reinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ... '
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -122,7 +124,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Reinstall Caskroom Packages'
                         ), usage=(
-                            'jsreinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ... '
+                            'jsdaily reinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ... '
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -154,7 +156,7 @@ def get_parser():
     parser_cleanup = subparser.add_parser('cleanup', description=(
                             'Cleanup Caches & Downloads'
                         ), usage=(
-                            'jsreinstall cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                            'jsdaily reinstall cleanup [-h] [-q] [--no-brew] [--no-cask]'
                         ))
     parser_cleanup.add_argument('--no-brew', dest='brew', action='store_false', default=True,
                         help=(

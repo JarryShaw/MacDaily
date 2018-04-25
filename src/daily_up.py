@@ -17,7 +17,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 
 # today
@@ -65,16 +65,19 @@ blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='jsupdate', description=(
+    parser = argparse.ArgumentParser(prog='update', description=(
                     'Automatic Package Update Manager'
                 ), usage=(
-                    'jsupdate [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
+                    'jsdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
+                ), epilog=(
+                    'aliases: update, up, upgrade'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
                         dest='mode', help=(
-                            'update all packages installed through Atom, pip '
-                            'RubyGem, Node.js, Homebrew, App Store, and etc'
+                            'update all packages installed through Atom, pip, '
+                            'RubyGem, Node.js, Homebrew, Caskroom, App Store, '
+                            'and etc'
                         ))
 
     parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
@@ -98,15 +101,15 @@ def get_parser():
     subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
                         dest='mode', help=(
                             'update outdated packages installed through '
-                            'a specified method, e.g.: apm, pip, brew, '
-                            'cask, appstore, or alternatively and simply, '
-                            'cleanup'
+                            'a specified method, e.g.: apm, gem, npm, pip, '
+                            'brew, cask, appstore, or alternatively and '
+                            'simply, cleanup'
                         ))
 
     parser_apm = subparser.add_parser('apm', description=(
                             'Update Installed Atom Packages'
                         ), usage=(
-                            'jsupdate apm [-h] [-qv] [-a] [-p PKG]'
+                            'jsdaily update apm [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_apm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -128,7 +131,7 @@ def get_parser():
     parser_gem = subparser.add_parser('gem', description=(
                             'Update Installed Ruby Packages'
                         ), usage=(
-                            'jsupdate gem [-h] [-qv] [-a] [-p PKG]'
+                            'jsdaily update gem [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_gem.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -150,7 +153,7 @@ def get_parser():
     parser_npm = subparser.add_parser('npm', description=(
                             'Update Installed Node.js Packages'
                         ), usage=(
-                            'jsupdate npm [-h] [-qv] [-a] [-p PKG]'
+                            'jsdaily update npm [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_npm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -172,7 +175,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Update Installed Python Packages'
                         ), usage=(
-                            'jsupdate pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'jsdaily update pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -223,7 +226,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Update Installed Homebrew Packages'
                         ), usage=(
-                            'jsupdate brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]'
+                            'jsdaily update brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -257,7 +260,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Update Installed Caskroom Packages'
                         ), usage=(
-                            'jsupdate cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]'
+                            'jsdaily update cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -292,7 +295,7 @@ def get_parser():
     parser_cleanup = subparser.add_parser('cleanup', description=(
                             'Cleanup Caches & Downloads'
                         ), usage=(
-                            'jsupdate cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                            'jsdaily update cleanup [-h] [-q] [--no-brew] [--no-cask]'
                         ))
     parser_cleanup.add_argument('--no-gem', dest='gem', action='store_false', default=True,
                         help=(
@@ -322,7 +325,7 @@ def get_parser():
     parser_appstore = subparser.add_parser('appstore', description=(
                             'Update installed App Store packages'
                         ), usage=(
-                            'jsupdate appstore [-h] [-q] [-a] [-p PKG]'
+                            'jsdaily update appstore [-h] [-q] [-a] [-p PKG]'
                         ))
     parser_appstore.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(

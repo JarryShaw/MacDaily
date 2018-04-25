@@ -17,7 +17,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 
 # today
@@ -54,8 +54,12 @@ blue   = '\033[96m'     # bright blue foreground
 
 def get_parser():
     parser = argparse.ArgumentParser(prog='logging', description=(
-        'Application & Package Logging Manager'
-    ))
+                    'Application & Package Logging Manager'
+                ), usage=(
+                    'jsdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]'
+                ), epilog=(
+                    'aliases: logging, log, lg'
+                ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='store_true', dest='all', default=False,
                         help=(

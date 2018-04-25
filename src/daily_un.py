@@ -18,7 +18,7 @@ from jsdaily.libuninstall import *
 
 
 # version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 # today
@@ -57,10 +57,12 @@ blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='jsuninstall', description=(
+    parser = argparse.ArgumentParser(prog='uninstall', description=(
                     'Package Recursive Uninstall Manager'
                 ), usage=(
-                    'jsuninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ... '
+                    'jsdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ... '
+                ), epilog=(
+                    'aliases: uninstall, remove, rm, r, un'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
@@ -86,7 +88,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Uninstall Installed Python Packages'
                         ), usage=(
-                            'jsuninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'jsdaily uninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(
@@ -143,7 +145,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Uninstall Installed Homebrew Packages'
                         ), usage=(
-                            'jsuninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]'
+                            'jsdaily uninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -178,7 +180,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Uninstall Installed Caskroom Packages'
                         ), usage=(
-                            'jsuninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]'
+                            'jsdaily uninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]'
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(

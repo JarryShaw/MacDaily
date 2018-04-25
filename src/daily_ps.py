@@ -17,7 +17,7 @@ from jsdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 # today
@@ -39,10 +39,12 @@ blue   = '\033[96m'     # bright blue foreground
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(prog='jspostinstall', description=(
+    parser = argparse.ArgumentParser(prog='postinstall', description=(
         'Homebrew Package Postinstall Manager'
     ), usage=(
-        'jspostinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup] '
+        'jsdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup] '
+    ), epilog=(
+        'aliases: postinstall, post, ps'
     ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
