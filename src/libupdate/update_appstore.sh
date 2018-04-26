@@ -17,8 +17,8 @@ yellow="\033[93m"       # bright yellow foreground
 # Check software updates.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Quiet Flag
 #   4. Verbose Flag
 #   5. Restart Flag
@@ -29,18 +29,13 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # Parameter Assignment
-logdate=$1
-logtime=$2
+logfile="$1"
+tmpfile="$2"
 arg_q=$3
 arg_v=$4
 arg_r=$5
 arg_o=$6
 arg_pkg=${*:7}
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
 
 
 # remove /tmp/log/update.log
@@ -123,7 +118,7 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

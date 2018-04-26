@@ -17,7 +17,7 @@ from jsdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 
 # today
@@ -113,7 +113,7 @@ def main(argv=None):
             for key, value in args.__dict__.items():
                 logfile.write(f'ARG: {key} = {value}\n')
 
-        log = postinstall(args, file=logname, date=logdate)
+        log = postinstall(args, file=logname, date=logdate, time=logtime)
 
         filelist = list()
         for subdir in os.listdir(logdir):

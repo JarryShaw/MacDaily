@@ -17,8 +17,8 @@ yellow="\033[93m"       # bright yellow foreground
 # Check Atom updates.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Quiet Flag
 #   4. Verbose Flag
 #   5. Outdated Flag
@@ -28,17 +28,12 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+logfile="$1"
+tmpfile="$2"
 arg_q=$3
 arg_v=$4
 arg_o=$5
 arg_pkg=${*:6}
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
 
 
 # remove /tmp/log/update.log
@@ -108,7 +103,7 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

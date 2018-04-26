@@ -195,7 +195,7 @@ def reinstall_all(args, *, file, date):
     return log
 
 
-def postinstall(args, *, file, date):
+def postinstall(args, *, file, date, time):
     if shutil.which('brew') is None:
         print(
             f'postinstall: {blush}{flash}brew{reset}: command not found\n'

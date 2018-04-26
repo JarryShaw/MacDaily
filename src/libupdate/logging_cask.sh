@@ -9,21 +9,16 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Caskroom packages updates.
 #
 # Parameter List
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Greedy Flag
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+logfile="$1"
+tmpfile="$2"
 arg_g=$3
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
 
 
 # remove /tmp/log/update.log
@@ -64,7 +59,7 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

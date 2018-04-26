@@ -17,7 +17,7 @@ from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '1.0.4'
+__version__ = '1.1.0'
 
 
 # today
@@ -376,7 +376,7 @@ def get_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv, config):
     try:
         parser = get_parser()
         args = parser.parse_args(argv)
@@ -385,14 +385,15 @@ def main(argv=None):
             parser.print_help()
             return
 
-        tmpdir = '/tmp/log'
-        logdir = '/Library/Logs/Scripts/update'
-        arcdir = '/Library/Logs/Scripts/archive/update'
-        tardir = '/Library/Logs/Scripts/tarfile/update'
+        tmpdir = config['Path']['tmpdir']
+        logdir = config['Path']['logdir'] + '/update'
+        arcdir = config['Path']['logdir'] + '/archive/update'
+        tardir = config['Path']['logdir'] + '/tarfile/update'
 
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
         logname = f'{logdir}/{logdate}/{logtime}.log'
+        tmpname = f'{tmpdir}/update.log'
 
         pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
         pathlib.Path(tardir).mkdir(parents=True, exist_ok=True)
@@ -407,11 +408,17 @@ def main(argv=None):
             for key, value in args.__dict__.items():
                 logfile.write(f'ARG: {key} = {value}\n')
 
+        for mode in config['Mode'].keys():
+            flag = not config['Mode'].getboolean(mode)
+            if flag:
+                args.__setattr__(f'no_{mode}', flag)
         if isinstance(args.mode, str):
             args.mode = [args.mode]
-        for mode in args.mode:
+        if 'all' in args.mode:
+            args.mode = ['all']
+        for mode in set(args.mode):
             update = MODE.get(mode)
-            log = update(args, file=logname, date=logdate, time=logtime)
+            log = update(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
 
         filelist = list()
         for subdir in os.listdir(logdir):
@@ -457,29 +464,30 @@ def main(argv=None):
                         filelist.append(arcname)
                 shutil.rmtree(arcdir)
 
-        ctime = datetime.datetime.fromtimestamp(os.stat('/Library/Logs/Scripts/tarfile').st_birthtime)
-        delta = today - ctime
-        if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
-            arcdate = datetime.date.strftime(ctime, '%y%m%d')
-            tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
-            with tarfile.open(tarname, 'w:xz') as tf:
-                abs_src = os.path.abspath('/Library/Logs/Scripts/tarfile')
-                for dirname, subdirs, files in os.walk('/Library/Logs/Scripts/tarfile'):
-                    for filename in files:
-                        if filename == '.DS_Store':
-                            continue
-                        name, ext = os.path.splitext(filename)
-                        if ext != '.bz':
-                            continue
-                        absname = os.path.abspath(os.path.join(dirname, filename))
-                        arcname = absname[len(abs_src) + 1:]
-                        tf.add(absname, arcname)
-                        filelist.append(arcname)
-                shutil.rmtree('/Library/Logs/Scripts/tarfile')
+        dskpath = pathlib.Path(config['Path']['dskdir'])
+        if dskpath.exists() and dskpath.is_dir():
+            ctime = datetime.datetime.fromtimestamp(os.stat(config['Path']['logdir'] + '/tarfile').st_birthtime)
+            delta = today - ctime
+            if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
+                arcdate = datetime.date.strftime(ctime, '%y%m%d')
+                tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
+                with tarfile.open(tarname, 'w:xz') as tf:
+                    abs_src = os.path.abspath(config['Path']['logdir'] + '/tarfile')
+                    for dirname, subdirs, files in os.walk(config['Path']['logdir'] + '/tarfile'):
+                        for filename in files:
+                            if filename == '.DS_Store':
+                                continue
+                            name, ext = os.path.splitext(filename)
+                            if ext != '.bz':
+                                continue
+                            absname = os.path.abspath(os.path.join(dirname, filename))
+                            arcname = absname[len(abs_src) + 1:]
+                            tf.add(absname, arcname)
+                            filelist.append(arcname)
+                    shutil.rmtree(config['Path']['logdir'] + '/tarfile')
 
-            dskpath = pathlib.Path('/Volumes/Jarry Shaw/')
-            if dskpath.exists() and dskpath.is_dir():
-                arcfile = '/Volumes/Jarry Shaw/Developers/archive.zip'
+                pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
+                arcfile = config['Path']['arcdir'] + '/archive.zip'
                 with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                     arcname = os.path.split(tarname)[1]
                     zf.write(tarname, arcname)

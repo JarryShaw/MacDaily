@@ -9,19 +9,14 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Ruby packages updates.
 #
 # Parameter List
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
+logfile="$1"
+tmpfile="$2"
 
 
 # remove /tmp/log/update.log
@@ -49,7 +44,7 @@ echo >> $tmpfile
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

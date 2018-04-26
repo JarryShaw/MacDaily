@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <!-- Label唯一的标识 -->
+        <key>Label</key>
+        <string>com.jsdaily.update.plist</string>
+        <!-- 指定要运行的脚本 -->
+        <key>Program</key>
+        <string>/usr/local/opt/python/Frameworks/Python.framework/Versions/3.6/bin/jsdaily</string>
+        <key>ProgramArguments</key>
+        <array>
+            <string>/usr/local/opt/python/Frameworks/Python.framework/Versions/3.6/bin/jsdaily</string>
+            <string>update</string>
+            <string>--all</string>
+        </array>
+        <!-- 指定要运行的时间 -->
+        <key>StartCalendarInterval</key>
+        <array>
+            <dict>
+                <key>Hour</key>
+                <integer>08</integer>
+                <key>Minute</key>
+                <integer>00</integer>
+            </dict>
+            <dict>
+                <key>Hour</key>
+                <integer>22</integer>
+                <key>Minute</key>
+                <integer>30</integer>
+            </dict>
+        </array>
+        <!-- 标准输出文件 -->
+        <key>StandardOutPath</key>
+        <string>/Library/Logs/Scripts/launchd.log</string>
+        <!-- 标准错误输出文件，错误日志 -->
+        <key>StandardErrorPath</key>
+        <string>/Library/Logs/Scripts/launchd.err</string>
+    </dict>
+</plist>

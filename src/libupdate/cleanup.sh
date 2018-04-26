@@ -14,32 +14,29 @@ bold="\033[1m"          # bold
 # Clean up caches.
 #
 # Parameter List:
-#   1. Log Date
-#   2. Log Time
-#   3. Ruby Flag
-#   4. Node.js Flag
-#   5. Python Flag
-#   6. Homebrew Flag
-#   7. Caskroom Flag
-#   8. Quiet Flag
+#   1. Log File
+#   2. Temp File
+#   3. Disk File
+#   4. Ruby Flag
+#   5. Node.js Flag
+#   6. Python Flag
+#   7. Homebrew Flag
+#   8. Caskroom Flag
+#   9. Quiet Flag
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
-arg_gem=$3
-arg_npm=$4
-arg_pip=$5
-arg_brew=$6
-arg_cask=$7
-arg_q=$8
-# arg_v=$9
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
+logfile="$1"
+tmpfile="$2"
+dskfile="$3"
+arg_gem=$4
+arg_npm=$5
+arg_pip=$6
+arg_brew=$7
+arg_cask=$8
+arg_q=$9
+# arg_v=${10}
 
 
 # remove /tmp/log/update.log
@@ -143,15 +140,15 @@ fi
 
 
 # archive caches if hard disk attached
-if [ -e /Volumes/Jarry\ Shaw/ ] ; then
+if [ -e $dskfile ] ; then
     # check if cache directory exists
     if [ -e $(brew --cache) ] ; then
         # move caches
         $logprefix printf "+ ${bold}cp -rf -v cache archive $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ > /dev/null 2>&1
+            $logprefix cp -rf -v $(brew --cache) $dskfile > /dev/null 2>&1
         else
-            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/
+            $logprefix cp -rf -v $(brew --cache) $dskfile
         fi
         $logprefix echo | $logsuffix
     fi
@@ -181,7 +178,7 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

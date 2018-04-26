@@ -9,8 +9,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Python site packages updates.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. System Flag
 #   4. Cellar Flag
 #   5. CPython Flag
@@ -41,19 +41,14 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+logfile="$1"
+tmpfile="$2"
 arg_s=$3
 arg_b=$4
 arg_c=$5
 arg_y=$6
 arg_V=$7
 arg_pkg=${*:8}
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
 
 
 # remove /tmp/log/update.log
@@ -363,7 +358,7 @@ done
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh $logfile $tmpfile
 
 
 # remove /tmp/log/update.log

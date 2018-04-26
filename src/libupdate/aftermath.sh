@@ -9,21 +9,16 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Move temporary logs into log files.
 #
 # Parameter List:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Interrupted Flag
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+logfile="$1"
+tmpfile="$2"
 interrupred=$3
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/update/$logdate/$logtime.log"
-tmpfile="/tmp/log/update.log"
 
 
 # check if temporary log exists
