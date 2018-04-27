@@ -528,7 +528,7 @@ def main(argv, config):
     except (KeyboardInterrupt, PermissionError):
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
-        logfile = shlex.quote(config['Path']['logdir'] + f'/archive/update/{logdate}/{logtime}.log')
+        logfile = shlex.quote(config['Path']['logdir'] + f'/update/{logdate}/{logtime}.log')
         tmpfile = shlex.quote(config['Path']['tmpdir'] + '/update.log')
         subprocess.run(['bash', 'libupdate/aftermath.sh', logfile, tmpfile, 'true'])
 

@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.1.0.dev5'
+__version__ = '1.1.0.dev6'
 
 
 # set-up script for pip distribution

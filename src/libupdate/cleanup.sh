@@ -28,9 +28,9 @@ bold="\033[1m"          # bold
 
 # parameter assignment
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $2`
-dskfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $3`
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
 arg_gem=$4
 arg_npm=$5
 arg_pip=$6
