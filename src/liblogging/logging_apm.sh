@@ -18,13 +18,13 @@ logfile=$1
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find packages
-echo -e "++ apm list --bare | sed \"s/\(.*\)*@.*/INF: \1/\"" >> $logfile
-apm list --bare 2> /dev/null | sed "s/\(.*\)*@.*/INF: \1/" >> $logfile
-echo >> $logfile
+echo -e "++ apm list --bare | sed \"s/\(.*\)*@.*/INF: \1/\"" >> "$logfile"
+apm list --bare 2> /dev/null | sed "s/\(.*\)*@.*/INF: \1/" >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

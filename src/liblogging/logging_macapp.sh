@@ -18,13 +18,13 @@ logfile=$1
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ ls /Applications | sed \"s/^/INF: /\" $daemon" >> $logfile
-ls /Applications 2> /dev/null | sed "s/^/INF: /" $daemon >> $logfile
-echo >> $logfile
+echo -e "++ ls /Applications | sed \"s/^/INF: /\" $daemon" >> "$logfile"
+ls /Applications 2> /dev/null | sed "s/^/INF: /" $daemon >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

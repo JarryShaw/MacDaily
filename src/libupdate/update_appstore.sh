@@ -29,8 +29,8 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # Parameter Assignment
-logfile="$1"
-tmpfile="$2"
+logfile=$1
+tmpfile=$2
 arg_q=$3
 arg_v=$4
 arg_r=$5

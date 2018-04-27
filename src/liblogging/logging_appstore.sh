@@ -18,13 +18,13 @@ logfile=$1
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\" | sed \"s/^/INF: \1/\"" >> $logfile
-find /Applications -path "*Contents/_MASReceipt/receipt" -maxdepth 4 -print 2> /dev/null | sed "s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##" | sed "s/^/INF: /" >> $logfile
-echo >> $logfile
+echo -e "++ find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\" | sed \"s/^/INF: \1/\"" >> "$logfile"
+find /Applications -path "*Contents/_MASReceipt/receipt" -maxdepth 4 -print 2> /dev/null | sed "s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##" | sed "s/^/INF: /" >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

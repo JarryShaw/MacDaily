@@ -15,8 +15,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # parameter assignment
-logfile="$1"
-tmpfile="$2"
+logfile=$1
+tmpfile=$2
 
 
 # remove /tmp/log/update.log

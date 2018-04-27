@@ -132,7 +132,7 @@ def main():
     elif args.command in ('dependency', 'deps', 'dp'):
         dependency(argv)
     elif args.command in ('logging', 'log', 'lg'):
-        logging(argv)
+        logging(argv, config)
     else:
         parser.print_help()
 

@@ -15,17 +15,16 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 # parameter assignment
 logfile=$1
-arg_d=$2
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find packages
-echo -e "++ brew leaves | sed \"s/^/INF: /\"" >> $logfile
-brew leaves 2> /dev/null | sed "s/^/INF: /" >> $logfile
-echo >> $logfile
+echo -e "++ brew leaves | sed \"s/^/INF: /\"" >> "$logfile"
+brew leaves 2> /dev/null | sed "s/^/INF: /" >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

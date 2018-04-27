@@ -18,13 +18,13 @@ logfile=$1
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ gem list | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
-gem list 2>/dev/null | sed "s/\(.*\)* (.*)/INF: \1/" >> $logfile
-echo >> $logfile
+echo -e "++ gem list | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> "$logfile"
+gem list 2>/dev/null | sed "s/\(.*\)* (.*)/INF: \1/" >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

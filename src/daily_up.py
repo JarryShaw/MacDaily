@@ -401,6 +401,10 @@ def main(argv, config):
         pathlib.Path(tmpdir).mkdir(parents=True, exist_ok=True)
         pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
 
+        dskpath = pathlib.Path(config['Path']['dskdir'])
+        if dskpath.exists() and dskpath.is_dir():
+            pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
+
         mode = '-*- Arguments -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
             logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
@@ -465,7 +469,6 @@ def main(argv, config):
                         filelist.append(arcname)
                 shutil.rmtree(arcdir)
 
-        dskpath = pathlib.Path(config['Path']['dskdir'])
         if dskpath.exists() and dskpath.is_dir():
             ctime = datetime.datetime.fromtimestamp(os.stat(config['Path']['logdir'] + '/tarfile').st_birthtime)
             delta = today - ctime
@@ -487,7 +490,6 @@ def main(argv, config):
                             filelist.append(arcname)
                     shutil.rmtree(config['Path']['logdir'] + '/tarfile')
 
-                pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
                 arcfile = config['Path']['arcdir'] + '/archive.zip'
                 with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                     arcname = os.path.split(tarname)[1]

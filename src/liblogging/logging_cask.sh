@@ -18,13 +18,13 @@ logfile=$1
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ brew cask list -1 | sed \"s/^/INF: /\"" >> $logfile
-brew cask list -1 2> /dev/null | sed "s/^/INF: /" >> $logfile
-echo >> $logfile
+echo -e "++ brew cask list -1 | sed \"s/^/INF: /\"" >> "$logfile"
+brew cask list -1 2> /dev/null | sed "s/^/INF: /" >> "$logfile"
+echo >> "$logfile"
 
 
 # clear potential terminal buffer

@@ -27,9 +27,9 @@ bold="\033[1m"          # bold
 
 
 # parameter assignment
-logfile="$1"
-tmpfile="$2"
-dskfile="$3"
+logfile=$1
+tmpfile=$2
+dskfile=$3
 arg_gem=$4
 arg_npm=$5
 arg_pip=$6
@@ -140,15 +140,15 @@ fi
 
 
 # archive caches if hard disk attached
-if [ -e $dskfile ] ; then
+if [ -e "$dskfile" ] ; then
     # check if cache directory exists
     if [ -e $(brew --cache) ] ; then
         # move caches
         $logprefix printf "+ ${bold}cp -rf -v cache archive $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix cp -rf -v $(brew --cache) $dskfile > /dev/null 2>&1
+            $logprefix cp -rf -v $(brew --cache) "$dskfile" > /dev/null 2>&1
         else
-            $logprefix cp -rf -v $(brew --cache) $dskfile
+            $logprefix cp -rf -v $(brew --cache) "$dskfile"
         fi
         $logprefix echo | $logsuffix
     fi

@@ -47,7 +47,7 @@ arg_V=$6
 
 
 # log current status
-echo "+ /bin/bash $0 $@" >> $logfile
+echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # pip logging function usage:
@@ -57,7 +57,7 @@ function piplogging {
     mode=$1
 
     # log function call
-    echo "++ piplogging $@" >> $logfile
+    echo "++ piplogging $@" >> "$logfile"
 
     # make prefix & suffix of pip
     case $mode in
@@ -154,11 +154,11 @@ function piplogging {
     # if executive exits
     if [ -e $prefix/$suffix ] ; then
         # list packages
-        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> $logfile
-        $prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/INF: \1/" >> $logfile
-        echo >> $logfile
+        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> "$logfile"
+        $prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/INF: \1/" >> "$logfile"
+        echo >> "$logfile"
     else
-        echo -e "ERR: $prefix/$suffix: no such file or directory\n" >> $logfile
+        echo -e "ERR: $prefix/$suffix: no such file or directory\n" >> "$logfile"
     fi
 }
 
