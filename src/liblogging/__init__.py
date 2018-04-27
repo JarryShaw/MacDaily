@@ -67,7 +67,7 @@ def logging_cask(args, *, file):
 
 def logging_dotapp(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['sudo', '-H', 'bash', 'liblogging/logging_dotapp.sh', file])
+        subprocess.run(['sudo', 'bash', 'liblogging/logging_dotapp.sh', file])
         if not args.quiet:
             print(f'logging: {green}dotapp{reset}: all applications ({bold}*.app{reset}) logged in {under}{file}{reset}')
     else:

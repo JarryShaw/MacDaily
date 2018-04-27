@@ -29,8 +29,9 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # parameter assignment
-logfile=$1
-tmpfile=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $2`
 arg_a=$3
 arg_q=$4
 arg_v=$5

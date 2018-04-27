@@ -14,7 +14,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # parameter assignment
-logfile=$1
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip()[1:-1])" <<< $1`
 
 
 # log current status
