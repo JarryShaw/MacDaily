@@ -17,6 +17,7 @@ bold   = '\033[1m'      # bold
 under  = '\033[4m'      # underline
 flash  = '\033[5m'      # flash
 red    = '\033[91m'     # bright red foreground
+green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
 blush  = '\033[101m'    # bright red background
 purple = '\033[104m'    # bright purple background
@@ -221,7 +222,7 @@ def postinstall(args, *, file, date, time):
             ['bash', 'libprinstall/logging_brew.sh', date, time, 'postinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.replace(b'\x1b', b'').decode().strip().split())
+        log = set(logging.stdout.decode().strip().split())
     else:
         log = packages
 
@@ -233,7 +234,7 @@ def postinstall(args, *, file, date, time):
         with open(file, 'a') as logfile:
             logfile.write('INF: no postinstallation performed\n')
         if not args.quiet:
-            print(f'postinstall: ${green}brew${reset}: no postinstallation performed\n')
+            print(f'postinstall: {green}brew{reset}: no postinstallation performed\n')
 
     if not args.quiet:  print()
     if not args.no_cleanup:

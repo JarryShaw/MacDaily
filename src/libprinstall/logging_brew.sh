@@ -78,16 +78,16 @@ for name in $arg_pkg ; do
             list=`brew list -1`
             for pkg in $list ; do
                 if [[ $pkg > $start ]] && [[ $pkg < $end ]] ; then
-                    echo -e "+ brew desc $pkg | sed -e \"s/\[1m//\" | grep \"$pkg: \" | sed \"s/\(.*\)*:.*/\1/\"" >> $tmpfile
-                    $logprefix brew desc $pkg | sed -e "s/\[1m//" | grep "$pkg: " | sed "s/\(.*\)*:.*/\1/"
+                    echo -e "+ brew desc $pkg | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> $tmpfile
+                    $logprefix brew desc $pkg | sed -e "s/.*\[1m\(.*\)*:.*/\1/"
                     echo >> $tmpfile
                 fi
             done ;;
         *)
             # check if package installed
             if brew list --versions $name > /dev/null ; then
-                echo -e "+ brew desc $name | sed -e \"s/\[1m//\" | grep \"$name: \" | sed \"s/\(.*\)*:.*/\1/\"" >> $tmpfile
-                $logprefix brew desc $name | sed -e "s/\[1m//" | grep "$name: " | sed "s/\(.*\)*:.*/\1/"
+                echo -e "+ brew info $name | grep \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
+                $logprefix brew info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
                 echo >> $tmpfile
             else
                 echo -e "Error: no formula names $name installed" >> $tmpfile

@@ -20,35 +20,35 @@ tmpfile="$2"
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
 # check for oudated packages
-echo -e "+ gem outdated | sed \"s/\(.*\)* (.*)/\1/\"" >> $tmpfile
+echo -e "+ gem outdated | sed \"s/\(.*\)* (.*)/\1/\"" >> "$tmpfile"
 $logprefix gem outdated | sed "s/\(.*\)* (.*)/\1/"
-echo >> $tmpfile
+echo >> "$tmpfile"
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logfile $tmpfile
+bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

@@ -21,8 +21,13 @@ tmpfile="$2"
 interrupred=$3
 
 
+# create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
+touch "$logfile"
+touch "$tmpfile"
+
+
 # check if temporary log exists
-if [ -e $tmpfile ] ; then
+if [ -e "$tmpfile" ] ; then
     # read /tmp/log/update.log line by line then migrate to log file
     while read -r line ; do
         # remove colourised characters
@@ -30,11 +35,11 @@ if [ -e $tmpfile ] ; then
         # plus `+` proceeds in line
         if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then
             # add "+" in the beginning, then write to /Library/Logs/Scripts/update/logdate/logtime.log
-            echo "+$line" >> $logfile
+            echo "+$line" >> "$logfile"
         # minus `-` proceeds in line
         elif [[ $line =~ ^(-\ )(.*)$ ]] ; then
             # replace "-" with "+", then write to /Library/Logs/Scripts/update/logdate/logtime.log
-            echo "$line" | sed "y/-/+/" >> $logfile
+            echo "$line" | sed "y/-/+/" >> "$logfile"
         # colon `:` in line
         elif [[ $line =~ ^([[:alnum:]][[:alnum:]]*)(:)(.*)$ ]] ; then
             # if this is a update logging message
@@ -69,38 +74,38 @@ if [ -e $tmpfile ] ; then
                 suffix=`echo $line | sed "s/.*:\ \(.*\)*.*/\1/"`
             fi
             # write to /Library/Logs/Scripts/update/logdate/logtime.log
-            echo "$prefix: $suffix" >> $logfile
+            echo "$prefix: $suffix" >> "$logfile"
         # colourised `[??m` line
         elif [[ $line =~ ^(.*)(\[[0-9][;0-9]*m)(.*)$ ]] ; then
             # error (red/[31m) line
             if [[ $line =~ ^(.*)(\[[;0-9]*;*31;*[;0-9]*m)(.*)$ ]] ; then
                 # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "ERR: $line" >> $logfile
+                echo "ERR: $line" >> "$logfile"
             # warning (yellow/[[01;33m])
             elif [[ $line =~ ^(.*)(\[[;0-9]*;*33;*[;0-9]*m)(.*)$ ]] ; then
                 # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "WAR: $line" >> $logfile
+                echo "WAR: $line" >> "$logfile"
             # other colourised line
             else
                 # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "INF: $line" >> $logfile
+                echo "INF: $line" >> "$logfile"
             fi
         # empty / blank line
         elif [[ $line =~ ^([[:space:]]*)$ ]] ; then
             # directly write to /Library/Logs/Scripts/update/logdate/logtime.log
-            echo $line >> $logfile
+            echo $line >> "$logfile"
         # non-empty line
         else
             # add `OUT` tag, remove special characters and discard flushed lines then write to /Library/Logs/Scripts/update/logdate/logtime.log
-            echo "OUT: $line" | sed "s/\[\?25[lh]//g" | sed "/\[K/d" | sed "/##*\ \ *.*%/d" >> $logfile
+            echo "OUT: $line" | sed "s/\[\?25[lh]//g" | sed "/\[K/d" | sed "/##*\ \ *.*%/d" >> "$logfile"
         fi
-    done < $tmpfile
+    done < "$tmpfile"
 fi
 
 
 # if called after KeyboardInterrupt
 if [[ -nz $interrupred ]] ; then
-    echo 'ERR: interrupred' >> $logfile
+    echo 'ERR: update procedure interrupred' >> "$logfile"
 fi
 
 

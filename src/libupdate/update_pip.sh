@@ -66,20 +66,20 @@ arg_pkg=${*:11}
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -97,7 +97,7 @@ function pip_fixbroken {
     local arg_pkg=${*:4}
 
     # log function call
-    echo "+ pip_fixbroken $@" >> $tmpfile
+    echo "+ pip_fixbroken $@" >> "$tmpfile"
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
@@ -124,7 +124,7 @@ function pipupdate {
     mode=$1
 
     # log function call
-    echo "+ pipupdate $@" >> $tmpfile
+    echo "+ pipupdate $@" >> "$tmpfile"
 
     # make prefix & suffix of pip
     case $mode in
@@ -283,7 +283,7 @@ function pipupdate {
             $logprefix echo | $logsuffix
         fi
     else
-        printf "update: pip: pip$pprint not installed.\n\n" >> $tmpfile
+        printf "update: pip: pip$pprint not installed.\n\n" >> "$tmpfile"
     fi
 }
 
@@ -479,11 +479,11 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logfile $tmpfile
+bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

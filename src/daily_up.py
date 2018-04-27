@@ -7,6 +7,7 @@ import datetime
 import os
 import pathlib
 import platform
+import shlex
 import shutil
 import subprocess
 import sys
@@ -525,7 +526,9 @@ def main(argv, config):
     except (KeyboardInterrupt, PermissionError):
         logdate = datetime.date.strftime(today, '%y%m%d')
         logtime = datetime.date.strftime(today, '%H%M%S')
-        subprocess.run(['bash', 'libupdate/aftermath.sh', logdate, logtime, 'true'])
+        logfile = shlex.quote(config['Path']['logdir'] + f'/archive/update/{logdate}/{logtime}.log')
+        tmpfile = shlex.quote(config['Path']['tmpdir'] + '/update.log')
+        subprocess.run(['bash', 'libupdate/aftermath.sh', logfile, tmpfile, 'true'])
 
 
 if __name__ == '__main__':

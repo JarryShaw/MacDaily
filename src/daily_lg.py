@@ -17,7 +17,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 
 # today
@@ -130,6 +130,7 @@ def get_parser():
 
 
 def main(argv=None):
+    logmode = None
     try:
         parser = get_parser()
         args = parser.parse_args(argv)
@@ -257,9 +258,8 @@ def main(argv=None):
         if arcflag and not args.quiet:
             print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}/Library/Logs/Scripts/archive/logging{reset}')
     except (KeyboardInterrupt, PermissionError):
-        logdate = datetime.date.strftime(today, '%y%m%d')
-        logtime = datetime.date.strftime(today, '%H%M%S')
-        subprocess.run(['bash', 'liblogging/aftermath.sh', logdate, logtime, 'true'])
+        if logname and not args.quiet:
+            print(f'logging: {red}{logmode}{reset}: logging procedure interrupted')
 
 
 if __name__ == '__main__':

@@ -52,20 +52,20 @@ arg_pkg=${*:8}
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
@@ -76,7 +76,7 @@ function piplogging {
     mode=$1
 
     # log function call
-    echo "+ piplogging $@" >> $tmpfile
+    echo "+ piplogging $@" >> "$tmpfile"
 
     # make prefix & suffix of pip
     case $mode in
@@ -176,23 +176,23 @@ function piplogging {
         for name in $arg_pkg ; do
             case $name in
                 all)
-                    echo -e "++ pip$pprint list --format freeze --outdated | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> $tmpfile
+                    echo -e "++ pip$pprint list --format freeze --outdated | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> "$tmpfile"
                     $logprefix $prefix/$suffix -m pip list --format freeze --outdate 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
-                    echo >> $tmpfile ;;
+                    echo >> "$tmpfile" ;;
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
-                        echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
+                        echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> "$tmpfile"
                         $logprefix $prefix/$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
-                        echo >> $tmpfile
+                        echo >> "$tmpfile"
                     else
-                        echo -e "Error: no pip$pprint package names $name installed\n" >> $tmpfile
+                        echo -e "Error: no pip$pprint package names $name installed\n" >> "$tmpfile"
                     fi ;;
             esac
         done
     else
-        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> $tmpfile
+        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> "$tmpfile"
     fi
 }
 
@@ -358,11 +358,11 @@ done
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logfile $tmpfile
+bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer
