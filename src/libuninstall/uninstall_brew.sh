@@ -17,8 +17,8 @@ yellow="\033[93m"       # bright yellow foreground
 # Uninstall Homebrew packages.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Force Flag
 #   4. Quiet Flag
 #   5. Verbose Flag
@@ -30,8 +30,9 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_f=$3
 arg_q=$4
 arg_v=$5
@@ -40,26 +41,21 @@ arg_Y=$7
 arg_pkg=${*:8}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/uninstall/$logdate/$logtime.log"
-tmpfile="/tmp/log/uninstall.log"
-
-
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/uninstall.log & /Library/Logs/Scripts/uninstall/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -199,11 +195,11 @@ fi
 
 
 # aftermath works
-bash ./libuninstall/aftermath.sh $logdate $logtime
+bash ./libuninstall/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

@@ -14,45 +14,43 @@ bold="\033[1m"          # bold
 # Clean up caches.
 #
 # Parameter List:
-#   1. Log Date
-#   2. Log Time
-#   3. Log Mode
-#   4. Homebrew Flag
-#   5. Caskroom Flag
-#   6. Quiet Flag
+#   1. Log File
+#   2. Temp File
+#   3. Disk File
+#   4. Log Mode
+#   5. Homebrew Flag
+#   6. Caskroom Flag
+#   7. Quiet Flag
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
-logmode=$3
-arg_brew=$4
-arg_cask=$5
-arg_q=$6
-# arg_v=$6
-
-
-# log file prepare
-logfile="/Library/Logs/Scripts/$logmode/$logdate/$logtime.log"
-tmpfile="/tmp/log/$logmode.log"
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+logmode=$4
+arg_brew=$5
+arg_cask=$6
+arg_q=$7
+# arg_v=$8
 
 
 # remove /tmp/log/logmode.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/logmode.log & /Library/Logs/Scripts/logmode/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -93,15 +91,15 @@ fi
 
 
 # archive caches if hard disk attached
-if [ -e /Volumes/Jarry\ Shaw/ ] ; then
+if [ -e "$dskfile" ] ; then
     # check if cache directory exists
     if [ -e $(brew --cache) ] ; then
         # move caches
         $logprefix printf "+ ${bold}cp -rf -v cache archive $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/ > /dev/null 2>&1
+            $logprefix cp -rf -v $(brew --cache) "$dskfile" > /dev/null 2>&1
         else
-            $logprefix cp -rf -v $(brew --cache) /Volumes/Jarry\ Shaw/Developers/
+            $logprefix cp -rf -v $(brew --cache) "$dskfile"
         fi
         $logprefix echo | $logsuffix
     fi
@@ -131,11 +129,11 @@ fi
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh $logdate $logtime $logmode
+bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" $logmode
 
 
 # remove /tmp/log/logmode.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

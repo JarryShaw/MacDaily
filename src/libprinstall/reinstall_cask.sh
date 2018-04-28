@@ -17,8 +17,8 @@ yellow="\033[93m"       # bright yellow foreground
 # Reinstall Caskroom packages.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Quiet Flag
 #   4. Verbose Flag
 #   5. Package
@@ -27,33 +27,29 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_q=$3
 arg_v=$4
 arg_pkg=${*:5}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/reinstall/$logdate/$logtime.log"
-tmpfile="/tmp/log/reinstall.log"
-
-
 # remove /tmp/log/reinstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/reinstall.log & /Library/Logs/Scripts/reinstall/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -103,11 +99,11 @@ done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh $logdate $logtime "reinstall"
+bash ./libprinstall/aftermath.sh ""$logfile"" ""$tmpfile"" "reinstall"
 
 
 # remove /tmp/log/reinstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

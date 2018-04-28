@@ -9,39 +9,35 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Homebrew packages.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_pkg=${*:3}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/dependency/$logdate/$logtime.log"
-tmpfile="/tmp/log/dependency.log"
-
-
 # remove /tmp/log/dependency.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/dependency.log & /Library/Logs/Scripts/dependency/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
@@ -49,28 +45,28 @@ logprefix="script -aq $tmpfile"
 for name in $arg_pkg; do
     case $name in
         all)
-            echo -e "+ brew leaves" >> $tmpfile
+            echo -e "+ brew leaves" >> "$tmpfile"
             $logprefix brew leaves
-            echo >> $tmpfile ;;
+            echo >> "$tmpfile" ;;
         *)
             # check if package installed
             if brew list --versions $name > /dev/null ; then
-                echo -e "+ brew desc $name | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
-                $logprefix brew desc $name | sed "s/\(.*\)*: .*/\1/" | $logsuffix
-                echo >> $tmpfile
+                echo -e "+ brew desc $name | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> ""$tmpfile""
+                $logprefix brew desc $name | sed -e "s/.*\[1m\(.*\)*:.*/\1/"
+                echo >> "$tmpfile"
             else
-                echo -e "Error: no formula names $name installed" >> $tmpfile
+                echo -e "Error: no formula names $name installed" >> "$tmpfile"
             fi ;;
     esac
 done
 
 
 # aftermath works
-bash ./libdependency/aftermath.sh $logdate $logtime
+bash ./libdependency/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/dependency.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

@@ -130,7 +130,7 @@ def get_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv, config):
     logmode = None
     try:
         parser = get_parser()
@@ -160,8 +160,8 @@ def main(argv=None):
 
         arcflag = False
         for logmode in args.mode:
-            flag = config['Mode'].getboolean(mode)
-            if flag and args.__getattribute__(f'no_{logmode}'):
+            flag = not config['Mode'].getboolean(logmode)
+            if flag or args.__getattribute__(f'no_{logmode}'):
                 continue
 
             logdir = config['Path']['logdir'] + f'/logging/{logmode}'
@@ -175,7 +175,7 @@ def main(argv=None):
             pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
 
             with open(logname, 'a') as logfile:
-                logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
+                logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
                 logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
                 for key, value in args.__dict__.items():
                     logfile.write(f'ARG: {key} = {value}\n')

@@ -17,8 +17,8 @@ yellow="\033[93m"       # bright yellow foreground
 # Log Python site packages uninstallation.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. System Flag
 #   4. Cellar Flag
 #   5. CPython Flag
@@ -53,8 +53,9 @@ yellow="\033[93m"       # bright yellow foreground
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_s=$3
 arg_b=$4
 arg_c=$5
@@ -67,26 +68,21 @@ arg_i=${11}
 arg_pkg=${*:12}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/uninstall/$logdate/$logtime.log"
-tmpfile="/tmp/log/uninstall.log"
-
-
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/uninstall.log & /Library/Logs/Scripts/uninstall/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 if ( $arg_q ) ; then
     logsuffix="grep ^$"
 else
@@ -104,7 +100,7 @@ function pipuninstall {
     local pprint=$4
 
     # log function call
-    echo "+ pipuninstall $@" >> $tmpfile
+    echo "+ pipuninstall $@" >> "$tmpfile"
 
     # dependency list
     list=`$prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"`
@@ -153,7 +149,7 @@ function pip_fixmissing {
     local arg_pkg=${*:4}
 
     # log function call
-    echo "+ pip_fixmissing $@" >> $tmpfile
+    echo "+ pip_fixmissing $@" >> "$tmpfile"
 
     # reinstall missing packages
     for $name in $arg_pkg ; do
@@ -178,7 +174,7 @@ function piplogging {
     mode=$1
 
     # log function call
-    echo "+ piplogging $@" >> $tmpfile
+    echo "+ piplogging $@" >> "$tmpfile"
 
 
     # make prefix & suffix of pip
@@ -335,7 +331,7 @@ function piplogging {
             $logprefix echo | $logsuffix
         fi
     else
-        printf "uninstall: pip: pip$pprint not installed.\n\n" >> $tmpfile
+        printf "uninstall: pip: pip$pprint not installed.\n\n" >> "$tmpfile"
     fi
 }
 
@@ -539,11 +535,11 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

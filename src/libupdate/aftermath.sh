@@ -106,7 +106,7 @@ fi
 
 # if called after KeyboardInterrupt
 if [[ -nz $interrupred ]] ; then
-    echo 'ERR: update procedure interrupred' >> "$logfile"
+    echo "ERR: update procedure interrupred" >> "$logfile"
 fi
 
 

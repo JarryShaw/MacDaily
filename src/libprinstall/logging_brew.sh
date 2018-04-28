@@ -9,8 +9,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Homebrew packages reinstallation.
 #
 # Parameter List
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. Log Mode
 #   4. Start Package
 #   5. End Package
@@ -20,34 +20,30 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 logmode=$3
 arg_s=$4
 arg_e=$5
 arg_pkg=${*:6}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/$logmode/$logdate/$logtime.log"
-tmpfile="/tmp/log/$logmode.log"
-
-
 # remove /tmp/log/logmode.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/logmode.log & /Library/Logs/Scripts/logmode/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
@@ -78,30 +74,30 @@ for name in $arg_pkg ; do
             list=`brew list -1`
             for pkg in $list ; do
                 if [[ $pkg > $start ]] && [[ $pkg < $end ]] ; then
-                    echo -e "+ brew desc $pkg | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> $tmpfile
+                    echo -e "+ brew desc $pkg | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> "$tmpfile"
                     $logprefix brew desc $pkg | sed -e "s/.*\[1m\(.*\)*:.*/\1/"
-                    echo >> $tmpfile
+                    echo >> "$tmpfile"
                 fi
             done ;;
         *)
             # check if package installed
             if brew list --versions $name > /dev/null ; then
-                echo -e "+ brew info $name | grep \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> $tmpfile
+                echo -e "+ brew info $name | grep \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> "$tmpfile"
                 $logprefix brew info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
-                echo >> $tmpfile
+                echo >> "$tmpfile"
             else
-                echo -e "Error: no formula names $name installed" >> $tmpfile
+                echo -e "Error: no formula names $name installed" >> "$tmpfile"
             fi ;;
     esac
 done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh $logdate $logtime $logmode
+bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" $logmode
 
 
 # remove /tmp/log/logmode.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

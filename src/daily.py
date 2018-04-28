@@ -80,12 +80,12 @@ def get_parser():
                     'administrator of macOS to manupulate packages '
                 )
     group.add_argument('command', choices=[
-                            'update', 'up', 'upgrade',                  # jsupdate
+                            'update', 'up', 'U', 'upgrade',             # jsupdate
                             'uninstall', 'remove', 'rm', 'r', 'un',     # jsuninstall
-                            'reinstall', 're',                          # jsreinstall
-                            'postinstall', 'post', 'ps',                # jspostinstall
-                            'dependency', 'deps', 'dp',                 # jsdependency
-                            'logging', 'log', 'lg',                     # jslogging
+                            'reinstall', 're', 'R',                     # jsreinstall
+                            'postinstall', 'post', 'ps', 'p',           # jspostinstall
+                            'dependency', 'deps', 'dp', 'de', 'd',      # jsdependency
+                            'logging', 'log', 'lg', 'l',                # jslogging
                         ], help=argparse.SUPPRESS)
 
     return parser
@@ -121,17 +121,17 @@ def main():
             raise error from None
 
     argv = sys.argv[2:]
-    if args.command in ('update', 'up', 'upgrade'):
+    if args.command in ('update', 'up', 'U', 'upgrade'):
         update(argv, config)
     elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
-        uninstall(argv)
-    elif args.command in ('reinstall', 're'):
+        uninstall(argv, config)
+    elif args.command in ('reinstall', 're', 'R'):
         reinstall(argv)
-    elif args.command in ('postinstall', 'post', 'ps'):
+    elif args.command in ('postinstall', 'post', 'ps', 'p'):
         postinstall(argv)
-    elif args.command in ('dependency', 'deps', 'dp'):
+    elif args.command in ('dependency', 'deps', 'dp', 'de', 'd'):
         dependency(argv)
-    elif args.command in ('logging', 'log', 'lg'):
+    elif args.command in ('logging', 'log', 'lg', 'l'):
         logging(argv, config)
     else:
         parser.print_help()

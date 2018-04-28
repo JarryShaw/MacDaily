@@ -9,8 +9,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log Python site packages uninstall dependencies.
 #
 # Parameter list:
-#   1. Log Date
-#   2. Log Time
+#   1. Log File
+#   2. Temp File
 #   3. System Flag
 #   4. Cellar Flag
 #   5. CPython Flag
@@ -42,8 +42,9 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 # parameter assignment
-logdate=$1
-logtime=$2
+# echo $1 | cut -c2- | rev | cut -c2- | rev
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_s=$3
 arg_b=$4
 arg_c=$5
@@ -53,26 +54,21 @@ arg_i=$8
 arg_pkg=${*:9}
 
 
-# log file prepare
-logfile="/Library/Logs/Scripts/uninstall/$logdate/$logtime.log"
-tmpfile="/tmp/log/uninstall.log"
-
-
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # create /tmp/log/uninstall.log & /Library/Logs/Scripts/uninstall/logdate.log
-touch $logfile
-touch $tmpfile
+touch "$logfile"
+touch "$tmpfile"
 
 
 # log current status
-echo "- /bin/bash $0 $@" >> $tmpfile
+echo "- /bin/bash $0 $@" >> "$tmpfile"
 
 
 # log commands
-logprefix="script -aq $tmpfile"
+logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
@@ -83,7 +79,7 @@ function piplogging {
     local mode=$1
 
     # log function call
-    echo "+ piplogging $@" >> $tmpfile
+    echo "+ piplogging $@" >> "$tmpfile"
 
 
     # make prefix & suffix of pip
@@ -184,30 +180,30 @@ function piplogging {
         for name in $arg_pkg ; do
             case $name in
                 all)
-                    echo -e "++ pip$pprint list --format freeze | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> $tmpfile
+                    echo -e "++ pip$pprint list --format freeze | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> "$tmpfile"
                     $logprefix $prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
-                    echo >> $tmpfile ;;
+                    echo >> "$tmpfile" ;;
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
-                        echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> $tmpfile
+                        echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> "$tmpfile"
                         $logprefix $prefix/$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
-                        echo >> $tmpfile
+                        echo >> "$tmpfile"
 
                         # if ignore-dependencies flag not set
                         if ( ! $arg_i ) ; then
-                            echo -e "++ pip$pprint show $name | grep \"Requires: \" | sed \"s/Requires: //\" | sed \"s/,//g\"" >> $tmpfile
+                            echo -e "++ pip$pprint show $name | grep \"Requires: \" | sed \"s/Requires: //\" | sed \"s/,//g\"" >> "$tmpfile"
                             $logprefix $prefix/$suffix -m pip show $name | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"
-                            echo >> $tmpfile
+                            echo >> "$tmpfile"
                         fi
                     else
-                        echo -e "Error: no pip$pprint package names $name installed\n" >> $tmpfile
+                        echo -e "Error: no pip$pprint package names $name installed\n" >> "$tmpfile"
                     fi ;;
             esac
         done
     else
-        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> $tmpfile
+        echo -e "Error: $prefix/$suffix: no such file or directory\n" >> "$tmpfile"
     fi
 }
 
@@ -373,11 +369,11 @@ done
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh $logdate $logtime
+bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log
-rm -f $tmpfile
+rm -f "$tmpfile"
 
 
 # clear potential terminal buffer

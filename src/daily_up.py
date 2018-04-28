@@ -407,7 +407,7 @@ def main(argv, config):
 
         mode = '-*- Arguments -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
-            logfile.write(datetime.date.strftime(today, '%+').center(80, '—'))
+            logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
             logfile.write(f'\n\nCMD: {python} {program}')
             logfile.write(f'\n\n{mode}\n\n')
             for key, value in args.__dict__.items():

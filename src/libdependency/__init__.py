@@ -19,6 +19,7 @@ bold   = '\033[1m'      # bold
 under  = '\033[4m'      # underline
 flash  = '\033[5m'      # flash
 red    = '\033[91m'     # bright red foreground
+green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
 blush  = '\033[101m'    # bright red background
 purple = '\033[104m'    # bright purple background
@@ -47,14 +48,16 @@ def _merge_packages(args):
     return packages
 
 
-def dependency_pip(args, *, file, date, time, retset=False):
+def dependency_pip(args, *, file, temp, retset=False):
+    logname = shlex.quote(file)
+    tmpname = shlex.quote(temp)
     tree = str(args.tree).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Python -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-    print(f'\n-*- {blue}Python{reset} -*-\n')
+    print(f'-*- {blue}Python{reset} -*-\n')
 
     if 'null' in packages:
         log = set()
@@ -71,22 +74,23 @@ def dependency_pip(args, *, file, date, time, retset=False):
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_pip.sh', date, time, system, brew, cpython, pypy, version] + list(packages),
+            ['bash', 'libdependency/logging_pip.sh', logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().split().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_pip.sh', date, time, system, brew, cpython, pypy, version, tree] + list(packages)
+            ['bash', 'libdependency/dependency_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, tree] + list(packages)
         )
         subprocess.run(
             ['bash', 'libdependency/relink_pip.sh'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
+    print()
     return log if retset else dict(pip=log)
 
 
-def dependency_brew(args, *, file, date, retset=False):
+def dependency_brew(args, *, file, temp, retset=False):
     if shutil.which('brew') is None:
         print(
             f'dependency: {blush}{flash}brew{reset}: command not found\n'
@@ -95,13 +99,15 @@ def dependency_brew(args, *, file, date, retset=False):
         )
         return set() if retset else dict(brew=set())
 
+    logname = shlex.quote(file)
+    tmpname = shlex.quote(temp)
     tree = str(args.tree).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Homebrew -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-    print(f'\n-*- {blue}Homebrew{reset} -*-\n')
+    print(f'-*- {blue}Homebrew{reset} -*-\n')
 
     if 'null' in packages:
         log = set()
@@ -110,14 +116,15 @@ def dependency_brew(args, *, file, date, retset=False):
         print(f'dependency: ${green}brew${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_brew.sh', date, time] + list(packages),
+            ['bash', 'libdependency/logging_brew.sh', logname, tmpname] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_brew.sh', date, time, tree] + list(packages)
+            ['bash', 'libdependency/dependency_brew.sh', logname, tmpname, tree] + list(packages)
         )
+    print()
     return log if retset else dict(brew=log)
 
 
@@ -125,5 +132,5 @@ def dependency_all(args, *, file, date, time):
     log = collections.defaultdict(set)
     for mode in ('pip', 'brew'):
         if not args.__getattribute__(f'no_{mode}'):
-            log[mode] = eval(f'dependency_{mode}')(args, retset=True, file=file, date=date, time=time)
+            log[mode] = eval(f'dependency_{mode}')(args, file=file, temp=temp, retset=True)
     return log

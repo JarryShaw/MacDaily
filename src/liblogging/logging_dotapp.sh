@@ -23,8 +23,8 @@ echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ sudo -H find / ! -path \"/Volumes/Macintosh HD\" -type d -iname *.app | sed \"s/^/INF: /\"" >> "$logfile"
-sudo find / ! -path "/Volumes/Macintosh HD" -type d -iname *.app 2> /dev/null | sed "s/^/INF: /" >> "$logfile"
+echo -e "++ sudo -H find / ! -path \"/Volumes\" -type d -iname *.app | sed \"s/^/INF: /\"" >> "$logfile"
+sudo find / ! -path "/Volumes" -type d -iname *.app 2> /dev/null | sed "s/^/INF: /" >> "$logfile"
 echo >> "$logfile"
 
 
