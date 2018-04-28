@@ -366,7 +366,7 @@ def main(argv, config):
                     comment = '' if args.idep else ' (including dependencies)'
                     logfile.write(f'LOG: uninstalled following {name} packages: {pkgs}{comment}\n')
                     if not args.quiet:
-                        pkgs_coloured = f'$({reset}), $({red})'.join(log[mode])
+                        pkgs_coloured = f'{reset}, {red}'.join(log[mode])
                         print(
                             f'uninstall: {green}{mode}{reset}: '
                             f'uninstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}{comment}'
