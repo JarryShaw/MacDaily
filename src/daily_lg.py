@@ -59,7 +59,7 @@ def get_parser():
                 ), usage=(
                     'jsdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]'
                 ), epilog=(
-                    'aliases: logging, log, lg'
+                    'aliases: logging, log, lg, l'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='store_true', dest='all', default=False,

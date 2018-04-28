@@ -60,7 +60,7 @@ def get_parser():
                 ), usage=(
                     'jsdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
-                    'aliases: dependency, deps, dp'
+                    'aliases: dependency, deps, dep, dp, de, d'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',

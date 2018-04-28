@@ -127,8 +127,8 @@ def get_parser():
                         ))
     parser_pip.add_argument('-i', '--ignore-dependencies', action='store_true',
                         default=False, dest='idep', help=(
-                            'run in irrecursive mode, i.e. ignore dependencies '
-                            'of installing packages'
+                            'run in non-recursive mode, i.e. ignore dependencies '
+                            'of uninstalling packages'
                         ))
     parser_pip.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
@@ -162,8 +162,8 @@ def get_parser():
                         ))
     parser_brew.add_argument('-i', '--ignore-dependencies', action='store_true',
                         default=False, dest='idep', help=(
-                            'run in irrecursive mode, i.e. ignore dependencies '
-                            'of installing packages'
+                            'run in non-recursive mode, i.e. ignore dependencies '
+                            'of uninstalling packages'
                         ))
     parser_brew.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
@@ -214,7 +214,7 @@ def get_parser():
                         ))
     parser.add_argument('-i', '--ignore-dependencies', action='store_true',
                         default=False, dest='idep', help=(
-                            'run in irrecursive mode, only for Python and Homebrew'
+                            'run in non-recursive mode, only for Python and Homebrew'
                         ))
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(

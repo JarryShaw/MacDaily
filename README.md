@@ -2,19 +2,21 @@
 
 Status: Stable
 
-Platform: macOS
+Platform: macOS High Sierra
 
 Language: Python & Bourne-Again Shell
 
-Environment: Console
+Environment: Console | Terminal
 
-Requirements: Python>=3.6, Bash>=3.2
+Requirements: Python>=3.6 & Bash>=3.2
 
 Implementation: CPython | PyPy
 
 ---
 
 # jsdaily
+
+&nbsp;
 
  - [About](#about)
  - [Installation](#install)
@@ -39,6 +41,8 @@ Implementation: CPython | PyPy
  - [Troubleshooting](#issue)
 
 ---
+
+&nbsp;
 
 <a name="about"> </a>
 
@@ -247,7 +251,7 @@ mode selection:
                  method, e.g.: apm, gem, npm, pip, brew, cask, appstore, or
                  alternatively and simply, cleanup
 
-aliases: update, up, upgrade
+aliases: update, up, U, upgrade
 ```
 
 &emsp; Note that disabled modes in configuration file `.dailyrc` will not update under any circumstances. To update all packages, use one of the commands below.
@@ -470,3 +474,144 @@ optional arguments:
 ```
 
 &emsp; If arguments omit, `jsdaily` will cleanup all caches as its default setup.
+
+<a name="uninstall"> </a>
+
+### Uninstall Procedure
+
+&emsp; The `uninstall` command will recursively uninstall all dependency packages installed through --
+
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+
+The man page of `uninstall` shows as below.
+
+```
+$ jsdaily uninstall --help
+usage: jsdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ...
+
+Package Recursive Uninstall Manager
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  -a, --all             uninstall all packages installed through pip,
+                        Homebrew, and App Store
+  -f, --force           run in force mode, only for Homebrew and Caskroom
+  -i, --ignore-dependencies
+                        run in non-recursive mode, only for Python and Homebrew
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with more information
+  -Y, --yes             yes for all selections
+
+mode selection:
+  MODE                  uninstall given packages installed through a specified
+                        method, e.g.: pip, brew or cask
+
+aliases: uninstall, remove, rm, r, un
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not uninstall under any circumstances. To uninstall all packages, use one of the commands below.
+
+```
+$ jsdaily uninstall -a
+$ jsdaily uninstall --all
+```
+
+<a name="uninstall_pip"> </a>
+
+1. `pip` -- Python Package
+
+&emsp; As there're several kinds and versions of Python complier, along wiht its `pip` package manager. Here, we support uninstall procedure in following --
+
+ - Python 2.\*/3.\* installed through Python official disk images (`*.dmg`)
+ - Python 2/3 installed through `brew install python@2/python`
+ - PyPy 2/3 installed through `brew install pypy/pypy3`
+
+&emsp; And the man page for `jsdaily uninstall pip` shows as below.
+
+```
+$ jsdaily uninstall pip --help
+usage: jsdaily uninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]
+
+Uninstall Installed Python Packages
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             uninstall all packages installed through pip
+  -V VER, --python_version VER
+                        indicate packages in which version of pip will be
+                        uninstalled
+  -s, --system          uninstall pip packages on system level, i.e. python
+                        installed through official installer
+  -b, --brew            uninstall pip packages on Cellar level, i.e. python
+                        installed through Homebrew
+  -c, --cpython         uninstall pip packages on CPython environment
+  -y, --pypy            uninstall pip packages on Pypy environment
+  -p PKG, --package PKG
+                        name of packages to be uninstalled, default is null
+  -i, --ignore-dependencies
+                        run in non-recursive mode, i.e. ignore dependencies
+                        of uninstalling packages
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with more information
+  -Y, --yes             yes for all selections
+```
+
+&emsp; If arguments omit, `jsdaily` will __NOT__ uninstall packages in all copies of Python. And when using `-p` or `--package`, if given wrong package name, `jsdaily` might give a trivial “did-you-mean” correction.
+
+<a name="uninstall_brew"> </a>
+
+2. `brew` – Homebrew Formula
+
+&emsp; [Homebrew](https://brew.sh) is the missing package manager for macOS. The man page for `jsdaily uninstall brew` shows as below.
+
+```
+$ jsdaily uninstall brew --help
+usage: jsdaily uninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]
+
+Uninstall Installed Homebrew Packages
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             uninstall all packages installed through Homebrew
+  -p PKG, --package PKG
+                        name of packages to be uninstalled, default is null
+  -f, --force           use "--force" when running `brew uninstall`
+  -i, --ignore-dependencies
+                        run in non-recursive mode, i.e. ignore dependencies of
+                        uninstalling packages
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with more information
+  -Y, --yes             yes for all selections
+```
+
+&emsp; If arguments omit, `jsdaily` will __NOT__ uninstall packages of Homebrew. And when using `-p` or `--package`, if given wrong package name, `jsdaily` might give a trivial “did-you-mean” correction.
+
+<a name="uninstall_cask"> </a>
+
+3. `cask` – Caskrooom Binary
+
+&emsp; [Caskroom](https://caskroom.github.io) is a friendly binary installer for macOS. The man page for `jsdaily uninstall cask` shows as below.
+
+```
+$ jsdaily uninstall cask --help
+usage: jsdaily uninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]
+
+Uninstall Installed Caskroom Packages
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             uninstall all packages installed through Caskroom
+  -p PKG, --package PKG
+                        name of packages to be uninstalled, default is null
+  -f, --force           use "--force" when running `brew cask uninstall`
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with more information
+  -Y, --yes             yes for all selections
+```
+
+&emsp; If arguments omit, `jsdaily` will __NOT__ uninstall packages of Caskroom. And when using `-p` or `--package`, if given wrong package name, `jsdaily` might give a trivial “did-you-mean” correction.
+
+&nbsp;

@@ -71,7 +71,7 @@ def get_parser():
                 ), usage=(
                     'jsdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
-                    'aliases: update, up, upgrade'
+                    'aliases: update, up, U, upgrade'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',

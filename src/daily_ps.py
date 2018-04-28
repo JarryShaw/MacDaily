@@ -45,7 +45,7 @@ def get_parser():
     ), usage=(
         'jsdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup] '
     ), epilog=(
-        'aliases: postinstall, post, ps'
+        'aliases: postinstall, post, ps, p'
     ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',

@@ -61,7 +61,7 @@ def get_parser():
                 ), usage=(
                     'jsdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
-                    'aliases: reinstall, re'
+                    'aliases: reinstall, re, R'
                 ))
     parser.add_argument('-V', '--version', action='version',
                         version='{}'.format(__version__))
