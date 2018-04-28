@@ -99,7 +99,8 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew cask list $name > /dev/null 2>&1 ; then
+            flag=`brew cask list -1 | awk "/^$name$/"`
+            if [[ -nz $flag ]] ; then
                 $logprefix printf "+ ${bold}brew cask uninstall $name $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $name $force $verbose $quiet > /dev/null 2>&1
@@ -108,7 +109,7 @@ for name in $arg_pkg ; do
                 fi
                 $logprefix echo | $logsuffix
             else
-                $logprefix printf "uninstall: ${yellow}cask${reset}: no Cask names $name installed\n" | $logsuffix
+                $logprefix printf "uninstall: ${yellow}cask${reset}: no Cask names ${red}$name${reset} installed\n" | $logsuffix
 
                 # did you mean
                 tmp=`brew cask list -1 | grep $name | xargs`

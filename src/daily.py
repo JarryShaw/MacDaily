@@ -38,24 +38,24 @@ CONFIG = """\
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts  ; path where logs will be store
-tmpdir = /tmp/log               ; path where temporary runtime logs go
-dskdir = /Volumes/Your Disk     ; path where your hard disk lies
-arcdir = ${dsk_dir}/Developers  ; path where ancient logs archive
+logdir = /Library/Logs/Scripts      ; path where logs will be store
+tmpdir = /tmp/log                   ; path where temporary runtime logs go
+dskdir = /Volumes/Your Disk         ; path where your hard disk lies
+arcdir = ${dsk_dir}/Developers      ; path where ancient logs archive
 
 [Mode]
 # In this section, flags for modes are configured.
 # If you would like to disable the mode, set it to "false".
-apm      = true ; Atom packages
-gem      = true ; Ruby gems
-npm      = true ; Node.js modules
-pip      = true ; Python packages
-brew     = true ; Homebrew Cellars
-cask     = true ; Caskroom Casks
-dotapp   = true ; Applications (*.app)
-macapp   = true ; applications in /Application folder
-cleanup  = true ; cleanup caches
-appstore = true ; Mac App Store applications
+apm      = true     ; Atom packages
+gem      = true     ; Ruby gems
+npm      = true     ; Node.js modules
+pip      = true     ; Python packages
+brew     = true     ; Homebrew Cellars
+cask     = true     ; Caskroom Casks
+dotapp   = true     ; Applications (*.app)
+macapp   = true     ; applications in /Application folder
+cleanup  = true     ; cleanup caches
+appstore = true     ; Mac App Store applications
 """
 
 
@@ -126,11 +126,11 @@ def main():
     elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
         uninstall(argv, config)
     elif args.command in ('reinstall', 're', 'R'):
-        reinstall(argv)
+        reinstall(argv, config)
     elif args.command in ('postinstall', 'post', 'ps', 'p'):
-        postinstall(argv)
+        postinstall(argv, config)
     elif args.command in ('dependency', 'deps', 'dp', 'de', 'd'):
-        dependency(argv)
+        dependency(argv, config)
     elif args.command in ('logging', 'log', 'lg', 'l'):
         logging(argv, config)
     else:

@@ -89,7 +89,7 @@ else
             fi
             $logprefix echo | $logsuffix
         else
-            $logprefix printf "update: ${yellow}brew${reset}: no formula names $name installed\n" | $logsuffix
+            $logprefix printf "update: ${yellow}brew${reset}: no formula names ${red}$name${reset} installed\n" | $logsuffix
 
             # did you mean
             tmp=`brew list -1 | grep $name | xargs`

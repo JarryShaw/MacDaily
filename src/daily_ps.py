@@ -83,7 +83,7 @@ def get_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv, config):
     try:
         parser = get_parser()
         args = parser.parse_args(argv)

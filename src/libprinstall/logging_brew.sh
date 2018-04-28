@@ -81,9 +81,10 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew list --versions $name > /dev/null ; then
-                echo -e "+ brew info $name | grep \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> "$tmpfile"
-                $logprefix brew info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
+            flag=`brew list -1 | awk "/^$name$/"`
+            if [[ -nz $flag ]] ; then
+                echo -e "+ brew desc $name | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> "$tmpfile"
+                $logprefix brew desc $name | sed -e "s/.*\[1m\(.*\)*:.*/\1/"
                 echo >> "$tmpfile"
             else
                 echo -e "Error: no formula names $name installed" >> "$tmpfile"

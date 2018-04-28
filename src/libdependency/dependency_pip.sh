@@ -95,7 +95,8 @@ function pipdependency {
     # if tree flag set
     if ( $arg_t ) ; then
         # check if `pipdeptree` installed
-        if $prefix/$suffix -m pipdeptree > /dev/null ; then
+        flag=`$prefix/$suffix -m pip list --format freeze | sed "s/\(.*\)*==.*/\1/" | awk "/^pipdeptree$/"`
+        if [[ -nz $flag ]] ; then
             case $arg_pkg in
                 all)
                     $logprefix printf "++ ${bold}pipdeptree$pprint${reset}\n"
@@ -110,8 +111,8 @@ function pipdependency {
             $logprefix printf "dependency: ${red}pip${reset}: package ${red}pipdeptree${reset} not installed on ${bold}pip$pprint${reset}\n"
         fi
     else
-        $logprefix ecprintfho "++ ${bold}pip$pprint deps $arg_pkg${reset}\n"
-        $logprefix $prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | tr " " "\t"
+        $logprefix printf "++ ${bold}pip$pprint deps $arg_pkg${reset}\n"
+        $logprefix $prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g" | tr " " "\n"
         $logprefix echo
     fi
 }
@@ -253,7 +254,7 @@ function piplogging {
                     if [[ -nz $flag ]]; then
                         pipdependency $name $prefix $suffix $pprint
                     else
-                        $logprefix printf "dependency: ${yellow}pip${reset}: no pip$pprint package names $name installed\n"
+                        $logprefix printf "dependency: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n"
 
                         # did you mean
                         tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`

@@ -77,7 +77,7 @@ def dependency_pip(args, *, file, temp, retset=False):
             ['bash', 'libdependency/logging_pip.sh', logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        log = set(logging.stdout.decode().split().split())
+        log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
             ['bash', 'libdependency/dependency_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, tree] + list(packages)
@@ -128,7 +128,7 @@ def dependency_brew(args, *, file, temp, retset=False):
     return log if retset else dict(brew=log)
 
 
-def dependency_all(args, *, file, date, time):
+def dependency_all(args, *, file, temp):
     log = collections.defaultdict(set)
     for mode in ('pip', 'brew'):
         if not args.__getattribute__(f'no_{mode}'):

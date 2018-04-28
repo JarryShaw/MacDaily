@@ -75,26 +75,40 @@ fi
 
 # postinstall procedure
 for name in $arg_pkg ; do
-    flag=`brew list -1 | awk "/^$name$/"`
-    if [[ -nz $flag ]] ; then
-        $logprefix printf "+ ${bold}brew postinstall $name $verbose $quiet${reset}\n" | $logsuffix
-        if ( $arg_q ) ; then
-            $logprefix brew postinstall $name $verbose $quiet > /dev/null 2>&1
-        else
-            $logprefix brew postinstall $name $verbose $quiet
-        fi
-        $logprefix echo | $logsuffix
-    else
-        $logprefix printf "postinstall: ${yellow}brew${reset}: no formula names $name installed\n" | $logsuffix
+    case $name in
+        all)
+            list=`brew list -1`
+            for pkg in $list ; do
+                $logprefix printf "+ ${bold}brew postinstall $pkg $verbose $quiet${reset}\n" | $logsuffix
+                if ( $arg_q ) ; then
+                    $logprefix brew postinstall $pkg $verbose $quiet > /dev/null 2>&1
+                else
+                    $logprefix brew postinstall $pkg $verbose $quiet
+                fi
+                $logprefix echo | $logsuffix
+            done ;;
+        *)
+            flag=`brew list -1 | awk "/^$name$/"`
+            if [[ -nz $flag ]] ; then
+                $logprefix printf "+ ${bold}brew postinstall $name $verbose $quiet${reset}\n" | $logsuffix
+                if ( $arg_q ) ; then
+                    $logprefix brew postinstall $name $verbose $quiet > /dev/null 2>&1
+                else
+                    $logprefix brew postinstall $name $verbose $quiet
+                fi
+                $logprefix echo | $logsuffix
+            else
+                $logprefix printf "postinstall: ${yellow}brew${reset}: no formula names ${red}$name${reset} installed\n" | $logsuffix
 
-        # did you mean
-        tmp=`brew list -1 | grep $name | xargs`
-        if [[ -nz $tmp ]] ; then
-            dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-            $logprefix printf "postinstall: ${yellow}brew${reset}: did you mean any of the following formulae: $dym?\n" | $logsuffix
-        fi
-        $logprefix echo | $logsuffix
-    fi
+                # did you mean
+                tmp=`brew list -1 | grep $name | xargs`
+                if [[ -nz $tmp ]] ; then
+                    dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
+                    $logprefix printf "postinstall: ${yellow}brew${reset}: did you mean any of the following formulae: $dym?\n" | $logsuffix
+                fi
+                $logprefix echo | $logsuffix
+            fi ;;
+    esac
 done
 
 

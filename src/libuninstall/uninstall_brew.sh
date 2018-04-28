@@ -125,7 +125,8 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew list --versions $name > /dev/null ; then
+            flag=`brew list -1 | awk "/^$name$/"`
+            if [[ -nz $flag ]] ; then
                 # along with dependencies or not
                 $logprefix printf "+ ${bold}brew uninstall $name --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
@@ -152,7 +153,7 @@ for name in $arg_pkg ; do
                     done
                 fi
             else
-                $logprefix printf "uninstall: ${yellow}brew${reset}: no formula names $name installed\n" | $logsuffix
+                $logprefix printf "uninstall: ${yellow}brew${reset}: no formula names ${red}$name${reset} installed\n" | $logsuffix
 
                 # did you mean
                 tmp=`brew list -1 | grep $name | xargs`

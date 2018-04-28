@@ -291,7 +291,7 @@ function piplogging {
                     if [[ -nz $flag ]]; then
                         pipuninstall $name $prefix $suffix $pprint
                     else
-                        $logprefix printf "uninstall: ${yellow}pip${reset}: no pip$pprint package names $name installed\n" | $logsuffix
+                        $logprefix printf "uninstall: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n" | $logsuffix
 
                         # did you mean
                         tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`

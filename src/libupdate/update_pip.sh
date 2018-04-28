@@ -244,7 +244,7 @@ function pipupdate {
                         fi
                         $logprefix echo | $logsuffix
                     else
-                        $logprefix printf "update: ${yellow}pip${reset}: no pip$pprint package names $name installed\n" | $logsuffix
+                        $logprefix printf "update: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n" | $logsuffix
 
                         # did you mean
                         tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`

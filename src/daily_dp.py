@@ -69,11 +69,11 @@ def get_parser():
                             'through pip and Homebrew'
                         ))
 
+    parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
-    parser.add_argument('--cask', action='append_const', const='cask', dest='mode', help=argparse.SUPPRESS)
 
+    parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
-    parser.add_argument('--no-cask', action='store_true', default=False, help=argparse.SUPPRESS)
 
     subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
                         dest='mode', help=(

@@ -52,7 +52,7 @@ def _merge_packages(args, *, mode):
     return packages
 
 
-def reinstall_cleanup(args, *, file, temp, disk, mode, brew=False, cask=False):
+def reinstall_cleanup(args, *, file, temp, disk, mode, brew=False, cask=False, retset=False):
     logname = shlex.quote(file)
     tmpname = shlex.quote(temp)
     dskname = shlex.quote(disk)

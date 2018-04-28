@@ -71,12 +71,13 @@ for name in $arg_pkg ; do
             done ;;
         *)
             # check if package installed
-            if brew list --versions $name > /dev/null ; then
+            flag=`brew list -1 | awk "/^$name$/"`
+            if [[ -nz $flag ]] ; then
                 $logprefix printf "+ ${bold}brew deps $name $tree${reset}\n"
                 $logprefix brew deps $name $tree
                 $logprefix echo
             else
-                $logprefix printf "dependency: ${yellow}brew${reset}: no formula names $name installed\n"
+                $logprefix printf "dependency: ${yellow}brew${reset}: no formula names ${red}$name${reset} installed\n"
 
                 # did you mean
                 tmp=`brew list -1 | grep $name | xargs`
