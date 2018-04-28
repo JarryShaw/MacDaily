@@ -1,10 +1,10 @@
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts      ; path where logs will be store
+logdir = /Library/Logs/Scripts      ; path where logs will be stored
 tmpdir = /tmp/log                   ; path where temporary runtime logs go
 dskdir = /Volumes/Your Disk         ; path where your hard disk lies
-arcdir = ${dsk_dir}/Developers      ; path where ancient logs archive
+arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 
 [Mode]
 # In this section, flags for modes are configured.

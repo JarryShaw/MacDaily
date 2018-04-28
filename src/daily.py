@@ -38,10 +38,10 @@ CONFIG = """\
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts      ; path where logs will be store
+logdir = /Library/Logs/Scripts      ; path where logs will be stored
 tmpdir = /tmp/log                   ; path where temporary runtime logs go
 dskdir = /Volumes/Your Disk         ; path where your hard disk lies
-arcdir = ${dsk_dir}/Developers      ; path where ancient logs archive
+arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 
 [Mode]
 # In this section, flags for modes are configured.
@@ -77,15 +77,15 @@ def get_parser():
     group = parser.add_argument_group(
                     'Commands',
                     'jsdaily provides a friendly CLI workflow for the '
-                    'administrator of macOS to manupulate packages '
+                    'administrator of macOS to manipulate packages '
                 )
     group.add_argument('command', choices=[
-                            'update', 'up', 'U', 'upgrade',             # jsupdate
-                            'uninstall', 'remove', 'rm', 'r', 'un',     # jsuninstall
-                            'reinstall', 're', 'R',                     # jsreinstall
-                            'postinstall', 'post', 'ps', 'p',           # jspostinstall
-                            'dependency', 'deps', 'dp', 'de', 'd',      # jsdependency
-                            'logging', 'log', 'lg', 'l',                # jslogging
+                            'update', 'up', 'U', 'upgrade',                 # jsupdate
+                            'uninstall', 'remove', 'rm', 'r', 'un',         # jsuninstall
+                            'reinstall', 're', 'R',                         # jsreinstall
+                            'postinstall', 'post', 'ps', 'p',               # jspostinstall
+                            'dependency', 'deps', 'dep', 'dp', 'de', 'd',   # jsdependency
+                            'logging', 'log', 'lg', 'l',                    # jslogging
                         ], help=argparse.SUPPRESS)
 
     return parser
@@ -129,7 +129,7 @@ def main():
         reinstall(argv, config)
     elif args.command in ('postinstall', 'post', 'ps', 'p'):
         postinstall(argv, config)
-    elif args.command in ('dependency', 'deps', 'dp', 'de', 'd'):
+    elif args.command in ('dependency', 'deps', 'dep', 'dp', 'de', 'd'):
         dependency(argv, config)
     elif args.command in ('logging', 'log', 'lg', 'l'):
         logging(argv, config)
