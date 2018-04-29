@@ -1,8 +1,6 @@
 ---
 
-Status: Stable
-
-Platform: macOS (Darwin)
+Platform: macOS High Sierra
 
 Language: Python & Bourne-Again Shell
 
