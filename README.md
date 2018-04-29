@@ -29,7 +29,7 @@ Implementation: CPython | PyPy
         - [Python Package](#update_pip)
         - [Homebrew Formula](#update_brew)
         - [Caskroom Binary](#update_cask)
-        - [Mac App Store](#update_apptore)
+        - [Mac App Store](#update_appstore)
         - [Cleanup Procedure](#update_cleanup)
     * [Uninstall Procedure](#uninstall)
         - [Python Package](#uninstall_pip)
@@ -54,7 +54,7 @@ Implementation: CPython | PyPy
         - [Caskroom Binary](#logging_cask)
         - [All Application](#logging_dotapp)
         - [Installed Application](#logging_macapp)
-        - [Mac App Store](#logging_apptore)
+        - [Mac App Store](#logging_appstore)
  - [Troubleshooting](#issue)
  - [TODO](#todo)
 
