@@ -26,7 +26,7 @@ __all__ = ['main']
 
 
 # version string
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 
 # today
@@ -56,6 +56,19 @@ dotapp   = true     ; Applications (*.app)
 macapp   = true     ; applications in /Application folder
 cleanup  = true     ; cleanup caches
 appstore = true     ; Mac App Store applications
+
+[Setup]
+# In this section, scheduled tasks are set up.
+# You may append and/or remove the time intervals.
+update      = true      ; run update on schedule
+uninstall   = false     ; don't run uninstall
+reinstall   = false     ; don't run reinstall
+postinstall = false     ; don't run postinstall
+dependency  = false     ; don't run dependency
+logging     = true      ; run logging on schedule
+timing  =               ; scheduled timing (in 24 hours)
+    8:00
+    22:30
 """
 
 
