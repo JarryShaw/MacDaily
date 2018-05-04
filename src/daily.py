@@ -60,6 +60,8 @@ def get_parser():
                             'postinstall', 'post', 'ps', 'p',               # jspostinstall
                             'dependency', 'deps', 'dep', 'dp', 'de', 'd',   # jsdependency
                             'logging', 'log', 'lg', 'l',                    # jslogging
+                            'launch',                                       # launch
+                            'config', 'cfg',                                # config
                         ], help=argparse.SUPPRESS)
 
     return parser
@@ -69,7 +71,7 @@ def main():
     if platform.system() != 'Darwin':
         raise UnsupoortedOS('jsdaily: script runs only on macOS')
 
-    config = parse()
+    cfgdct = parse()
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:2])
     logdate = datetime.date.strftime(today, '%y%m%d')
@@ -77,17 +79,21 @@ def main():
 
     argv = sys.argv[2:]
     if args.command in ('update', 'up', 'U', 'upgrade'):
-        update(argv, config, logdate=logdate, logtime=logtime, today=today)
+        update(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
-        uninstall(argv, config, logdate=logdate, logtime=logtime, today=today)
+        uninstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('reinstall', 're', 'R'):
-        reinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
+        reinstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('postinstall', 'post', 'ps', 'p'):
-        postinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
+        postinstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('dependency', 'deps', 'dep', 'dp', 'de', 'd'):
-        dependency(argv, config, logdate=logdate, logtime=logtime, today=today)
+        dependency(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('logging', 'log', 'lg', 'l'):
-        logging(argv, config, logdate=logdate, logtime=logtime, today=today)
+        logging(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
+    elif args.command in ('launch'):
+        launch(cfgdct)
+    elif args.command in ('config', 'cfg'):
+        config()
     else:
         parser.print_help()
 

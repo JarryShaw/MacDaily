@@ -140,6 +140,7 @@ def main(argv, config, *, logdate, logtime, today):
         try:
             flag = not config['Mode'].getboolean(mode)
         except ValueError as error:
+            sys.tracebacklimit = 0
             raise error from None
         if flag or args.__getattribute__(f'no_{logmode}'):
             continue
@@ -159,6 +160,7 @@ def main(argv, config, *, logdate, logtime, today):
             log = logging(args, file=shlex.quote(logname))
         except BaseException as error:
             print(f'logging: {red}{logmode}{reset}: logging procedure interrupted')
+            sys.tracebacklimit = 0
             raise error from None
 
         with open(logname, 'a') as logfile:

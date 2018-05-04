@@ -243,6 +243,7 @@ def main(argv, config, *, logdate, logtime, today):
         try:
             flag = not config['Mode'].getboolean(mode)
         except ValueError as error:
+            sys.tracebacklimit = 0
             raise error from None
         if flag:
             args.__setattr__(f'no_{mode}', flag)

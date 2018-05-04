@@ -5,8 +5,7 @@ import collections
 import configparser
 import datetime
 import io
-import os
-import pathilb
+import pathlib
 import plistlib
 import re
 import shlex
@@ -29,13 +28,13 @@ green  = '\033[92m'     # bright green foreground
 scpt_prefix = """\
 #!/usr/bin/osascript
 
-tell application &quot;Terminal&quot;
+tell application "Terminal"
     if not (exists window 1) then reopen
     activate
-    display notification &quot;Daily scheduled scripts running...&quot; with title &quot;jsdaily&quot;
+    display notification "Daily scheduled scripts running..." with title "jsdaily"
 """
 scpt_suffix = """\
-    display notification &quot;Daily scheduled scripts done...&quot; with title &quot;jsdaily&quot;
+    display notification "Daily scheduled scripts done..." with title "jsdaily"
 end tell
 """
 
@@ -110,48 +109,53 @@ def get_config():
     return config
 
 
-def loads(config, rcpath):
+def loads(rcpath):
+    config = get_config()
     try:
         with open(rcpath, 'r') as config_file:
             config.read_file(config_file)
     except configparser.Error as error:
+        sys.tracebacklimit = 0
         raise error from None
     return config
 
 
-def dumps(config, rcpath):
+def dumps(rcpath):
     try:
         with open(rcpath, 'w') as config_file:
             config_file.write(CONFIG)
     except BaseException as error:
+        sys.tracebacklimit = 0
         raise error from None
-    return config
+    return get_config()
 
 
 def parse():
-    config = get_config()
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     if rcpath.exists() and rcpath.is_file():
-        return loads(config, rcpath)
-    return dumps(config, rcpath)
+        return loads(rcpath)
+    return dumps(rcpath)
 
 
-def launch():
+def launch(config):
     flag = False
     plist['ProgramArguments'][2] += scpt_prefix
     for mode in ('update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'):
         if config['Setup'].getboolean(mode):
             flag = True
-            plist['ProgramArguments'][2] += f'\tdo script &quot;jsdaily {mode} --all&quot; in window 1\n'
+            plist['ProgramArguments'][2] += f'\tdo script "jsdaily {mode} --all" in window 1\n'
     plist['ProgramArguments'][2] += scpt_suffix
 
     lapath = pathlib.Path('~/Library/LaunchAgents/com.jsdaily.launchd.plist').expanduser()
+    subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     if flag:
         config = parse()
         try:
             logdir = config['Path']['logdir']
             pathlib.Path(f'{logdir}/launchd').mkdir(parents=True, exist_ok=True)
         except BaseException as error:
+            sys.tracebacklimit = 0
             raise error from None
         plist['StandardOutPath'] = f'{logdir}/launchd/stdout.log'
         plist['StandardErrorPath'] = f'{logdir}/launchd/stderr.log'
@@ -159,18 +163,18 @@ def launch():
         try:
             timing = config['Setup']['timing'].split()
             for time in timing:
-                ptime = datetime.datetime.strptime(time, '%H%M')
+                ptime = datetime.datetime.strptime(time, '%H:%M')
                 plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
         except BaseException as error:
+            sys.tracebacklimit = 0
             raise error from None
 
-        with open(lapath, 'w') as plist_file:
-            plistlib.dump(plist_file, plist, sort_keys=False)
+        with open(lapath, 'wb') as plist_file:
+            plistlib.dump(plist, plist_file, sort_keys=False)
         print(f'jsdaily: {green}launch{reset}: new scheduled services loaded')
-        subprocess.run(shlex.split(f'launchctl load -w {lapath}', stdout=os.devnull, stderr=os.devnull))
+        subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     else:
         print(f'jsdaily: {red}launch{reset}: no scheduled services loaded')
-        subprocess.run(shlex.split(f'launchctl unload -w {lapath}', stdout=os.devnull, stderr=os.devnull))
 
 
 def config():
@@ -182,7 +186,7 @@ def config():
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.write(cfg.readlines(3))
+            config_file.writelines(cfg.readlines(5))
             cfg.readline()
             print(f'\nFor logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             print(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -190,12 +194,13 @@ def config():
             dskdir = input('Name of your hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.write(cfg.readlines(26))
+            config_file.writelines(cfg.readlines(26))
             print('\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print('You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
             print('Please enter time as HH:MM format, and each time seperated with comma.')
             timing = (input('Time for daily scripts [8:00,10:30]: ') or '8:00,10:30').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
     except BaseException as error:
+        sys.tracebacklimit = 0
         raise error from None
-    launch()
+    launch(parse())

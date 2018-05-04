@@ -9,6 +9,7 @@ import pathlib
 import shlex
 import shutil
 import subprocess
+import sys
 import tarfile
 import zipfile
 
@@ -41,7 +42,8 @@ def aftermath(*, logfile, tmpfile, command):
             try:
                 return func(*args, **kwargs)
             except BaseException as error:
-                subprocess.run(['bash', 'lib{command}/aftermath.sh', shlex.quote(logfile), shlex.quote(tmpfile), 'true'])
+                subprocess.run(['bash', f'lib{command}/aftermath.sh', shlex.quote(logfile), shlex.quote(tmpfile), 'true'])
+                sys.tracebacklimit = 0
                 raise error from None
         return wrapper
     return decorator
