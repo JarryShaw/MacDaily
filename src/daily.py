@@ -2,7 +2,6 @@
 
 
 import argparse
-import configparser
 import datetime
 import os
 import pathlib
@@ -10,6 +9,7 @@ import platform
 import re
 import sys
 
+from jsdaily.daily_rc import *
 from jsdaily.daily_up import main as update
 from jsdaily.daily_un import main as uninstall
 from jsdaily.daily_re import main as reinstall
@@ -22,7 +22,7 @@ __all__ = ['main']
 
 
 # change working directory
-# os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__))
 
 
 # version string
@@ -31,45 +31,6 @@ __version__ = '1.1.1'
 
 # today
 today = datetime.datetime.today()
-
-
-# default config
-CONFIG = """\
-[Path]
-# In this section, paths for log files are specified.
-# Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts      ; path where logs will be stored
-tmpdir = /tmp/log                   ; path where temporary runtime logs go
-dskdir = /Volumes/Your Disk         ; path where your hard disk lies
-arcdir = ${dskdir}/Developers       ; path where ancient logs archive
-
-[Mode]
-# In this section, flags for modes are configured.
-# If you would like to disable the mode, set it to "false".
-apm      = true     ; Atom packages
-gem      = true     ; Ruby gems
-npm      = true     ; Node.js modules
-pip      = true     ; Python packages
-brew     = true     ; Homebrew Cellars
-cask     = true     ; Caskroom Casks
-dotapp   = true     ; Applications (*.app)
-macapp   = true     ; applications in /Application folder
-cleanup  = true     ; cleanup caches
-appstore = true     ; Mac App Store applications
-
-[Setup]
-# In this section, scheduled tasks are set up.
-# You may append and/or remove the time intervals.
-update      = true      ; run update on schedule
-uninstall   = false     ; don't run uninstall
-reinstall   = false     ; don't run reinstall
-postinstall = false     ; don't run postinstall
-dependency  = false     ; don't run dependency
-logging     = true      ; run logging on schedule
-timing  =               ; scheduled timing (in 24 hours)
-    8:00
-    22:30
-"""
 
 
 # error handling class
@@ -108,44 +69,25 @@ def main():
     if platform.system() != 'Darwin':
         raise UnsupoortedOS('jsdaily: script runs only on macOS')
 
+    config = parse()
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:2])
-
-    config = configparser.ConfigParser(
-        inline_comment_prefixes=(';',),
-        interpolation=configparser.ExtendedInterpolation())
-    config.SECTCRE = re.compile(r"\[ *(?P<header>[^]]+?) *\]")
-    config.read_string(CONFIG)
-
-    rcpath = pathlib.Path('~/.dailyrc').expanduser()
-    if rcpath.exists() and rcpath.is_file():
-        try:
-            with open(rcpath, 'r') as config_file:
-                config.read_file(config_file)
-        except configparser.Error as error:
-            sys.tracebacklimit = 0
-            raise error from None
-    else:
-        try:
-            with open(rcpath, 'w') as config_file:
-                config_file.write(CONFIG)
-        except BaseException as error:
-            sys.tracebacklimit = 0
-            raise error from None
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    logtime = datetime.date.strftime(today, '%H%M%S')
 
     argv = sys.argv[2:]
     if args.command in ('update', 'up', 'U', 'upgrade'):
-        update(argv, config)
+        update(argv, config, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
-        uninstall(argv, config)
+        uninstall(argv, config, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('reinstall', 're', 'R'):
-        reinstall(argv, config)
+        reinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('postinstall', 'post', 'ps', 'p'):
-        postinstall(argv, config)
+        postinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('dependency', 'deps', 'dep', 'dp', 'de', 'd'):
-        dependency(argv, config)
+        dependency(argv, config, logdate=logdate, logtime=logtime, today=today)
     elif args.command in ('logging', 'log', 'lg', 'l'):
-        logging(argv, config)
+        logging(argv, config, logdate=logdate, logtime=logtime, today=today)
     else:
         parser.print_help()
 

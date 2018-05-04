@@ -2,27 +2,15 @@
 
 
 import argparse
-import calendar
 import datetime
-import os
-import pathlib
-import platform
-import shlex
-import shutil
-import subprocess
 import sys
-import tarfile
-import zipfile
 
+from jsdaily.daily_ng import *
 from jsdaily.libprinstall import *
 
 
 # version string
-__version__ = '1.1.0'
-
-
-# today
-today = datetime.datetime.today()
+__version__ = '1.1.1'
 
 
 # display mode names
@@ -198,161 +186,67 @@ def get_parser():
     return parser
 
 
-def main(argv, config):
-    try:
-        parser = get_parser()
-        args = parser.parse_args(argv)
+def main(argv, config, *, logdate, logtime, today):
+    parser = get_parser()
+    args = parser.parse_args(argv)
 
-        if args.mode is None:
-            parser.print_help()
-            return
+    if args.mode is None:
+        parser.print_help()
+        return
 
-        tmpdir = config['Path']['tmpdir']
-        logdir = config['Path']['logdir'] + '/reinstall'
-        arcdir = config['Path']['logdir'] + '/archive/reinstall'
-        tardir = config['Path']['logdir'] + '/tarfile/reinstall'
+    tmppath, logpath, arcpath, tarpath = make_path(config, mode='reinstall', logdate=logdate)
+    logname = f'{logpath}/{logdate}/{logtime}.log'
+    tmpname = f'{tmppath}/reinstall.log'
 
-        logdate = datetime.date.strftime(today, '%y%m%d')
-        logtime = datetime.date.strftime(today, '%H%M%S')
-        logname = f'{logdir}/{logdate}/{logtime}.log'
-        tmpname = f'{tmpdir}/reinstall.log'
+    mode = '-*- Arguments -*-'.center(80, ' ')
+    with open(logname, 'a') as logfile:
+        logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
+        logfile.write(f'\n\nCMD: {python} {program}')
+        logfile.write(f'\n\n{mode}\n\n')
+        for key, value in args.__dict__.items():
+            logfile.write(f'ARG: {key} = {value}\n')
 
-        pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
-        pathlib.Path(tardir).mkdir(parents=True, exist_ok=True)
-        pathlib.Path(tmpdir).mkdir(parents=True, exist_ok=True)
-        pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
-
-        dskpath = pathlib.Path(config['Path']['dskdir'])
-        if dskpath.exists() and dskpath.is_dir():
-            pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
-
-        mode = '-*- Arguments -*-'.center(80, ' ')
-        with open(logname, 'a') as logfile:
-            logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-            logfile.write(f'\n\nCMD: {python} {program}')
-            logfile.write(f'\n\n{mode}\n\n')
-            for key, value in args.__dict__.items():
-                logfile.write(f'ARG: {key} = {value}\n')
-
-        for mode in config['Mode'].keys():
+    for mode in config['Mode'].keys():
+        try:
             flag = not config['Mode'].getboolean(mode)
-            if flag:
-                args.__setattr__(f'no_{mode}', flag)
-        if isinstance(args.mode, str):
-            args.mode = [args.mode]
-        if 'all' in args.mode:
-            args.mode = ['all']
-        for mode in set(args.mode):
-            reinstall = MODE.get(mode)
-            log = reinstall(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
+        except ValueError as error:
+            raise error from None
+        if flag:
+            args.__setattr__(f'no_{mode}', flag)
+    if isinstance(args.mode, str):
+        args.mode = [args.mode]
+    if 'all' in args.mode:
+        args.mode = ['all']
 
-        filelist = list()
-        for subdir in os.listdir(logdir):
-            if subdir == '.DS_Store':
-                continue
-            absdir = os.path.join(logdir, subdir)
-            if not os.path.isdir(absdir):
-                continue
-            if subdir != logdate:
-                tarname = f'{arcdir}/{subdir}.tar.gz'
-                with tarfile.open(tarname, 'w:gz') as tf:
-                    abs_src = os.path.abspath(absdir)
-                    for dirname, subdirs, files in os.walk(absdir):
-                        for filename in files:
-                            if filename == '.DS_Store':
-                                continue
-                            name, ext = os.path.splitext(filename)
-                            if ext != '.log':
-                                continue
-                            absname = os.path.abspath(os.path.join(dirname, filename))
-                            arcname = absname[len(abs_src) + 1:]
-                            tf.add(absname, arcname)
-                            filelist.append(arcname)
-                    shutil.rmtree(absdir)
+    for mode in set(args.mode):
+        reinstall = MODE.get(mode)
+        log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall'
+                )(reinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
 
-        ctime = datetime.datetime.fromtimestamp(os.stat(arcdir).st_birthtime)
-        delta = today - ctime
-        if delta > datetime.timedelta(7):
-            arcdate = datetime.date.strftime(ctime, '%y%m%d')
-            tarname = f'{tardir}/{arcdate}-{logdate}.tar.bz'
-            with tarfile.open(tarname, 'w:bz2') as tf:
-                abs_src = os.path.abspath(arcdir)
-                for dirname, subdirs, files in os.walk(arcdir):
-                    for filename in files:
-                        if filename == '.DS_Store':
-                            continue
-                        name, ext = os.path.splitext(filename)
-                        if ext != '.gz':
-                            continue
-                        absname = os.path.abspath(os.path.join(dirname, filename))
-                        arcname = absname[len(abs_src) + 1:]
-                        tf.add(absname, arcname)
-                        filelist.append(arcname)
-                shutil.rmtree(arcdir)
+    mode = '-*- Reinstall Logs -*-'.center(80, ' ')
+    with open(logname, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+        if not args.quiet:
+            print(f'-*- {blue}Reinstall Logs{reset} -*-\n')
 
-        if dskpath.exists() and dskpath.is_dir():
-            ctime = datetime.datetime.fromtimestamp(os.stat(config['Path']['logdir'] + '/tarfile').st_birthtime)
-            delta = today - ctime
-            if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
-                arcdate = datetime.date.strftime(ctime, '%y%m%d')
-                tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
-                with tarfile.open(tarname, 'w:xz') as tf:
-                    abs_src = os.path.abspath(config['Path']['logdir'] + '/tarfile')
-                    for dirname, subdirs, files in os.walk(config['Path']['logdir'] + '/tarfile'):
-                        for filename in files:
-                            if filename == '.DS_Store':
-                                continue
-                            name, ext = os.path.splitext(filename)
-                            if ext != '.bz':
-                                continue
-                            absname = os.path.abspath(os.path.join(dirname, filename))
-                            arcname = absname[len(abs_src) + 1:]
-                            tf.add(absname, arcname)
-                            filelist.append(arcname)
-                    shutil.rmtree(config['Path']['logdir'] + '/tarfile')
-
-                arcfile = config['Path']['arcdir'] + '/archive.zip'
-                with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
-                    arcname = os.path.split(tarname)[1]
-                    zf.write(tarname, arcname)
-                    filelist.append(arcname)
-                    os.remove(tarname)
-
-        mode = '-*- Reinstall Logs -*-'.center(80, ' ')
-        with open(logname, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-            if not args.quiet:
-                print(f'-*- {blue}Reinstall Logs{reset} -*-\n')
-
-            for mode in log:
-                name = NAME.get(mode)
-                if name is None:    continue
-                if log[mode] and all(log[mode]):
-                    pkgs = f', '.join(log[mode])
-                    logfile.write(f'LOG: reinstalled following {name} packages: {pkgs}\n')
-                    if not args.quiet:
-                        pkgs_coloured = f'{reset}, {red}'.join(log[mode])
-                        print(
-                            f'reinstall: {green}{mode}{reset}: '
-                            f'reinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'
-                        )
-                else:
-                    logfile.write(f"LOG: no package reinstalled in {name}\n")
-                    if not args.quiet:
-                        print(f'reinstall: {green}{mode}{reset}: no package reinstalled in {bold}{name}{reset}')
-
-            if filelist:
-                files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following old logs: {files}\n')
+        for mode in log:
+            name = NAME.get(mode)
+            if name is None:    continue
+            if log[mode] and all(log[mode]):
+                pkgs = f', '.join(log[mode])
+                logfile.write(f'LOG: reinstalled following {name} packages: {pkgs}\n')
                 if not args.quiet:
-                    print(f'reinstall: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
-    except (KeyboardInterrupt, PermissionError):
-        logdate = datetime.date.strftime(today, '%y%m%d')
-        logtime = datetime.date.strftime(today, '%H%M%S')
-        logfile = shlex.quote(config['Path']['logdir'] + f'/reinstall/{logdate}/{logtime}.log')
-        tmpfile = shlex.quote(config['Path']['tmpdir'] + '/reinstall.log')
-        subprocess.run(['bash', 'libprinstall/aftermath.sh', logfile, tmpfile, 'reinstall', 'true'])
+                    pkgs_coloured = f'{reset}, {red}'.join(log[mode])
+                    print(  f'reinstall: {green}{mode}{reset}: '
+                            f'reinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'  )
+            else:
+                logfile.write(f"LOG: no package reinstalled in {name}\n")
+                if not args.quiet:
+                    print(f'reinstall: {green}{mode}{reset}: no package reinstalled in {bold}{name}{reset}')
 
-
-if __name__ == '__main__':
-    sys.exit(main())
+        filelist = archive(logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: archived following old logs: {files}\n')
+            if not args.quiet:
+                print(f'reinstall: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')

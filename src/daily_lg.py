@@ -2,27 +2,16 @@
 
 
 import argparse
-import calendar
 import datetime
-import os
-import pathlib
-import platform
 import shlex
-import shutil
-import subprocess
 import sys
-import tarfile
-import zipfile
 
+from jsdaily.daily_ng import *
 from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.1.0'
-
-
-# today
-today = datetime.datetime.today()
+__version__ = '1.1.1'
 
 
 # mode actions
@@ -130,143 +119,56 @@ def get_parser():
     return parser
 
 
-def main(argv, config):
-    logmode = None
-    try:
-        parser = get_parser()
-        args = parser.parse_args(argv)
+def main(argv, config, *, logdate, logtime, today):
+    parser = get_parser()
+    args = parser.parse_args(argv)
 
-        modes = list()
-        for mode in args.mode:
-            if isinstance(mode, str):   modeds.append(mode)
-            else:                       modes += mode
-        if args.all:
-            modes += ['apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
-        args.mode = set(modes) or None
+    modes = list()
+    for mode in args.mode:
+        if isinstance(mode, str):   modeds.append(mode)
+        else:                       modes += mode
+    if args.all:
+        modes += ['apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
+    args.mode = set(modes) or None
 
-        if args.mode is None:
-            parser.print_help()
-            return
+    if args.mode is None:
+        parser.print_help()
+        return
 
-        tmpdir = config['Path']['tmpdir']
-        pathlib.Path(tmpdir).mkdir(parents=True, exist_ok=True)
+    arcflag = False
+    for logmode in args.mode:
+        try:
+            flag = not config['Mode'].getboolean(mode)
+        except ValueError as error:
+            raise error from None
+        if flag or args.__getattribute__(f'no_{logmode}'):
+            continue
 
-        dskpath = pathlib.Path(config['Path']['dskdir'])
-        if dskpath.exists() and dskpath.is_dir():
-            pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
+        tmppath, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
+        logname = f'{logpath}/{logdate}/{logtime}.log'
 
-        logdate = datetime.date.strftime(today, '%y%m%d')
-        logtime = datetime.date.strftime(today, '%H%M%S')
+        with open(logname, 'a') as logfile:
+            logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
+            logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
+            for key, value in args.__dict__.items():
+                logfile.write(f'ARG: {key} = {value}\n')
+            logfile.write('\n\n')
 
-        arcflag = False
-        for logmode in args.mode:
-            flag = not config['Mode'].getboolean(logmode)
-            if flag or args.__getattribute__(f'no_{logmode}'):
-                continue
-
-            logdir = config['Path']['logdir'] + f'/logging/{logmode}'
-            arcdir = config['Path']['logdir'] + f'/archive/logging/{logmode}'
-            tardir = config['Path']['logdir'] + f'/tarfile/logging/{logmode}'
-
-            logname = f'{logdir}/{logdate}/{logtime}.log'
-
-            pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
-            pathlib.Path(tardir).mkdir(parents=True, exist_ok=True)
-            pathlib.Path(f'{logdir}/{logdate}').mkdir(parents=True, exist_ok=True)
-
-            with open(logname, 'a') as logfile:
-                logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-                logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
-                for key, value in args.__dict__.items():
-                    logfile.write(f'ARG: {key} = {value}\n')
-                logfile.write('\n\n')
-
+        try:
             logging = MODE.get(logmode)
             log = logging(args, file=shlex.quote(logname))
-
-            filelist = list()
-            for subdir in os.listdir(logdir):
-                if subdir == '.DS_Store':
-                    continue
-                absdir = os.path.join(logdir, subdir)
-                if not os.path.isdir(absdir):
-                    continue
-                if subdir != logdate:
-                    tarname = f'{arcdir}/{subdir}.tar.gz'
-                    with tarfile.open(tarname, 'w:gz') as tf:
-                        abs_src = os.path.abspath(absdir)
-                        for dirname, subdirs, files in os.walk(absdir):
-                            for filename in files:
-                                if filename == '.DS_Store':
-                                    continue
-                                name, ext = os.path.splitext(filename)
-                                if ext != '.log':
-                                    continue
-                                absname = os.path.abspath(os.path.join(dirname, filename))
-                                arcname = absname[len(abs_src) + 1:]
-                                tf.add(absname, arcname)
-                                filelist.append(arcname)
-                        shutil.rmtree(absdir)
-
-            ctime = datetime.datetime.fromtimestamp(os.stat(arcdir).st_birthtime)
-            delta = today - ctime
-            if delta > datetime.timedelta(7):
-                arcdate = datetime.date.strftime(ctime, '%y%m%d')
-                tarname = f'{tardir}/{arcdate}-{logdate}.tar.bz'
-                with tarfile.open(tarname, 'w:bz2') as tf:
-                    abs_src = os.path.abspath(arcdir)
-                    for dirname, subdirs, files in os.walk(arcdir):
-                        for filename in files:
-                            if filename == '.DS_Store':
-                                continue
-                            name, ext = os.path.splitext(filename)
-                            if ext != '.gz':
-                                continue
-                            absname = os.path.abspath(os.path.join(dirname, filename))
-                            arcname = absname[len(abs_src) + 1:]
-                            tf.add(absname, arcname)
-                            filelist.append(arcname)
-                    shutil.rmtree(arcdir)
-
-            with open(logname, 'a') as logfile:
-                if filelist:
-                    arcflag = True
-                    files = ', '.join(filelist)
-                    logfile.write(f'LOG: archived following old logs: {files}\n')
-
-        if dskpath.exists() and dskpath.is_dir():
-            ctime = datetime.datetime.fromtimestamp(os.stat(config['Path']['logdir'] + '/tarfile').st_birthtime)
-            delta = today - ctime
-            if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
-                arcdate = datetime.date.strftime(ctime, '%y%m%d')
-                tarname = f'{tmpdir}/{arcdate}-{logdate}.tar.xz'
-                with tarfile.open(tarname, 'w:xz') as tf:
-                    abs_src = os.path.abspath('/Library/Logs/Scripts/tarfile')
-                    for dirname, subdirs, files in os.walk(config['Path']['logdir'] + '/tarfile'):
-                        for filename in files:
-                            if filename == '.DS_Store':
-                                continue
-                            name, ext = os.path.splitext(filename)
-                            if ext != '.bz':
-                                continue
-                            absname = os.path.abspath(os.path.join(dirname, filename))
-                            arcname = absname[len(abs_src) + 1:]
-                            tf.add(absname, arcname)
-                    shutil.rmtree(config['Path']['logdir'] + '/tarfile')
-
-                arcfile = config['Path']['arcdir'] + '/archive.zip'
-                with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
-                    arcname = os.path.split(tarname)[1]
-                    zf.write(tarname, arcname)
-                    os.remove(tarname)
-
-        if arcflag and not args.quiet:
-            arcdir = config['Path']['logdir'] + '/archive/logging'
-            print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
-    except (KeyboardInterrupt, PermissionError):
-        if logname and not args.quiet:
+        except BaseException as error:
             print(f'logging: {red}{logmode}{reset}: logging procedure interrupted')
+            raise error from None
 
+        with open(logname, 'a') as logfile:
+            filelist = archive(logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, storage=False)
+            if filelist:
+                arcflag = True
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following old logs: {files}\n')
 
-if __name__ == '__main__':
-    sys.exit(main())
+    storage(logdate=logdate, today=today)
+    if arcflag and not args.quiet:
+        arcdir = config['Path']['logdir'] + '/archive/logging'
+        print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
