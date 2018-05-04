@@ -191,7 +191,7 @@ def main(argv, config, *, logdate, logtime, today):
             else:
                 logfile.write(f'LOG: no dependencies showed in {name} packages\n')
 
-        filelist = archive(logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+        filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
         if filelist:
             files = ', '.join(filelist)
             logfile.write(f'LOG: archived following old logs: {files}\n')

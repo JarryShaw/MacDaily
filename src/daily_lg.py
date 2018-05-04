@@ -138,7 +138,7 @@ def main(argv, config, *, logdate, logtime, today):
     arcflag = False
     for logmode in args.mode:
         try:
-            flag = not config['Mode'].getboolean(mode)
+            flag = not config['Mode'].getboolean(logmode)
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
@@ -164,13 +164,13 @@ def main(argv, config, *, logdate, logtime, today):
             raise error from None
 
         with open(logname, 'a') as logfile:
-            filelist = archive(logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, storage=False)
+            filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, mvflag=False)
             if filelist:
                 arcflag = True
                 files = ', '.join(filelist)
                 logfile.write(f'LOG: archived following old logs: {files}\n')
 
-    storage(logdate=logdate, today=today)
+    storage(config, logdate=logdate, today=today)
     if arcflag and not args.quiet:
         arcdir = config['Path']['logdir'] + '/archive/logging'
         print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')

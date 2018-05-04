@@ -49,7 +49,7 @@ def aftermath(*, logfile, tmpfile, command):
     return decorator
 
 
-def archive(*, logpath, arcpath, tarpath, logdate, today, storage=True):
+def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
     filelist = list()
     for subdir in os.listdir(logpath):
         if subdir == '.DS_Store':
@@ -90,12 +90,12 @@ def archive(*, logpath, arcpath, tarpath, logdate, today, storage=True):
                     filelist.append(arcname)
             shutil.rmtree(arcpath)
 
-    if storage:
-        filelist += storage(logdate=logdate, today=today)
+    if mvflag:
+        filelist += storage(config, logdate=logdate, today=today)
     return filelist
 
 
-def storage(*, logdate, today):
+def storage(config, *, logdate, today):
     filelist = list()
     tmppath = config['Path']['tmpdir']
     tarpath = config['Path']['logdir'] + '/tarfile'

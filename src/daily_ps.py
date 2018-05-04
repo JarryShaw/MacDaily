@@ -113,7 +113,7 @@ def main(argv, config, *, logdate, logtime, today):
             if not args.quiet:
                 print(f'postinstall: {green}{mode}{reset}: no package postinstalled in {bold}{name}{reset}')
 
-        filelist = archive(logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+        filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
         if filelist:
             files = ', '.join(filelist)
             logfile.write(f'LOG: archived following old logs: {files}\n')
