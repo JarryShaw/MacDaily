@@ -10,12 +10,14 @@ import re
 import sys
 
 from jsdaily.daily_rc import *
+from jsdaily.daily_ng import beholder
 from jsdaily.daily_up import main as update
 from jsdaily.daily_un import main as uninstall
 from jsdaily.daily_re import main as reinstall
 from jsdaily.daily_ps import main as postinstall
 from jsdaily.daily_dp import main as dependency
 from jsdaily.daily_lg import main as logging
+from jsdaily.daily_mv import main as archive
 
 
 __all__ = ['main']
@@ -62,11 +64,13 @@ def get_parser():
                             'logging', 'log', 'lg', 'l',                    # jslogging
                             'launch',                                       # launch
                             'config', 'cfg',                                # config
+                            'archive', 'gz', 'tar',                         # archive
                         ], help=argparse.SUPPRESS)
 
     return parser
 
 
+@beholder
 def main():
     if platform.system() != 'Darwin':
         raise UnsupoortedOS('jsdaily: script runs only on macOS')
@@ -94,6 +98,8 @@ def main():
         launch(cfgdct)
     elif args.command in ('config', 'cfg'):
         config()
+    elif args.command in ('archive', 'gz', 'tar'):
+        archive(cfgdct, logdate=logdate, today=today)
     else:
         parser.print_help()
 

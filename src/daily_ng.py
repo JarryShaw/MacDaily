@@ -14,7 +14,39 @@ import tarfile
 import zipfile
 
 
-__all__ = ['make_path', 'aftermath', 'archive', 'storage']
+__all__ = ['aftermath', 'make_path', 'archive', 'storage']
+
+
+# terminal display
+reset  = '\033[0m'      # reset
+red    = '\033[91m'     # bright red foreground
+
+
+def beholder(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except (KeyboardInterrupt, PermissionError):
+            print(f'jsdaily: {red}error{reset}: operation interrupted')
+        except BaseException as error:
+            sys.tracebacklimit = 0
+            raise error from None
+    return wrapper
+
+
+def aftermath(*, logfile, tmpfile, command):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except BaseException as error:
+                subprocess.run(['bash', f'lib{command}/aftermath.sh', shlex.quote(logfile), shlex.quote(tmpfile), 'true'])
+                sys.tracebacklimit = 0
+                raise error from None
+        return wrapper
+    return decorator
 
 
 def make_path(config, *, mode, logdate):
@@ -33,20 +65,6 @@ def make_path(config, *, mode, logdate):
         pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
 
     return tmppath, logpath, arcpath, tarpath
-
-
-def aftermath(*, logfile, tmpfile, command):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except BaseException as error:
-                subprocess.run(['bash', f'lib{command}/aftermath.sh', shlex.quote(logfile), shlex.quote(tmpfile), 'true'])
-                sys.tracebacklimit = 0
-                raise error from None
-        return wrapper
-    return decorator
 
 
 def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):

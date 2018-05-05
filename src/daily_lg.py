@@ -4,6 +4,7 @@
 import argparse
 import datetime
 import shlex
+import subprocess
 import sys
 
 from jsdaily.daily_ng import *
@@ -158,8 +159,18 @@ def main(argv, config, *, logdate, logtime, today):
         try:
             logging = MODE.get(logmode)
             log = logging(args, file=shlex.quote(logname))
+        except subprocess.TimeoutExpired as error:
+            with open(lgname, 'a') as logfile:
+                logfile.write('\ERR: operation timeout\n')
+            if not args.quiet:
+                print(f'logging: {red}{logmode}{reset}: operation timeout')
+            sys.tracebacklimit = 0
+            raise error from None
         except BaseException as error:
-            print(f'logging: {red}{logmode}{reset}: logging procedure interrupted')
+            with open(lgname, 'a') as logfile:
+                logfile.write('\nWAR: procedure interrupted\n')
+            if not args.quiet:
+                print(f'logging: {red}{logmode}{reset}: procedure interrupted')
             sys.tracebacklimit = 0
             raise error from None
 

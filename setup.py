@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.1.1a3'
+__version__ = '1.1.1b2'
 
 
 # set-up script for pip distribution
@@ -45,7 +45,7 @@ setuptools.setup(
     },
     entry_points = {
         'console_scripts': [
-            'jsdaily = jsdaily:daily',
+            'jsdaily = jsdaily.daily:main',
         ]
     },
     packages = [

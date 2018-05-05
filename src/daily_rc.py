@@ -25,16 +25,13 @@ green  = '\033[92m'     # bright green foreground
 
 
 # AppleScript
-scpt_prefix = """\
+scpt = lambda mode: f"""\
 #!/usr/bin/osascript
 
+display notification "Daily scheduled script `{mode}` running..." with title "jsdaily"
 tell application "Terminal"
-    if not (exists window 1) then reopen
     activate
-    display notification "Daily scheduled scripts running..." with title "jsdaily"
-"""
-scpt_suffix = """\
-    display notification "Daily scheduled scripts done..." with title "jsdaily"
+    do script "jsdaily {mode} --all"
 end tell
 """
 
@@ -138,41 +135,32 @@ def parse():
 
 
 def launch(config):
+    try:
+        logdir = config['Path']['logdir']
+        timing = config['Setup']['timing'].split()
+        for time in timing:
+            ptime = datetime.datetime.strptime(time, '%H:%M')
+            plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+    except BaseException as error:
+        sys.tracebacklimit = 0
+        raise error from None
+
     flag = False
-    plist['ProgramArguments'][2] += scpt_prefix
     for mode in ('update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'):
+        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
+        if lapath.exists() and lapath.is_file():
+            subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if config['Setup'].getboolean(mode):
             flag = True
-            plist['ProgramArguments'][2] += f'\tdo script "jsdaily {mode} --all" in window 1\n'
-    plist['ProgramArguments'][2] += scpt_suffix
-
-    lapath = pathlib.Path('~/Library/LaunchAgents/com.jsdaily.launchd.plist').expanduser()
-    subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            plist['ProgramArguments'][2] = scpt(mode)
+            plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
+            plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
+            with open(lapath, 'wb') as plist_file:
+                plistlib.dump(plist, plist_file, sort_keys=False)
+            subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     if flag:
-        config = parse()
-        try:
-            logdir = config['Path']['logdir']
-            pathlib.Path(f'{logdir}/launchd').mkdir(parents=True, exist_ok=True)
-        except BaseException as error:
-            sys.tracebacklimit = 0
-            raise error from None
-        plist['StandardOutPath'] = f'{logdir}/launchd/stdout.log'
-        plist['StandardErrorPath'] = f'{logdir}/launchd/stderr.log'
-
-        try:
-            timing = config['Setup']['timing'].split()
-            for time in timing:
-                ptime = datetime.datetime.strptime(time, '%H:%M')
-                plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
-        except BaseException as error:
-            sys.tracebacklimit = 0
-            raise error from None
-
-        with open(lapath, 'wb') as plist_file:
-            plistlib.dump(plist, plist_file, sort_keys=False)
         print(f'jsdaily: {green}launch{reset}: new scheduled services loaded')
-        subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     else:
         print(f'jsdaily: {red}launch{reset}: no scheduled services loaded')
 
