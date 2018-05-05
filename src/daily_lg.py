@@ -160,14 +160,14 @@ def main(argv, config, *, logdate, logtime, today):
             logging = MODE.get(logmode)
             log = logging(args, file=shlex.quote(logname))
         except subprocess.TimeoutExpired as error:
-            with open(lgname, 'a') as logfile:
+            with open(logname, 'a') as logfile:
                 logfile.write('\ERR: operation timeout\n')
             if not args.quiet:
                 print(f'logging: {red}{logmode}{reset}: operation timeout')
             sys.tracebacklimit = 0
             raise error from None
         except BaseException as error:
-            with open(lgname, 'a') as logfile:
+            with open(logname, 'a') as logfile:
                 logfile.write('\nWAR: procedure interrupted\n')
             if not args.quiet:
                 print(f'logging: {red}{logmode}{reset}: procedure interrupted')
