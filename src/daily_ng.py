@@ -87,7 +87,7 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
                         absname = os.path.abspath(os.path.join(dirname, filename))
                         arcname = absname[len(abs_src) + 1:]
                         tf.add(absname, arcname)
-                        filelist.append(arcname)
+                        filelist.append(absname)
                 shutil.rmtree(absdir)
 
     ctime = datetime.datetime.fromtimestamp(os.stat(arcpath).st_birthtime)
@@ -105,7 +105,7 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
                     absname = os.path.abspath(os.path.join(dirname, filename))
                     arcname = absname[len(abs_src) + 1:]
                     tf.add(absname, arcname)
-                    filelist.append(arcname)
+                    filelist.append(absname)
             shutil.rmtree(arcpath)
 
     if mvflag:
@@ -134,13 +134,13 @@ def storage(config, *, logdate, today):
                         absname = os.path.abspath(os.path.join(dirname, filename))
                         arcname = absname[len(abs_src) + 1:]
                         tf.add(absname, arcname)
-                        filelist.append(arcname)
+                        filelist.append(absname)
                 shutil.rmtree(tarpath)
 
             arcfile = config['Path']['arcdir'] + '/archive.zip'
             with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                 arcname = os.path.split(tarname)[1]
                 zf.write(tarname, arcname)
-                filelist.append(arcname)
+                filelist.append(tarname)
                 os.remove(tarname)
     return filelist

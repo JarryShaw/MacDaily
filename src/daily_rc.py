@@ -146,7 +146,7 @@ def launch(config):
         raise error from None
 
     flag = False
-    for mode in ('update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'):
+    for mode in {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'}:
         lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
         if lapath.exists() and lapath.is_file():
             subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -158,18 +158,16 @@ def launch(config):
             with open(lapath, 'wb') as plist_file:
                 plistlib.dump(plist, plist_file, sort_keys=False)
             subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    if flag:
-        print(f'jsdaily: {green}launch{reset}: new scheduled services loaded')
-    else:
+            print(f'jsdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
+    if not flag:
         print(f'jsdaily: {red}launch{reset}: no scheduled services loaded')
 
 
 def config():
     cfg = StringIO(CONFIG)
-    print('Entering interactive command line setup procedure...')
-    print('Default settings are shown as in the square brackets.')
-    print('Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
+    print(f'Entering interactive command line setup procedure...')
+    print(f'Default settings are shown as in the square brackets.')
+    print(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
 
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     try:
@@ -178,15 +176,15 @@ def config():
             cfg.readline()
             print(f'\nFor logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             print(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print('Please note that all paths must be valid under all circumstances.')
+            print(f'Please note that all paths must be valid under all circumstances.')
             dskdir = input('Name of your hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
             config_file.writelines(cfg.readlines(26))
-            print('\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
-            print('You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print('Please enter time as HH:MM format, and each time seperated with comma.')
-            timing = (input('Time for daily scripts [8:00,10:30]: ') or '8:00,10:30').split(',')
+            print(f'\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
+            print(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
+            print(f'Please enter time as HH:MM format, and each time seperated with comma.')
+            timing = (input('Time for daily scripts [8:00,22:30]: ') or '8:00,22:30').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
     except BaseException as error:
         sys.tracebacklimit = 0

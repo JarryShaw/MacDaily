@@ -371,7 +371,7 @@ def update_appstore(args, *, file, temp, disk, retset=False):
 
 def update_all(args, *, file, temp, disk):
     log = collections.defaultdict(set)
-    for mode in ('apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'):
+    for mode in {'apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'}:
         globals()[mode] = False
         if not args.__getattribute__(f'no_{mode}'):
             globals()[mode] = True

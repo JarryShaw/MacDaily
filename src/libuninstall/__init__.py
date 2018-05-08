@@ -185,7 +185,7 @@ def uninstall_cask(args, *, file, temp, retset=False):
 
 def uninstall_all(args, *, file, temp):
     log = collections.defaultdict(set)
-    for mode in ('pip', 'brew', 'cask'):
+    for mode in {'pip', 'brew', 'cask'}:
         if not args.__getattribute__(f'no_{mode}'):
             log[mode] = eval(f'uninstall_{mode}')(args, file=file, temp=temp, retset=True)
     return log

@@ -130,7 +130,7 @@ def dependency_brew(args, *, file, temp, retset=False):
 
 def dependency_all(args, *, file, temp):
     log = collections.defaultdict(set)
-    for mode in ('pip', 'brew'):
+    for mode in {'pip', 'brew'}:
         if not args.__getattribute__(f'no_{mode}'):
             log[mode] = eval(f'dependency_{mode}')(args, file=file, temp=temp, retset=True)
     return log
