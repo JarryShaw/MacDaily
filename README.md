@@ -2,19 +2,25 @@
 
 Platform: macOS High Sierra
 
-Language: Python & Bourne-Again Shell
+Language: Python | Bourne-Again Shell
 
 Environment: Console | Terminal
-
-Requirements: Python>=3.6 & Bash>=3.2
-
-Implementation: CPython | PyPy
 
 ---
 
 # jsdaily
 
 &nbsp;
+
+[![Downloads](http://pepy.tech/badge/jsdaily)](http://pepy.tech/count/jsdaily)
+[![version](https://img.shields.io/pypi/v/jsdaily.svg)](https://pypi.org/project/jsdaily)
+[![format](https://img.shields.io/pypi/format/jsdaily.svg)](https://pypi.org/project/jsdaily)
+[![status](https://img.shields.io/pypi/status/jsdaily.svg)](https://pypi.org/project/jsdaily)
+
+[![language](https://img.shields.io/github/languages/top/JarryShaw/jsdaily.svg)](https://github.com/JarryShaw/jsdaily)
+[![made-with-bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash)
+[![python](https://img.shields.io/pypi/pyversions/jsdaily.svg)](https://python.org)
+[![implementation](https://img.shields.io/pypi/implementation/jsdaily.svg)](http://pypy.org)
 
  - [About](#about)
  - [Installation](#install)
