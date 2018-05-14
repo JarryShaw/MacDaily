@@ -12,8 +12,6 @@ Environment: Console | Terminal
 
 # jsdaily
 
-&nbsp;
-
 [![Downloads](http://pepy.tech/badge/jsdaily)](http://pepy.tech/count/jsdaily)
 [![version](https://img.shields.io/pypi/v/jsdaily.svg)](https://pypi.org/project/jsdaily)
 [![format](https://img.shields.io/pypi/format/jsdaily.svg)](https://pypi.org/project/jsdaily)
