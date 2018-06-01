@@ -153,7 +153,7 @@ function pip_fixmissing {
     echo "+ pip_fixmissing $@" >> "$tmpfile"
 
     # reinstall missing packages
-    for $name in $arg_pkg ; do
+    for name in $arg_pkg ; do
         $logprefix printf "++ ${bold}pip$pprint install $name --no-cache-dir $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             sudo -H $logprefix $prefix/$suffix -m pip install $name --no-cache-dir $verbose $quiet > /dev/null 2>&1
@@ -319,7 +319,7 @@ function piplogging {
                     case $yn in
                         [Yy]* )
                             $logprefix echo | $logsuffix
-                            pip_fixmissing $prefix $suffix $pprint $miss
+                            pip_fixmissing $prefix $suffix $pprint $tmparg
                             break ;;
                         [Nn]* )
                         $logprefix printf "uninstall: ${red}pip${reset}: missing dependencies remain\n" | $logsuffix

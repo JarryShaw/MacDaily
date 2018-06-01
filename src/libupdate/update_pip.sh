@@ -264,7 +264,7 @@ function pipupdate {
             $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: $broken\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then
                 $logprefix echo | $logsuffix
-                pip_fixbroken $prefix $suffix $pprint $broken
+                pip_fixbroken $prefix $suffix $pprint $tmparg
             else
                 while true ; do
                     read -p "Would you like to reinstall? (y/N)" yn

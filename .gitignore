@@ -1,4 +1,8 @@
 
+make.bat
+Makefile
+you-get.rb
+source/
 deprecated/
 
 # Created by https://www.gitignore.io/api/macos,python
