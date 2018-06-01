@@ -8,9 +8,9 @@ Environment: Console | Terminal
 
 ---
 
-# jsdaily
-
 &nbsp;
+
+# jsdaily
 
 [![Downloads](http://pepy.tech/badge/jsdaily)](http://pepy.tech/count/jsdaily)
 [![version](https://img.shields.io/pypi/v/jsdaily.svg)](https://pypi.org/project/jsdaily)
@@ -21,6 +21,8 @@ Environment: Console | Terminal
 [![made-with-bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash)
 [![python](https://img.shields.io/pypi/pyversions/jsdaily.svg)](https://python.org)
 [![implementation](https://img.shields.io/pypi/implementation/jsdaily.svg)](http://pypy.org)
+
+&nbsp;
 
  - [About](#about)
  - [Installation](#install)
