@@ -108,9 +108,9 @@ function pipuninstall {
     # uninstall procedure
     $logprefix printf "++ ${bold}pip$pprint uninstall $arg_pkg $idep $verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo -H $logprefix $prefix/$suffix -m pip uninstall $arg_pkg --yes $verbose $quiet > /dev/null 2>&1
+        sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet > /dev/null 2>&1
     else
-        sudo -H $logprefix $prefix/$suffix -m pip uninstall $arg_pkg --yes $verbose $quiet
+        sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet
     fi
     # $logprefix echo | $logsuffix
 
@@ -123,13 +123,13 @@ function pipuninstall {
                     : ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         # $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo -H $logprefix $prefix/$suffix -m pip uninstall $name --yes $verbose $quiet > /dev/null 2>&1
+                            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo -H $logprefix $prefix/$suffix -m pip uninstall $name --yes $verbose $quiet
+                            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet
                         fi
                         # $logprefix echo | $logsuffix
                     fi ;;
@@ -154,11 +154,11 @@ function pip_fixmissing {
 
     # reinstall missing packages
     for name in $arg_pkg ; do
-        $logprefix printf "++ ${bold}pip$pprint install $name --no-cache-dir $verbose $quiet${reset}\n" | $logsuffix
+        $logprefix printf "++ ${bold}pip$pprint install --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo -H $logprefix $prefix/$suffix -m pip install $name --no-cache-dir $verbose $quiet > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
         else
-            sudo -H $logprefix $prefix/$suffix -m pip install $name --no-cache-dir $verbose $quiet
+            sudo -H $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -270,7 +270,7 @@ function piplogging {
             case $name in
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                    list=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
+                    list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     for pkg in $list ; do
                         case $pkg in
                             # keep fundamental packages
@@ -288,14 +288,14 @@ function piplogging {
                     done ;;
                 *)
                     # check if package installed
-                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         pipuninstall $name $prefix $suffix $pprint
                     else
                         $logprefix printf "uninstall: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n" | $logsuffix
 
                         # did you mean
-                        tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
+                        tmp=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
                         if [[ -nz $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                             $logprefix printf "uninstall: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
@@ -308,7 +308,7 @@ function piplogging {
         # fix missing package dependencies
         tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "requires" | sed "s/.* requires \(.*\)*, .*/\1/" | sort -u | xargs`
         if [[ -nz $tmparg ]]; then
-            missing=`python -c "print('${red}' + '${reset}, ${red}'.join([ item.split('==')[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
+            missing=`python -c "print('${red}' + '${reset}, ${red}'.join([ __import__('re').split('[>=<]', item)[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
             $logprefix printf "uninstall: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found missing: $missing\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then
                 $logprefix echo | $logsuffix

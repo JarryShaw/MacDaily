@@ -95,7 +95,7 @@ function pipdependency {
     # if tree flag set
     if ( $arg_t ) ; then
         # check if `pipdeptree` installed
-        flag=`$prefix/$suffix -m pip list --format freeze | sed "s/\(.*\)*==.*/\1/" | awk "/^pipdeptree$/"`
+        flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze | sed "s/\(.*\)*==.*/\1/" | awk "/^pipdeptree$/"`
         if [[ -nz $flag ]] ; then
             case $arg_pkg in
                 all)
@@ -243,21 +243,21 @@ function piplogging {
                         list="all"
                     else
                         # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                        list=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
+                        list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     fi
 
                     for pkg in $list ; do
                         pipdependency $pkg $prefix $suffix $pprint
                     done ;;
                 *)
-                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         pipdependency $name $prefix $suffix $pprint
                     else
                         $logprefix printf "dependency: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n"
 
                         # did you mean
-                        tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
+                        tmp=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
                         if [[ -nz $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                             $logprefix printf "dependency: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n"

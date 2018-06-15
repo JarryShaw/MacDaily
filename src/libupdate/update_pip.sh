@@ -102,13 +102,13 @@ function pip_fixbroken {
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
-        $logprefix printf "++ ${bold}pip$pprint reinstall --ignore-installed $pkg --no-cache-dir $verbose $quiet${reset}\n" | $logsuffix
+        $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet > /dev/null 2>&1
-            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
         else
-            sudo -H $logprefix $prefix/$suffix -m pip uninstall $pkg --yes $verbose $quiet
-            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed $pkg --no-cache-dir $verbose $quiet
+            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pkg $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -219,7 +219,7 @@ function pipupdate {
             case $name in
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                    list=`$prefix/$suffix -m pip list --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
+                    list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ -nz $list ]] ; then
                         for pkg in $list ; do
                             $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet${reset}\n" | $logsuffix
@@ -234,7 +234,7 @@ function pipupdate {
                         $logprefix printf "update: ${green}pip${reset}: all ${bold}pip$pprint packages${reset} have been up-to-date\n\n" | $logsuffix
                     fi ;;
                 *)
-                    flag=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
+                    flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ -nz $flag ]]; then
                         $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
@@ -247,7 +247,7 @@ function pipupdate {
                         $logprefix printf "update: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n" | $logsuffix
 
                         # did you mean
-                        tmp=`$prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
+                        tmp=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
                         if [[ -nz $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                             $logprefix printf "update: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
@@ -260,7 +260,7 @@ function pipupdate {
         # fix broken package dependencies
         tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
         if [[ -nz $tmparg ]]; then
-            broken=`python -c "print('${red}' + '${reset}, ${red}'.join([ item.split('==')[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
+            broken=`python -c "print('${red}' + '${reset}, ${red}'.join([ __import__('re').split('[>=<]', item)[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
             $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: $broken\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then
                 $logprefix echo | $logsuffix

@@ -1069,7 +1069,7 @@ $ jsdaily logging apm gem npm pip brew cask dotapp macapp appstore
 
  - [x] support configuration
  - [x] support command aliases
- - [ ] reconstruct archiving procedure
+ - [x] reconstruct archiving procedure
  - [ ] support `gem` and `npm` in all commands
- - [ ] optimise `KeyboardInterrupt` handling procedure
+ - [x] optimise `KeyboardInterrupt` handling procedure
  - [ ] review `pip` implementation and version indication

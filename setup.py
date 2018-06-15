@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.1.1rc2'
+__version__ = '1.1.1'
 
 
 # set-up script for pip distribution
@@ -33,13 +33,14 @@ setuptools.setup(
     version = __version__,
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
-    url = 'https://github.com/JarryShaw/jsdaily/',
+    url = 'https://github.com/JarryShaw/jsdaily#jsdaily',
     license = 'GNU General Public License v3 (GPLv3)',
     keywords = 'daily utility script',
     description = 'Some useful daily utility scripts.',
     long_description = long_desc,
     long_description_content_type='text/markdown',
     python_requires = '>=3.6',
+    install_requires = ['setuptools'],
     extras_require = {
         'pipdeptree': ['pipdeptree']
     },
@@ -58,9 +59,8 @@ setuptools.setup(
     ],
     package_data = {
         '': [
-            'LICENSE.txt',
+            'LICENSE',
             'README.md',
-            'README.rst',
         ],
         'jsdaily.libupdate': ['*.py', '*.sh'],
         'jsdaily.libuninstall': ['*.py', '*.sh'],

@@ -155,8 +155,8 @@ function piplogging {
     # if executive exits
     if [ -e $prefix/$suffix ] ; then
         # list packages
-        echo "+++ pip$pprint list --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> "$logfile"
-        $prefix/$suffix -m pip list --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/INF: \1/" >> "$logfile"
+        echo "+++ pip$pprint list --no-cache-dir --format legacy | sed \"s/\(.*\)* (.*)/INF: \1/\"" >> "$logfile"
+        $prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/INF: \1/" >> "$logfile"
         echo >> "$logfile"
     else
         echo -e "ERR: $prefix/$suffix: no such file or directory\n" >> "$logfile"
