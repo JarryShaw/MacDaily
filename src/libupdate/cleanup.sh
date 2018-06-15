@@ -118,10 +118,10 @@ fi
 if ( $arg_pip ) ; then
     $logprefix printf "+ ${bold}pip cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip > /dev/null 2>&1
+        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/http > /dev/null 2>&1
         sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip > /dev/null 2>&1
     else
-        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip
+        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/http
         sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip
     fi
     $logprefix echo | $logsuffix
