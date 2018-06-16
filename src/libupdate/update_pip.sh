@@ -113,8 +113,11 @@ function pip_fixbroken {
         $logprefix echo | $logsuffix
     done
 
-    # inform if broken dependencies fixed
-    $logprefix printf "update: ${green}pip${reset}: all broken ${bold}pip$pprint${reset} dependencies fixed\n" | $logsuffix
+    # recursively fix broken package dependencies
+    tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
+    if [[ -nz $tmparg ]]; then
+    	pip_fixbroken $prefix $suffix $pprint $tmparg
+    fi
 }
 
 
@@ -265,6 +268,7 @@ function pipupdate {
             if ( $arg_Y || $arg_q ) ; then
                 $logprefix echo | $logsuffix
                 pip_fixbroken $prefix $suffix $pprint $tmparg
+                $logprefix printf "update: ${green}pip${reset}: all broken ${bold}pip$pprint${reset} dependencies fixed\n" | $logsuffix
             else
                 while true ; do
                     read -p "Would you like to reinstall? (y/N)" yn
@@ -272,6 +276,7 @@ function pipupdate {
                         [Yy]* )
                             $logprefix echo | $logsuffix
                             pip_fixbroken $prefix $suffix $pprint $tmparg
+						    $logprefix printf "update: ${green}pip${reset}: all broken ${bold}pip$pprint${reset} dependencies fixed\n" | $logsuffix
                             break ;;
                         [Nn]* )
                             $logprefix printf "update: ${red}pip${reset}: broken dependencies remain\n" | $logsuffix
