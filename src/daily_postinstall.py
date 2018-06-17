@@ -10,7 +10,7 @@ from jsdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.1.1'
+__version__ = '1.2.0'
 
 
 # terminal commands

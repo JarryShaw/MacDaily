@@ -156,8 +156,10 @@ def launch(config):
             subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if config['Daemon'].getboolean(mode):
             flag = True
+            schedule = list()
             for ptime, _ in filter(lambda x: x[1] in ('any', mode), ptemp):
-                plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+                schedule.append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            plist['StartCalendarInterval'] = schedule or [dict(Hour=8, Minute=0), dict(Hour=22, Minute=30)]
             plist['ProgramArguments'][2] = scpt(mode)
             plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
             plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
