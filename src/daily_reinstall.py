@@ -5,7 +5,7 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_ng import *
+from jsdaily.daily_util import *
 from jsdaily.libprinstall import *
 
 

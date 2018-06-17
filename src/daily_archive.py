@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from jsdaily.daily_ng import *
+from jsdaily.daily_util import *
 
 
 # terminal display

@@ -9,18 +9,15 @@ import platform
 import re
 import sys
 
-from jsdaily.daily_rc import *
-from jsdaily.daily_ng import beholder
-from jsdaily.daily_up import main as update
-from jsdaily.daily_un import main as uninstall
-from jsdaily.daily_re import main as reinstall
-from jsdaily.daily_ps import main as postinstall
-from jsdaily.daily_dp import main as dependency
-from jsdaily.daily_lg import main as logging
-from jsdaily.daily_mv import main as archive
-
-
-__all__ = ['main']
+from jsdaily.daily_archive import main as archive
+from jsdaily.daily_config import *
+from jsdaily.daily_dependency import main as dependency
+from jsdaily.daily_logging import main as logging
+from jsdaily.daily_postinstall import main as postinstall
+from jsdaily.daily_reinstall import main as reinstall
+from jsdaily.daily_uninstall import main as uninstall
+from jsdaily.daily_update import main as update
+from jsdaily.daily_util import beholder
 
 
 # change working directory

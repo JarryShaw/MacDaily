@@ -72,7 +72,7 @@ macapp   = true     ; applications in /Application folder
 cleanup  = true     ; cleanup caches
 appstore = true     ; Mac App Store applications
 
-[Setup]
+[Daemon]
 # In this section, scheduled tasks are set up.
 # You may append and/or remove the time intervals.
 update      = true      ; run update on schedule
@@ -81,9 +81,10 @@ reinstall   = false     ; don't run reinstall
 postinstall = false     ; don't run postinstall
 dependency  = false     ; don't run dependency
 logging     = true      ; run logging on schedule
-timing  =               ; scheduled timing (in 24 hours)
-    8:00
-    22:30
+schedule    =           ; scheduled timing (in 24 hours)
+    8:00                ; update & logging at 8:00
+    22:30 : update      ; update at 22:30
+    23:00 : logging     ; logging at 23:00
 """
 
 
@@ -135,12 +136,15 @@ def parse():
 
 
 def launch(config):
+    ptemp = list()
     try:
         logdir = config['Path']['logdir']
-        timing = config['Setup']['timing'].split()
-        for time in timing:
+        timing = config['Daemon']['schedule'].strip().split('\n')
+        for line in timing:
+            temp = re.split('\W:\W', line)
+            time, mode = temp if len(temp) == 2 else (temp[0], 'any')
             ptime = datetime.datetime.strptime(time, '%H:%M')
-            plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            ptemp.append((ptime, mode))
     except BaseException as error:
         sys.tracebacklimit = 0
         raise error from None
@@ -150,8 +154,10 @@ def launch(config):
         lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
         if lapath.exists() and lapath.is_file():
             subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if config['Setup'].getboolean(mode):
+        if config['Daemon'].getboolean(mode):
             flag = True
+            for ptime, _ in filter(lambda x: x[1] in ('any', mode), ptemp):
+                plist['StartCalendarInterval'].append(dict(Hour=ptime.hour, Minute=ptime.minute))
             plist['ProgramArguments'][2] = scpt(mode)
             plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
             plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
@@ -184,7 +190,7 @@ def config():
             print(f'\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
             print(f'Please enter time as HH:MM format, and each time seperated with comma.')
-            timing = (input('Time for daily scripts [8:00,22:30]: ') or '8:00,22:30').split(',')
+            timing = (input('Time for daily scripts [8:00,22:30]: ') or '8:00,22:30 : update,23:00 : logging').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
     except BaseException as error:
         sys.tracebacklimit = 0

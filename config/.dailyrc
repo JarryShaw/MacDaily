@@ -20,7 +20,7 @@ macapp   = true     ; applications in /Application folder
 cleanup  = true     ; cleanup caches
 appstore = true     ; Mac App Store applications
 
-[Setup]
+[Daemon]
 # In this section, scheduled tasks are set up.
 # You may append and/or remove the time intervals.
 update      = true      ; run update on schedule
@@ -29,6 +29,7 @@ reinstall   = false     ; don't run reinstall
 postinstall = false     ; don't run postinstall
 dependency  = false     ; don't run dependency
 logging     = true      ; run logging on schedule
-timing  =               ; scheduled timing (in 24 hours)
-    8:00
-    22:30
+schedule    =           ; scheduled timing (in 24 hours)
+    8:00                ; update & logging at 8:00
+    22:30 : update      ; update at 22:30
+    23:00 : logging     ; logging at 23:00
