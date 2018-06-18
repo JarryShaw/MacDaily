@@ -17,7 +17,7 @@ from jsdaily.daily_postinstall import main as postinstall
 from jsdaily.daily_reinstall import main as reinstall
 from jsdaily.daily_uninstall import main as uninstall
 from jsdaily.daily_update import main as update
-from jsdaily.daily_util import beholder
+from jsdaily.daily_utility import beholder
 
 
 # change working directory
@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '1.2.0'
+__version__ = '1.3.1'
 
 
 # today

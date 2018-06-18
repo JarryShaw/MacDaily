@@ -7,12 +7,12 @@ import shlex
 import subprocess
 import sys
 
-from jsdaily.daily_util import *
+from jsdaily.daily_utility import *
 from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.2.0'
+__version__ = '1.3.1'
 
 
 # mode actions
@@ -126,7 +126,7 @@ def main(argv, config, *, logdate, logtime, today):
 
     modes = list()
     for mode in args.mode:
-        if isinstance(mode, str):   modeds.append(mode)
+        if isinstance(mode, str):   modes.append(mode)
         else:                       modes += mode
     if args.all:
         modes += ['apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
@@ -161,7 +161,7 @@ def main(argv, config, *, logdate, logtime, today):
             log = logging(args, file=shlex.quote(logname))
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
-                logfile.write('\ERR: operation timeout\n')
+                logfile.write('\nERR: operation timeout\n')
             if not args.quiet:
                 print(f'logging: {red}{logmode}{reset}: operation timeout')
         except BaseException as error:

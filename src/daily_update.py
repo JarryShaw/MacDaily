@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_util import *
+from jsdaily.daily_utility import *
 from jsdaily.libupdate import *
 
 
 # version string
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 # display mode names
@@ -403,6 +403,7 @@ def main(argv, config, *, logdate, logtime, today):
         log = aftermath(logfile=logname, tmpfile=tmpname, command='update'
                 )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
 
+    if log == set():    return
     mode = '-*- Update Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
