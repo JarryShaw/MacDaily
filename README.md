@@ -26,10 +26,13 @@ Environment: Console | Terminal
 
  - [About](#about)
  - [Installation](#install)
- - [Configuration](#config)
+ - [Configuration](#configuration)
  - [Usage Manual](#usage)
     * [Start-Up](#startup)
     * [Commands](#command)
+    * [Archive Procedure](#archive)
+    * [Config Procedure](#config)
+    * [Launch Procedure](#launch)
     * [Update Procedure](#update)
         - [Atom Plug-In](#update_apm)
         - [Ruby Gem](#update_gem)
@@ -60,7 +63,7 @@ Environment: Console | Terminal
         - [Python Package](#logging_pip)
         - [Homebrew Formula](#logging_brew)
         - [Caskroom Binary](#logging_cask)
-        - [All Application](#logging_dotapp)
+        - [macOS Application](#logging_dotapp)
         - [Installed Application](#logging_macapp)
         - [Mac App Store](#logging_appstore)
  - [Troubleshooting](#issue)
@@ -101,13 +104,15 @@ $ python setup.py install
 
 &nbsp;
 
-<a name="config"> </a>
+<a name="configuration"> </a>
 
 ## Configuration
 
  > This part might be kind of garrulous, some users may not know what's going on here. :wink:
 
 &emsp; Since robust enough, `jsdaily` now supports configuration upon user's own wish. One may set up log path, hard disk path, archive path and many other things, other than the default settings.
+
+ > __NOTA BENE__ -- `jsdaily` now supports configuration commands, see [Config Procedure](#config) section for more information.
 
 &emsp; The configuration file should be stored under `~/.dailyrc`, which is hidden from Finder by macOS. To review or edit it, you may use text editors like `vim` and `nano`, or other graphic editors, such as `Sublime Text` and `Atom`, or whatever you find favourable.
 
@@ -133,6 +138,21 @@ dotapp   = true     ; Applications (*.app)
 macapp   = true     ; applications in /Application folder
 cleanup  = true     ; cleanup caches
 appstore = true     ; Mac App Store applications
+
+[Daemon]
+# In this section, scheduled tasks are set up.
+# You may append and/or remove the time intervals.
+update      = true      ; run update on schedule
+uninstall   = false     ; don't run uninstall
+reinstall   = false     ; don't run reinstall
+postinstall = false     ; don't run postinstall
+dependency  = false     ; don't run dependency
+logging     = true      ; run logging on schedule
+schedule    =           ; scheduled timing (in 24 hours)
+    8:00                ; any daemon commands at 8:00
+    22:30 : update      ; update at 22:30
+    23:00 : logging     ; logging at 23:00
+
 ```
 
 &emsp; Above is the content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.
@@ -142,6 +162,12 @@ appstore = true     ; Mac App Store applications
 &emsp; You may wish to set the `dskdir` -- *path where your hard disk lies*, which allows `jsdaily` to archive your ancient logs and caches into somewhere never bothers.
 
 &emsp; Please __NOTE__ that, under all circumstances, of section `[Path]`, all values would better be a ***valid path name without blank characters*** (`' \t\n\r\f\v'`), except your hard disk `dskdir`.
+
+&emsp; Besides, in section `[Daemon]`, you can decide which command is scheduled and when to run such command, with the format of `HH:MM [: command]`.
+
+&emsp; Please __NOTE__ that, the spaces around colon (`:`) are mandatory and the `command` is optional, which is `any` when omits.
+
+&emsp; And you may setup which command(s) will be registered as daemons and run with schedule. These boolean values help `jsdaily` indicate commands to be configured when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `jsdaily` will register all commands that set `true` in the above boolean values.
 
 &nbsp;
 
@@ -157,49 +183,76 @@ appstore = true     ; Mac App Store applications
 
  > __NOTE__ -- all acronyms and aliases are left out for a quick and clear view of `jsdaily`
 
-1. How to update all outdated packages?
+1 . How to use `jsdaily`?
+
+    ```shell
+    # call from /usr/local/bin
+    jsdaily [command ...] [flag ...]
+    # or call from Python module
+    python -m jsdaily [command ...] [flag ...]
+    ```
+
+2. How to setup my disks and daemons?
+
+    ```
+    $ jsdaily config
+    ```
+
+3. How to relaunch daemons after I manually modified `~/.jsdaily`?
+
+    ```
+    $ jsdaily launch
+    ```
+
+4. How to archive ancient logs without running any commands?
+
+    ```
+    $ jsdaily archive
+    ```
+
+5. How to update all outdated packages?
 
     ```
     $ jsdaily update --all
     ```
 
-2. How to update a certain package (eg: `hello` from Homebrew) ?
+6. How to update a certain package (eg: `hello` from Homebrew) ?
 
     ```
     $ jsdaily update brew --package hello
     ```
 
-3. How to uninstall a certain package along with its dependencies (eg: `pytest` from brewed CPython version 3.6) ?
+7. How to uninstall a certain package along with its dependencies (eg: `pytest` from brewed CPython version 3.6) ?
 
     ```
     $ jsdaily uninstall pip --brew --cpython --python_version 3 --package pytest
     ```
 
-4. How to reinstall all packages but do not cleanup caches?
+8. How to reinstall all packages but do not cleanup caches?
 
     ```
     $ jsdaily reinstall --all --no-cleanup
     ```
 
-5. How to postinstall packages whose name ranges between "start" and "stop" alphabetically?
+9. How to postinstall packages whose name ranges between "start" and "stop" alphabetically?
 
     ```
     $ jsdaily postinstall --all --startwith start --endwith stop
     ```
 
-6. How to show dependency of a certain package as a tree (eg: `gnupg` from Homebrew) ?
+10. How to show dependency of a certain package as a tree (eg: `gnupg` from Homebrew) ?
 
     ```
     $ jsdaily dependency brew --package gnupg --tree
     ```
 
-7. How to log all applications on my Mac, a.k.a. `*.app` files?
+11. How to log all applications on my Mac, a.k.a. `*.app` files?
 
     ```
     $ jsdaily logging dotapp
     ```
 
-8. How to run `jsdaily` in quiet mode, i.e. with no output information (eg: `logging` in quiet mode) ?
+12. How to run `jsdaily` in quiet mode, i.e. with no output information (eg: `logging` in quiet mode) ?
 
     ```
     $ jsdaily logging --all --quiet
@@ -209,16 +262,19 @@ appstore = true     ; Mac App Store applications
 
 ### Commands
 
-&emsp; `jsdaily` supports several different commands, from `update`, `unisntall`, `reinstall` and `postinstall` to `dependency` and `logging`. Of all commands, there are corresponding **aliases** for which to be reckoned as valid.
+&emsp; `jsdaily` supports several different commands, from `archive`, `config`, `launch`, `update`, `unisntall`, `reinstall` and `postinstall` to `dependency` and `logging`. Of all commands, there are corresponding **aliases** for which to be reckoned as valid.
 
-| Command       | Aliases                         |
-| :------------ | :------------------------------ |
-| `update`      | `up`, `U`, `upgrade`            |
-| `uninstall`   | `un`, `remove`, `rm`, `r`, `un` |
-| `reinstall`   | `re`, `R`                       |
-| `postinstall` | `post`, `ps`, `p`               |
-| `dependency`  | `deps`, `dep`, `dp`, `de`, `d`  |
-| `logging`     | `log`, `lg`, `l`                |
+| Command                       | Aliases                         |
+| :---------------------------- | :------------------------------ |
+| [`archive`](#archive)         |                                 |
+| [`config`](#config)           | `cfg`                           |
+| [`launch`](#launch)           | `init`                          |
+| [`update`](#update)           | `up`, `upgrade`                 |
+| [`uninstall`](#uninstall)     | `un`, `remove`, `rm`, `r`, `un` |
+| [`reinstall`](#reinstall)     | `re`                            |
+| [`postinstall`](#postinstall) | `post`, `ps`,                   |
+| [`dependency`](#dependency)   | `deps`, `dp`                    |
+| [`logging`](#logging)         | `log`                           |
 
 &emsp; And the man page of `jsdaily` shows as below.
 
@@ -236,6 +292,53 @@ Commands:
   jsdaily provides a friendly CLI workflow for the administrator of macOS to
   manipulate packages
 ```
+
+<a name="archive"> </a>
+
+### Archive Procedure
+
+```
+$ jsdaily archive
+```
+
+&emsp; The `archive` command will move all ancient logs to where it belongs --
+
+ - daily logs from last week (7 days) -- `${logdir}/archive` with corresponding modes named as `YYMMDD.tar.gz`
+ - weekly archives from last month (approximately 4 weeks) -- `${logdir}/tarfile` with corresponding modes named as `YYMMDD-YYMMDD.tar.bz`
+ - even older logs -- inside `${arcdir}/archive.zip` with corresponding modes and named as `YYMMDD-YYMMDD.tar.xz`
+
+Actual paths of `${logdir}` and `${arcdir}` are defined in `~/.dailyrc`, may vary from your own settings.
+
+<a name="config"
+
+### Config Procedure
+
+```
+$ jsdaily config
+Entering interactive command line setup procedure...
+Default settings are shown as in the square brackets.
+Please directly ENTER if you prefer the default settings.
+
+For logging utilities, we recommend you to set up your hard disk path.
+You may change other path preferences in configuration `~/.dailyrc` later.
+Please note that all paths must be valid under all circumstances.
+Name of your hard disk []:
+
+In default, we will run update and logging commands twice a day.
+You may change daily commands preferences in configuration `~/.dailyrc` later.
+Please enter time as HH:MM format, and each time separated with comma.
+Time for daily scripts [8:00,22:30]:
+```
+
+&emsp; As shown above, the `config` command will help modify `~/.dailyrc`. For more information on `~/.dailyrc`, please refer to the [Configuration](#configuration) section.
+
+### Launch Procedure
+
+```
+$ jsdaily launch
+```
+
+&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. Please __NOTE__ that, launched daemons will set `RunAtLoad` to `<true/>`, which means after `launch` commands, they will directly run by the `Launch Agents`.
 
 <a name="update"> </a>
 
@@ -1021,9 +1124,9 @@ $ jsdaily logging apm gem npm pip brew cask dotapp macapp appstore
 
 <a name="logging_dotapp"> </a>
 
-7. `dotapp` -- All Application (`*.app`)
+7. `dotapp` -- macOS Application (`*.app`)
 
- > __NOTE__ -- symbolic link `/Volumes/Macintosh HD` is ignored
+ > __NOTE__ -- symbolic links and files or folders under `/Volumes` are ignored
 
 &emsp; On macOS, applications are folders named as `*.app` files. The `logging dotapp` command will walk through all directories from `/` root directory and seek `*.app` files.
 

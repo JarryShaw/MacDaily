@@ -38,7 +38,7 @@ end tell
 
 # Property List
 plist = collections.OrderedDict(
-    Label = 'com.jsdaily.launchd.plist',
+    Label = '',
     RunAtLoad = True,
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
@@ -159,6 +159,7 @@ def launch(config):
             schedule = list()
             for ptime, _ in filter(lambda x: x[1] in ('any', mode), ptemp):
                 schedule.append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            plist['Label'] = f'com.jsdaily.{mode}.plist'
             plist['StartCalendarInterval'] = schedule or [dict(Hour=8, Minute=0), dict(Hour=22, Minute=30)]
             plist['ProgramArguments'][2] = scpt(mode)
             plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
@@ -191,7 +192,7 @@ def config():
             config_file.writelines(cfg.readlines(26))
             print(f'\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print(f'Please enter time as HH:MM format, and each time seperated with comma.')
+            print(f'Please enter time as HH:MM format, and each time separated with comma.')
             timing = (input('Time for daily scripts [8:00,22:30]: ') or '8:00,22:30 : update,23:00 : logging').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
     except BaseException as error:

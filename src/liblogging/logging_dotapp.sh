@@ -52,22 +52,22 @@ function find_ng {
     # )
 
     # run python script
-    python << EOF
+    sudo python << EOF
 from __future__ import print_function
 import os, re
 
-def find(path):
-    dir = os.listdir(path)
-    for file in dir:
-        temp = os.path.join(path, file)
-        if os.path.islink(temp):
+def find(root):
+    temp = os.listdir(root)
+    for file in temp:
+        path = os.path.join(root, file)
+        if os.path.islink(path):
             continue
-        if os.path.isdir(temp):
-            match = re.match('^/Volumes', temp)
+        if os.path.isdir(path):
+            match = re.match('^/Volumes', path)
             if match is None:
-                if os.path.splitext(temp)[1] == '.app':
-                    print(temp)
-                find(temp)
+                if os.path.splitext(path)[1] == '.app':
+                    print(path)
+                find(path)
 
 find('$path')
 EOF

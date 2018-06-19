@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 
 
 # today
@@ -53,15 +53,15 @@ def get_parser():
                     'administrator of macOS to manipulate packages '
                 )
     group.add_argument('command', choices=[
-                            'update', 'up', 'U', 'upgrade',                 # jsupdate
+                            'update', 'up', 'upgrade',                      # jsupdate
                             'uninstall', 'remove', 'rm', 'r', 'un',         # jsuninstall
-                            'reinstall', 're', 'R',                         # jsreinstall
-                            'postinstall', 'post', 'ps', 'p',               # jspostinstall
-                            'dependency', 'deps', 'dep', 'dp', 'de', 'd',   # jsdependency
-                            'logging', 'log', 'lg', 'l',                    # jslogging
-                            'launch',                                       # launch
+                            'reinstall', 're',                              # jsreinstall
+                            'postinstall', 'post', 'ps',                    # jspostinstall
+                            'dependency', 'deps', 'dp',                     # jsdependency
+                            'logging', 'log',                               # jslogging
+                            'launch', 'init',                               # launch
                             'config', 'cfg',                                # config
-                            'archive', 'gz', 'tar',                         # archive
+                            'archive',                                      # archive
                         ], help=argparse.SUPPRESS)
 
     return parser
@@ -79,23 +79,24 @@ def main():
     logtime = datetime.date.strftime(today, '%H%M%S')
 
     argv = sys.argv[2:]
-    if args.command in ('update', 'up', 'U', 'upgrade'):
+    command = args.command.lower()
+    if command in ('update', 'up', 'upgrade',):
         update(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('uninstall', 'remove', 'rm', 'r', 'un'):
+    elif command in ('uninstall', 'remove', 'rm', 'r', 'un',):
         uninstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('reinstall', 're', 'R'):
+    elif command in ('reinstall', 're',):
         reinstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('postinstall', 'post', 'ps', 'p'):
+    elif command in ('postinstall', 'post', 'ps',):
         postinstall(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('dependency', 'deps', 'dep', 'dp', 'de', 'd'):
+    elif command in ('dependency', 'deps', 'dp',):
         dependency(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('logging', 'log', 'lg', 'l'):
+    elif command in ('logging', 'log',):
         logging(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
-    elif args.command in ('launch'):
+    elif command in ('launch', 'init',):
         launch(cfgdct)
-    elif args.command in ('config', 'cfg'):
+    elif command in ('config', 'cfg',):
         config()
-    elif args.command in ('archive', 'gz', 'tar'):
+    elif command in ('archive',):
         archive(cfgdct, logdate=logdate, today=today)
     else:
         parser.print_help()
