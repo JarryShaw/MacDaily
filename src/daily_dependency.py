@@ -10,7 +10,7 @@ from jsdaily.libdependency import *
 
 
 # version string
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
 # display mode names

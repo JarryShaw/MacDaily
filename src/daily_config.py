@@ -5,12 +5,14 @@ import collections
 import configparser
 import datetime
 import io
+import os
 import pathlib
 import plistlib
 import re
 import shlex
 import subprocess
 import sys
+import textwrap
 
 
 __all__ = ['parse', 'config', 'launch']
@@ -22,6 +24,16 @@ bold   = '\033[1m'      # bold
 under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
+length = os.get_terminal_size().columns
+                        # terminal length
+
+
+# wrapped print
+printw = lambda string: print('\n'.join(textwrap.wrap(string, length)))
+
+
+# mode list
+MODES = {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'}
 
 
 # AppleScript
@@ -83,8 +95,8 @@ dependency  = false     ; don't run dependency
 logging     = true      ; run logging on schedule
 schedule    =           ; scheduled timing (in 24 hours)
     8:00                ; update & logging at 8:00
-    22:30 : update      ; update at 22:30
-    23:00 : logging     ; logging at 23:00
+    22:30-update        ; update at 22:30
+    23:00-logging       ; logging at 23:00
 """
 
 
@@ -102,7 +114,7 @@ def get_config():
     config = configparser.ConfigParser(
         inline_comment_prefixes=(';',),
         interpolation=configparser.ExtendedInterpolation())
-    config.SECTCRE = re.compile(r"\[ *(?P<header>[^]]+?) *\]")
+    config.SECTCRE = re.compile(r'\[\s*(?P<header>[^]]+?)\s*\]')
     config.read_string(CONFIG)
     return config
 
@@ -136,64 +148,72 @@ def parse():
 
 
 def launch(config):
-    ptemp = list()
+    cfgmode = dict()
     try:
-        logdir = config['Path']['logdir']
-        timing = config['Daemon']['schedule'].strip().split('\n')
-        for line in timing:
-            temp = re.split('\W:\W', line)
-            time, mode = temp if len(temp) == 2 else (temp[0], 'any')
-            ptime = datetime.datetime.strptime(time, '%H:%M')
-            ptemp.append((ptime, mode))
+        for mode in MODES:
+            lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
+            if lapath.exists() and lapath.is_file():
+                subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
         raise error from None
 
-    flag = False
-    for mode in {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'}:
-        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
-        if lapath.exists() and lapath.is_file():
-            subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if config['Daemon'].getboolean(mode):
-            flag = True
-            schedule = list()
-            for ptime, _ in filter(lambda x: x[1] in ('any', mode), ptemp):
-                schedule.append(dict(Hour=ptime.hour, Minute=ptime.minute))
-            plist['Label'] = f'com.jsdaily.{mode}.plist'
-            plist['StartCalendarInterval'] = schedule or [dict(Hour=8, Minute=0), dict(Hour=22, Minute=30)]
-            plist['ProgramArguments'][2] = scpt(mode)
-            plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
-            plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
-            with open(lapath, 'wb') as plist_file:
-                plistlib.dump(plist, plist_file, sort_keys=False)
-            subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            print(f'jsdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
-    if not flag:
+    pltmode = collections.defaultdict(list)
+    try:
+        timing = config['Daemon']['schedule'].strip().split('\n')
+        for line in timing:
+            temp = re.split('\s*-\s*', line)
+            time, mode = temp if len(temp) == 2 else (temp[0], 'any')
+            ptime = datetime.datetime.strptime(time, '%H:%M')
+            if mode == 'any':
+                for tmpmode, boolean in cfgmode.items():
+                    if boolean: pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            elif mode in MODES:
+                pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            else:
+                raise NameError(f'unrecognised mode {mode}')
+    except BaseException as error:
+        sys.tracebacklimit = 0
+        raise error from None
+
+    print()
+    logdir = config['Path']['logdir']
+    for mode, schedule in pltmode.items():
+        plist['Label'] = f'com.jsdaily.{mode}.plist'
+        plist['StartCalendarInterval'] = schedule
+        plist['ProgramArguments'][2] = scpt(mode)
+        plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
+        plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
+        with open(lapath, 'wb') as plist_file:
+            plistlib.dump(plist, plist_file, sort_keys=False)
+        subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f'jsdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
+    if not pltmode:
         print(f'jsdaily: {red}launch{reset}: no scheduled services loaded')
 
 
 def config():
-    cfg = StringIO(CONFIG)
-    print(f'Entering interactive command line setup procedure...')
-    print(f'Default settings are shown as in the square brackets.')
-    print(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
+    config = StringIO(CONFIG)
+    printw(f'Entering interactive command line setup procedure...')
+    printw(f'Default settings are shown as in the square brackets.')
+    printw(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
 
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.writelines(cfg.readlines(5))
-            cfg.readline()
-            print(f'\nFor logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
-            print(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print(f'Please note that all paths must be valid under all circumstances.')
-            dskdir = input('Name of your hard disk []: ').ljust(17)
+            config_file.writelines(config.readlines(5));    config.readline();  print()
+            printw(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
+            printw(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
+            printw(f'Please note that all paths must be valid under all circumstances.')
+            dskdir = input('Name of your external hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.writelines(cfg.readlines(26))
-            print(f'\nIn default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
-            print(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print(f'Please enter time as HH:MM format, and each time separated with comma.')
-            timing = (input('Time for daily scripts [8:00,22:30]: ') or '8:00,22:30 : update,23:00 : logging').split(',')
+            config_file.writelines(config.readlines(26));   print()
+            printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
+            printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
+            printw(f'Please enter schedule as HH:MM-CMD format, and each separates with comma.')
+            timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ') or '8:00,22:30-update,23:00-logging').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
     except BaseException as error:
         sys.tracebacklimit = 0

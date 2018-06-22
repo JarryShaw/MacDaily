@@ -150,8 +150,8 @@ dependency  = false     ; don't run dependency
 logging     = true      ; run logging on schedule
 schedule    =           ; scheduled timing (in 24 hours)
     8:00                ; any daemon commands at 8:00
-    22:30 : update      ; update at 22:30
-    23:00 : logging     ; logging at 23:00
+    22:30-update        ; update at 22:30
+    23:00-logging       ; logging at 23:00
 
 ```
 
@@ -159,15 +159,13 @@ schedule    =           ; scheduled timing (in 24 hours)
 
 &emsp; In section `[Path]`, there are path names where logs and some other things to be stored. In section `[Mode]`, there are ten different modes to indicate if they are *enabled* or *disabled* in default.
 
-&emsp; You may wish to set the `dskdir` -- *path where your hard disk lies*, which allows `jsdaily` to archive your ancient logs and caches into somewhere never bothers.
+&emsp; You may wish to set the `dskdir` -- *path where your hard disk lies*, which allows `jsdaily` to archive your ancient logs and caches into somewhere never bothers. 
 
 &emsp; Please __NOTE__ that, under all circumstances, of section `[Path]`, all values would better be a ***valid path name without blank characters*** (`' \t\n\r\f\v'`), except your hard disk `dskdir`.
 
-&emsp; Besides, in section `[Daemon]`, you can decide which command is scheduled and when to run such command, with the format of `HH:MM [: command]`.
+&emsp; Besides, in section `[Daemon]`, you can decide which command is scheduled and when to run such command, with the format of `HH:MM[-CMD]`. 
 
-&emsp; Please __NOTE__ that, the spaces around colon (`:`) are mandatory and the `command` is optional, which is `any` when omits.
-
-&emsp; And you may setup which command(s) will be registered as daemons and run with schedule. These boolean values help `jsdaily` indicate commands to be configured when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `jsdaily` will register all commands that set `true` in the above boolean values.
+&emsp; Please __NOTE__ that, the `CMD` is optional, which will be `any` when omits. And you may setup which command(s) will be registered as daemons and run with schedule through six booleans above. These boolean values help `jsdaily` indicate which is to be launched when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `jsdaily` will register all commands that set `true` in the above boolean values.
 
 &nbsp;
 
@@ -309,7 +307,7 @@ $ jsdaily archive
 
 Actual paths of `${logdir}` and `${arcdir}` are defined in `~/.dailyrc`, may vary from your own settings.
 
-<a name="config"
+<a name="config"> </a>
 
 ### Config Procedure
 
@@ -326,8 +324,8 @@ Name of your hard disk []:
 
 In default, we will run update and logging commands twice a day.
 You may change daily commands preferences in configuration `~/.dailyrc` later.
-Please enter time as HH:MM format, and each time separated with comma.
-Time for daily scripts [8:00,22:30]:
+Please enter schedule as HH:MM-CMD format, and each separates with comma.
+Time for daily scripts [8:00,22:30-update,23:00-logging]:
 ```
 
 &emsp; As shown above, the `config` command will help modify `~/.dailyrc`. For more information on `~/.dailyrc`, please refer to the [Configuration](#configuration) section.
@@ -338,7 +336,7 @@ Time for daily scripts [8:00,22:30]:
 $ jsdaily launch
 ```
 
-&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. Please __NOTE__ that, launched daemons will set `RunAtLoad` to `<true/>`, which means after `launch` commands, they will directly run by the `Launch Agents`.
+&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. Please __NOTE__ that, launched daemons will set `RunAtLoad` to `<true/>`, which means after `launch` commands, they will be directly called by the `Launch Agents`.
 
 <a name="update"> </a>
 

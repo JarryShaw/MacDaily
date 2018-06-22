@@ -100,11 +100,11 @@ function pipdependency {
             case $arg_pkg in
                 all)
                     $logprefix printf "++ ${bold}pipdeptree$pprint${reset}\n"
-                    $logprefix pipdeptree$pprint
+                    $logprefix $prefix/$suffix -m pipdeptree
                     $logprefix echo ;;
                 *)
                     $logprefix printf "++ ${bold}pipdeptree$pprint -p $arg_pkg${reset}\n"
-                    $logprefix pipdeptree$pprint -p $arg_pkg
+                    $logprefix $prefix/$suffix -m pipdeptree -p $arg_pkg
                     $logprefix echo ;;
             esac
         else
@@ -218,18 +218,6 @@ function piplogging {
             # link brewed pypy3
             brew link pypy3 > /dev/null 2>&1 ;;
     esac
-
-    # if tree flag set
-    if ( $arg_t ) ; then
-        # check if executive of pipdeptree exists
-        pipdeptree="/usr/local/bin/pipdeptree$pprint"
-        if [ ! -e $pipdeptree ] ; then
-            touch $pipdeptree
-            chmod 777 $pipdeptree
-            echo "#!$python" >> $pipdeptree
-            cat ./libdependency/pipdeptree.py >> $pipdeptree
-        fi
-    fi
 
     # if executive exits
     if [ -e $prefix/$suffix ] ; then
