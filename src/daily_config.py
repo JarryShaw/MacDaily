@@ -51,7 +51,7 @@ end tell
 # Property List
 plist = collections.OrderedDict(
     Label = '',
-    RunAtLoad = True,
+    RunAtLoad = False,
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
     StartCalendarInterval = [],
