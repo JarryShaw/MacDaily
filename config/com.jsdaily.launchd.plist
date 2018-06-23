@@ -4,8 +4,6 @@
 <dict>
 	<key>Label</key>
 	<string>com.jsdaily.launchd.plist</string>
-	<key>RunAtLoad</key>
-	<false/>
 	<key>Program</key>
 	<string>/usr/bin/osascript</string>
 	<key>ProgramArguments</key>

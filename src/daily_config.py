@@ -51,7 +51,7 @@ end tell
 # Property List
 plist = collections.OrderedDict(
     Label = '',
-    RunAtLoad = False,
+    # RunAtLoad = True,
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
     StartCalendarInterval = [],
@@ -180,6 +180,7 @@ def launch(config):
     print()
     logdir = config['Path']['logdir']
     for mode, schedule in pltmode.items():
+        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
         plist['Label'] = f'com.jsdaily.{mode}.plist'
         plist['StartCalendarInterval'] = schedule
         plist['ProgramArguments'][2] = scpt(mode)

@@ -1,6 +1,7 @@
 global-include *.py *.sh
 global-exclude .DS_Store
 prune deprecated
+prune build
+prune dist
 prune docs
-prune var
 prune src

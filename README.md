@@ -181,7 +181,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 
  > __NOTE__ -- all acronyms and aliases are left out for a quick and clear view of `jsdaily`
 
-1 . How to use `jsdaily`?
+1. How to use `jsdaily`?
 
     ```shell
     # call from /usr/local/bin
@@ -196,7 +196,7 @@ schedule    =           ; scheduled timing (in 24 hours)
     $ jsdaily config
     ```
 
-3. How to relaunch daemons after I manually modified `~/.jsdaily`?
+3. How to relaunch daemons after I manually modified `~/.dailyrc`?
 
     ```
     $ jsdaily launch
