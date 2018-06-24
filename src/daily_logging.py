@@ -12,7 +12,7 @@ from jsdaily.liblogging import *
 
 
 # version string
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 
 
 # mode actions
@@ -129,7 +129,14 @@ def main(argv, config, *, logdate, logtime, today):
         if isinstance(mode, str):   modes.append(mode)
         else:                       modes += mode
     if args.all:
-        modes += ['apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore']
+        for mode in {'apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore'}:
+            try:
+                flag = config['Mode'].getboolean(mode)
+            except ValueError as error:
+                sys.tracebacklimit = 0
+                raise error from None
+            if flag and (not args.__getattribute__(f'no_{mode}')):
+                modes.append(mode)
     args.mode = set(modes) or None
 
     if args.mode is None:
@@ -138,14 +145,6 @@ def main(argv, config, *, logdate, logtime, today):
 
     arcflag = False
     for logmode in args.mode:
-        try:
-            flag = not config['Mode'].getboolean(logmode)
-        except ValueError as error:
-            sys.tracebacklimit = 0
-            raise error from None
-        if flag or args.__getattribute__(f'no_{logmode}'):
-            continue
-
         tmppath, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
         logname = f'{logpath}/{logdate}/{logtime}.log'
 

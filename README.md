@@ -1,5 +1,4 @@
 ---
-
 Platform: macOS High Sierra
 
 Language: Python | Bourne-Again Shell
@@ -79,7 +78,7 @@ Environment: Console | Terminal
 
  > Just some useful daily utility scripts.
 
-&emsp; `jsdaily` is a mediate collection of console scripts written in __Python__ and __Bourne-Again Shell__. Originally works as an automatic housekeeper for one's Mac, which should update all packages outdated, `jsdaily` is now fully functioned and end-user oriented. Without being aware of everything about your Mac, one can easily work around and manage packages out of no pain using `jsdaily`.
+&emsp; `jsdaily` is a mediate collection of console scripts written in __Python__ and __Bourne-Again Shell__. Originally works as an automatic housekeeper for Mac to update all packages outdated, `jsdaily` is now fully functioned and end-user oriented. Without being aware of everything about your Mac, one can easily work around and manage packages out of no pain using `jsdaily`.
 
 &nbsp;
 
@@ -87,13 +86,13 @@ Environment: Console | Terminal
 
 ## Installation
 
-&emsp; As of many Python packages, `jsdaily` can install through `pip` with the following command, which will get you the latest version from [PyPI](https://pypi.org).
+&emsp; Just as many Python packages, `jsdaily` can be installed through `pip` using the following command, which will get you the latest version from [PyPI](https://pypi.org).
 
 ```
 $ pip install jsdaily
 ```
 
-&emsp; Or if you prefer the real-latest version, fetch from this Git repository, then the script below should be used.
+&emsp; Or if you prefer the real-latest version and fetch from this Git repository, then the script below should be used.
 
 ```
 $ git clone https://github.com/JarryShaw/jsdaily.git
@@ -108,13 +107,13 @@ $ python setup.py install
 
 ## Configuration
 
- > This part might be kind of garrulous, some users may not know what's going on here. :wink:
+ > This part might be kind of garrulous, for some may not know what's going on here. :wink:
 
 &emsp; Since robust enough, `jsdaily` now supports configuration upon user's own wish. One may set up log path, hard disk path, archive path and many other things, other than the default settings.
 
  > __NOTA BENE__ -- `jsdaily` now supports configuration commands, see [Config Procedure](#config) section for more information.
 
-&emsp; The configuration file should be stored under `~/.dailyrc`, which is hidden from Finder by macOS. To review or edit it, you may use text editors like `vim` and `nano`, or other graphic editors, such as `Sublime Text` and `Atom`, or whatever you find favourable.
+&emsp; The configuration file should lie under `~/.dailyrc`, which is hidden from Finder by macOS. To review or edit it, you may use text editors like `vim` and `nano`, or other graphic editors, such as `Sublime Text` and `Atom`, or whatever you find favourable.
 
 ```
 [Path]
@@ -155,9 +154,9 @@ schedule    =           ; scheduled timing (in 24 hours)
 
 ```
 
-&emsp; Above is the content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.
+&emsp; Above is the default content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.
 
-&emsp; In section `[Path]`, there are path names where logs and some other things to be stored. In section `[Mode]`, there are ten different modes to indicate if they are *enabled* or *disabled* in default.
+&emsp; In section `[Path]`, there are path names where logs and some other things to be stored. In section `[Mode]`, there are ten different modes to indicate if they are *enabled* or *disabled* when calling from `--all` option.
 
 &emsp; You may wish to set the `dskdir` -- *path where your hard disk lies*, which allows `jsdaily` to archive your ancient logs and caches into somewhere never bothers. 
 
@@ -165,7 +164,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 
 &emsp; Besides, in section `[Daemon]`, you can decide which command is scheduled and when to run such command, with the format of `HH:MM[-CMD]`. 
 
-&emsp; Please __NOTE__ that, the `CMD` is optional, which will be `any` when omits. And you may setup which command(s) will be registered as daemons and run with schedule through six booleans above. These boolean values help `jsdaily` indicate which is to be launched when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `jsdaily` will register all commands that set `true` in the above boolean values.
+&emsp; The `CMD` is optional, which will be `any` if omits. And you may setup which command(s) will be registered as daemons and run with schedule through six booleans above. These boolean values help `jsdaily` indicate which is to be launched when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `jsdaily` will register all commands that set `true` in the above boolean values.
 
 &nbsp;
 
@@ -177,14 +176,14 @@ schedule    =           ; scheduled timing (in 24 hours)
 
 ### Start-Up
 
-&emsp; Before we dive into the usage of `jsdaily`, let's firstly get our hands dirty with some simple commands.
+&emsp; Before we dive into the detailed usage of `jsdaily`, let's firstly get our hands dirty with some simple commands.
 
  > __NOTE__ -- all acronyms and aliases are left out for a quick and clear view of `jsdaily`
 
 1. How to use `jsdaily`?
 
     ```shell
-    # call from /usr/local/bin
+    # call from $PATH
     jsdaily [command ...] [flag ...]
     # or call from Python module
     python -m jsdaily [command ...] [flag ...]
@@ -223,7 +222,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 7. How to uninstall a certain package along with its dependencies (eg: `pytest` from brewed CPython version 3.6) ?
 
     ```
-    $ jsdaily uninstall pip --brew --cpython --python_version 3 --package pytest
+    $ jsdaily uninstall pip --brew --cpython --python_version=3 --package pytest
     ```
 
 8. How to reinstall all packages but do not cleanup caches?
@@ -235,7 +234,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 9. How to postinstall packages whose name ranges between "start" and "stop" alphabetically?
 
     ```
-    $ jsdaily postinstall --all --startwith start --endwith stop
+    $ jsdaily postinstall --all --startwith=start --endwith=stop
     ```
 
 10. How to show dependency of a certain package as a tree (eg: `gnupg` from Homebrew) ?
@@ -324,7 +323,7 @@ Name of your hard disk []:
 
 In default, we will run update and logging commands twice a day.
 You may change daily commands preferences in configuration `~/.dailyrc` later.
-Please enter schedule as HH:MM-CMD format, and each separates with comma.
+Please enter schedule as HH:MM[-CMD] format, and each separates with comma.
 Time for daily scripts [8:00,22:30-update,23:00-logging]:
 ```
 
@@ -336,7 +335,7 @@ Time for daily scripts [8:00,22:30-update,23:00-logging]:
 $ jsdaily launch
 ```
 
-&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. Please __NOTE__ that, launched daemons will set `RunAtLoad` to `<true/>`, which means after `launch` commands, they will be directly called by the `Launch Agents`.
+&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. After manually modified  `[Daemon]` section on `~/.dailyrc`, it is manditory to run the `launch` command to activate these settings.
 
 <a name="update"> </a>
 
@@ -1150,15 +1149,15 @@ $ jsdaily logging apm gem npm pip brew cask dotapp macapp appstore
 
     &emsp; It depends. Since the path where logs go can be modified through `~/.dailyrc`, it may vary as your settings. In default, you may find them under `/Library/Logs/Scripts`. And with every command, logs can be found in its corresponding folder. Logs are named after its running time, in the fold with corresponding date as its name.
 
-    &emsp; Note that, normally, you can only find today's logs in the folder, since `jsdaily` automatically archive ancient logs into `./archive` folder. And every week, `./archive` folder will be tape-archived into `./tarfile`. Then after a month, and your hard disk available, they will be moved into `/Volumes/Your Diks/Developers/archive.zip`.
+    &emsp; Note that, normally, you can only find today's logs in the folder, since `jsdaily` automatically archive ancient logs into `${logdir}/archive` folder. And every week, `${logdir}/archive` folder will be tape-archived into `${logdir}/tarfile`. Then after a month, and your hard disk available, they will be moved into `/Volumes/Your Diks/Developers/archive.zip`.
 
 2. What if my hard disk ain't plugged-in when running the scripts?
 
-    &emsp; Then the archiving and removing procedure will __NOT__ perform. In case, there might be some useful resources of you.
+    &emsp; Then the archiving and removing procedure will __NOT__ perform. In case there might be some useful resources of yours.
 
 3. Which directory should I set in the configuration file?
 
-    &emsp; First and foremost, I highly recommend you __NOT__ to modify the paths in `~/.dailyrc`, __EXCEPT__ your disk path `dskdir`.
+    &emsp; First and foremost, I highly recommend you __NOT__ to modify the paths in `~/.dailyrc` manually, __EXCEPT__ your disk path `dskdir`.
 
     &emsp; But if you insist to do so, then make sure they are __VALID__ and ***available*** with permission granted, and most importantly, have __NO__ blank characters (`' \t\n\r\f\v'`) in the path, except `dskdir`.
 
@@ -1174,3 +1173,4 @@ $ jsdaily logging apm gem npm pip brew cask dotapp macapp appstore
  - [ ] support `gem` and `npm` in all commands
  - [x] optimise `KeyboardInterrupt` handling procedure
  - [ ] review `pip` implementation and version indication
+ - [ ] considering support more versions of Python

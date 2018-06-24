@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.3.4.post1'
+__version__ = '1.3.5'
 
 
 # set-up script for pip distribution
@@ -62,6 +62,12 @@ setuptools.setup(
             'LICENSE',
             'README.md',
         ],
+        'jsdaily': ['*.py', '*.sh'],
+        'jsdaily.libupdate': ['*.py', '*.sh'],
+        'jsdaily.libuninstall': ['*.py', '*.sh'],
+        'jsdaily.libprinstall': ['*.py', '*.sh'],
+        'jsdaily.libdependency': ['*.py', '*.sh'],
+        'jsdaily.liblogging': ['*.py', '*.sh'],
     },
     classifiers = [
         'Development Status :: 5 - Production/Stable',
