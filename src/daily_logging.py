@@ -7,12 +7,12 @@ import shlex
 import subprocess
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.liblogging import *
+from macdaily.daily_utility import *
+from macdaily.liblogging import *
 
 
 # version string
-__version__ = '1.3.2'
+__version__ = '1.4.0'
 
 
 # mode actions
@@ -47,7 +47,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='logging', description=(
                     'Application & Package Logging Manager'
                 ), usage=(
-                    'jsdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]'
+                    'macdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]'
                 ), epilog=(
                     'aliases: logging, log, lg, l'
                 ))

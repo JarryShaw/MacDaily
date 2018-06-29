@@ -1,8 +1,8 @@
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts      ; path where logs will be stored
-tmpdir = /tmp/log                   ; path where temporary runtime logs go
+logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored
+tmpdir = /tmp/dailylog              ; path where temporary runtime logs go
 dskdir = /Volumes/Your Disk         ; path where your hard disk lies
 arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 

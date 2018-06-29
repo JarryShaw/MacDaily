@@ -6,18 +6,17 @@ import datetime
 import os
 import pathlib
 import platform
-import re
 import sys
 
-from jsdaily.daily_archive import main as archive
-from jsdaily.daily_config import *
-from jsdaily.daily_dependency import main as dependency
-from jsdaily.daily_logging import main as logging
-from jsdaily.daily_postinstall import main as postinstall
-from jsdaily.daily_reinstall import main as reinstall
-from jsdaily.daily_uninstall import main as uninstall
-from jsdaily.daily_update import main as update
-from jsdaily.daily_utility import beholder
+from macdaily.daily_archive import main as archive
+from macdaily.daily_config import *
+from macdaily.daily_dependency import main as dependency
+from macdaily.daily_logging import main as logging
+from macdaily.daily_postinstall import main as postinstall
+from macdaily.daily_reinstall import main as reinstall
+from macdaily.daily_uninstall import main as uninstall
+from macdaily.daily_update import main as update
+from macdaily.daily_utility import beholder
 
 
 # change working directory
@@ -25,7 +24,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '1.3.4'
+__version__ = '1.4.0'
 
 
 # today
@@ -41,15 +40,15 @@ class UnsupoortedOS(RuntimeError):
 
 def get_parser():
     parser = argparse.ArgumentParser(prog='jsupdate', description=(
-                    'Package Day Care Manager'
+                    'Package Day-Care Manager'
                 ), usage=(
-                    'jsdaily [-h] command '
+                    'macdaily [-h] command '
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     group = parser.add_argument_group(
                     'Commands',
-                    'jsdaily provides a friendly CLI workflow for the '
+                    'macdaily provides a friendly CLI workflow for the '
                     'administrator of macOS to manipulate packages '
                 )
     group.add_argument('command', choices=[
@@ -70,7 +69,7 @@ def get_parser():
 @beholder
 def main():
     if platform.system() != 'Darwin':
-        raise UnsupoortedOS('jsdaily: script runs only on macOS')
+        raise UnsupoortedOS('macdaily: script runs only on macOS')
 
     cfgdct = parse()
     parser = get_parser()

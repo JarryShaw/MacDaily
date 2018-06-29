@@ -15,7 +15,7 @@ class UnsupoortedOS(RuntimeError):
 
 # check platform
 if platform.system() != 'Darwin':
-    raise UnsupoortedOS('jsdaily: script runs only on macOS')
+    raise UnsupoortedOS('macdaily: script runs only on macOS')
 
 
 # README
@@ -24,19 +24,19 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.3.5'
+__version__ = '1.4.0.dev2'
 
 
 # set-up script for pip distribution
 setuptools.setup(
-    name = 'jsdaily',
+    name = 'macdaily',
     version = __version__,
     author = 'Jarry Shaw',
     author_email = 'jarryshaw@icloud.com',
-    url = 'https://github.com/JarryShaw/jsdaily#jsdaily',
+    url = 'https://github.com/JarryShaw/macdaily#macdaily',
     license = 'GNU General Public License v3 (GPLv3)',
     keywords = 'daily utility script',
-    description = 'Some useful daily utility scripts.',
+    description = 'Package day-care manager on macOS.',
     long_description = long_desc,
     long_description_content_type='text/markdown',
     python_requires = '>=3.6',
@@ -46,28 +46,28 @@ setuptools.setup(
     },
     entry_points = {
         'console_scripts': [
-            'jsdaily = jsdaily.__main__:main',
+            'macdaily = macdaily.__main__:main',
         ]
     },
     packages = [
-        'jsdaily',
-        'jsdaily.libupdate',
-        'jsdaily.libuninstall',
-        'jsdaily.libprinstall',
-        'jsdaily.libdependency',
-        'jsdaily.liblogging',
+        'macdaily',
+        'macdaily.libupdate',
+        'macdaily.libuninstall',
+        'macdaily.libprinstall',
+        'macdaily.libdependency',
+        'macdaily.liblogging',
     ],
     package_data = {
         '': [
             'LICENSE',
             'README.md',
         ],
-        'jsdaily': ['*.py', '*.sh'],
-        'jsdaily.libupdate': ['*.py', '*.sh'],
-        'jsdaily.libuninstall': ['*.py', '*.sh'],
-        'jsdaily.libprinstall': ['*.py', '*.sh'],
-        'jsdaily.libdependency': ['*.py', '*.sh'],
-        'jsdaily.liblogging': ['*.py', '*.sh'],
+        'macdaily': ['*.py', '*.sh'],
+        'macdaily.libupdate': ['*.py', '*.sh'],
+        'macdaily.libuninstall': ['*.py', '*.sh'],
+        'macdaily.libprinstall': ['*.py', '*.sh'],
+        'macdaily.libdependency': ['*.py', '*.sh'],
+        'macdaily.liblogging': ['*.py', '*.sh'],
     },
     classifiers = [
         'Development Status :: 5 - Production/Stable',

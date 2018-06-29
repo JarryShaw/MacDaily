@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from jsdaily.daily_utility import *
+from macdaily.daily_utility import *
 
 
 # terminal display
@@ -22,6 +22,6 @@ def main(config, *, logdate, today):
 
     if filelist:
         files = f'{reset}, {under}'.join(filelist)
-        print(f'jsdaily: {green}archive{reset}: archived following old logs: {under}{files}{reset}')
+        print(f'macdaily: {green}archive{reset}: archived following old logs: {under}{files}{reset}')
     else:
-        print(f'jsdaily: {red}archive{reset}: no ancient logs archived')
+        print(f'macdaily: {red}archive{reset}: no ancient logs archived')

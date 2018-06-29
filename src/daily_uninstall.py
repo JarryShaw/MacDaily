@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.libuninstall import *
+from macdaily.daily_utility import *
+from macdaily.libuninstall import *
 
 
 # version string
-__version__ = '1.2.1'
+__version__ = '1.4.0'
 
 
 # display mode names
@@ -48,7 +48,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='uninstall', description=(
                     'Package Recursive Uninstall Manager'
                 ), usage=(
-                    'jsdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ... '
+                    'macdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
                     'aliases: uninstall, remove, rm, r, un'
                 ))
@@ -76,7 +76,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Uninstall Installed Python Packages'
                         ), usage=(
-                            'jsdaily uninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'macdaily uninstall pip [-h] [-qv] [-iY] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(
@@ -133,7 +133,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Uninstall Installed Homebrew Packages'
                         ), usage=(
-                            'jsdaily uninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]'
+                            'macdaily uninstall brew [-h] [-qv] [-iY] [-f] [-a] [-p PKG]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -168,7 +168,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Uninstall Installed Caskroom Packages'
                         ), usage=(
-                            'jsdaily uninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]'
+                            'macdaily uninstall cask [-h] [-qv] [-Y] [-f] [-a] [-p PKG]'
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(

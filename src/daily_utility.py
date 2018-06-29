@@ -28,7 +28,7 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except (KeyboardInterrupt, PermissionError):
-            print(f'jsdaily: {red}error{reset}: operation interrupted')
+            print(f'macdaily: {red}error{reset}: operation interrupted')
         except BaseException as error:
             sys.tracebacklimit = 0
             raise error from None
@@ -50,15 +50,15 @@ def aftermath(*, logfile, tmpfile, command):
 
 
 def make_path(config, *, mode, logdate):
-    tmppath = config['Path']['tmpdir']
-    logpath = config['Path']['logdir'] + f'/{mode}'
-    arcpath = config['Path']['logdir'] + f'/archive/{mode}'
-    tarpath = config['Path']['logdir'] + f'/tarfile/{mode}'
+    tmppath = os.path.expanduser(config['Path']['tmpdir'])
+    logpath = os.path.expanduser(config['Path']['logdir']) + f'/{mode}'
+    arcpath = os.path.expanduser(config['Path']['logdir']) + f'/archive/{mode}'
+    tarpath = os.path.expanduser(config['Path']['logdir']) + f'/tarfile/{mode}'
 
     pathlib.Path(arcpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tarpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tmppath).mkdir(parents=True, exist_ok=True)
-    pathlib.Path(f'{logpath}/{logdate}').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(f'{logpath}/{logdate}').expanduser().mkdir(parents=True, exist_ok=True)
 
     dskpath = pathlib.Path(config['Path']['dskdir'])
     if dskpath.exists() and dskpath.is_dir():

@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.libupdate import *
+from macdaily.daily_utility import *
+from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.2.1'
+__version__ = '1.4.0'
 
 
 # display mode names
@@ -57,7 +57,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='update', description=(
                     'Automatic Package Update Manager'
                 ), usage=(
-                    'jsdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
+                    'macdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
                     'aliases: update, up, U, upgrade'
                 ))
@@ -98,7 +98,7 @@ def get_parser():
     parser_apm = subparser.add_parser('apm', description=(
                             'Update Installed Atom Packages'
                         ), usage=(
-                            'jsdaily update apm [-h] [-qv] [-a] [-p PKG]'
+                            'macdaily update apm [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_apm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -120,7 +120,7 @@ def get_parser():
     parser_gem = subparser.add_parser('gem', description=(
                             'Update Installed Ruby Packages'
                         ), usage=(
-                            'jsdaily update gem [-h] [-qv] [-a] [-p PKG]'
+                            'macdaily update gem [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_gem.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -142,7 +142,7 @@ def get_parser():
     parser_npm = subparser.add_parser('npm', description=(
                             'Update Installed Node.js Packages'
                         ), usage=(
-                            'jsdaily update npm [-h] [-qv] [-a] [-p PKG]'
+                            'macdaily update npm [-h] [-qv] [-a] [-p PKG]'
                         ))
     parser_npm.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -164,7 +164,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Update Installed Python Packages'
                         ), usage=(
-                            'jsdaily update pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'macdaily update pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -215,7 +215,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Update Installed Homebrew Packages'
                         ), usage=(
-                            'jsdaily update brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]'
+                            'macdaily update brew [-h] [-qv] [-fm] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -249,7 +249,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Update Installed Caskroom Packages'
                         ), usage=(
-                            'jsdaily update cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]'
+                            'macdaily update cask [-h] [-qv] [-fg] [-a] [-p PKG] [--no-cleanup]'
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -284,7 +284,7 @@ def get_parser():
     parser_cleanup = subparser.add_parser('cleanup', description=(
                             'Cleanup Caches & Downloads'
                         ), usage=(
-                            'jsdaily update cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                            'macdaily update cleanup [-h] [-q] [--no-brew] [--no-cask]'
                         ))
     parser_cleanup.add_argument('--no-gem', dest='gem', action='store_false', default=True,
                         help=(
@@ -314,7 +314,7 @@ def get_parser():
     parser_appstore = subparser.add_parser('appstore', description=(
                             'Update installed App Store packages'
                         ), usage=(
-                            'jsdaily update appstore [-h] [-q] [-a] [-p PKG]'
+                            'macdaily update appstore [-h] [-q] [-a] [-p PKG]'
                         ))
     parser_appstore.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(

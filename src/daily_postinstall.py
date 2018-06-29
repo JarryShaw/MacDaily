@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.libprinstall import postinstall
+from macdaily.daily_utility import *
+from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.2.1'
+__version__ = '1.4.0'
 
 
 # terminal commands
@@ -31,7 +31,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='postinstall', description=(
         'Homebrew Package Postinstall Manager'
     ), usage=(
-        'jsdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup] '
+        'macdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup] '
     ), epilog=(
         'aliases: postinstall, post, ps, p'
     ))

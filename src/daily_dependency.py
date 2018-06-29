@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.libdependency import *
+from macdaily.daily_utility import *
+from macdaily.libdependency import *
 
 
 # version string
-__version__ = '1.2.2'
+__version__ = '1.4.0'
 
 
 # display mode names
@@ -46,7 +46,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='dependency', description=(
                     'Trivial Package Dependency Manager'
                 ), usage=(
-                    'jsdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
+                    'macdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
                     'aliases: dependency, deps, dep, dp, de, d'
                 ))
@@ -72,7 +72,7 @@ def get_parser():
     parser_pip = subparser.add_parser('pip', description=(
                             'Show Dependencies of Python Packages'
                         ), usage=(
-                            'jsdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
+                            'macdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
                         ))
     parser_pip.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(
@@ -116,7 +116,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Show Dependencies of Homebrew Packages'
                         ), usage=(
-                            'jsdaily dependency brew [-h] [-t] [-a] [-p PKG]'
+                            'macdaily dependency brew [-h] [-t] [-a] [-p PKG]'
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=True,
                         dest='all', help=(

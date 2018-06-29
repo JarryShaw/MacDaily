@@ -40,10 +40,10 @@ MODES = {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'loggi
 scpt = lambda mode: f"""\
 #!/usr/bin/osascript
 
-display notification "Daily scheduled script `{mode}` running..." with title "jsdaily"
+display notification "Daily scheduled script `{mode}` running..." with title "macdaily"
 tell application "Terminal"
     activate
-    do script "jsdaily {mode} --all"
+    do script "macdaily {mode} --all"
 end tell
 """
 
@@ -65,8 +65,8 @@ CONFIG = """\
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = /Library/Logs/Scripts      ; path where logs will be stored
-tmpdir = /tmp/log                   ; path where temporary runtime logs go
+logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored
+tmpdir = /tmp/dailylog              ; path where temporary runtime logs go
 dskdir = /Volumes/Your Disk         ; path where your hard disk lies
 arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 
@@ -151,7 +151,7 @@ def launch(config):
     cfgmode = dict()
     try:
         for mode in MODES:
-            lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
+            lapath = pathlib.Path(f'~/Library/LaunchAgents/com.macdaily.{mode}.plist').expanduser()
             if lapath.exists() and lapath.is_file():
                 subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
@@ -180,8 +180,8 @@ def launch(config):
     print()
     logdir = config['Path']['logdir']
     for mode, schedule in pltmode.items():
-        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.jsdaily.{mode}.plist').expanduser()
-        plist['Label'] = f'com.jsdaily.{mode}.plist'
+        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.macdaily.{mode}.plist').expanduser()
+        plist['Label'] = f'com.macdaily.{mode}.plist'
         plist['StartCalendarInterval'] = schedule
         plist['ProgramArguments'][2] = scpt(mode)
         plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
@@ -189,9 +189,9 @@ def launch(config):
         with open(lapath, 'wb') as plist_file:
             plistlib.dump(plist, plist_file, sort_keys=False)
         subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f'jsdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
+        print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
-        print(f'jsdaily: {red}launch{reset}: no scheduled services loaded')
+        print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
 
 
 def config():

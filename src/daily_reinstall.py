@@ -5,12 +5,12 @@ import argparse
 import datetime
 import sys
 
-from jsdaily.daily_utility import *
-from jsdaily.libprinstall import *
+from macdaily.daily_utility import *
+from macdaily.libprinstall import *
 
 
 # version string
-__version__ = '1.2.1'
+__version__ = '1.4.0'
 
 
 # display mode names
@@ -47,7 +47,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='reinstall', description=(
                     'Homebrew Package Reinstall Manager'
                 ), usage=(
-                    'jsdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ... '
+                    'macdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ... '
                 ), epilog=(
                     'aliases: reinstall, re, R'
                 ))
@@ -77,7 +77,7 @@ def get_parser():
     parser_brew = subparser.add_parser('brew', description=(
                             'Reinstall Homebrew Packages'
                         ), usage=(
-                            'jsdaily reinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ... '
+                            'macdaily reinstall brew [-hV] [-qv] [-f] [-se PKG] [-a] [--[no-]MODE] MODE ... '
                         ))
     parser_brew.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -113,7 +113,7 @@ def get_parser():
     parser_cask = subparser.add_parser('cask', description=(
                             'Reinstall Caskroom Packages'
                         ), usage=(
-                            'jsdaily reinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ... '
+                            'macdaily reinstall cask [-hV] [-qv] [-se PKG] [-a] [--[no-]MODE] MODE ... '
                         ))
     parser_cask.add_argument('-a', '--all', action='store_true', default=False,
                         dest='all', help=(
@@ -145,7 +145,7 @@ def get_parser():
     parser_cleanup = subparser.add_parser('cleanup', description=(
                             'Cleanup Caches & Downloads'
                         ), usage=(
-                            'jsdaily reinstall cleanup [-h] [-q] [--no-brew] [--no-cask]'
+                            'macdaily reinstall cleanup [-h] [-q] [--no-brew] [--no-cask]'
                         ))
     parser_cleanup.add_argument('--no-brew', dest='brew', action='store_false', default=True,
                         help=(
