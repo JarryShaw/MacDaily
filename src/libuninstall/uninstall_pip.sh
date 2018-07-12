@@ -535,16 +535,16 @@ done
 
 # if no pip uninstalled
 if ( ! $( \
-    $mode_pip_sys20 && $mode_pip_sys21 && $mode_pip_sys22 && $mode_pip_sys23 && $mode_pip_sys24 && $mode_pip_sys25 && $mode_pip_sys26 && $mode_pip_sys27 && \
-    $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
-    $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $uninstalled \
+    $mode_pip_sys20 || $mode_pip_sys21 || $mode_pip_sys22 || $mode_pip_sys23 || $mode_pip_sys24 || $mode_pip_sys25 || $mode_pip_sys26 || $mode_pip_sys27 || \
+    $mode_pip_sys30 || $mode_pip_sys31 || $mode_pip_sys32 || $mode_pip_sys33 || $mode_pip_sys34 || $mode_pip_sys35 || $mode_pip_sys36 || $mode_pip_sys37 || \
+    $mode_pip_brew2 || $mode_pip_brew3 || $mode_pip_pypy2 || $mode_pip_pypy3 || $uninstalled \
     ) ) ; then
     $logprefix printf "uninstall: ${green}pip${reset}: no ${bold}packages${reset} uninstalled in Python\n\n" | $logsuffix
 fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
+bash ./libuninstall/aftermath.sh "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log

@@ -14,7 +14,7 @@ __version__ = '1.4.0'
 
 
 # terminal commands
-python = sys.prefix             # Python version
+python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments
 
 

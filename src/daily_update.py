@@ -10,7 +10,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.4.0'
+__version__ = '1.4.1'
 
 
 # display mode names
@@ -40,7 +40,7 @@ MODE = dict(
 
 
 # terminal commands
-python = sys.prefix             # Python version
+python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments
 
 

@@ -30,7 +30,7 @@ MODE = dict(
 
 
 # terminal commands
-python = sys.prefix             # Python version
+python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments
 
 

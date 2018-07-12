@@ -83,7 +83,7 @@ def uninstall_pip(args, *, file, temp, retset=False):
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, quiet, verbose, yes, idep] + list(packages)
+            ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages)
         )
         subprocess.run(
             ['bash', 'libuninstall/relink_pip.sh'],

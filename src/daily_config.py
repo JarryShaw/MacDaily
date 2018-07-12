@@ -178,7 +178,7 @@ def launch(config):
         raise error from None
 
     print()
-    logdir = config['Path']['logdir']
+    logdir = os.path.expanduser(config['Path']['logdir'])
     for mode, schedule in pltmode.items():
         lapath = pathlib.Path(f'~/Library/LaunchAgents/com.macdaily.{mode}.plist').expanduser()
         plist['Label'] = f'com.macdaily.{mode}.plist'

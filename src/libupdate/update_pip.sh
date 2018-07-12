@@ -476,9 +476,9 @@ done
 
 # if no pip updated
 if ( ! $( \
-    $mode_pip_sys20 && $mode_pip_sys21 && $mode_pip_sys22 && $mode_pip_sys23 && $mode_pip_sys24 && $mode_pip_sys25 && $mode_pip_sys26 && $mode_pip_sys27 && \
-    $mode_pip_sys30 && $mode_pip_sys31 && $mode_pip_sys32 && $mode_pip_sys33 && $mode_pip_sys34 && $mode_pip_sys35 && $mode_pip_sys36 && $mode_pip_sys37 && \
-    $mode_pip_brew2 && $mode_pip_brew3 && $mode_pip_pypy2 && $mode_pip_pypy3 && $updated \
+    $mode_pip_sys20 || $mode_pip_sys21 || $mode_pip_sys22 || $mode_pip_sys23 || $mode_pip_sys24 || $mode_pip_sys25 || $mode_pip_sys26 || $mode_pip_sys27 || \
+    $mode_pip_sys30 || $mode_pip_sys31 || $mode_pip_sys32 || $mode_pip_sys33 || $mode_pip_sys34 || $mode_pip_sys35 || $mode_pip_sys36 || $mode_pip_sys37 || \
+    $mode_pip_brew2 || $mode_pip_brew3 || $mode_pip_pypy2 || $mode_pip_pypy3 || $updated \
     ) ) ; then
     $logprefix printf "update: ${green}pip${reset}: no ${bold}packages${reset} updated in Python\n\n" | $logsuffix
 fi
