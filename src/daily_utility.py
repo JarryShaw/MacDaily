@@ -115,8 +115,8 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
 
 def storage(config, *, logdate, today):
     filelist = list()
-    tmppath = config['Path']['tmpdir']
-    tarpath = config['Path']['logdir'] + '/tarfile'
+    tmppath = os.path.expanduser(config['Path']['tmpdir'])
+    tarpath = os.path.expanduser(config['Path']['logdir']) + '/tarfile'
     dskpath = pathlib.Path(config['Path']['dskdir'])
     if dskpath.exists() and dskpath.is_dir():
         ctime = datetime.datetime.fromtimestamp(os.stat(tarpath).st_birthtime)
@@ -137,7 +137,7 @@ def storage(config, *, logdate, today):
                         filelist.append(absname)
                 shutil.rmtree(tarpath)
 
-            arcfile = config['Path']['arcdir'] + '/archive.zip'
+            arcfile = os.path.expanduser(config['Path']['arcdir']) + '/archive.zip'
             with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                 arcname = os.path.split(tarname)[1]
                 zf.write(tarname, arcname)
