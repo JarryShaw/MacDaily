@@ -87,15 +87,26 @@ Environment: Console | Terminal
 
 &emsp; Just as many Python packages, `macdaily` can be installed through `pip` using the following command, which will get you the latest version from [PyPI](https://pypi.org).
 
-```
-$ pip install macdaily
+```sh
+pip install macdaily
 ```
 
 &emsp; Or if you prefer the real-latest version and fetch from this Git repository, then the script below should be used.
 
+```sh
+git clone https://github.com/JarryShaw/macdaily.git
+cd macdaily
+pip install -e .
+# and to update at any time
+git pull
 ```
-$ git clone https://github.com/JarryShaw/macdaily.git
-$ python setup.py install
+
+&emsp; And for tree format support in dependency command, you may need `pipdeptree`, then implicily you can use the following script to do so.
+
+```sh
+pip install macdaily[pipdeptree]
+# or explicitly...
+pip install macdaily pipdeptree
 ```
 
 &emsp; Do please __NOTE__ that, `macdaily` runs only with support of Python from version ***3.6*** and on. And it shall only work ideally on ***macOS***.
