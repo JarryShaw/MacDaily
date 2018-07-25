@@ -40,7 +40,7 @@ MODES = {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'loggi
 scpt = lambda mode: f"""\
 #!/usr/bin/osascript
 
-display notification "Daily scheduled script `{mode}` running..." with title "macdaily"
+display notification "Scheduled script `{mode}` running..." with title "MacDaily"
 tell application "Terminal"
     activate
     do script "macdaily {mode} --all"

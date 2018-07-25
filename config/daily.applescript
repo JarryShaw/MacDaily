@@ -1,7 +1,7 @@
 #!/usr/bin/osascript
 
-display notification "Daily scheduled script `{mode}` running..." with title "jsdaily"
+display notification "Scheduled script `{mode}` running..." with title "MacDaily"
 tell application "Terminal"
     activate
-    do script "jsdaily {mode} --all"
+    do script "macdaily {mode} --all"
 end tell
