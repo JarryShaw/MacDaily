@@ -94,7 +94,7 @@ else
             *)
                 installed="find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\""
                 flag=`$installed | sed "s/.app//" | awk "/^$name$/"`
-                if [[ -nz $flag ]] ; then
+                if [[ ! -z $flag ]] ; then
                     $logprefix printf "+ ${bold}softwareupdate --install --no-scan $name $restart $verbose $quiet${reset}\n" | $logsuffix
                     if ( $arg_q ) ; then
                         sudo $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet > /dev/null 2>&1
@@ -107,7 +107,7 @@ else
 
                     # did you mean
                     tmp=`$installed | sed "s/.app//" | grep $name | xargs`
-                    if [[ -nz $tmp ]] ; then
+                    if [[ ! -z $tmp ]] ; then
                         dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                         $logprefix printf "update: ${yellow}appstore${reset}: did you mean any of the following applications: $dym?\n" | $logsuffix
                     fi

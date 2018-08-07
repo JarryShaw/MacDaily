@@ -80,7 +80,7 @@ else
     # update procedure
     for name in $arg_pkg ; do
         flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
-        if [[ -nz $flag ]] ; then
+        if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
                 sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
@@ -93,7 +93,7 @@ else
 
             # did you mean
             tmp=`gem list | sed "s/\(.*\)* (.*)/\1/" | grep $arg_pkg | xargs`
-            if [[ -nz $tmp ]] ; then
+            if [[ ! -z $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                 $logprefix printf "update: ${yellow}gem${reset}: did you mean any of the following gems: $dym\n?" | $logsuffix
             fi

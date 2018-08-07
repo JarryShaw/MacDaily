@@ -51,7 +51,7 @@ for name in $arg_pkg; do
         *)
             # check if package installed
             flag=`brew cask list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 echo -e "+ brew cask info $name | grep  \"$name: \" | sed \"s/\(.*\)*: .*/\1/\"" >> "$tmpfile"
                 $logprefix brew cask info $name | grep "$name: " | sed "s/\(.*\)*: .*/\1/"
                 echo >> "$tmpfile"

@@ -100,7 +100,7 @@ for name in $arg_pkg ; do
         *)
             # check if package installed
             flag=`brew cask list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 $logprefix printf "+ ${bold}brew cask uninstall $name $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $name $force $verbose $quiet > /dev/null 2>&1
@@ -113,7 +113,7 @@ for name in $arg_pkg ; do
 
                 # did you mean
                 tmp=`brew cask list -1 | grep $name | xargs`
-                if [[ -nz $tmp ]] ; then
+                if [[ ! -z $tmp ]] ; then
                     dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                     $logprefix printf "uninstall: ${yellow}brew${reset}: did you mean any of the following formulae: $dym?\n" | $logsuffix
                 fi

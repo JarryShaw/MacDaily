@@ -51,7 +51,7 @@ for name in $arg_pkg; do
         *)
             # check if package installed
             flag=`brew list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 echo -e "+ brew desc $name | sed -e \"s/.*\[1m\(.*\)*:.*/\1/\"" >> ""$tmpfile""
                 $logprefix brew desc $name | sed -e "s/.*\[1m\(.*\)*:.*/\1/"
                 echo >> "$tmpfile"

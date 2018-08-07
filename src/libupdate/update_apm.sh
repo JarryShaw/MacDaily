@@ -80,7 +80,7 @@ else
     # update procedure
     for name in $arg_pkg ; do
         flag=`apm list --bare --no-color | sed "s/@.*//" | awk "/^$name$/"`
-        if [[ -nz $flag ]] ; then
+        if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}apm upgrade $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
                 $logprefix apm upgrade $name $verbose $quiet > /dev/null 2>&1
@@ -93,7 +93,7 @@ else
 
             # did you mean
             tmp=`apm list --bare --no-color | sed "s/@.*//" | grep $name | xargs`
-            if [[ -nz $tmp ]] ; then
+            if [[ ! -z $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                 $logprefix printf "update: ${yellow}apm${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
             fi

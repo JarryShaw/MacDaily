@@ -163,7 +163,8 @@ def launch(config):
     try:
         timing = config['Daemon']['schedule'].strip().split('\n')
         for line in timing:
-            temp = re.split('\s*-\s*', line)
+            if line:    continue
+            temp = re.split(r'\s*-\s*', line)
             time, mode = temp if len(temp) == 2 else (temp[0], 'any')
             ptime = datetime.datetime.strptime(time, '%H:%M')
             if mode == 'any':

@@ -115,7 +115,7 @@ function pip_fixbroken {
 
     # recursively fix broken package dependencies
     tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
-    if [[ -nz $tmparg ]]; then
+    if [[ ! -z $tmparg ]]; then
     	pip_fixbroken $prefix $suffix $pprint $tmparg
     fi
 }
@@ -223,7 +223,7 @@ function pipupdate {
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
                     list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
-                    if [[ -nz $list ]] ; then
+                    if [[ ! -z $list ]] ; then
                         for pkg in $list ; do
                             $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
@@ -238,7 +238,7 @@ function pipupdate {
                     fi ;;
                 *)
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
-                    if [[ -nz $flag ]]; then
+                    if [[ ! -z $flag ]]; then
                         $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
                             sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
@@ -251,7 +251,7 @@ function pipupdate {
 
                         # did you mean
                         tmp=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
-                        if [[ -nz $tmp ]] ; then
+                        if [[ ! -z $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                             $logprefix printf "update: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
                         fi
@@ -262,7 +262,7 @@ function pipupdate {
 
         # fix broken package dependencies
         tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "has requirement" | sed "s/.* has requirement \(.*\)*, .*/\1/" | sort -u | xargs`
-        if [[ -nz $tmparg ]]; then
+        if [[ ! -z $tmparg ]]; then
             broken=`python -c "print('${red}' + '${reset}, ${red}'.join([ __import__('re').split('[>=<]', item)[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
             $logprefix printf "update: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found broken: $broken\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then

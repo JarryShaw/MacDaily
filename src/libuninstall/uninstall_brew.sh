@@ -126,7 +126,7 @@ for name in $arg_pkg ; do
         *)
             # check if package installed
             flag=`brew list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 # along with dependencies or not
                 $logprefix printf "+ ${bold}brew uninstall $name --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
@@ -157,7 +157,7 @@ for name in $arg_pkg ; do
 
                 # did you mean
                 tmp=`brew list -1 | grep $name | xargs`
-                if [[ -nz $tmp ]] ; then
+                if [[ ! -z $tmp ]] ; then
                     dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                     $logprefix printf "uninstall: ${yellow}brew${reset}: did you mean any of the following formulae: $dym?\n" | $logsuffix
                 fi
@@ -169,7 +169,7 @@ done
 
 # fix missing brew dependencies
 tmparg=`brew missing 2>/dev/null | sed "s/.*: \(.*\)*/\1/" | sort -u | xargs`
-if [[ -nz $tmparg ]] ; then
+if [[ ! -z $tmparg ]] ; then
     missing==`python -c "print('${red}' + '${reset}, ${red}'.join([ item.split('==')[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
     $logprefix printf "uninstall: ${red}brew${reset}: dependency ${bold}formulae${reset} found missing: $missing\n" | $logsuffix
     if ( $arg_Y || $arg_q ) ; then

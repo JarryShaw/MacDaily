@@ -86,7 +86,7 @@ else
         else
             flag=`npm list --global --parseable | sed "s/.*\///" | awk "/^$name$/"`
         fi
-        if [[ -nz $flag ]] ; then
+        if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}npm install $name --global $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
                 sudo $logprefix npm install $name --global $verbose $quiet > /dev/null 2>&1
@@ -99,7 +99,7 @@ else
 
             # did you mean
             tmp=`npm list --global --parseable | sed "s/.*\///" | grep $arg_pkg | xargs`
-            if [[ -nz $tmp ]] ; then
+            if [[ ! -z $tmp ]] ; then
                 dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                 $logprefix printf "update: ${yellow}npm${reset}: did you mean any of the following node modules: $dym?\n" | $logsuffix
             fi

@@ -124,7 +124,7 @@ function pipuninstall {
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
-                    if [[ -nz $flag ]]; then
+                    if [[ ! -z $flag ]]; then
                         # $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
                             sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
@@ -289,14 +289,14 @@ function piplogging {
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
-                    if [[ -nz $flag ]]; then
+                    if [[ ! -z $flag ]]; then
                         pipuninstall $name $prefix $suffix $pprint
                     else
                         $logprefix printf "uninstall: ${yellow}pip${reset}: no pip$pprint package names ${red}$name${reset} installed\n" | $logsuffix
 
                         # did you mean
                         tmp=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | grep $name | xargs`
-                        if [[ -nz $tmp ]] ; then
+                        if [[ ! -z $tmp ]] ; then
                             dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                             $logprefix printf "uninstall: ${yellow}pip${reset}: did you mean any of the following packages: $dym?\n" | $logsuffix
                         fi
@@ -307,7 +307,7 @@ function piplogging {
 
         # fix missing package dependencies
         tmparg=`$prefix/$suffix -m pip check 2>/dev/null | grep "requires" | sed "s/.* requires \(.*\)*, .*/\1/" | sort -u | xargs`
-        if [[ -nz $tmparg ]]; then
+        if [[ ! -z $tmparg ]]; then
             missing=`python -c "print('${red}' + '${reset}, ${red}'.join([ __import__('re').split('[>=<]', item)[0] for item in __import__('sys').stdin.read().strip().split() ]) + '${reset}')" <<< $tmparg`
             $logprefix printf "uninstall: ${red}pip${reset}: dependency ${bold}pip$pprint packages${reset} found missing: $missing\n" | $logsuffix
             if ( $arg_Y || $arg_q ) ; then

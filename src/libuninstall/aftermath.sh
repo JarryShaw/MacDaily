@@ -105,7 +105,7 @@ fi
 
 
 # if called after KeyboardInterrupt
-if [[ -nz $interrupred ]] ; then
+if [[ ! -z $interrupred ]] ; then
     echo "ERR: uninstall procedure interrupred" >> "$logfile"
 fi
 

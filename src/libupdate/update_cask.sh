@@ -101,7 +101,7 @@ else
         # update procedure
         for name in $arg_pkg ; do
             flag=`brew cask list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 $logprefix printf "+ ${bold}brew cask upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall --force $name $verbose $quiet > /dev/null 2>&1
@@ -116,7 +116,7 @@ else
 
                 # did you mean
                 tmp=`brew cask list -1 | grep $name | xargs`
-                if [[ -nz $tmp ]] ; then
+                if [[ ! -z $tmp ]] ; then
                     dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                     $logprefix printf "update: ${yellow}cask${reset}: did you mean any of the following Casks: $dym?\n" | $logsuffix
                 fi

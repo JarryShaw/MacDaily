@@ -183,7 +183,7 @@ function piplogging {
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
-                    if [[ -nz $flag ]]; then
+                    if [[ ! -z $flag ]]; then
                         echo -e "++ pip$pprint show $name | grep \"Name: \" | sed \"s/Name: //\"" >> "$tmpfile"
                         $logprefix $prefix/$suffix -m pip show $name | grep "Name: " | sed "s/Name: //"
                         echo >> "$tmpfile"

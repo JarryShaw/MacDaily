@@ -72,7 +72,7 @@ for name in $arg_pkg ; do
         *)
             # check if package installed
             flag=`brew list -1 | awk "/^$name$/"`
-            if [[ -nz $flag ]] ; then
+            if [[ ! -z $flag ]] ; then
                 $logprefix printf "+ ${bold}brew deps $name $tree${reset}\n"
                 $logprefix brew deps $name $tree
                 $logprefix echo
@@ -81,7 +81,7 @@ for name in $arg_pkg ; do
 
                 # did you mean
                 tmp=`brew list -1 | grep $name | xargs`
-                if [[ -nz $tmp ]] ; then
+                if [[ ! -z $tmp ]] ; then
                     dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
                     $logprefix printf "dependency: ${yellow}brew${reset}: did you mean any of the following formulae: $dym?\n"
                 fi
