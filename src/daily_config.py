@@ -75,14 +75,16 @@ arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 # If you would like to disable the mode, set it to "false".
 apm      = true     ; Atom packages
 gem      = true     ; Ruby gems
+mas      = true     ; Mac App Store applications
 npm      = true     ; Node.js modules
 pip      = true     ; Python packages
 brew     = true     ; Homebrew Cellars
 cask     = true     ; Caskroom Casks
 dotapp   = true     ; Applications (*.app)
-macapp   = true     ; applications in /Application folder
+macapp   = true     ; all applications in /Application folder
+system   = true     ; macOS system packages
 cleanup  = true     ; cleanup caches
-appstore = true     ; Mac App Store applications
+appstore = true     ; Mac App Store applications in /Application folder
 
 [Daemon]
 # In this section, scheduled tasks are set up.

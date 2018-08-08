@@ -6,12 +6,11 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 ################################################################################
-# Log Caskroom packages updates.
+# Log Mac App Store updates.
 #
 # Parameter List
 #   1. Log File
 #   2. Temp File
-#   3. Greedy Flag
 ################################################################################
 
 
@@ -19,7 +18,6 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # echo $1 | cut -c2- | rev | cut -c2- | rev
 logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
 tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_g=$3
 
 
 # remove /tmp/log/update.log
@@ -40,23 +38,10 @@ logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
-# if greedy flag set
-if ( $arg_g ) ; then
-    echo -e "+ brew cask outdated --quiet --greedy" >> "$tmpfile"
-    $logprefix brew cask outdated --quiet --greedy
-    echo >> "$tmpfile"
-else
-    # following algorithm of Caskroom upgrade cblushits to
-    #     @Atais from <apple.stackexchange.com>
-    list=`brew cask list -1`
-    for cask in $list ; do
-        version=$(brew cask info $cask | sed -n "s/$cask:\ \(.*\)/\1/p")
-        installed=$(find "/usr/local/Caskroom/$cask" -type d -maxdepth 1 -maxdepth 1 -name "$version")
-        if [[ -z $installed ]] ; then
-            $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/"
-        fi
-    done
-fi
+# check for oudated packages
+echo -e "+ mas outdated | sed \"s/[0-9]* \(.*\)* ([0-9.]*)/\1/\"" >> "$tmpfile"
+$logprefix mas outdated | sed "s/[0-9]* \(.*\)* ([0-9.]*)/\1/"
+echo >> "$tmpfile"
 
 
 # aftermath works

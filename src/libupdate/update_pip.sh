@@ -46,7 +46,8 @@ yellow="\033[93m"       # bright yellow foreground
 #   8. Yes Flag
 #   9. Quiet Flag
 #  10. Verbose Flag
-#  11. Package
+#  11. Pre-release Flag
+#  12. Package
 #       ............
 ################################################################################
 
@@ -63,7 +64,8 @@ arg_V=$7
 arg_Y=$8
 arg_q=$9
 arg_v=${10}
-arg_pkg=${*:11}
+arg_P=${11}
+arg_pkg=${*:12}
 
 
 # remove /tmp/log/update.log
@@ -102,13 +104,13 @@ function pip_fixbroken {
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
-        $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $verbose $quiet${reset}\n" | $logsuffix
+        $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
-            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet > /dev/null 2>&1
         else
             sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
-            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pkg $verbose $quiet
+            sudo -H $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -222,14 +224,14 @@ function pipupdate {
             case $name in
                 all)
                     # list=`pipdeptree$pprint | grep -e "==" | grep -v "required"`
-                    list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
+                    list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ ! -z $list ]] ; then
                         for pkg in $list ; do
                             $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
-                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet > /dev/null 2>&1
+                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
                             else
-                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $verbose $quiet
+                                sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
                             fi
                             $logprefix echo | $logsuffix
                         done
@@ -307,6 +309,14 @@ if ( $arg_v ) ; then
     verbose="--verbose"
 else
     verbose=""
+fi
+
+
+# if pre-release flag set
+if ( $arg_P ) ; then
+    pre="--pre"
+else
+    pre=""
 fi
 
 
@@ -485,7 +495,8 @@ fi
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log

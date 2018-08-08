@@ -12,8 +12,8 @@ import subprocess
 
 
 __all__ = [
-    'update_all', 'update_apm', 'update_npm', 'update_gem', 'update_pip',
-    'update_brew', 'update_cask', 'update_cleanup', 'update_appstore'
+    'update_all', 'update_apm', 'update_mas', 'update_npm', 'update_gem',
+    'update_pip', 'update_brew', 'update_cask', 'update_cleanup', 'update_system'
 ]
 
 
@@ -26,6 +26,10 @@ red    = '\033[91m'     # bright red foreground
 blue   = '\033[96m'     # bright blue foreground
 blush  = '\033[101m'    # bright red background
 purple = '\033[104m'    # bright purple background
+
+
+# root path
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 def _merge_packages(args):
@@ -47,28 +51,18 @@ def _merge_packages(args):
     return packages
 
 
-def update_cleanup(args, *, file, temp, disk, gem=False, npm=False, pip=False, brew=False, cask=False, retset=False):
-    logname = shlex.quote(file)
-    tmpname = shlex.quote(temp)
-    dskname = shlex.quote(disk)
-    gem = str(args.gem if 'cleanup' in args.mode else gem).lower()
-    npm = str(args.npm if 'cleanup' in args.mode else npm).lower()
-    pip = str(args.pip if 'cleanup' in args.mode else pip).lower()
-    brew = str(args.brew if 'cleanup' in args.mode else brew).lower()
-    cask = str(args.cask if 'cleanup' in args.mode else cask).lower()
-    quiet = str(args.quiet).lower()
+def update_all(args, *, file, temp, disk):
+    glb = globals()
+    log = collections.defaultdict(set)
+    for mode in {'apm', 'gem', 'mas', 'npm', 'pip', 'brew', 'cask', 'system'}:
+        glb[mode] = False
+        if not getattr(args, f'no_{mode}'):
+            glb[mode] = True
+            log[mode] = eval(f'update_{mode}')(args, file=file, temp=temp, disk=disk, retset=True)
 
-    mode = '-*- Cleanup -*-'.center(80, ' ')
-    with open(file, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
-    if not args.quiet:
-        print(f'-*- {blue}Cleanup{reset} -*-\n')
-
-    subprocess.run(
-        ['bash', 'libupdate/cleanup.sh', logname, tmpname, dskname, gem, npm, pip, brew, cask, quiet]
-    )
-    if not args.quiet:  print()
-    return set() if retset else dict(cleanup=set())
+    if not args.no_cleanup:
+        update_cleanup(args, file=file, temp=temp, disk=disk, retset=True, gem=gem, npm=npm, pip=pip, brew=brew, cask=cask)
+    return log
 
 
 def update_apm(args, *, file, temp, disk, retset=False):
@@ -93,7 +87,7 @@ def update_apm(args, *, file, temp, disk, retset=False):
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_apm.sh', logname, tmpname],
+            ['bash', os.path.join(ROOT, 'logging_apm.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
@@ -103,7 +97,7 @@ def update_apm(args, *, file, temp, disk, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_apm.sh', logname, tmpname, quiet, verbose, outdated] + list(log)
+        ['bash', os.path.join(ROOT, 'update_apm.sh'), logname, tmpname, quiet, verbose, outdated] + list(log)
     )
     if not args.quiet:  print()
     return log if retset else dict(apm=log)
@@ -131,7 +125,7 @@ def update_gem(args, *, file, temp, disk, cleanup=True, retset=False):
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_gem.sh', logname, tmpname],
+            ['bash', os.path.join(ROOT, 'logging_gem.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
@@ -141,12 +135,50 @@ def update_gem(args, *, file, temp, disk, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_gem.sh', logname, tmpname, quiet, verbose, outdated] + list(log)
+        ['sudo', 'bash', os.path.join(ROOT, 'update_gem.sh'), logname, tmpname, quiet, verbose, outdated] + list(log)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
         update_cleanup(args, file=file, temp=temp, disk=disk, gem=True)
     return log if retset else dict(apm=log)
+
+
+def update_mas(args, *, file, temp, disk, retset=False):
+    if shutil.which('mas') is None:
+        print(
+            f'update: {blush}{flash}mas{reset}: command not found\n'
+            f'update: {red}cask{reset}: you may download MAS through following command --`{bold}brew install mas{reset}`\n'
+        )
+        return set() if retset else dict(appstore=set())
+
+    logname = shlex.quote(file)
+    tmpname = shlex.quote(temp)
+    quiet = str(args.quiet).lower()
+    verbose = str(args.verbose).lower()
+    packages = _merge_packages(args)
+
+    mode = '-*- Mac App Store -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+    if not args.quiet:
+        print(f'-*- {blue}Mac App Store{reset} -*-\n')
+
+    logging = subprocess.run(
+        ['bash', os.path.join(ROOT, 'logging_mas.sh'), logname, tmpname],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    if 'all' in packages or args.all:
+        log = set(re.split('[\r\n]', logging.stdout.decode().strip()))
+        outdated = 'true' if log and all(log) else 'false'
+    else:
+        log = packages
+        outdated = 'true'
+
+    subprocess.run(
+        ['sudo', 'bash', os.path.join(ROOT, 'update_mas.sh'), logname, tmpname, quiet, verbose, outdated] + list(packages)
+    )
+    if not args.quiet:  print()
+    return log if retset else dict(appstore=log)
 
 
 def update_npm(args, *, file, temp, disk, cleanup=True, retset=False):
@@ -172,7 +204,7 @@ def update_npm(args, *, file, temp, disk, cleanup=True, retset=False):
     if 'all' in packages or args.all:
         allflag = 'true'
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_npm.sh', logname, tmpname],
+            ['bash', os.path.join(ROOT, 'logging_npm.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         start = logging.stdout.find(b'{')
@@ -191,7 +223,7 @@ def update_npm(args, *, file, temp, disk, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_npm.sh', logname, tmpname, allflag, quiet, verbose, outdated] + list(pkg)
+        ['sudo', 'bash', os.path.join(ROOT, 'update_npm.sh'), logname, tmpname, allflag, quiet, verbose, outdated] + list(pkg)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -205,6 +237,7 @@ def update_pip(args, *, file, temp, disk, cleanup=True, retset=False):
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
     yes = str(args.yes).lower()
+    pre = str(args.pre).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Python -*-'.center(80, ' ')
@@ -222,16 +255,16 @@ def update_pip(args, *, file, temp, disk, cleanup=True, retset=False):
             str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
     logging = subprocess.run(
-        ['bash', 'libupdate/logging_pip.sh', logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
+        ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, pre] + list(packages),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     log = set(logging.stdout.decode().strip().split())
 
     subprocess.run(
-        ['sudo', '-H', 'bash', 'libupdate/update_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, yes, quiet, verbose] + list(packages)
+        ['sudo', '-H', 'bash', os.path.join(ROOT, 'update_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, yes, quiet, verbose, pre] + list(packages)
     )
     subprocess.run(
-        ['bash', 'libupdate/relink_pip.sh'],
+        ['bash', os.path.join(ROOT, 'relink_pip.sh')],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if not args.quiet:  print()
@@ -245,7 +278,7 @@ def update_brew(args, *, file, temp, disk, cleanup=True, retset=False):
         print(
             f'update: {blush}{flash}brew{reset}: command not found\n'
             f'update: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install){reset}`\n'
         )
         return set() if retset else dict(brew=set())
 
@@ -264,11 +297,11 @@ def update_brew(args, *, file, temp, disk, cleanup=True, retset=False):
         print(f'-*- {blue}Homebrew{reset} -*-\n')
 
     subprocess.run(
-        ['bash', 'libupdate/renew_brew.sh', logname, tmpname, quiet, verbose, force, merge]
+        ['bash', os.path.join(ROOT, 'renew_brew.sh'), logname, tmpname, quiet, verbose, force, merge]
     )
     if 'all' in packages or args.all:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_brew.sh', logname, tmpname],
+            ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
@@ -278,7 +311,7 @@ def update_brew(args, *, file, temp, disk, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_brew.sh', logname, tmpname, quiet, verbose, outdated] + list(log)
+        ['bash', os.path.join(ROOT, 'update_brew.sh'), logname, tmpname, quiet, verbose, outdated] + list(log)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -295,7 +328,7 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
         print(
             f'update: {blush}{flash}cask{reset}: command not found\n'
             f'update: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
-            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n'
+            f'or install Caskroom through following command -- `{bold}brew tap homebrew/cask{reset}`\n'
         )
         return set() if retset else dict(cask=set())
 
@@ -315,7 +348,7 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
-            ['bash', 'libupdate/logging_cask.sh', logname, tmpname, greedy],
+            ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
@@ -325,7 +358,7 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['bash', 'libupdate/update_cask.sh', logname, tmpname, quiet, verbose, force, greedy, outdated] + list(log)
+        ['bash', os.path.join(ROOT, 'update_cask.sh'), logname, tmpname, quiet, verbose, force, greedy, outdated] + list(log)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -333,9 +366,13 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
     return log if retset else dict(cask=log)
 
 
-def update_appstore(args, *, file, temp, disk, retset=False):
+def update_system(args, *, file, temp, disk, retset=False):
     if shutil.which('softwareupdate') is None:
-        print(f'update: {blush}{flash}appstore{reset}: command not found\n')
+        print(
+            f'update: {blush}{flash}system{reset}: command not found\n'
+            f"update: {red}system{reset}: you may add `softwareupdate' to $PATH through the following command -- "
+            f"`{bold}echo export PATH='/usr/sbin:$PATH' >> ~/.bash_profile{reset}'\n"
+        )
         return set() if retset else dict(appstore=set())
 
     logname = shlex.quote(file)
@@ -345,14 +382,14 @@ def update_appstore(args, *, file, temp, disk, retset=False):
     restart = str(args.restart).lower()
     packages = _merge_packages(args)
 
-    mode = '-*- App Store -*-'.center(80, ' ')
+    mode = '-*- System -*-'.center(80, ' ')
     with open(file, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
     if not args.quiet:
-        print(f'-*- {blue}App Store{reset} -*-\n')
+        print(f'-*- {blue}System{reset} -*-\n')
 
     logging = subprocess.run(
-        ['bash', 'libupdate/logging_appstore.sh', logname, tmpname],
+        ['bash', os.path.join(ROOT, 'logging_system.sh'), logname, tmpname],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     if 'all' in packages or args.all:
@@ -363,20 +400,31 @@ def update_appstore(args, *, file, temp, disk, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', 'bash', 'libupdate/update_appstore.sh', logname, tmpname, quiet, verbose, restart, outdated] + list(packages)
+        ['sudo', 'bash', os.path.join(ROOT, 'update_system.sh'), logname, tmpname, quiet, verbose, restart, outdated] + list(packages)
     )
     if not args.quiet:  print()
     return log if retset else dict(appstore=log)
 
 
-def update_all(args, *, file, temp, disk):
-    log = collections.defaultdict(set)
-    for mode in {'apm', 'gem', 'npm', 'pip', 'brew', 'cask', 'appstore'}:
-        globals()[mode] = False
-        if not args.__getattribute__(f'no_{mode}'):
-            globals()[mode] = True
-            log[mode] = eval(f'update_{mode}')(args, file=file, temp=temp, disk=disk, retset=True)
+def update_cleanup(args, *, file, temp, disk, gem=False, npm=False, pip=False, brew=False, cask=False, retset=False):
+    logname = shlex.quote(file)
+    tmpname = shlex.quote(temp)
+    dskname = shlex.quote(disk)
+    gem = str(args.gem if 'cleanup' in args.mode else gem).lower()
+    npm = str(args.npm if 'cleanup' in args.mode else npm).lower()
+    pip = str(args.pip if 'cleanup' in args.mode else pip).lower()
+    brew = str(args.brew if 'cleanup' in args.mode else brew).lower()
+    cask = str(args.cask if 'cleanup' in args.mode else cask).lower()
+    quiet = str(args.quiet).lower()
 
-    if not args.no_cleanup:
-        update_cleanup(args, file=file, temp=temp, disk=disk, retset=True, gem=gem, npm=npm, pip=pip, brew=brew, cask=cask)
-    return log
+    mode = '-*- Cleanup -*-'.center(80, ' ')
+    with open(file, 'a') as logfile:
+        logfile.write(f'\n\n{mode}\n\n')
+    if not args.quiet:
+        print(f'-*- {blue}Cleanup{reset} -*-\n')
+
+    subprocess.run(
+        ['bash', os.path.join(ROOT, 'cleanup.sh'), logname, tmpname, dskname, gem, npm, pip, brew, cask, quiet]
+    )
+    if not args.quiet:  print()
+    return set() if retset else dict(cleanup=set())

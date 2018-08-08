@@ -10,18 +10,19 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.4.1'
+__version__ = '1.5.0'
 
 
 # display mode names
 NAME = dict(
     apm = 'Atom',
     gem = 'Ruby',
+    mas = 'Mac App Store',
     npm = 'Node.js',
     pip = 'Python',
     brew = 'Homebrew',
     cask = 'Caskroom',
-    appstore = 'App Store',
+    system = 'System Software',
 )
 
 
@@ -30,12 +31,13 @@ MODE = dict(
     all = lambda *args, **kwargs: update_all(*args, **kwargs),
     apm = lambda *args, **kwargs: update_apm(*args, **kwargs),
     gem = lambda *args, **kwargs: update_gem(*args, **kwargs),
+    mas = lambda *args, **kwargs: update_mas(*args, **kwargs),
     npm = lambda *args, **kwargs: update_npm(*args, **kwargs),
     pip = lambda *args, **kwargs: update_pip(*args, **kwargs),
     brew = lambda *args, **kwargs: update_brew(*args, **kwargs),
     cask = lambda *args, **kwargs: update_cask(*args, **kwargs),
+    system = lambda *args, **kwargs: update_system(*args, **kwargs),
     cleanup = lambda *args, **kwargs: update_cleanup(*args, **kwargs),
-    appstore = lambda *args, **kwargs: update_appstore(*args, **kwargs),
 )
 
 
@@ -64,34 +66,35 @@ def get_parser():
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-a', '--all', action='append_const', const='all',
                         dest='mode', help=(
-                            'update all packages installed through Atom, pip, '
-                            'RubyGem, Node.js, Homebrew, Caskroom, App Store, '
-                            'and etc'
+                            'update all packages installed through Atom, RubyGem, '
+                            'Node.js, Homebrew, Caskroom, Mac App Store, and etc'
                         ))
 
     parser.add_argument('--apm', action='append_const', const='apm', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--gem', action='append_const', const='gem', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--mas', action='append_const', const='mas', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--npm', action='append_const', const='npm', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--cask', action='append_const', const='cask', dest='mode', help=argparse.SUPPRESS)
+    parser.add_argument('--system', action='append_const', const='system', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--cleanup', action='append_const', const='cleanup', dest='mode', help=argparse.SUPPRESS)
-    parser.add_argument('--appstore', action='append_const', const='appstore', dest='mode', help=argparse.SUPPRESS)
 
     parser.add_argument('--no-apm', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-gem', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-mas', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-npm', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-cask', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--no-system', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-cleanup', action='store_true', default=False, help=argparse.SUPPRESS)
-    parser.add_argument('--no-appstore', action='store_true', default=False, help=argparse.SUPPRESS)
 
     subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
                         dest='mode', help=(
                             'update outdated packages installed through '
-                            'a specified method, e.g.: apm, gem, npm, pip, '
-                            'brew, cask, appstore, or alternatively and '
+                            'a specified method, e.g.: apm, gem, mas, npm, '
+                            'pip, brew, cask, system, or alternatively and '
                             'simply, cleanup'
                         ))
 
@@ -135,6 +138,28 @@ def get_parser():
                             'run in quiet mode, with no output information'
                         ))
     parser_gem.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help=(
+                            'run in verbose mode, with detailed output information'
+                        ))
+
+    parser_mas = subparser.add_parser('mas', description=(
+                            'Update Installed Mac App Store Packagess'
+                        ), usage=(
+                            'macdaily update mas [-h] [-qv] [-a] [-p PKG]'
+                        ))
+    parser_mas.add_argument('-a', '--all', action='store_true', default=False,
+                        dest='all', help=(
+                            'update all packages installed through Mac App Store'
+                        ))
+    parser_mas.add_argument('-p', '--package', metavar='PKG', action='append',
+                        dest='package', help=(
+                            'name of packages to be updated, default is all'
+                        ))
+    parser_mas.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'run in quiet mode, with no output information'
+                        ))
+    parser_mas.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
@@ -198,6 +223,10 @@ def get_parser():
     parser_pip.add_argument('-p', '--package', metavar='PKG', action='append',
                         dest='package', help=(
                             'name of packages to be updated, default is all'
+                        ))
+    parser_pip.add_argument('-P', '--pre', action='store_true', default=False,
+                        dest='pre', help=(
+                            'include pre-release and development versions'
                         ))
     parser_pip.add_argument('-Y', '--yes', action='store_true', default=False,
                         dest='yes', help=(
@@ -281,6 +310,32 @@ def get_parser():
                             'do not remove caches & downloads'
                         ))
 
+    parser_system = subparser.add_parser('system', description=(
+                            'Update Installed System Packages'
+                        ), usage=(
+                            'macdaily update system [-h] [-qv] [-r] [-a] [-p PKG]'
+                        ))
+    parser_system.add_argument('-a', '--all', action='store_true', default=False,
+                        dest='all', help=(
+                            'update all packages installed through softwareupdate'
+                        ))
+    parser_system.add_argument('-p', '--package', metavar='PKG', action='append',
+                        dest='package', help=(
+                            'name of packages to be updated, default is all'
+                        ))
+    parser_system.add_argument('-r', '--restart', action='store_true', default=False,
+                        dest='restart', help=(
+                            'automatically restart if necessary'
+                        ))
+    parser_system.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help=(
+                            'run in quiet mode, with no output information'
+                        ))
+    parser_system.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help=(
+                            'run in verbose mode, with detailed output information'
+                        ))
+
     parser_cleanup = subparser.add_parser('cleanup', description=(
                             'Cleanup Caches & Downloads'
                         ), usage=(
@@ -311,28 +366,6 @@ def get_parser():
                             'run in quiet mode, with no output information'
                         ))
 
-    parser_appstore = subparser.add_parser('appstore', description=(
-                            'Update installed App Store packages'
-                        ), usage=(
-                            'macdaily update appstore [-h] [-q] [-a] [-p PKG]'
-                        ))
-    parser_appstore.add_argument('-a', '--all', action='store_true', default=False,
-                        dest='all', help=(
-                            'update all packages installed through App Store'
-                        ))
-    parser_appstore.add_argument('-p', '--package', metavar='PKG', action='append',
-                        dest='package', help=(
-                            'name of packages to be updated, default is all'
-                        ))
-    parser_appstore.add_argument('-r', '--restart', action='store_true', default=False,
-                        dest='restart', help=(
-                            'automatically restart if necessary'
-                        ))
-    parser_appstore.add_argument('-q', '--quiet', action='store_true', default=False,
-                        help=(
-                            'run in quiet mode, with no output information'
-                        ))
-
     parser.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
                             'run in force mode, only for Homebrew or Caskroom'
@@ -347,7 +380,12 @@ def get_parser():
                         ))
     parser.add_argument('-r', '--restart', action='store_true', default=False,
                         dest='restart', help=(
-                            'automatically restart if necessary, only for App Store'
+                            'automatically restart if necessary, only for System'
+                        ))
+    parser.add_argument('-P', '--pre', action='store_true', default=False,
+                        dest='pre', help=(
+                            'include pre-release and development versions, '
+                            'only for Python'
                         ))
     parser.add_argument('-Y', '--yes', action='store_true', default=False,
                         dest='yes', help=(

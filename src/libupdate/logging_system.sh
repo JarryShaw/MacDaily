@@ -6,7 +6,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 
 
 ################################################################################
-# Log App Store packages updates.
+# Log system software updates.
 #
 # Parameter List
 #   1. Log File
@@ -45,7 +45,8 @@ echo >> "$tmpfile"
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log

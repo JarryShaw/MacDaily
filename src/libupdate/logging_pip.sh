@@ -35,7 +35,8 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   8. Package
+#   8. Pre-release Flag
+#   9. Package
 #       ............
 ################################################################################
 
@@ -49,7 +50,8 @@ arg_b=$4
 arg_c=$5
 arg_y=$6
 arg_V=$7
-arg_pkg=${*:8}
+arg_P=$8
+arg_pkg=${*:9}
 
 
 # remove /tmp/log/update.log
@@ -177,8 +179,8 @@ function piplogging {
         for name in $arg_pkg ; do
             case $name in
                 all)
-                    echo -e "++ pip$pprint list --no-cache-dir --format freeze --outdated | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> "$tmpfile"
-                    $logprefix $prefix/$suffix -m pip list --no-cache-dir --format freeze --outdate 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
+                    echo -e "++ pip$pprint list --no-cache-dir --format freeze --outdated $pre | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> "$tmpfile"
+                    $logprefix $prefix/$suffix -m pip list --no-cache-dir --format freeze --outdate $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
                     echo >> "$tmpfile" ;;
                 *)
                     # check if package installed
@@ -196,6 +198,14 @@ function piplogging {
         echo -e "Error: $prefix/$suffix: no such file or directory\n" >> "$tmpfile"
     fi
 }
+
+
+# if pre-release flag set
+if ( $arg_P ) ; then
+    pre="--pre"
+else
+    pre=""
+fi
 
 
 # preset all mode bools
@@ -359,7 +369,8 @@ done
 
 
 # aftermath works
-bash ./libupdate/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/update.log
