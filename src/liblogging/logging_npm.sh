@@ -23,8 +23,8 @@ echo "+ /bin/bash $0 $@" >> "$logfile"
 
 
 # find apps
-echo -e "++ npm list --global | sed \"s/^/INF: /\"" >> "$logfile"
-npm list --global 2> /dev/null | sed "s/^/INF: /" >> "$logfile"
+echo -e "++ npm list --global --depth=0 2> /dev/null | grep '@' | cut -c 5- | sed \"s/\(.*\)*@.*/^INF: \1/\"" >> "$logfile"
+npm list --global --depth=0 2> /dev/null | grep '@' | cut -c 5- | sed "s/\(.*\)*@.*/^INF: \1/" >> "$logfile"
 echo >> "$logfile"
 
 
