@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '1.5.0rc1'
+__version__ = '1.5.0rc2'
 
 
 # set-up script for pip distribution
@@ -51,6 +51,7 @@ setuptools.setup(
     },
     packages = [
         'macdaily',
+        'macdaily.libbundle',
         'macdaily.libupdate',
         'macdaily.libuninstall',
         'macdaily.libprinstall',
@@ -63,6 +64,7 @@ setuptools.setup(
             'README.md',
         ],
         'macdaily': ['*.py', '*.sh'],
+        'macdaily.libbundle': ['*.py', '*.sh'],
         'macdaily.libupdate': ['*.py', '*.sh'],
         'macdaily.libuninstall': ['*.py', '*.sh'],
         'macdaily.libprinstall': ['*.py', '*.sh'],

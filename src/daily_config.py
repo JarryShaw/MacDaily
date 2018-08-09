@@ -213,7 +213,7 @@ def config():
             dskdir = input('Name of your external hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.writelines(config.readlines(26));   print()
+            config_file.writelines(config.readlines(27));   print()
             printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
             printw(f'Please enter schedule as HH:MM-CMD format, and each separates with comma.')

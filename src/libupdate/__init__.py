@@ -278,7 +278,7 @@ def update_brew(args, *, file, temp, disk, cleanup=True, retset=False):
         print(
             f'update: {blush}{flash}brew{reset}: command not found\n'
             f'update: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install){reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
         )
         return set() if retset else dict(brew=set())
 
@@ -327,7 +327,7 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
     if testing.returncode:
         print(
             f'update: {blush}{flash}cask{reset}: command not found\n'
-            f'update: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
+            f'update: {red}cask{reset}: you may find Caskroom on {purple}{under}https://caskroom.github.io{reset}, '
             f'or install Caskroom through following command -- `{bold}brew tap homebrew/cask{reset}`\n'
         )
         return set() if retset else dict(cask=set())

@@ -227,7 +227,7 @@ function pipupdate {
                     list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ ! -z $list ]] ; then
                         for pkg in $list ; do
-                            $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $verbose $quiet${reset}\n" | $logsuffix
+                            $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
                                 sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
                             else
@@ -241,11 +241,11 @@ function pipupdate {
                 *)
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ ! -z $flag ]]; then
-                        $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
+                        $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $pre $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
+                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $verbose $quiet
+                            sudo -H $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet
                         fi
                         $logprefix echo | $logsuffix
                     else
