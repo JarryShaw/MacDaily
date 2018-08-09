@@ -1,18 +1,26 @@
-# #!/bin/bash
+#!/bin/bash
 
 
 # parameter assignment
-arg_v=$1
+verbose=$1
+
+
+# check gem installed
+which gem > /dev/null 2>&1
+if [ $? -ne 0 ] ; then
+    exit 1
+fi
 
 
 # dump procedure
-if ( $arg_v ) ; then
-	# fetch description for verbose output
-	list=`gem list 2>/dev/null | sed "s/\(.*\)* (.*)/\1/" | sort | uniq | xargs`
-	for name in $list ; do
-		gem list $name --detail | tail -1 | sed "s/    /# /" >> ~/.Macfile
-		echo gem "$name" >> ~/.Macfile
-	done
+if ( $verbose ) ; then
+    # fetch description for verbose output
+    list=`gem list 2> /dev/null | sed "s/\(.*\)* (.*)/\1/" | sort | uniq | xargs`
+    for name in $list ; do
+        gem list $name --detail 2> /dev/null | tail -1 | sed "s/    /# /" >> ~/.Macfile
+        version=`gem list 2> /dev/null | grep $name | sed "s/\(.*\)* (\(default: \)*\([0-9.]*\)*.*)/\3/"`
+        echo -e gem \"$name\", version: $version >> ~/.Macfile
+    done
 else
-	gem list 2>/dev/null | sed "s/\(.*\)* (.*)/gem \"\1\"/" | sort | uniq >> ~/.Macfile
+    gem list 2> /dev/null | sed "s/\(.*\)* (\(default: \)*\([0-9.]*\)*.*)/gem \"\1\", version: \3/" | sort | uniq >> ~/.Macfile
 fi
