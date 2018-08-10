@@ -34,7 +34,7 @@ function find_ng {
     # # create subprocess
     # (
     #     # walk directory
-    #     list=`sudo ls -AF $path 2>/dev/null`
+    #     list=`ls -AF $path 2>/dev/null`
     #     for item in $list ; do
     #         temp="$path$item"
     #         # recursive DFS
@@ -52,7 +52,7 @@ function find_ng {
     # )
 
     # run python script
-    sudo python << EOF
+    python << EOF
 from __future__ import print_function
 import os, re
 

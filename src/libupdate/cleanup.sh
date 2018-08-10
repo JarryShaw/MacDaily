@@ -86,9 +86,9 @@ fi
 if ( $arg_gem ) ; then
     $logprefix printf "+ ${bold}gem cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
+        sudo -u root -H $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
     else
-        sudo $logprefix gem cleanup --verbose $quiet
+        sudo -u root -H $logprefix gem cleanup --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 fi
@@ -98,17 +98,17 @@ fi
 if ( $arg_npm ) ; then
     $logprefix printf "+ ${bold}npm dedupe --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
+        sudo -u root -H $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
     else
-        sudo $logprefix npm dedupe --global --verbose $quiet
+        sudo -u root -H $logprefix npm dedupe --global --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 
     $logprefix printf "+ ${bold}npm cache clean --force --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo $logprefix npm cache clean --force --global --verbose $quiet > /dev/null 2>&1
+        sudo -u root -H $logprefix npm cache clean --force --global --verbose $quiet > /dev/null 2>&1
     else
-        sudo $logprefix npm cache clean --force --global --verbose $quiet
+        sudo -u root -H $logprefix npm cache clean --force --global --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 fi
@@ -118,11 +118,11 @@ fi
 if ( $arg_pip ) ; then
     $logprefix printf "+ ${bold}pip cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/ > /dev/null 2>&1
-        sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/ > /dev/null 2>&1
+        sudo -u root -H $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/ > /dev/null 2>&1
+        sudo -u root -H $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/ > /dev/null 2>&1
     else
-        sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/
-        sudo $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/
+        sudo -u root -H $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/
+        sudo -u root -H $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/
     fi
     $logprefix echo | $logsuffix
 fi
@@ -169,9 +169,9 @@ if [ -e "$dskfile" ] ; then
     if ( $arg_brew ) ; then
         $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
+            $logprefix rm -f -v $( brew --cache ) > /dev/null 2>&1
         else
-            $logprefix rm -rf -v $( brew --cache )
+            $logprefix rm -f -v $( brew --cache )
         fi
         $logprefix echo | $logsuffix
     fi

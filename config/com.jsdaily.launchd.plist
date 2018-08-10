@@ -4,21 +4,28 @@
 <dict>
 	<key>Label</key>
 	<string>com.jsdaily.launchd.plist</string>
+	<key>UserName</key>
+	<string>root</string>
 	<key>Program</key>
 	<string>/usr/bin/osascript</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/usr/bin/osascript</string>
 		<string>-e</string>
-		<string>#!/usr/bin/osascript
+		<string>
+		#!/usr/bin/osascript
 
-display notification "Scheduled script `{mode}` running..." with title "MacDaily"
-tell application "Terminal"
-    activate
-    do script "macdaily {mode} --all"
-end tell
-</string>
+		-- show notification
+		display notification "Daily scheduled script `logging` running..." with title "macdaily"
+
+		-- run script
+		do shell script "{sys.executable} -m macdaily {mode} {argv}"
+		</string>
 	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>RootDirectory</key>
+	<string>{HOME}</string>
 	<key>StartCalendarInterval</key>
 	<array>
 		<dict>

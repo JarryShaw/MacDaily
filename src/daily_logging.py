@@ -12,7 +12,7 @@ from macdaily.liblogging import *
 
 
 # version string
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 
 # mode actions
@@ -116,6 +116,10 @@ def get_parser():
                         help=(
                             'run in quiet mode, with no output information'
                         ))
+    parser.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     return parser
 
@@ -182,3 +186,6 @@ def main(argv, config, *, logdate, logtime, today):
     if arcflag and not args.quiet:
         arcdir = config['Path']['logdir'] + '/archive/logging'
         print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+
+    if args.show_log:
+        subprocess.run(['/usr/bin/open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

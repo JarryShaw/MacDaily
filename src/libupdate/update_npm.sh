@@ -89,9 +89,9 @@ else
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}npm install $name --global $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                sudo $logprefix npm install $name --global $verbose $quiet > /dev/null 2>&1
+                $logprefix npm install $name --global $verbose $quiet > /dev/null 2>&1
             else
-                sudo $logprefix npm install $name --global $verbose $quiet
+                $logprefix npm install $name --global $verbose $quiet
             fi
             $logprefix echo | $logsuffix
         else

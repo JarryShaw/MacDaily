@@ -3,6 +3,7 @@
 
 import argparse
 import datetime
+import subprocess
 import sys
 
 from macdaily.daily_utility import *
@@ -399,6 +400,10 @@ def get_parser():
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
+    parser.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     return parser
 
@@ -469,3 +474,6 @@ def main(argv, config, *, logdate, logtime, today):
             logfile.write(f'LOG: archived following old logs: {files}\n')
             if not args.quiet:
                 print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+
+    if args.show_log:
+        subprocess.run(['/usr/bin/open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

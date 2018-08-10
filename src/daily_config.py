@@ -4,6 +4,7 @@
 import collections
 import configparser
 import datetime
+import getpass
 import io
 import os
 import pathlib
@@ -28,6 +29,10 @@ length = os.get_terminal_size().columns
                         # terminal length
 
 
+# user name
+USER = getpass.getuser()
+
+
 # wrapped print
 printw = lambda string: print('\n'.join(textwrap.wrap(string, length)))
 
@@ -37,23 +42,25 @@ MODES = {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'loggi
 
 
 # AppleScript
-scpt = lambda mode: f"""\
+scpt = lambda mode, argv: f"""\
 #!/usr/bin/osascript
 
-display notification "Scheduled script `{mode}` running..." with title "MacDaily"
-tell application "Terminal"
-    activate
-    do script "macdaily {mode} --all"
-end tell
+-- show notification
+display notification "Daily scheduled script `logging` running..." with title "macdaily"
+
+-- run script
+do shell script "{sys.executable} -m macdaily {mode} {argv}"
 """
 
 
 # Property List
 plist = collections.OrderedDict(
     Label = '',
-    # RunAtLoad = True,
+    UserName='root',
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
+    RunAtLoad = True,
+    RootDirectory = pathlib.Path.home(),
     StartCalendarInterval = [],
     StandardOutPath = '',
     StandardErrorPath = '',
@@ -99,6 +106,12 @@ schedule    =           ; scheduled timing (in 24 hours)
     8:00                ; update & logging at 8:00
     22:30-update        ; update at 22:30
     23:00-logging       ; logging at 23:00
+
+[Option]
+# In this section, command options are picked.
+# Do make sure these options are available for commands.
+update  = --all --yes --pre --restart --show-log
+logging = --all --show-log
 """
 
 
@@ -153,9 +166,9 @@ def launch(config):
     cfgmode = dict()
     try:
         for mode in MODES:
-            lapath = pathlib.Path(f'~/Library/LaunchAgents/com.macdaily.{mode}.plist').expanduser()
-            if lapath.exists() and lapath.is_file():
-                subprocess.run(shlex.split(f'launchctl unload -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.plist'
+            if ldpath.exists() and ldpath.is_file():
+                subprocess.run(shlex.split(f'sudo -u {USER} -H launchctl unload -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
@@ -181,17 +194,20 @@ def launch(config):
         raise error from None
 
     print()
+    tmpdir = config['Path']['tmpdir']
     logdir = os.path.expanduser(config['Path']['logdir'])
     for mode, schedule in pltmode.items():
-        lapath = pathlib.Path(f'~/Library/LaunchAgents/com.macdaily.{mode}.plist').expanduser()
+        tmpath = f'{tmpdir}/com.macdaily.{mode}.plist'
+        ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.plist'
         plist['Label'] = f'com.macdaily.{mode}.plist'
+        plist['ProgramArguments'][2] = scpt(mode, config['Option'].get(mode, ''))
         plist['StartCalendarInterval'] = schedule
-        plist['ProgramArguments'][2] = scpt(mode)
         plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
         plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
-        with open(lapath, 'wb') as plist_file:
+        with open(tmpath, 'wb') as plist_file:
             plistlib.dump(plist, plist_file, sort_keys=False)
-        subprocess.run(shlex.split(f'launchctl load -w {lapath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '-u', USER, '-H', 'mv', tmpath, ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(shlex.split(f'sudo -u {USER} -H launchctl load -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
         print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
