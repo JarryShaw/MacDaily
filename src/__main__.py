@@ -9,6 +9,7 @@ import platform
 import sys
 
 from macdaily.daily_archive import main as archive
+from macdaily.daily_bundle import main  as bundle
 from macdaily.daily_config import *
 from macdaily.daily_dependency import main as dependency
 from macdaily.daily_logging import main as logging
@@ -52,15 +53,16 @@ def get_parser():
                     'administrator of macOS to manipulate packages '
                 )
     group.add_argument('command', choices=[
-                            'update', 'up', 'upgrade',                      # jsupdate
-                            'uninstall', 'remove', 'rm', 'r', 'un',         # jsuninstall
-                            'reinstall', 're',                              # jsreinstall
-                            'postinstall', 'post', 'ps',                    # jspostinstall
-                            'dependency', 'deps', 'dp',                     # jsdependency
-                            'logging', 'log',                               # jslogging
+                            'update', 'up', 'upgrade',                      # update
+                            'uninstall', 'remove', 'rm', 'r', 'un',         # uninstall
+                            'reinstall', 're',                              # reinstall
+                            'postinstall', 'post', 'ps',                    # postinstall
+                            'dependency', 'deps', 'dp',                     # dependency
+                            'logging', 'log',                               # logging
                             'launch', 'init',                               # launch
                             'config', 'cfg',                                # config
                             'archive',                                      # archive
+                            'bundle',                                       # bundle
                         ], help=argparse.SUPPRESS)
 
     return parser
@@ -97,6 +99,8 @@ def main():
         config()
     elif command in ('archive',):
         archive(cfgdct, logdate=logdate, today=today)
+    elif command in ('bundle',):
+        bundle(argv, cfgdct, logdate=logdate, logtime=logtime, today=today)
     else:
         parser.print_help()
 
