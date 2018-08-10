@@ -129,7 +129,7 @@ pip install macdaily pipdeptree
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = ~/Library/Logs/Scripts     ; path where logs will be stored
+logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored
 tmpdir = /tmp/dailylog              ; path where temporary runtime logs go
 dskdir = /Volumes/Your Disk         ; path where your hard disk lies
 arcdir = ${dskdir}/Developers       ; path where ancient logs archive
@@ -139,14 +139,16 @@ arcdir = ${dskdir}/Developers       ; path where ancient logs archive
 # If you would like to disable the mode, set it to "false".
 apm      = true     ; Atom packages
 gem      = true     ; Ruby gems
+mas      = true     ; Mac App Store applications
 npm      = true     ; Node.js modules
 pip      = true     ; Python packages
 brew     = true     ; Homebrew Cellars
 cask     = true     ; Caskroom Casks
 dotapp   = true     ; Applications (*.app)
-macapp   = true     ; applications in /Application folder
+macapp   = true     ; all applications in /Application folder
+system   = true     ; macOS system packages
 cleanup  = true     ; cleanup caches
-appstore = true     ; Mac App Store applications
+appstore = true     ; Mac App Store applications in /Application folder
 
 [Daemon]
 # In this section, scheduled tasks are set up.
@@ -158,10 +160,15 @@ postinstall = false     ; don't run postinstall
 dependency  = false     ; don't run dependency
 logging     = true      ; run logging on schedule
 schedule    =           ; scheduled timing (in 24 hours)
-    8:00                ; any daemon commands at 8:00
+    8:00                ; update & logging at 8:00
     22:30-update        ; update at 22:30
     23:00-logging       ; logging at 23:00
 
+[Option]
+# In this section, command options are picked.
+# Do make sure these options are available for commands.
+update  = --all --yes --pre --restart --show-log
+logging = --all --show-log
 ```
 
 &emsp; Above is the default content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.

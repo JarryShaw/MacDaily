@@ -25,8 +25,10 @@ bold   = '\033[1m'      # bold
 under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
-length = os.get_terminal_size().columns
-                        # terminal length
+try:                    # terminal length
+    length = os.get_terminal_size().columns
+except OSError:
+    length = 80       
 
 
 # user name
@@ -60,7 +62,7 @@ plist = collections.OrderedDict(
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
     RunAtLoad = True,
-    RootDirectory = pathlib.Path.home(),
+    RootDirectory = str(pathlib.Path.home()),
     StartCalendarInterval = [],
     StandardOutPath = '',
     StandardErrorPath = '',
@@ -166,9 +168,9 @@ def launch(config):
     cfgmode = dict()
     try:
         for mode in MODES:
-            ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.plist'
+            ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.plist')
             if ldpath.exists() and ldpath.is_file():
-                subprocess.run(shlex.split(f'sudo -u {USER} -H launchctl unload -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(shlex.split(f'sudo -H launchctl unload -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
@@ -178,7 +180,7 @@ def launch(config):
     try:
         timing = config['Daemon']['schedule'].strip().split('\n')
         for line in timing:
-            if line:    continue
+            if not line:    continue
             temp = re.split(r'\s*-\s*', line)
             time, mode = temp if len(temp) == 2 else (temp[0], 'any')
             ptime = datetime.datetime.strptime(time, '%H:%M')
@@ -196,6 +198,7 @@ def launch(config):
     print()
     tmpdir = config['Path']['tmpdir']
     logdir = os.path.expanduser(config['Path']['logdir'])
+    pathlib.Path(tmpdir).mkdir(exist_ok=True, parents=True)
     for mode, schedule in pltmode.items():
         tmpath = f'{tmpdir}/com.macdaily.{mode}.plist'
         ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.plist'
@@ -206,8 +209,9 @@ def launch(config):
         plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
         with open(tmpath, 'wb') as plist_file:
             plistlib.dump(plist, plist_file, sort_keys=False)
-        subprocess.run(['sudo', '-u', USER, '-H', 'mv', tmpath, ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(shlex.split(f'sudo -u {USER} -H launchctl load -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '-H', 'mv', tmpath, ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '-H', 'chown', 'root', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(shlex.split(f'sudo -H launchctl load -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
         print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
@@ -229,7 +233,7 @@ def config():
             dskdir = input('Name of your external hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.writelines(config.readlines(27));   print()
+            config_file.writelines(config.readlines(28));   print()
             printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
             printw(f'Please enter schedule as HH:MM-CMD format, and each separates with comma.')
