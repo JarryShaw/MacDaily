@@ -40,7 +40,7 @@ else:
 user, repo = '$tap'.split('/')
 
 # wait some time for API rate limit
-time.sleep(random.randint(0, datetime.datetime.now().second))
+time.sleep(random.randint(0, datetime.datetime.now().second // 6))
 
 # request GitHub API
 try:

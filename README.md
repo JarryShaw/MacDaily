@@ -34,11 +34,12 @@ Environment: Console | Terminal
     * [Update Procedure](#update)
         - [Atom Plug-In](#update_apm)
         - [Ruby Gem](#update_gem)
+        - [Mac App Store](#update_mas)
         - [Node.js Module](#update_npm)
         - [Python Package](#update_pip)
         - [Homebrew Formula](#update_brew)
         - [Caskroom Binary](#update_cask)
-        - [Mac App Store](#update_appstore)
+        - [System Software](#update_system)
         - [Cleanup Procedure](#update_cleanup)
     * [Uninstall Procedure](#uninstall)
         - [Python Package](#uninstall_pip)
@@ -64,6 +65,9 @@ Environment: Console | Terminal
         - [macOS Application](#logging_dotapp)
         - [Installed Application](#logging_macapp)
         - [Mac App Store](#logging_appstore)
+    * [Bundle Procedure](#bundle)
+        - [Dump Macfile](#bundle_dump)
+        - [Load Macfile](#bundle_load)
  - [Troubleshooting](#issue)
  - [TODO](#todo)
 
@@ -183,6 +187,8 @@ logging = --all --show-log
 
 &emsp; The `CMD` is optional, which will be `any` if omits. And you may setup which command(s) will be registered as daemons and run with schedule through six booleans above. These boolean values help `macdaily` indicate which is to be launched when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `macdaily` will register all commands that set `true` in the above boolean values.
 
+&emsp; Also, in section `[Option]`, you may set up optional arguments for the daemons above. Do please make sure these commands are **valid**. And if omit, an empty arguments will be given.
+
 &nbsp;
 
 <a name="usage"> </a>
@@ -272,6 +278,12 @@ logging = --all --show-log
     $ macdaily logging --all --quiet
     ```
 
+13. How to dump a `Macfile` to keep track of all packages?
+
+    ```
+    $ macdaily bundle dump
+    ```
+
 <a name="command"> </a>
 
 ### Commands
@@ -281,6 +293,7 @@ logging = --all --show-log
 | Command                       | Aliases                         |
 | :---------------------------- | :------------------------------ |
 | [`archive`](#archive)         |                                 |
+| [`bundle`](#bundle)           |                                 |
 | [`config`](#config)           | `cfg`                           |
 | [`launch`](#launch)           | `init`                          |
 | [`update`](#update)           | `up`, `upgrade`                 |
@@ -362,11 +375,12 @@ $ macdaily launch
 
  - `apm` -- [Atom](https://atom.io) plug-ins
  - `gem` -- [Ruby](https://www.ruby-lang.org) gems
+ - `mas` -- [Mac App Store](https://github.com/mas-cli/mas#mas-cli) applications
  - `npm` -- [Node.js](https://nodejs.org) modules
  - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
  - `brew` -- [Homebrew](https://brew.sh) formulae
  - `cask` -- [Caskroom](https://caskroom.github.io) binaries
- - `appstore` -- Mac App Store or `softwareupdate` installed applications
+ - `system` -- [`softwareupdate(8)`](https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man8/softwareupdate.8.html) system software
 
 and an additional `cleanup` procedure, which prunes and deduplicates files, archives and removes caches. The man page of `update` shows as below.
 
@@ -388,10 +402,11 @@ optional arguments:
   -Y, --yes      yes for all selections, only for pip
   -q, --quiet    run in quiet mode, with no output information
   -v, --verbose  run in verbose mode, with detailed output information
+  --show-log     open log in Console upon completion of command
 
 mode selection:
   MODE           update outdated packages installed through a specified
-                 method, e.g.: apm, gem, npm, pip, brew, cask, appstore, or
+                 method, e.g.: apm, gem, mas, npm, pip, brew, cask, system, or
                  alternatively and simply, cleanup
 
 aliases: update, up, U, upgrade
@@ -455,9 +470,32 @@ optional arguments:
 
 &emsp; If arguments omit, `macdaily` will __NOT__ update outdated packages of Ruby. And when using `-p` or `--package`, if given wrong package name, `macdaily` might give a trivial "did-you-mean" correction.
 
+<a name="update_mas"> </a>
+
+3. `mas` -- Mac App Store Application
+
+&emsp; [MAS](https://github.com/mas-cli/mas#mas-cli) is a simple command line interface for the Mac App Store. The man page for [`macdaily update mas`] shows as below.
+
+```
+$ macdaily update mas --help
+usage: macdaily update mas [-h] [-qv] [-a] [-p PKG]
+
+Update Installed Mac App Store Packagess
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             update all packages installed through Mac App Store
+  -p PKG, --package PKG
+                        name of packages to be updated, default is all
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with detailed output information
+```
+
+&emsp; If arguments omit, `macdaily` will __NOT__ update outdated packages of Ruby. And when using `-p` or `--package`, if given wrong package name, `macdaily` might give a trivial "did-you-mean" correction.
+
 <a name="update_npm"> </a>
 
-3. `npm` -- Node.js Module
+4. `npm` -- Node.js Module
 
 &emsp; [Node.js](https://nodejs.org) provides a package manager called `npm`, i.e. "Node.js Package Manger". The man page for `macdaily update npm` shows as below.
 
@@ -480,7 +518,7 @@ optional arguments:
 
 <a name="update_pip"> </a>
 
-4. `pip` -- Python Package
+5. `pip` -- Python Package
 
 &emsp; As there\'re all kinds and versions of Python complier, along with its `pip` package manager. Here, we support update of the following --
 
@@ -517,7 +555,7 @@ optional arguments:
 
 <a name="update_brew"> </a>
 
-5. `brew` -- Homebrew Formula
+6. `brew` -- Homebrew Formula
 
 &emsp; [Homebrew](https://brew.sh) is the missing package manager for macOS. The man page for `macdaily update brew` shows as below.
 
@@ -545,7 +583,7 @@ optional arguments:
 
 <a name="update_cask"> </a>
 
-6. `cask` -- Caskrooom Binary
+7. `cask` -- Caskrooom Binary
 
 &emsp; [Caskroom](https://caskroom.github.io) is a friendly binary installer for macOS. The man page for `macdaily update cask` shows as below.
 
@@ -574,13 +612,13 @@ optional arguments:
 
 <a name="update_appstore"> </a>
 
-7. `appstore` -- Mac App Store
+8. `system` -- Mac App Store
 
-&emsp; `softwareupdate` is the system software update tool. The man page for `macdaily update appstore` shows as below.
+&emsp; `softwareupdate` is the system software update tool. The man page for `macdaily update system` shows as below.
 
 ```
-$ macdaily update appstore --help
-usage: macdaily update appstore [-h] [-q] [-a] [-p PKG]
+$ macdaily update system --help
+usage: macdaily update system [-h] [-q] [-a] [-p PKG]
 
 Update installed App Store packages
 
@@ -596,7 +634,7 @@ optional arguments:
 
 <a name="update_cleanup"> </a>
 
-8. `cleanup` -- Cleanup Procedure
+9. `cleanup` -- Cleanup Procedure
 
 &emsp; `cleanup` prunes and deduplicates files, archives and removes caches. The man page for `macdaily update cleanup` shows as below.
 
@@ -1059,14 +1097,14 @@ The man page of `logging` shows as below.
 
 ```
 $ macdaily logging --help
-usage: macdaily logging [-h] [-V] [-a] [-v VER] [-s] [-b] [-c] [-y] [-q]
-               [MODE [MODE ...]]
+usage: macdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]
 
 Application & Package Logging Manager
 
 positional arguments:
   MODE                  name of logging mode, could be any from followings,
-                        apm, pip, brew, cask, dotapp, macapp, or appstore
+                        apm, gem, pip, npm, brew, cask, dotapp, macapp, or
+                        appstore
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -1081,6 +1119,7 @@ optional arguments:
   -c, --cpython         log pip packages on CPython environment
   -y, --pypy            log pip packages on PyPy environment
   -q, --quiet           run in quiet mode, with no output information
+  --show-log            open log in Console upon completion of command
 
 aliases: logging, log, lg, l
 ```

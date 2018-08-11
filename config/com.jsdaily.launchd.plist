@@ -25,7 +25,12 @@
 	<key>RunAtLoad</key>
 	<true/>
 	<key>RootDirectory</key>
-	<string>{HOME}</string>
+	<string>{ROOT}</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>{HOME}</string>
+	</dict>
 	<key>StartCalendarInterval</key>
 	<array>
 		<dict>

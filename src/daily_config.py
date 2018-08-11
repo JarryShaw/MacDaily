@@ -63,6 +63,7 @@ plist = collections.OrderedDict(
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
     RunAtLoad = True,
     RootDirectory = str(pathlib.Path.home()),
+    EnvironmentVariables = dict(os.environ),
     StartCalendarInterval = [],
     StandardOutPath = '',
     StandardErrorPath = '',
@@ -112,8 +113,8 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --restart --show-log
-logging = --all --show-log
+update  = --all --yes --pre --quiet --restart --show-log
+logging = --all --quiet --show-log
 """
 
 
@@ -239,6 +240,7 @@ def config():
             printw(f'Please enter schedule as HH:MM-CMD format, and each separates with comma.')
             timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ') or '8:00,22:30-update,23:00-logging').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
+            config.readlines(3);    config_file.writelines(config.readlines())
     except BaseException as error:
         sys.tracebacklimit = 0
         raise error from None
