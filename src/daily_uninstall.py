@@ -3,6 +3,10 @@
 
 import argparse
 import datetime
+import getpass
+import os
+import pwd
+import subprocess
 import sys
 
 from macdaily.daily_utility import *
@@ -10,7 +14,7 @@ from macdaily.libuninstall import *
 
 
 # version string
-__version__ = '1.4.1'
+__version__ = '1.5.0'
 
 
 # display mode names
@@ -42,6 +46,10 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+
+
+# user name
+USER = getpass.getuser()
 
 
 def get_parser():
@@ -129,6 +137,10 @@ def get_parser():
                         dest='yes', help=(
                             'yes for all selections'
                         ))
+    parser_pip.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_brew = subparser.add_parser('brew', description=(
                             'Uninstall Installed Homebrew Packages'
@@ -164,6 +176,10 @@ def get_parser():
                         dest='yes', help=(
                             'yes for all selections'
                         ))
+    parser_brew.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_cask = subparser.add_parser('cask', description=(
                             'Uninstall Installed Caskroom Packages'
@@ -194,6 +210,10 @@ def get_parser():
                         dest='yes', help=(
                             'yes for all selections'
                         ))
+    parser_cask.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
@@ -214,6 +234,10 @@ def get_parser():
     parser.add_argument('-Y', '--yes', action='store_true', default=False,
                         dest='yes', help=(
                             'yes for all selections'
+                        ))
+    parser.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     return parser
@@ -238,6 +262,12 @@ def main(argv, config, *, logdate, logtime, today):
         logfile.write(f'\n\n{mode}\n\n')
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
+
+    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+        subprocess.run(
+            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
 
     for mode in config['Mode'].keys():
         try:
@@ -286,3 +316,6 @@ def main(argv, config, *, logdate, logtime, today):
             logfile.write(f'LOG: archived following old logs: {files}\n')
             if not args.quiet:
                 print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+
+    if args.show_log:
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -22,7 +22,8 @@ yellow="\033[93m"       # bright yellow foreground
 #   3. Quiet Flag
 #   4. Verbose Flag
 #   5. Outdated Flag
-#   6. Package
+#   6. Log User
+#   7. Package
 #       ............
 ################################################################################
 
@@ -34,7 +35,8 @@ tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\'')
 arg_q=$3
 arg_v=$4
 arg_o=$5
-arg_pkg=${*:6}
+arg_u=$6
+arg_pkg=${*:7}
 
 
 # remove /tmp/log/update.log
@@ -83,9 +85,9 @@ else
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
+                sudo --user root --set-home $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
             else
-                sudo $logprefix gem update $name $verbose $quiet
+                sudo --user root --set-home $logprefix gem update $name $verbose $quiet
             fi
             $logprefix echo | $logsuffix
         else

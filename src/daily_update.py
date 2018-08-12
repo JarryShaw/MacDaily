@@ -3,6 +3,9 @@
 
 import argparse
 import datetime
+import getpass
+import os
+import pwd
 import subprocess
 import sys
 
@@ -54,6 +57,10 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+
+
+# user name
+USER = getpass.getuser()
 
 
 def get_parser():
@@ -120,6 +127,10 @@ def get_parser():
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
+    parser_apm.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_gem = subparser.add_parser('gem', description=(
                             'Update Installed Ruby Packages'
@@ -141,6 +152,10 @@ def get_parser():
     parser_gem.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
+                        ))
+    parser_gem.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     parser_mas = subparser.add_parser('mas', description=(
@@ -164,6 +179,10 @@ def get_parser():
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
+    parser_mas.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_npm = subparser.add_parser('npm', description=(
                             'Update Installed Node.js Packages'
@@ -185,6 +204,10 @@ def get_parser():
     parser_npm.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
+                        ))
+    parser_npm.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     parser_pip = subparser.add_parser('pip', description=(
@@ -241,6 +264,10 @@ def get_parser():
                         help=(
                             'run in verbose mode, with detailed output information'
                         ))
+    parser_pip.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_brew = subparser.add_parser('brew', description=(
                             'Update Installed Homebrew Packages'
@@ -274,6 +301,10 @@ def get_parser():
     parser_brew.add_argument('--no-cleanup', action='store_false', default=True,
                         dest='nocleanup', help=(
                             'do not remove caches & downloads'
+                        ))
+    parser_brew.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     parser_cask = subparser.add_parser('cask', description=(
@@ -310,6 +341,10 @@ def get_parser():
                         dest='nocleanup', help=(
                             'do not remove caches & downloads'
                         ))
+    parser_cask.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_system = subparser.add_parser('system', description=(
                             'Update Installed System Packages'
@@ -335,6 +370,10 @@ def get_parser():
     parser_system.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
+                        ))
+    parser_system.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     parser_cleanup = subparser.add_parser('cleanup', description=(
@@ -365,6 +404,10 @@ def get_parser():
     parser_cleanup.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
                             'run in quiet mode, with no output information'
+                        ))
+    parser_cleanup.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     parser.add_argument('-f', '--force', action='store_true', default=False,
@@ -428,6 +471,12 @@ def main(argv, config, *, logdate, logtime, today):
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
+    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+        subprocess.run(
+            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+
     for mode in config['Mode'].keys():
         try:
             flag = not config['Mode'].getboolean(mode)
@@ -476,4 +525,4 @@ def main(argv, config, *, logdate, logtime, today):
                 print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
 
     if args.show_log:
-        subprocess.run(['/usr/bin/open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

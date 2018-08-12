@@ -17,8 +17,8 @@ def main(config, *, logdate, today):
                     'logging/apm', 'logging/gem', 'logging/pip', 'logging/npm',
                     'logging/brew', 'logging/cask', 'logging/dotapp', 'logging/macapp', 'logging/appstore'  }:
         tmppath, logpath, arcpath, tarpath = make_path(config, mode=mode, logdate=logdate)
-        filelist += archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, mvflag=False)
-    filelist += storage(config, logdate=logdate, today=today)
+        filelist.extend(archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, mvflag=False))
+    filelist.extend(storage(config, logdate=logdate, today=today))
 
     if filelist:
         files = f'{reset}, {under}'.join(filelist)

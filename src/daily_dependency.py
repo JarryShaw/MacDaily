@@ -3,6 +3,10 @@
 
 import argparse
 import datetime
+import getpass
+import os
+import pwd
+import subprocess
 import sys
 
 from macdaily.daily_utility import *
@@ -40,6 +44,10 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+
+
+# user name
+USER = getpass.getuser()
 
 
 def get_parser():
@@ -112,6 +120,10 @@ def get_parser():
                             'show dependencies as a tree. This feature requests '
                             '`pipdeptree`'
                         ))
+    parser_pip.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser_brew = subparser.add_parser('brew', description=(
                             'Show Dependencies of Homebrew Packages'
@@ -130,11 +142,19 @@ def get_parser():
                         help=(
                             'show dependencies as a tree'
                         ))
+    parser_brew.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     parser.add_argument('-t', '--tree', action='store_true', default=False,
                         help=(
                             'show dependencies as a tree. This feature may request '
                             '`pipdeptree`'
+                        ))
+    parser.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
                         ))
 
     return parser
@@ -159,6 +179,12 @@ def main(argv, config, *, logdate, logtime, today):
         logfile.write(f'\n\n{mode}\n\n')
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
+
+    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+        subprocess.run(
+            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
 
     for mode in config['Mode'].keys():
         try:
@@ -196,3 +222,6 @@ def main(argv, config, *, logdate, logtime, today):
         if filelist:
             files = ', '.join(filelist)
             logfile.write(f'LOG: archived following old logs: {files}\n')
+
+    if args.show_log:
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

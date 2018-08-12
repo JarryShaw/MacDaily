@@ -108,9 +108,9 @@ function pipuninstall {
     # uninstall procedure
     $logprefix printf "++ ${bold}pip$pprint uninstall $arg_pkg $idep $verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet > /dev/null 2>&1
+        sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet > /dev/null 2>&1
     else
-        sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet
+        sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet
     fi
     # $logprefix echo | $logsuffix
 
@@ -127,9 +127,9 @@ function pipuninstall {
                     if [[ ! -z $flag ]]; then
                         # $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
+                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo -H $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet
+                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet
                         fi
                         # $logprefix echo | $logsuffix
                     fi ;;
@@ -156,9 +156,9 @@ function pip_fixmissing {
     for name in $arg_pkg ; do
         $logprefix printf "++ ${bold}pip$pprint install --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo -H $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
+            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
         else
-            sudo -H $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet
+            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -279,9 +279,9 @@ function piplogging {
                             *)
                                 $logprefix printf "++ ${bold}pip$pprint uninstall $pkg $yes $verbose $quiet${reset}\n" | $logsuffix
                                 if ( $arg_q ) ; then
-                                    sudo -H $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet > /dev/null 2>&1
+                                    sudo --user root --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet > /dev/null 2>&1
                                 else
-                                    sudo -H $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet
+                                    sudo --user root --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet
                                 fi
                                 $logprefix echo | $logsuffix ;;
                         esac

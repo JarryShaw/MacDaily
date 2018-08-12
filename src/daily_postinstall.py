@@ -3,6 +3,10 @@
 
 import argparse
 import datetime
+import getpass
+import os
+import pwd
+import subprocess
 import sys
 
 from macdaily.daily_utility import *
@@ -10,7 +14,7 @@ from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 
 # terminal commands
@@ -25,6 +29,10 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+
+
+# user name
+USER = getpass.getuser()
 
 
 def get_parser():
@@ -67,6 +75,10 @@ def get_parser():
                         help=(
                             'do not remove postinstall caches & downloads'
                         ))
+    parser.add_argument('--show-log', action='store_true', default=False,
+                        help=(
+                            'open log in Console upon completion of command'
+                        ))
 
     return parser
 
@@ -90,6 +102,12 @@ def main(argv, config, *, logdate, logtime, today):
         logfile.write(f'\n\n{mode}\n\n')
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
+
+    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+        subprocess.run(
+            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
 
     log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall'
             )(postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
@@ -120,3 +138,6 @@ def main(argv, config, *, logdate, logtime, today):
             logfile.write(f'LOG: archived following old logs: {files}\n')
             if not args.quiet:
                 print(f'postinstall: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+
+    if args.show_log:
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

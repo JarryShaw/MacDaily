@@ -10,7 +10,6 @@ import os
 import pathlib
 import plistlib
 import re
-import shlex
 import subprocess
 import sys
 import textwrap
@@ -169,9 +168,10 @@ def launch(config):
     cfgmode = dict()
     try:
         for mode in MODES:
-            ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.plist')
+            ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
             if ldpath.exists() and ldpath.is_file():
-                subprocess.run(shlex.split(f'sudo -H launchctl unload -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '-H', 'launchctl', 'unload', '-w', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '-H', 'rm', '-f', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
@@ -197,13 +197,13 @@ def launch(config):
         raise error from None
 
     print()
-    tmpdir = config['Path']['tmpdir']
+    tmpdir = os.path.expanduser(config['Path']['tmpdir'])
     logdir = os.path.expanduser(config['Path']['logdir'])
     pathlib.Path(tmpdir).mkdir(exist_ok=True, parents=True)
     for mode, schedule in pltmode.items():
-        tmpath = f'{tmpdir}/com.macdaily.{mode}.plist'
-        ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.plist'
-        plist['Label'] = f'com.macdaily.{mode}.plist'
+        tmpath = f'{tmpdir}/com.macdaily.{mode}.{USER}.plist'
+        ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist'
+        plist['Label'] = f'com.macdaily.{mode}.{USER}.plist'
         plist['ProgramArguments'][2] = scpt(mode, config['Option'].get(mode, ''))
         plist['StartCalendarInterval'] = schedule
         plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
@@ -212,7 +212,7 @@ def launch(config):
             plistlib.dump(plist, plist_file, sort_keys=False)
         subprocess.run(['sudo', '-H', 'mv', tmpath, ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run(['sudo', '-H', 'chown', 'root', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(shlex.split(f'sudo -H launchctl load -w {ldpath}'), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '-H', 'launchctl', 'load', '-w', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
         print(f'macdaily: {red}launch{reset}: no scheduled services loaded')

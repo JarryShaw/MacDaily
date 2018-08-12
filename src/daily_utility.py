@@ -4,6 +4,7 @@
 import calendar
 import datetime
 import functools
+import getpass
 import os
 import pathlib
 import shlex
@@ -20,6 +21,14 @@ __all__ = ['aftermath', 'make_path', 'archive', 'storage']
 # terminal display
 reset  = '\033[0m'      # reset
 red    = '\033[91m'     # bright red foreground
+
+
+# root path
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+# user name
+USER = getpass.getuser()
 
 
 def beholder(func):
@@ -42,7 +51,10 @@ def aftermath(*, logfile, tmpfile, command):
             try:
                 return func(*args, **kwargs)
             except BaseException as error:
-                subprocess.run(['bash', f'lib{command}/aftermath.sh', shlex.quote(logfile), shlex.quote(tmpfile), 'true'])
+                subprocess.run(
+                    ['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true'],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
                 sys.tracebacklimit = 0
                 raise error from None
         return wrapper
@@ -63,7 +75,10 @@ def make_path(config, *, mode, logdate):
     dskpath = pathlib.Path(config['Path']['dskdir'])
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
-
+    subprocess.run(
+        ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
     return tmppath, logpath, arcpath, tarpath
 
 
@@ -109,7 +124,7 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
             shutil.rmtree(arcpath)
 
     if mvflag:
-        filelist += storage(config, logdate=logdate, today=today)
+        filelist.extend(storage(config, logdate=logdate, today=today))
     return filelist
 
 

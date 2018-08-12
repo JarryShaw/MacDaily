@@ -2,9 +2,8 @@
 
 
 import collections
-import json
+import getpass
 import os
-import re
 import shlex
 import shutil
 import subprocess
@@ -23,6 +22,14 @@ green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
 blush  = '\033[101m'    # bright red background
 purple = '\033[104m'    # bright purple background
+
+
+# root path
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+# user name
+USER = getpass.getuser()
 
 
 def _merge_packages(args):
@@ -46,6 +53,14 @@ def _merge_packages(args):
     else:
         packages = {'null'}
     return packages
+
+
+def dependency_all(args, *, file, temp):
+    log = collections.defaultdict(set)
+    for mode in {'pip', 'brew'}:
+        if not getattr(args, f'no_{mode}'):
+            log[mode] = eval(f'dependency_{mode}')(args, file=file, temp=temp, retset=True)
+    return log
 
 
 def dependency_pip(args, *, file, temp, retset=False):
@@ -74,17 +89,17 @@ def dependency_pip(args, *, file, temp, retset=False):
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_pip.sh', logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, tree] + list(packages)
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'dependency_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, tree] + list(packages)
         )
         subprocess.run(
-            ['bash', 'libdependency/relink_pip.sh'],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'relink_pip.sh')],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
     print()
     return log if retset else dict(pip=log)
@@ -116,21 +131,13 @@ def dependency_brew(args, *, file, temp, retset=False):
         print(f'dependency: ${green}brew${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libdependency/logging_brew.sh', logname, tmpname] + list(packages),
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libdependency/dependency_brew.sh', logname, tmpname, tree] + list(packages)
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'dependency_brew.sh'), logname, tmpname, tree] + list(packages)
         )
     print()
     return log if retset else dict(brew=log)
-
-
-def dependency_all(args, *, file, temp):
-    log = collections.defaultdict(set)
-    for mode in {'pip', 'brew'}:
-        if not args.__getattribute__(f'no_{mode}'):
-            log[mode] = eval(f'dependency_{mode}')(args, file=file, temp=temp, retset=True)
-    return log

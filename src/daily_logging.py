@@ -3,6 +3,9 @@
 
 import argparse
 import datetime
+import getpass
+import os
+import pwd
 import shlex
 import subprocess
 import sys
@@ -41,6 +44,10 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+
+
+# user name
+USER = getpass.getuser()
 
 
 def get_parser():
@@ -159,6 +166,12 @@ def main(argv, config, *, logdate, logtime, today):
                 logfile.write(f'ARG: {key} = {value}\n')
             logfile.write('\n\n')
 
+        if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+            subprocess.run(
+                ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+
         try:
             logging = MODE.get(logmode)
             log = logging(args, file=shlex.quote(logname))
@@ -182,10 +195,10 @@ def main(argv, config, *, logdate, logtime, today):
                 files = ', '.join(filelist)
                 logfile.write(f'LOG: archived following old logs: {files}\n')
 
+        if args.show_log:
+            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     storage(config, logdate=logdate, today=today)
     if arcflag and not args.quiet:
         arcdir = config['Path']['logdir'] + '/archive/logging'
         print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
-
-    if args.show_log:
-        subprocess.run(['/usr/bin/open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

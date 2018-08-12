@@ -2,6 +2,7 @@
 
 
 import collections
+import getpass
 import os
 import shlex
 import shutil
@@ -21,6 +22,14 @@ green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
 blush  = '\033[101m'    # bright red background
 purple = '\033[104m'    # bright purple background
+
+
+# root path
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+# user name
+USER = getpass.getuser()
 
 
 def _merge_packages(args):
@@ -44,6 +53,14 @@ def _merge_packages(args):
     else:
         packages = {'null'}
     return packages
+
+
+def uninstall_all(args, *, file, temp):
+    log = collections.defaultdict(set)
+    for mode in {'pip', 'brew', 'cask'}:
+        if not getattr(args, f'no_{mode}'):
+            log[mode] = eval(f'uninstall_{mode}')(args, file=file, temp=temp, retset=True)
+    return log
 
 
 def uninstall_pip(args, *, file, temp, retset=False):
@@ -77,17 +94,17 @@ def uninstall_pip(args, *, file, temp, retset=False):
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, idep] + list(packages),
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['sudo', '-H', 'bash', 'libuninstall/uninstall_pip.sh', logname, tmpname, system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages)
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'uninstall_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages)
         )
         subprocess.run(
-            ['bash', 'libuninstall/relink_pip.sh'],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'relink_pip.sh')],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
     if not args.quiet:  print()
     return log if retset else dict(pip=log)
@@ -125,13 +142,13 @@ def uninstall_brew(args, *, file, temp, retset=False):
             print(f'uninstall: ${green}brew${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_brew.sh', logname, tmpname, idep] + list(packages),
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libuninstall/uninstall_brew.sh', logname, tmpname, force, quiet, verbose, idep, yes] + list(packages)
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'uninstall_brew.sh'), logname, tmpname, force, quiet, verbose, idep, yes] + list(packages)
         )
     if not args.quiet:  print()
     return log if retset else dict(brew=log)
@@ -139,8 +156,8 @@ def uninstall_brew(args, *, file, temp, retset=False):
 
 def uninstall_cask(args, *, file, temp, retset=False):
     testing = subprocess.run(
-        shlex.split('brew cask'),
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ['sudo', '--user', USER, '--set-home', 'brew', 'command', 'cask'],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     if testing.returncode:
         print(
@@ -171,21 +188,13 @@ def uninstall_cask(args, *, file, temp, retset=False):
             print(f'uninstall: ${green}cask${reset}: no uninstallation performed\n')
     else:
         logging = subprocess.run(
-            ['bash', 'libuninstall/logging_cask.sh', logname, tmpname] + list(packages),
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())
 
         subprocess.run(
-            ['bash', 'libuninstall/uninstall_cask.sh', logname, tmpname, quiet, verbose, force] + list(packages)
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'uninstall_cask.sh'), logname, tmpname, quiet, verbose, force] + list(packages)
         )
     if not args.quiet:  print()
     return log if retset else dict(cask=log)
-
-
-def uninstall_all(args, *, file, temp):
-    log = collections.defaultdict(set)
-    for mode in {'pip', 'brew', 'cask'}:
-        if not args.__getattribute__(f'no_{mode}'):
-            log[mode] = eval(f'uninstall_{mode}')(args, file=file, temp=temp, retset=True)
-    return log
