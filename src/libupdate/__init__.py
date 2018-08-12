@@ -8,6 +8,7 @@ import os
 import re
 import shlex
 import shutil
+import signal
 import subprocess
 
 
@@ -263,6 +264,9 @@ def update_pip(args, *, file, temp, disk, cleanup=True, retset=False):
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     log = set(logging.stdout.decode().strip().split())
+    if 'macdaily' in log:
+        log.remove('macdaily')
+        os.kill(os.getpid(), signal.SIGUSR1)
 
     subprocess.run(
         ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'update_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, yes, quiet, verbose, pre] + list(packages)

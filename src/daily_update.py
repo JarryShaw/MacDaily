@@ -6,6 +6,7 @@ import datetime
 import getpass
 import os
 import pwd
+import signal
 import subprocess
 import sys
 
@@ -14,7 +15,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.5.0'
+__version__ = '1.5.1'
 
 
 # display mode names
@@ -477,6 +478,12 @@ def main(argv, config, *, logdate, logtime, today):
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
 
+    reload_flag = False
+    def reload(*args, **kwargs):
+        global reload_flag
+        reload_flag = True
+    signal.signal(signal.SIGUSR1, reload)
+
     for mode in config['Mode'].keys():
         try:
             flag = not config['Mode'].getboolean(mode)
@@ -526,3 +533,8 @@ def main(argv, config, *, logdate, logtime, today):
 
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if reload_flag:
+        subprocess.run(
+            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cahe-dir', '--pre', 'macdaily']
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
