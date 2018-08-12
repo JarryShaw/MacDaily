@@ -52,7 +52,7 @@ function find_ng {
     # )
 
     # run python script
-    python << EOF
+    sudo --user root --set-home python << EOF
 from __future__ import print_function
 import os, re
 

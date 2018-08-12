@@ -32,7 +32,7 @@ USER = getpass.getuser()
 
 def logging_apm(args, *, file):
     if shutil.which('apm') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_apm.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_apm.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}apm{reset}: {bold}Atom{reset} packages logged in {under}{file}{reset}')
     else:
@@ -42,7 +42,7 @@ def logging_apm(args, *, file):
 
 def logging_appstore(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_appstore.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_appstore.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}appstore{reset}: {bold}Mac App Store{reset} applications logged in {under}{file}{reset}')
     else:
@@ -52,7 +52,7 @@ def logging_appstore(args, *, file):
 
 def logging_brew(args, *, file):
     if shutil.which('brew') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_brew.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_brew.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}brew{reset}: {bold}Homebrew{reset} formulae logged in {under}{file}{reset}')
     else:
@@ -66,7 +66,7 @@ def logging_cask(args, *, file):
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     if not testing.returncode:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_cask.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_cask.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}cask{reset}: {bold}Caskroom{reset} binaries logged in {under}{file}{reset}')
     else:
@@ -76,7 +76,7 @@ def logging_cask(args, *, file):
 
 def logging_dotapp(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['sudo', '-H', 'bash', os.path.join(ROOT, 'logging_dotapp.sh'), file], timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_dotapp.sh'), file], timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}dotapp{reset}: all applications ({bold}*.app{reset}) logged in {under}{file}{reset}')
     else:
@@ -86,7 +86,7 @@ def logging_dotapp(args, *, file):
 
 def logging_gem(args, *, file):
     if shutil.which('npm') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_gem.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_gem.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}gem{reset}: {bold}Ruby{reset} gems logged in {under}{file}{reset}')
     else:
@@ -96,7 +96,7 @@ def logging_gem(args, *, file):
 
 def logging_macapp(args, *, file):
     if shutil.which('find') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_macapp.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_macapp.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}macapp{reset}: all applications placed in {bold}/Application{reset} folder logged in {under}{file}{reset}')
     else:
@@ -106,7 +106,7 @@ def logging_macapp(args, *, file):
 
 def logging_npm(args, *, file):
     if shutil.which('npm') is not None:
-        subprocess.run(['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_npm.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_npm.sh'), file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}npm{reset}: {bold}Node.js{reset} modules logged in {under}{file}{reset}')
     else:
@@ -124,11 +124,11 @@ def logging_pip(args, *, file):
                 str(args.system).lower(), str(args.brew).lower(), \
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
         subprocess.run(
-            ['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'logging_pip.sh'), file, system, brew, cpython, pypy, version],
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_pip.sh'), file, system, brew, cpython, pypy, version],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         subprocess.run(
-            ['sudo', '-u', USER, '-H', 'bash', os.path.join(ROOT, 'relink_pip.sh')],
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'relink_pip.sh')],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         if not args.quiet:
