@@ -1,0 +1,448 @@
+# MacDaily General Manual
+
+ * [Archive Procedure](#archive)
+ * [Config Procedure](#config)
+ * [Launch Procedure](#launch)
+ * [Update Procedure](#update)
+ * [Uninstall Procedure](#uninstall)
+ * [Reinstall Procedure](#reinstall)
+ * [Postinstall Procedure](#postinstall)
+ * [Dependency Procedure](#dependency)
+ * [Logging Procedure](#logging)
+ * [Bundle Procedure](#bundle)
+
+---
+
+<a name="archive"> </a>
+
+### Archive Procedure
+
+```
+$ macdaily archive
+```
+
+&emsp; The `archive` command will move all ancient logs to where it belongs --
+
+ - daily logs from last week (7 days) -- `${logdir}/archive` with corresponding modes named as `YYMMDD.tar.gz`
+ - weekly archives from last month (approximately 4 weeks) -- `${logdir}/tarfile` with corresponding modes named as `YYMMDD-YYMMDD.tar.bz`
+ - even older logs -- inside `${arcdir}/archive.zip` with corresponding modes and named as `YYMMDD-YYMMDD.tar.xz`
+
+Actual paths of `${logdir}` and `${arcdir}` are defined in `~/.dailyrc`, may vary from your own settings.
+
+&nbsp;
+
+<a name="config"> </a>
+
+### Config Procedure
+
+```
+$ macdaily config
+Entering interactive command line setup procedure...
+Default settings are shown as in the square brackets.
+Please directly ENTER if you prefer the default settings.
+
+For logging utilities, we recommend you to set up your hard disk path.
+You may change other path preferences in configuration `~/.dailyrc` later.
+Please note that all paths must be valid under all circumstances.
+Name of your hard disk []:
+
+In default, we will run update and logging commands twice a day.
+You may change daily commands preferences in configuration `~/.dailyrc` later.
+Please enter schedule as HH:MM[-CMD] format, and each separates with comma.
+Time for daily scripts [8:00,22:30-update,23:00-logging]:
+```
+
+&emsp; As shown above, the `config` command will help modify `~/.dailyrc`. For more information on `~/.dailyrc`, please refer to the [Configuration](https://github.com/JarryShaw/MacDaily#configuration) section.
+
+&nbsp;
+
+<a name="launch"> </a>
+
+### Launch Procedure
+
+```
+$ macdaily launch
+```
+
+&emsp; The `launch` command will reload `~/.dailyrc` and register daemons to `Launch Agents` on macOS. After manually modified  `[Daemon]` section on `~/.dailyrc`, it is mandatory to run the `launch` command to activate these settings.
+
+&nbsp;
+
+<a name="update"> </a>
+
+### Update Procedure
+
+&emsp; The `update` command will automatically update all outdated packages installed through --
+
+ - `apm` -- [Atom](https://atom.io) plug-ins
+ - `gem` -- [Ruby](https://www.ruby-lang.org) gems
+ - `mas` -- [Mac App Store](https://github.com/mas-cli/mas#mas-cli) applications
+ - `npm` -- [Node.js](https://nodejs.org) modules
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+ - `system` -- [`softwareupdate(8)`](https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man8/softwareupdate.8.html) system software
+
+and an additional `cleanup` procedure, which prunes and deduplicates files, archives and removes caches. The man page of `update` shows as below.
+
+```
+$ macdaily update --help
+usage: macdaily update [-hV] [-qv] [-fgm] [-a] [--[no-]MODE] MODE ...
+
+Automatic Package Update Manager
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -V, --version  show program's version number and exit
+  -a, --all      update all packages installed through Atom, pip, RubyGem,
+                 Node.js, Homebrew, Caskroom, App Store, and etc
+  -f, --force    run in force mode, only for Homebrew or Caskroom
+  -m, --merge    run in merge mode, only for Homebrew
+  -g, --greedy   run in greedy mode, only for Caskroom
+  -r, --restart  automatically restart if necessary, only for App Store
+  -Y, --yes      yes for all selections, only for pip
+  -q, --quiet    run in quiet mode, with no output information
+  -v, --verbose  run in verbose mode, with detailed output information
+  --show-log     open log in Console upon completion of command
+
+mode selection:
+  MODE           update outdated packages installed through a specified
+                 method, e.g.: apm, gem, mas, npm, pip, brew, cask, system, or
+                 alternatively and simply, cleanup
+
+aliases: update, up, U, upgrade
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not update under any circumstances. To update all packages, use one of the commands below.
+
+```
+$ macdaily update -a
+$ macdaily update --all
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Update Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#macdaily-update-manual). And here is a brief catalogue for the manual.
+
+ - [Atom Plug-In](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_apm)
+ - [Ruby Gem](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_gem)
+ - [Mac App Store](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_mas)
+ - [Node.js Module](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_npm)
+ - [Python Package](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_pip)
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_brew)
+ - [Caskroom Binary](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_cask)
+ - [System Software](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_system)
+ - [Cleanup Procedure](https://github.com/JarryShaw/MacDaily/tree/master/src/libupdate#update_cleanup)
+
+&nbsp;
+
+<a name="uninstall"> </a>
+
+### Uninstall Procedure
+
+&emsp; The `uninstall` command will recursively uninstall all dependency packages installed through --
+
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+
+The man page of `uninstall` shows as below.
+
+```
+$ macdaily uninstall --help
+usage: macdaily uninstall [-hV] [-qv] [-fiY] [-a] [--[no-]MODE] MODE ...
+
+Package Recursive Uninstall Manager
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  -a, --all             uninstall all packages installed through pip,
+                        Homebrew, and App Store
+  -f, --force           run in force mode, only for Homebrew and Caskroom
+  -i, --ignore-dependencies
+                        run in non-recursive mode, only for Python and Homebrew
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with more information
+  -Y, --yes             yes for all selections
+  --show-log            open log in Console upon completion of command
+
+mode selection:
+  MODE                  uninstall given packages installed through a specified
+                        method, e.g.: pip, brew or cask
+
+aliases: uninstall, remove, rm, r, un
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not uninstall under any circumstances. To uninstall all packages, use one of the commands below.
+
+```
+$ macdaily uninstall -a
+$ macdaily uninstall --all
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Uninstall Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libuninstall#macdaily-uninstall-manual). And here is a brief catalogue for the manual.
+
+ - [Python Package](https://github.com/JarryShaw/MacDaily/tree/master/src/libuninstall#uninstall_pip)
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/libuninstall#uninstall_brew)
+ - [Caskroom Binary](https://github.com/JarryShaw/MacDaily/tree/master/src/libuninstall#uninstall_cask)
+
+&nbsp;
+
+<a name="reinstall"> </a>
+
+### Reinstall Procedure
+
+&emsp; The `reinstall` command will automatically reinstall all given packages installed through --
+
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+
+and an additional `cleanup` procedure, which prunes and deduplicates files, archives and removes caches. The man page of `reinstall` shows as below.
+
+```
+$ macdaily reinstall --help
+usage: macdaily reinstall [-hV] [-qv] [-f] [-es PKG] [-a] [--[no-]MODE] MODE ...
+
+Homebrew Package Reinstall Manager
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  -a, --all             reinstall all packages installed through Homebrew and
+                        Caskroom
+  -s START, --startwith START
+                        reinstall procedure starts from which package, sort in
+                        initial alphabets
+  -e START, --endwith START
+                        reinstall procedure ends until which package, sort in
+                        initial alphabets
+  -f, --force           run in force mode, using for `brew reinstall`
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with detailed output information
+  --show-log            open log in Console upon completion of command
+
+mode selection:
+  MODE                  reinstall packages installed through a specified
+                        method, e.g.: brew or cask, or alternatively and
+                        simply, cleanup
+
+aliases: reinstall, re, R
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not reinstall under any circumstances. To reinstall all packages, use one of the commands below.
+
+```
+$ macdaily reinstall -a
+$ macdaily reinstall --all
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Reinstall & Postinstall Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#macdaily-reinstall-&-postinstall-manual). And here is a brief catalogue for the manual.
+
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#reinstall_brew)
+ - [Caskroom Binary](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#reinstall_cask)
+ - [Cleanup Procedure](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#reinstall_cleanup)
+
+&nbsp;
+
+<a name="postinstall"> </a>
+
+### Postinstall Procedure
+
+&emsp; The `postinstall` command will automatically postinstall all given packages installed through --
+
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+
+and an additional `cleanup` procedure, which prunes and deduplicates files, archives and removes caches. The man page of `postinstall` shows as below.
+
+```
+$ macdaily postinstall --help
+usage: macdaily postinstall [-hV] [-qv] [-eps PKG] [-a] [--no-cleanup]
+
+Homebrew Package Postinstall Manager
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  -a, --all             postinstall all packages installed through Homebrew
+  -p PKG, --package PKG
+                        name of packages to be postinstalled, default is all
+  -s START, --startwith START
+                        postinstall procedure starts from which package, sort
+                        in initial alphabets
+  -e START, --endwith START
+                        postinstall procedure ends until which package, sort
+                        in initial alphabets
+  -q, --quiet           run in quiet mode, with no output information
+  -v, --verbose         run in verbose mode, with detailed output information
+  --no-cleanup          do not remove postinstall caches & downloads
+  --show-log            open log in Console upon completion of command
+
+aliases: postinstall, post, ps, p
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not postinstall under any circumstances. To postinstall all packages, use one of the commands below.
+
+```
+$ macdaily postinstall -a
+$ macdaily postinstall --all
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Reinstall & Postinstall Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#macdaily-reinstall-&-postinstall-manual). And here is a brief catalogue for the manual.
+
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#postinstall_brew)
+ - [Cleanup Procedure](https://github.com/JarryShaw/MacDaily/tree/master/src/libprinstall#postinstall_cleanup)
+
+&nbsp;
+
+<a name="dependency"> </a>
+
+### Dependency Procedure
+
+&emsp; The `dependency` command will automatically show dependencies of all packages installed through --
+
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+
+The man page of `dependency` shows as below.
+
+```
+$ macdaily dependency --help
+usage: macdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ...
+
+Trivial Package Dependency Manager
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -V, --version  show program's version number and exit
+  -a, --all      show dependencies of all packages installed through pip and
+                 Homebrew
+  -t, --tree     show dependencies as a tree. This feature may request
+                 `pipdeptree`
+  --show-log     open log in Console upon completion of command
+
+mode selection:
+  MODE           show dependencies of packages installed through a specified
+                 method, e.g.: pip or brew
+
+aliases: dependency, deps, dep, dp, de, d
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not show dependencies under any circumstances. To show dependencies of all packages, use one of the commands below.
+
+```
+$ macdaily dependency -a
+$ macdaily dependency --all
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Dependency Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libdependency#macdaily-dependency-manual). And here is a brief catalogue for the manual.
+
+ - [Python Package](https://github.com/JarryShaw/MacDaily/tree/master/src/libdependency#dependency_pip)
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/libdependency#dependency_brew)
+
+&nbsp;
+
+<a name="logging"> </a>
+
+### Logging Procedure
+
+&emsp; The `logging` command will automatically log all applications and/or packages installed through --
+
+ - `apm` -- [Atom](https://atom.io) plug-ins
+ - `gem` -- [Ruby](https://www.ruby-lang.org) gems
+ - `npm` -- [Node.js](https://nodejs.org) modules
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+ - `dotapp` -- all `*.app` files on this Mac, a.k.a. `/` root directory
+ - `macapp` -- applications in `/Application` folder
+ - `appstore` -- Mac App Store applications
+
+The man page of `logging` shows as below.
+
+```
+$ macdaily logging --help
+usage: macdaily logging [-hV] [-q] [-a] [-bcsy] [-v VER] [--[no-]MODE] [MODE [MODE ...]]
+
+Application & Package Logging Manager
+
+positional arguments:
+  MODE                  name of logging mode, could be any from followings,
+                        apm, gem, pip, npm, brew, cask, dotapp, macapp, or
+                        appstore
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  -a, --all             log applications and packages of all entries
+  -v VER, --python_version VER
+                        indicate which version of pip will be logged
+  -s, --system          log pip packages on system level, i.e. python
+                        installed through official installer
+  -b, --brewed          log pip packages on Cellar level, i.e. python
+                        installed through Homebrew
+  -c, --cpython         log pip packages on CPython environment
+  -y, --pypy            log pip packages on PyPy environment
+  -q, --quiet           run in quiet mode, with no output information
+  --show-log            open log in Console upon completion of command
+
+aliases: logging, log, lg, l
+```
+
+&emsp; Note that disabled modes in configuration file `.dailyrc` will not be logged under any circumstances. To log all packages, use one of the commands below.
+
+```
+$ macdaily logging -a
+$ macdaily logging --all
+$ macdaily logging apm gem npm pip brew cask dotapp macapp appstore
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Logging Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#macdaily-logging-manual). And here is a brief catalogue for the manual.
+
+ - [Atom Plug-In](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_apm)
+ - [Ruby Gem](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_gem)
+ - [Node.js Module](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_npm)
+ - [Python Package](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_pip)
+ - [Homebrew Formula](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_brew)
+ - [Caskroom Binary](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_cask)
+ - [macOS Application](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_dotapp)
+ - [Installed Application](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_macapp)
+ - [Mac App Store](https://github.com/JarryShaw/MacDaily/tree/master/src/liblogging#logging_appstore)
+
+&nbsp;
+
+<a name="bundle"> </a>
+
+### Bundle Procedure
+
+&emsp; The `bundle` command will automatically log all applications and/or packages installed through --
+
+ - `apm` -- [Atom](https://atom.io) plug-ins
+ - `gem` -- [Ruby](https://www.ruby-lang.org) gems
+ - `mas` -- [Mac App Store](https://github.com/mas-cli/mas#mas-cli) applications
+ - `npm` -- [Node.js](https://nodejs.org) modules
+ - `pip` -- Python packages, in both version of 2.\* and 3.\*, running under [CPython](https://www.python.org) or [PyPy](https://pypy.org) compiler, and installed through `brew` or official disk images (`*.dmg`)
+ - `tap` -- [Taps](https://docs.brew.sh/Taps), third-party repositories for [Homebrew](https://brew.sh) formulae
+ - `brew` -- [Homebrew](https://brew.sh) formulae
+ - `cask` -- [Caskroom](https://caskroom.github.io) binaries
+
+The man page of `bundle` shows as below.
+
+```
+$ macdaily bundle --help
+usage: macdaily bundle [-hV] [-v]
+
+Automatic Package Bundling Manager
+
+positional arguments:
+  {load,dump}    dump or load a Macfile to keep track to all packages
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -V, --version  show program's version number and exit
+  -v, --verbose  run in verbose mode, with detailed output information
+```
+
+&emsp; For more information on detailed commands, please refer to the [MacDaily Bundle Manual](https://github.com/JarryShaw/MacDaily/tree/master/src/libbundle#macdaily-bundle-manual). And here is a brief catalogue for the manual.
+
+ - [What is a `Macfile`?](https://github.com/JarryShaw/MacDaily/tree/master/src/libbundle#macfile)
+ - [Dump Macfile](https://github.com/JarryShaw/MacDaily/tree/master/src/libbundle#bundle_dump)
+ - [Load Macfile](https://github.com/JarryShaw/MacDaily/tree/master/src/libbundle#bundle_load)

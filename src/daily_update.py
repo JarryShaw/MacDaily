@@ -538,3 +538,4 @@ def main(argv, config, *, logdate, logtime, today):
             ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
+        print(f'update: {green}macdaily{reset}: package is now up-to-date')

@@ -76,7 +76,7 @@ def make_path(config, *, mode, logdate):
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+        ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, tmppath, os.path.expanduser(config['Path']['logdir'])],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     return tmppath, logpath, arcpath, tarpath

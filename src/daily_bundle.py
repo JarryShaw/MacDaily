@@ -26,7 +26,9 @@ def get_parser():
                     'macdaily bundle [-hV] [-v]'
                 ))
     parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('command', choices=['load', 'dump'], help=argparse.SUPPRESS)
+    parser.add_argument('command', choices=['load', 'dump'], help=(
+                            'dump or load a Macfile to keep track to all packages'
+                        ))
     parser.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
