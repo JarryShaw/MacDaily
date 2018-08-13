@@ -8,6 +8,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # terminal display
 reset="\033[0m"         # reset
 bold="\033[1m"          # bold
+under="\033[4m"         # underline
 red="\033[91m"          # bright red foreground
 green="\033[92m"        # bright green foreground
 yellow="\033[93m"       # bright yellow foreground
@@ -229,7 +230,7 @@ function pipupdate {
                         for pkg in $list ; do
                             case $pkg in
                                 macdaily )
-                                    : ;;
+                                    $logprefix printf "update: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to update after\n\n" | $logsuffix ;;
                                 * )
                                     $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
                                     if ( $arg_q ) ; then

@@ -4,6 +4,7 @@
 import argparse
 import datetime
 import getpass
+import multiprocessing
 import os
 import pwd
 import signal
@@ -478,10 +479,9 @@ def main(argv, config, *, logdate, logtime, today):
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
 
-    reload_flag = False
+    reload_flag = multiprocessing.Value('B', False)
     def reload(*args, **kwargs):
-        global reload_flag
-        reload_flag = True
+        reload_flag.value = True
     signal.signal(signal.SIGUSR1, reload)
 
     for mode in config['Mode'].keys():
@@ -533,8 +533,8 @@ def main(argv, config, *, logdate, logtime, today):
 
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if reload_flag:
+    if reload_flag.value:
         subprocess.run(
-            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cahe-dir', '--pre', 'macdaily'],
+            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
