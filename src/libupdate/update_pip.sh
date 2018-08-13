@@ -227,13 +227,18 @@ function pipupdate {
                     list=`$prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"`
                     if [[ ! -z $list ]] ; then
                         for pkg in $list ; do
-                            $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
-                            if ( $arg_q ) ; then
-                                sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
-                            else
-                                sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
-                            fi
-                            $logprefix echo | $logsuffix
+                            case $pkg in
+                                macdaily )
+                                    : ;;
+                                * )
+                                    $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
+                                    if ( $arg_q ) ; then
+                                        sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
+                                    else
+                                        sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
+                                    fi
+                                    $logprefix echo | $logsuffix ;;
+                            esac
                         done
                     else
                         $logprefix printf "update: ${green}pip${reset}: all ${bold}pip$pprint packages${reset} have been up-to-date\n\n" | $logsuffix

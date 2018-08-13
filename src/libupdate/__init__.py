@@ -265,7 +265,6 @@ def update_pip(args, *, file, temp, disk, cleanup=True, retset=False):
     )
     log = set(logging.stdout.decode().strip().split())
     if 'macdaily' in log:
-        log.remove('macdaily')
         os.kill(os.getpid(), signal.SIGUSR1)
 
     subprocess.run(
