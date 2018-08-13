@@ -535,6 +535,6 @@ def main(argv, config, *, logdate, logtime, today):
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if reload_flag:
         subprocess.run(
-            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cahe-dir', '--pre', 'macdaily']
+            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cahe-dir', '--pre', 'macdaily'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
