@@ -534,8 +534,11 @@ def main(argv, config, *, logdate, logtime, today):
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if reload_flag.value:
-        subprocess.run(
+        proc = subprocess.run(
             ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
-        print(f'update: {green}macdaily{reset}: package is now up-to-date')
+        if proc:
+            print(f'update: {red}macdaily{reset}: process failed, please try manually')
+        else:
+            print(f'update: {green}macdaily{reset}: package is now up-to-date')
