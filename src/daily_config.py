@@ -10,6 +10,7 @@ import os
 import pathlib
 import plistlib
 import re
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -24,10 +25,8 @@ bold   = '\033[1m'      # bold
 under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
-try:                    # terminal length
-    length = os.get_terminal_size().columns
-except OSError:
-    length = 80       
+length = shutil.get_terminal_size().columns
+                        # terminal length
 
 
 # user name
