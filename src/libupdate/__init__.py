@@ -120,6 +120,7 @@ def update_gem(args, *, file, temp, disk, cleanup=True, retset=False):
     tmpname = shlex.quote(temp)
     quiet = str(args.quiet).lower()
     verbose = str(args.verbose).lower()
+    yes = str(args.yes).lower()
     packages = _merge_packages(args)
 
     mode = '-*- Ruby -*-'.center(80, ' ')
@@ -140,7 +141,7 @@ def update_gem(args, *, file, temp, disk, cleanup=True, retset=False):
         outdated = 'true'
 
     subprocess.run(
-        ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'update_gem.sh'), logname, tmpname, quiet, verbose, outdated, USER] + list(log)
+        ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'update_gem.sh'), logname, tmpname, quiet, verbose, yes, outdated, USER] + list(log)
     )
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -355,7 +356,7 @@ def update_cask(args, *, file, temp, disk, cleanup=True, retset=False):
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
-            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy],
+            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy, force],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         log = set(logging.stdout.decode().strip().split())

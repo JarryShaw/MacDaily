@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.5.1'
+__version__ = '1.5.2'
 
 
 # display mode names
@@ -154,6 +154,10 @@ def get_parser():
     parser_gem.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
+                        ))
+    parser_gem.add_argument('-Y', '--yes', action='store_true', default=False,
+                        dest='yes', help=(
+                            'yes for all selections'
                         ))
     parser_gem.add_argument('--show-log', action='store_true', default=False,
                         help=(

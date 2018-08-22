@@ -169,9 +169,9 @@ if [ -e "$dskfile" ] ; then
     if ( $arg_brew ) ; then
         $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix rm -f -v $( brew --cache ) > /dev/null 2>&1
+            $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
         else
-            $logprefix rm -f -v $( brew --cache )
+            $logprefix rm -rf -v $( brew --cache )
         fi
         $logprefix echo | $logsuffix
     fi

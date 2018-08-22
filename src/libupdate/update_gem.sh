@@ -21,9 +21,10 @@ yellow="\033[93m"       # bright yellow foreground
 #   2. Temp File
 #   3. Quiet Flag
 #   4. Verbose Flag
-#   5. Outdated Flag
-#   6. Log User
-#   7. Package
+#   5. Yes Flag
+#   6. Outdated Flag
+#   7. Log User
+#   8. Package
 #       ............
 ################################################################################
 
@@ -34,9 +35,10 @@ logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\'')
 tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_q=$3
 arg_v=$4
-arg_o=$5
-arg_u=$6
-arg_pkg=${*:7}
+arg_y=$5
+arg_o=$6
+arg_u=$7
+arg_pkg=${*:8}
 
 
 # remove /tmp/log/update.log

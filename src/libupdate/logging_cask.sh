@@ -12,6 +12,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 #   1. Log File
 #   2. Temp File
 #   3. Greedy Flag
+#   4. Force Flag
 ################################################################################
 
 
@@ -20,6 +21,7 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
 tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 arg_g=$3
+arg_f=$4
 
 
 # remove /tmp/log/update.log
@@ -40,10 +42,14 @@ logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
-# if greedy flag set
+# if greedy/force flag set
 if ( $arg_g ) ; then
     echo -e "+ brew cask outdated --quiet --greedy" >> "$tmpfile"
     $logprefix brew cask outdated --quiet --greedy
+    echo >> "$tmpfile"
+elif ( $arg_f ) ; then
+    echo -e "+ brew cask outdated --quiet" >> "$tmpfile"
+    $logprefix brew cask outdated --quiet
     echo >> "$tmpfile"
 else
     # following algorithm of Caskroom upgrade cblushits to

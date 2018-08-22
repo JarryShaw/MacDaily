@@ -46,8 +46,8 @@ def main(argv, config, *, logdate, logtime, today):
         return
 
     if args.command in ('load'):
-        subprocess.run(['sudo', '--user', 'USER', '--set-home', 'bash', os.path.join(ROOT, 'libbundle/load.sh')])
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'libbundle/load.sh')])
     elif args.command in ('dump'):
-        subprocess.run(['sudo', '--user', 'USER', '--set-home', 'bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()])
+        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()])
     else:
         parser.print_help()
