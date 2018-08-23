@@ -42,16 +42,16 @@ logprefix="script -aq "$tmpfile""
 # logsuffix="grep ^.*$"
 
 
-# if greedy/force flag set
+# if greedy flag set
 if ( $arg_g ) ; then
-    echo -e "+ brew cask outdated --quiet --greedy" >> "$tmpfile"
-    $logprefix brew cask outdated --quiet --greedy
-    echo >> "$tmpfile"
-elif ( $arg_f ) ; then
-    echo -e "+ brew cask outdated --quiet" >> "$tmpfile"
-    $logprefix brew cask outdated --quiet
-    echo >> "$tmpfile"
+    greedy="--greedy"
 else
+    greedy=""
+fi
+
+
+# if force flag set
+if ( $arg_f ) ; then
     # following algorithm of Caskroom upgrade cblushits to
     #     @Atais from <apple.stackexchange.com>
     list=`brew cask list -1`
@@ -62,6 +62,10 @@ else
             $logprefix brew cask info $cask | grep "$cask: " | sed "s/\(.*\)*: .*/\1/"
         fi
     done
+else
+    echo -e "+ brew cask outdated --quiet $greedy" >> "$tmpfile"
+    $logprefix brew cask outdated --quiet $greedy
+    echo >> "$tmpfile"
 fi
 
 
