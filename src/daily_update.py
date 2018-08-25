@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.5.5'
+__version__ = '1.5.5.post1'
 
 
 # display mode names
