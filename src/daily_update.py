@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.5.4'
+__version__ = '1.5.5'
 
 
 # display mode names
@@ -542,7 +542,7 @@ def main(argv, config, *, logdate, logtime, today):
             ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
-        if proc:
-            print(f'update: {red}macdaily{reset}: process failed, please try manually')
-        else:
+        if proc.returncode == 0:
             print(f'update: {green}macdaily{reset}: package is now up-to-date')
+        else:
+            print(f'update: {red}macdaily{reset}: process failed, please try manually')

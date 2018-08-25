@@ -154,27 +154,38 @@ if [ -e "$dskfile" ] ; then
         $logprefix echo | $logsuffix
     fi
 
-    # if cask flag set
-    if ( $arg_cask ) ; then
-        $logprefix printf "+ ${bold}brew cask cleanup --verbose $quiet${reset}\n" | $logsuffix
+    # if brew or cask flag set
+    if $( $arg_brew || $arg_cask ) ; then
+        $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix brew cask cleanup --verbose > /dev/null 2>&1
+            $logprefix brew cleanup --verbose > /dev/null 2>&1
         else
-            $logprefix brew cask cleanup --verbose
+            $logprefix brew cleanup --verbose
         fi
         $logprefix echo | $logsuffix
     fi
 
-    # if brew flag set
-    if ( $arg_brew ) ; then
-        $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
-        if ( $arg_q ) ; then
-            $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
-        else
-            $logprefix rm -rf -v $( brew --cache )
-        fi
-        $logprefix echo | $logsuffix
-    fi
+    # # if cask flag set
+    # if ( $arg_cask ) ; then
+    #     $logprefix printf "+ ${bold}brew cask cleanup --verbose $quiet${reset}\n" | $logsuffix
+    #     if ( $arg_q ) ; then
+    #         $logprefix brew cask cleanup --verbose > /dev/null 2>&1
+    #     else
+    #         $logprefix brew cask cleanup --verbose
+    #     fi
+    #     $logprefix echo | $logsuffix
+    # fi
+
+    # # if brew flag set
+    # if ( $arg_brew ) ; then
+    #     $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
+    #     if ( $arg_q ) ; then
+    #         $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
+    #     else
+    #         $logprefix rm -rf -v $( brew --cache )
+    #     fi
+    #     $logprefix echo | $logsuffix
+    # fi
 fi
 
 
