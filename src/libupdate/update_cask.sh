@@ -104,11 +104,13 @@ else
             if [[ ! -z $flag ]] ; then
                 $logprefix printf "+ ${bold}brew cask upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
-                    $logprefix brew cask uninstall --force $name $verbose $quiet > /dev/null 2>&1
-                    $logprefix brew cask install --force $name $verbose $quiet > /dev/null 2>&1
+                    $logprefix brew cask upgrade --force $name $verbose $quiet > /dev/null 2>&1
+                    # $logprefix brew cask uninstall --force $name $verbose $quiet > /dev/null 2>&1
+                    # $logprefix brew cask install --force $name $verbose $quiet > /dev/null 2>&1
                 else
-                    $logprefix brew cask uninstall --force $name $verbose $quiet
-                    $logprefix brew cask install --force $name $verbose $quiet
+                    $logprefix brew cask upgrade --force $name $verbose $quiet
+                    # $logprefix brew cask uninstall --force $name $verbose $quiet
+                    # $logprefix brew cask install --force $name $verbose $quiet
                 fi
                 $logprefix echo | $logsuffix
             else

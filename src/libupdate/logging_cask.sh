@@ -64,7 +64,11 @@ if ( $arg_f ) ; then
     done
 else
     echo -e "+ brew cask outdated --quiet $greedy" >> "$tmpfile"
-    $logprefix brew cask outdated --quiet $greedy
+    if ( $arg_g ) ; then
+        $logprefix brew cask outdated --greedy --quiet
+    else
+        $logprefix brew cask outdated --greedy | awk '!/latest/' | sed "s/\(.*\)* (.*) .*/\1/"
+    fi
     echo >> "$tmpfile"
 fi
 

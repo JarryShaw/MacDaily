@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '1.5.3'
+__version__ = '1.5.4'
 
 
 # today
