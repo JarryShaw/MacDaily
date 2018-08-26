@@ -152,6 +152,17 @@ if [ -e "$dskfile" ] ; then
             $logprefix cp -rf -v $(brew --cache) "$dskfile"
         fi
         $logprefix echo | $logsuffix
+
+        # remove incomplete caches
+        $logprefix printf "+ ${bold}rm -rf -v incomplete $quiet${reset}\n" | $logsuffix
+        if ( $arg_q ) ; then
+            $logprefix rm -rf -v "${dskfile}/Homebrew/*.incomplete" > /dev/null 2>&1
+            $logprefix rm -rf -v "${dskfile}/Homebrew/Cask/*.incomplete" > /dev/null 2>&1
+        else
+            $logprefix rm -rf -v "${dskfile}/Homebrew/*.incomplete" 2> /dev/null
+            $logprefix rm -rf -v "${dskfile}/Homebrew/Cask/*.incomplete" 2> /dev/null
+        fi
+        $logprefix echo | $logsuffix
     fi
 
     # if brew or cask flag set

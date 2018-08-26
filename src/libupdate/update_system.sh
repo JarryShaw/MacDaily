@@ -63,7 +63,7 @@ fi
 
 # if no outdated packages found
 if ( ! $arg_o ) ; then
-    $logprefix printf "update: ${green}appstore${reset}: all ${bold}applications${reset} have been up-to-date\n\n" | $logsuffix
+    $logprefix printf "update: ${green}system${reset}: all ${bold}applications${reset} have been up-to-date\n\n" | $logsuffix
 else
     # if quiet flag set
     if ( $arg_q ) ; then
@@ -103,13 +103,13 @@ else
                     fi
                     $logprefix echo | $logsuffix
                 else
-                    $logprefix printf "update: ${yellow}appstore${reset}: no application names ${red}$name${reset} installed\n" | $logsuffix
+                    $logprefix printf "update: ${yellow}system${reset}: no application names ${red}$name${reset} installed\n" | $logsuffix
 
                     # did you mean
                     tmp=`$installed | sed "s/.app//" | grep $name | xargs`
                     if [[ ! -z $tmp ]] ; then
                         dym=`python -c "print('${red}' + '${reset}, ${red}'.join(__import__('sys').stdin.read().strip().split()) + '${reset}')" <<< $tmp`
-                        $logprefix printf "update: ${yellow}appstore${reset}: did you mean any of the following applications: $dym?\n" | $logsuffix
+                        $logprefix printf "update: ${yellow}system${reset}: did you mean any of the following applications: $dym?\n" | $logsuffix
                     fi
                     $logprefix echo | $logsuffix
                 fi ;;

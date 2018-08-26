@@ -14,7 +14,7 @@ from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '1.5.2'
+__version__ = '1.5.3'
 
 
 # terminal commands
