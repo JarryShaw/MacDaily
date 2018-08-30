@@ -2,6 +2,7 @@
 
 
 import collections
+import datetime
 import json
 import os
 import re
@@ -32,8 +33,8 @@ purple = '\033[104m'    # bright purple background
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-# brew renewed flag
-BREW_RENEWED = False
+# brew renewed time
+BREW_RENEW = None
 
 
 def _merge_packages(args):
@@ -304,12 +305,12 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
     if not args.quiet:
         print(f'-*- {blue}Homebrew{reset} -*-\n')
 
-    global BREW_RENEWED
-    if not BREW_RENEWED:
+    global BREW_RENEW
+    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds > 300:
         subprocess.run(
             ['bash', os.path.join(ROOT, 'renew_brew.sh'), logname, tmpname, quiet, verbose, force, merge]
         )
-        BREW_RENEWED = True
+        BREW_RENEW = datetime.datetime.now()
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
@@ -359,12 +360,12 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
     if not args.quiet:
         print(f'-*- {blue}Caskroom{reset} -*-\n')
 
-    global BREW_RENEWED
-    if not BREW_RENEWED:
+    global BREW_RENEW
+    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds > 300:
         subprocess.run(
             ['bash', os.path.join(ROOT, 'renew_brew.sh'), logname, tmpname, quiet, verbose, force, merge]
         )
-        BREW_RENEWED = True
+        BREW_RENEW = datetime.datetime.now()
 
     if 'all' in packages or args.all:
         logging = subprocess.run(
