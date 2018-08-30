@@ -25,3 +25,16 @@ def main(config, *, logdate, today):
         print(f'macdaily: {green}archive{reset}: archived following old logs: {under}{files}{reset}')
     else:
         print(f'macdaily: {red}archive{reset}: no ancient logs archived')
+
+
+if __name__ == '__main__':
+    import datetime
+    import sys
+
+    from macdaily.daily_config import parse
+
+    config = parse()
+    argv = sys.argv[1:]
+    today = datetime.datetime.today()
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    sys.exit(main(argv, config, logdate=logdate, today=today))
