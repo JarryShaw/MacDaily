@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '1.5.5.post2'
+__version__ = '2018.08.29'
 
 
 # display mode names
@@ -128,6 +128,10 @@ def get_parser():
     parser_apm.add_argument('-v', '--verbose', action='store_true', default=False,
                         help=(
                             'run in verbose mode, with detailed output information'
+                        ))
+    parser_apm.add_argument('-Y', '--yes', action='store_true', default=False,
+                        dest='yes', help=(
+                            'yes for all selections'
                         ))
     parser_apm.add_argument('--show-log', action='store_true', default=False,
                         help=(
@@ -326,6 +330,10 @@ def get_parser():
                         dest='package', help=(
                             'name of packages to be updated, default is all'
                         ))
+    parser_cask.add_argument('-m', '--merge', action='store_true', default=False,
+                        help=(
+                            'use "--merge" when running `brew update`'
+                        ))
     parser_cask.add_argument('-f', '--force', action='store_true', default=False,
                         help=(
                             'use "--force" when running `brew cask upgrade`'
@@ -439,7 +447,7 @@ def get_parser():
                         ))
     parser.add_argument('-Y', '--yes', action='store_true', default=False,
                         dest='yes', help=(
-                            'yes for all selections, only for pip'
+                            'yes for all selections, only for pip and apm'
                         ))
     parser.add_argument('-q', '--quiet', action='store_true', default=False,
                         help=(
@@ -468,6 +476,7 @@ def main(argv, config, *, logdate, logtime, today):
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='update', logdate=logdate)
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = f'{tmppath}/update.log'
+    PIPE = make_pipe(config)
 
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
@@ -479,8 +488,8 @@ def main(argv, config, *, logdate, logtime, today):
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(
-            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
 
     reload_flag = multiprocessing.Value('B', False)
@@ -504,7 +513,7 @@ def main(argv, config, *, logdate, logtime, today):
     for mode in set(args.mode):
         update = MODE.get(mode)
         log = aftermath(logfile=logname, tmpfile=tmpname, command='update'
-                )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'])
+                )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], pipe=PIPE)
 
     if log == set():    return
     mode = '-*- Update Logs -*-'.center(80, ' ')
@@ -531,16 +540,20 @@ def main(argv, config, *, logdate, logtime, today):
         filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
         if filelist:
             files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following old logs: {files}\n')
+            logfile.write(f'LOG: archived following ancient logs: {files}\n')
             if not args.quiet:
                 print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+        else:
+            logfile.write(f'LOG: no ancient logs archived\n')
+            if not args.quiet:
+                print(f'update: {green}cleanup{reset}: no ancient logs archived')
 
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if reload_flag.value:
         proc = subprocess.run(
-            ['sudo', '--user', 'root', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ['sudo', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
+            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         if proc.returncode == 0:
             print(f'update: {green}macdaily{reset}: package is now up-to-date')

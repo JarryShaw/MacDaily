@@ -90,6 +90,10 @@ else
 
     # if greedy flag set
     if ( $arg_g ) ; then
+        # ask for password up-front
+        sudo --reset-timestamp
+        sudo --stdin --validate
+
         $logprefix printf "+ ${bold}brew cask upgrade --greedy $force $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix brew cask upgrade --greedy $verbose $forc $quiet > /dev/null 2>&1
@@ -102,6 +106,10 @@ else
         for name in $arg_pkg ; do
             flag=`brew cask list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate
+
                 $logprefix printf "+ ${bold}brew cask upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask upgrade --force $name $verbose $quiet > /dev/null 2>&1

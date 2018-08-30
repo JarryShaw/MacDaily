@@ -87,9 +87,9 @@ else
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                sudo --user root --set-home $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
+                sudo --stdin $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
             else
-                sudo --user root --set-home $logprefix gem update $name $verbose $quiet
+                sudo --stdin $logprefix gem update $name $verbose $quiet
             fi
             $logprefix echo | $logsuffix
         else

@@ -61,8 +61,8 @@ for name in $arg_pkg; do
 
                 # if ignore-dependencies flag not set
                 if ( ! $arg_i ) ; then
-                    echo -e "+ brew deps $name" >> "$tmpfile"
-                    $logprefix brew deps $name
+                    echo -e "+ brew deps $name --installed" >> "$tmpfile"
+                    $logprefix brew deps $name --installed
                     echo >> "$tmpfile"
                 fi
             else

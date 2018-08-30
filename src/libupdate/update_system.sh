@@ -86,9 +86,9 @@ else
             all)
                 $logprefix printf "+ ${bold}softwareupdate --install --no-scan --all $restart $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
-                    sudo --user root --set-home $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet > /dev/null 2>&1
+                    sudo --stdin $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet > /dev/null 2>&1
                 else
-                    sudo --user root --set-home $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet
+                    sudo --stdin $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet
                 fi
                 $logprefix echo | $logsuffix ;;
             *)
@@ -97,9 +97,9 @@ else
                 if [[ ! -z $flag ]] ; then
                     $logprefix printf "+ ${bold}softwareupdate --install --no-scan $name $restart $verbose $quiet${reset}\n" | $logsuffix
                     if ( $arg_q ) ; then
-                        sudo --user root --set-home $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet > /dev/null 2>&1
+                        sudo --stdin $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet > /dev/null 2>&1
                     else
-                        sudo --user root --set-home $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet
+                        sudo --stdin $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet
                     fi
                     $logprefix echo | $logsuffix
                 else

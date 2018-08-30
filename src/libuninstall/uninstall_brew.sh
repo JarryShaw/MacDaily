@@ -138,7 +138,7 @@ for name in $arg_pkg ; do
 
                 # if ignore-dependencies flag not set
                 if ( ! $arg_i ) ; then
-                    list=`brew deps $name`
+                    list=`brew deps $name --installed`
                     for pkg in $list; do
                         # check if package installed
                         if brew list --versions $pkg > /dev/null ; then

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import base64
 import calendar
 import datetime
 import functools
@@ -15,7 +16,7 @@ import tarfile
 import zipfile
 
 
-__all__ = ['aftermath', 'make_path', 'archive', 'storage']
+__all__ = ['aftermath', 'make_pipe', 'make_path', 'archive', 'storage']
 
 
 # terminal display
@@ -61,6 +62,12 @@ def aftermath(*, logfile, tmpfile, command):
     return decorator
 
 
+def make_pipe(config):
+    username = config['Account']['username']
+    password = base64.b85decode(config['Account']['password']).decode()
+    return subprocess.Popen(['yes', password], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+
+
 def make_path(config, *, mode, logdate):
     tmppath = os.path.expanduser(config['Path']['tmpdir'])
     logpath = os.path.expanduser(config['Path']['logdir']) + f'/{mode}'
@@ -76,8 +83,8 @@ def make_path(config, *, mode, logdate):
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, tmppath, os.path.expanduser(config['Path']['logdir'])],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        ['sudo', '--stdin', 'chown', '-R', USER, tmppath, os.path.expanduser(config['Path']['logdir'])],
+        stdin=make_pipe(config).stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     return tmppath, logpath, arcpath, tarpath
 

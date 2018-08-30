@@ -86,9 +86,9 @@ fi
 if ( $arg_gem ) ; then
     $logprefix printf "+ ${bold}gem cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo --user root --set-home $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
+        sudo --stdin $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
     else
-        sudo --user root --set-home $logprefix gem cleanup --verbose $quiet
+        sudo --stdin $logprefix gem cleanup --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 fi
@@ -98,17 +98,17 @@ fi
 if ( $arg_npm ) ; then
     $logprefix printf "+ ${bold}npm dedupe --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo --user root --set-home $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
+        sudo --stdin $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
     else
-        sudo --user root --set-home $logprefix npm dedupe --global --verbose $quiet
+        sudo --stdin $logprefix npm dedupe --global --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 
     $logprefix printf "+ ${bold}npm cache clean --force --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo --user root --set-home $logprefix npm cache clean --force --global --verbose $quiet > /dev/null 2>&1
+        sudo --stdin $logprefix npm cache clean --force --global --verbose $quiet > /dev/null 2>&1
     else
-        sudo --user root --set-home $logprefix npm cache clean --force --global --verbose $quiet
+        sudo --stdin $logprefix npm cache clean --force --global --verbose $quiet
     fi
     $logprefix echo | $logsuffix
 fi
@@ -118,11 +118,11 @@ fi
 if ( $arg_pip ) ; then
     $logprefix printf "+ ${bold}pip cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo --user root --set-home $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/ > /dev/null 2>&1
-        sudo --user root --set-home $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/ > /dev/null 2>&1
+        sudo --stdin $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/ > /dev/null 2>&1
+        sudo --stdin $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/ > /dev/null 2>&1
     else
-        sudo --user root --set-home $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/
-        sudo --user root --set-home $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/
+        sudo --stdin $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/
+        sudo --stdin $logprefix rm -rf -v $cmd_q /var/root/Library/Caches/pip/*/
     fi
     $logprefix echo | $logsuffix
 fi

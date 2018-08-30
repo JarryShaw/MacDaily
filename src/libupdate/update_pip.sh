@@ -107,11 +107,11 @@ function pip_fixbroken {
     for pkg in $arg_pkg ; do
         $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet > /dev/null 2>&1
+            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
+            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet > /dev/null 2>&1
         else
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet
+            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
+            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -234,9 +234,9 @@ function pipupdate {
                                 * )
                                     $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
                                     if ( $arg_q ) ; then
-                                        sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
+                                        sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
                                     else
-                                        sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
+                                        sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
                                     fi
                                     $logprefix echo | $logsuffix ;;
                             esac
@@ -249,9 +249,9 @@ function pipupdate {
                     if [[ ! -z $flag ]]; then
                         $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $pre $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
+                            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet
+                            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet
                         fi
                         $logprefix echo | $logsuffix
                     else

@@ -81,6 +81,10 @@ else
     for name in $arg_pkg ; do
         flag=`brew list -1 | awk "/^$name$/"`
         if [[ ! -z $flag ]] ; then
+            # ask for password up-front
+            sudo --reset-timestamp
+            sudo --stdin --validate
+
             $logprefix printf "+ ${bold}brew upgrade $name --cleanup $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
                 $logprefix brew upgrade $name --cleanup $verbose $quiet > /dev/null 2>&1

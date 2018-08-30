@@ -84,9 +84,9 @@ else
             all)
                 $logprefix printf "+ ${bold}mas upgrade $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
-                    sudo --user root --set-home $logprefix mas upgrade $verbose $quiet > /dev/null 2>&1
+                    sudo --stdin $logprefix mas upgrade $verbose $quiet > /dev/null 2>&1
                 else
-                    sudo --user root --set-home $logprefix mas upgrade $verbose $quiet
+                    sudo --stdin $logprefix mas upgrade $verbose $quiet
                 fi
                 $logprefix echo | $logsuffix ;;
             *)
@@ -95,9 +95,9 @@ else
                     $logprefix printf "+ ${bold}mas upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                     number=`mas list | grep "$name" | sed "s/\([0-9]*\)* .*/\1/"`
                     if ( $arg_q ) ; then
-                        sudo --user root --set-home $logprefix mas upgrade $number $verbose $quiet > /dev/null 2>&1
+                        sudo --stdin $logprefix mas upgrade $number $verbose $quiet > /dev/null 2>&1
                     else
-                        sudo --user root --set-home $logprefix mas upgrade $number $verbose $quiet
+                        sudo --stdin $logprefix mas upgrade $number $verbose $quiet
                     fi
                     $logprefix echo | $logsuffix
                 else

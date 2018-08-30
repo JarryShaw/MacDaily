@@ -15,7 +15,7 @@ from macdaily.liblogging import *
 
 
 # version string
-__version__ = '1.5.0'
+__version__ = '2018.08.29'
 
 
 # mode actions

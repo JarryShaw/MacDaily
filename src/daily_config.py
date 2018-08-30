@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import base64
 import collections
 import configparser
 import datetime
@@ -14,6 +15,8 @@ import shutil
 import subprocess
 import sys
 import textwrap
+
+from macdaily.daily_utility import make_pipe
 
 
 __all__ = ['parse', 'config', 'launch']
@@ -46,7 +49,7 @@ scpt = lambda mode, argv: f"""\
 #!/usr/bin/osascript
 
 -- show notification
-display notification "Daily scheduled script `logging` running..." with title "macdaily"
+display notification "Daily scheduled script `{mode}` running..." with title "macdaily"
 
 -- run script
 do shell script "{sys.executable} -m macdaily {mode} {argv}"
@@ -56,7 +59,7 @@ do shell script "{sys.executable} -m macdaily {mode} {argv}"
 # Property List
 plist = collections.OrderedDict(
     Label = '',
-    UserName='root',
+    UserName = USER,
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
     RunAtLoad = True,
@@ -113,6 +116,10 @@ schedule    =           ; scheduled timing (in 24 hours)
 # Do make sure these options are available for commands.
 update  = --all --yes --pre --quiet --restart --show-log
 logging = --all --quiet --show-log
+
+[Account]
+# In this section, account information are stored.
+# You must not modify this part under any circumstances.
 """
 
 
@@ -147,7 +154,10 @@ def loads(rcpath):
 
 
 def dumps(rcpath):
+    global CONFIG
     try:
+        PASS = base64.b85encode(getpass.getpass().encode()).decode()
+        CONFIG += f'username = {USER}\npassword = {PASS}\n'
         with open(rcpath, 'w') as config_file:
             config_file.write(CONFIG)
     except BaseException as error:
@@ -164,13 +174,14 @@ def parse():
 
 
 def launch(config):
+    PIPE = make_pipe(config)
     cfgmode = dict()
     try:
         for mode in MODES:
             ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
             if ldpath.exists() and ldpath.is_file():
-                subprocess.run(['sudo', '-H', 'launchctl', 'unload', '-w', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                subprocess.run(['sudo', '-H', 'rm', '-f', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
@@ -209,9 +220,9 @@ def launch(config):
         plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
         with open(tmpath, 'wb') as plist_file:
             plistlib.dump(plist, plist_file, sort_keys=False)
-        subprocess.run(['sudo', '-H', 'mv', tmpath, ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '-H', 'chown', 'root', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '-H', 'launchctl', 'load', '-w', ldpath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'mv', tmpath, ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'chown', 'root', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'launchctl', 'load', '-w', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
         print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
@@ -236,10 +247,16 @@ def config():
             config_file.writelines(config.readlines(28));   print()
             printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            printw(f'Please enter schedule as HH:MM-CMD format, and each separates with comma.')
+            printw(f'Please enter schedule as {bold}{under}HH:MM-CMD{reset} format, and each separates with {under}comma{reset}.')
             timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ') or '8:00,22:30-update,23:00-logging').split(',')
             config_file.write('\t' + '\n\t'.join(map(lambda s: s.strip(), timing)) + '\n')
-            config.readlines(3);    config_file.writelines(config.readlines())
+
+            config.readlines(3);    config_file.writelines(config.readlines()); print()
+            printw(f'To make sure the daemons will launch as expected, we will record your account information.')
+            printw(f'You {bold}must not{reset} modify the information generated by {under}MacDaily{reset}.')
+            printw(f'Please enter your login password, and we will keep it in a safe place.')
+            passwd = base64.b85encode(getpass.getpass().encode()).decode()
+            config_file.write(f'username = {USER}\npassword = {passwd}\n')
     except BaseException as error:
         sys.tracebacklimit = 0
         raise error from None

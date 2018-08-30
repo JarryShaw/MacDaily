@@ -14,7 +14,7 @@ from macdaily.libdependency import *
 
 
 # version string
-__version__ = '1.4.1'
+__version__ = '2018.08.29'
 
 
 # display mode names
