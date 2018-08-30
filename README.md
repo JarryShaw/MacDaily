@@ -1,5 +1,5 @@
 ---
-Platform: macOS High Sierra | Mojave
+Platform: OS X Yosemite ~ macOS Mojave
 
 Language: Python | Bourne-Again Shell
 
@@ -40,7 +40,7 @@ Environment: Console | Terminal
 
 ## About
 
- > Just some useful daily utility scripts.
+ > Package day-care manager on macOS.
 
 &emsp; `macdaily` is a mediate collection of console scripts written in __Python__ and __Bourne-Again Shell__. Originally works as an automatic housekeeper for Mac to update all packages outdated, `macdaily` is now fully functioned and end-user oriented. Without being aware of everything about your Mac, one can easily work around and manage packages out of no pain using `macdaily`.
 
@@ -132,8 +132,14 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --restart --show-log
+update  = --all --yes --pre --quiet --restart --show-log --no-cask
 logging = --all --quiet --show-log
+
+[Account]
+# In this section, account information are stored.
+# You must not modify this part under any circumstances.
+username = ...
+password = ********
 ```
 
 &emsp; Above is the default content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.
@@ -147,6 +153,8 @@ logging = --all --quiet --show-log
 &emsp; Besides, in section `[Daemon]`, you can decide which command is scheduled and when to run such command, with the format of `HH:MM[-CMD]`. The `CMD` is optional, which will be `any` if omits. And you may setup which command(s) will be registered as daemons and run with schedule through six booleans above. These boolean values help `macdaily` indicate which is to be launched when commands in `schedule` omit. That is to say, when `command` omits in `schedule`, `macdaily` will register all commands that set `true` in the above boolean values.
 
 &emsp; Also, in section `[Option]`, you may set up optional arguments for the daemons above. Do please make sure these commands are **valid**. And if omit, an empty arguments will be given.
+
+&emsp; Last but no least, in section `[Account]`, you should **NEVER** modify any contents under this section in order to keep `macdaily` working. However, you may setup this part with [`config`](https://github.com/JarryShaw/MacDaily/tree/master/src#config) command.
 
 &nbsp;
 

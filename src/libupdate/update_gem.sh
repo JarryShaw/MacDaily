@@ -37,7 +37,7 @@ logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\'')
 tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
 arg_q=$4
 arg_v=$5
-arg_y=$6
+arg_Y=$6
 arg_o=$7
 arg_u=$8
 arg_pkg=${*:9}
@@ -83,6 +83,13 @@ else
         verbose=""
     fi
 
+    # if yes flag set
+    if ( $arg_Y ) ; then
+        yes="yes"
+    else
+        yes=":"
+    fi
+
     # update procedure
     for name in $arg_pkg ; do
         flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
@@ -93,9 +100,9 @@ else
 
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
+                sudo $logprefix $yes | gem update $name $verbose $quiet > /dev/null 2>&1
             else
-                sudo $logprefix gem update $name $verbose $quiet
+                sudo $logprefix $yes | gem update $name $verbose $quiet
             fi
             $logprefix echo | $logsuffix
         else

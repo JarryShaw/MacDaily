@@ -31,6 +31,7 @@ optional arguments:
                         name of packages to be updated, default is all
   -q, --quiet           run in quiet mode, with no output information
   -v, --verbose         run in verbose mode, with detailed output information
+  -Y, --yes             yes for all selections
   --show-log            open log in Console upon completion of command
 ```
 
@@ -60,6 +61,7 @@ optional arguments:
                         name of packages to be updated, default is all
   -q, --quiet           run in quiet mode, with no output information
   -v, --verbose         run in verbose mode, with detailed output information
+  -Y, --yes             yes for all selections
   --show-log            open log in Console upon completion of command
 ```
 
@@ -136,14 +138,16 @@ optional arguments:
   -a, --all             update all packages installed through pip
   -V VER, --python_version VER
                         indicate which version of pip will be updated
-  -s, --system          update pip packages on system level, i.e. python
+  -s, --system          update pip packages on system level, i.e. Python
                         installed through official installer
-  -b, --brew            update pip packages on Cellar level, i.e. python
+  -b, --brew            update pip packages on Cellar level, i.e. Python
                         installed through Homebrew
   -c, --cpython         update pip packages on CPython environment
   -y, --pypy            update pip packages on PyPy environment
   -p PKG, --package PKG
                         name of packages to be updated, default is all
+  -P, --pre             include pre-release and development versions
+  -Y, --yes             yes for all selections
   -q, --quiet           run in quiet mode, with no output information
   -v, --verbose         run in verbose mode, with detailed output information
   --show-log            open log in Console upon completion of command
