@@ -22,7 +22,8 @@ yellow="\033[93m"       # bright yellow foreground
 #   3. Quiet Flag
 #   4. Verbose Flag
 #   5. Outdated Flag
-#   6. Package
+#   6. Yes Flag
+#   7. Package
 #       ............
 ################################################################################
 
@@ -34,7 +35,8 @@ tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\'')
 arg_q=$3
 arg_v=$4
 arg_o=$5
-arg_pkg=${*:6}
+arg_Y=$6
+arg_pkg=${*:7}
 
 
 # remove /tmp/log/update.log
@@ -77,15 +79,22 @@ else
         verbose=""
     fi
 
+    # if yes flag set
+    if ( $arg_Y ) ; then
+        yes="yes yes"
+    else
+        yes=":"
+    fi
+
     # update procedure
     for name in $arg_pkg ; do
         flag=`apm list --bare --no-color | sed "s/@.*//" | awk "/^$name$/"`
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}apm upgrade $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                $logprefix apm upgrade $name $verbose $quiet > /dev/null 2>&1
+                $logprefix $yes | apm upgrade $name $verbose $quiet > /dev/null 2>&1
             else
-                $logprefix apm upgrade $name $verbose $quiet
+                $logprefix $yes | apm upgrade $name $verbose $quiet
             fi
             $logprefix echo | $logsuffix
         else

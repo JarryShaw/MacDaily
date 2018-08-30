@@ -2,8 +2,8 @@
 
 
 import argparse
+import base64
 import datetime
-import getpass
 import multiprocessing
 import os
 import pwd
@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.08.29'
+__version__ = '2018.08.30'
 
 
 # display mode names
@@ -59,10 +59,6 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
-
-
-# user name
-USER = getpass.getuser()
 
 
 def get_parser():
@@ -476,7 +472,10 @@ def main(argv, config, *, logdate, logtime, today):
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='update', logdate=logdate)
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = f'{tmppath}/update.log'
+
     PIPE = make_pipe(config)
+    USER = config['Account']['username']
+    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
 
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
@@ -513,7 +512,7 @@ def main(argv, config, *, logdate, logtime, today):
     for mode in set(args.mode):
         update = MODE.get(mode)
         log = aftermath(logfile=logname, tmpfile=tmpname, command='update'
-                )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], pipe=PIPE)
+                )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS)
 
     if log == set():    return
     mode = '-*- Update Logs -*-'.center(80, ' ')

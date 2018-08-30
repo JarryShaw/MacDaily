@@ -18,13 +18,14 @@ yellow="\033[93m"       # bright yellow foreground
 # Check Python site packages updates.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. System Flag
-#   4. Cellar Flag
-#   5. CPython Flag
-#   6. PyPy Flag
-#   7. Version
+#   1. Encrypted Password
+#   2. Log File
+#   3. Temp File
+#   4. System Flag
+#   5. Cellar Flag
+#   6. CPython Flag
+#   7. PyPy Flag
+#   8. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -44,29 +45,30 @@ yellow="\033[93m"       # bright yellow foreground
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   8. Yes Flag
-#   9. Quiet Flag
-#  10. Verbose Flag
-#  11. Pre-release Flag
-#  12. Package
+#   9. Yes Flag
+#  10. Quiet Flag
+#  11. Verbose Flag
+#  12. Pre-release Flag
+#  13. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_s=$3
-arg_b=$4
-arg_c=$5
-arg_y=$6
-arg_V=$7
-arg_Y=$8
-arg_q=$9
-arg_v=${10}
-arg_P=${11}
-arg_pkg=${*:12}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+arg_s=$4
+arg_b=$5
+arg_c=$6
+arg_y=$7
+arg_V=$8
+arg_Y=$9
+arg_q=${10}
+arg_v=${11}
+arg_P=${12}
+arg_pkg=${*:13}
 
 
 # remove /tmp/log/update.log
@@ -105,13 +107,17 @@ function pip_fixbroken {
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
+        # ask for password up-front
+        sudo --reset-timestamp
+        sudo --stdin --validate <<< $password ; echo
+
         $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
-            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet > /dev/null 2>&1
+            sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
+            sudo --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet > /dev/null 2>&1
         else
-            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
-            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet
+            sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet
+            sudo --set-home $logprefix $prefix/$suffix -m pip install --ignore-installed --no-cache-dir $pre $pkg $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -232,11 +238,15 @@ function pipupdate {
                                 macdaily )
                                     $logprefix printf "update: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to update after\n\n" | $logsuffix ;;
                                 * )
+                                    # ask for password up-front
+                                    sudo --reset-timestamp
+                                    sudo --stdin --validate <<< $password ; echo
+
                                     $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
                                     if ( $arg_q ) ; then
-                                        sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
+                                        sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
                                     else
-                                        sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
+                                        sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet
                                     fi
                                     $logprefix echo | $logsuffix ;;
                             esac
@@ -247,11 +257,15 @@ function pipupdate {
                 *)
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ ! -z $flag ]]; then
+                        # ask for password up-front
+                        sudo --reset-timestamp
+                        sudo --stdin --validate <<< $password ; echo
+
                         $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $pre $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
+                            sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo --stdin --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet
+                            sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet
                         fi
                         $logprefix echo | $logsuffix
                     else

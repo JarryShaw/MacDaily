@@ -17,24 +17,26 @@ yellow="\033[93m"       # bright yellow foreground
 # Check Mac App Store updates.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. Quiet Flag
-#   4. Verbose Flag
-#   5. Outdated Flag
-#   6. Package
+#   1. Encrypted Password
+#   2. Log File
+#   3. Temp File
+#   4. Quiet Flag
+#   5. Verbose Flag
+#   6. Outdated Flag
+#   7. Package
 #       ............
 ################################################################################
 
 
 # Parameter Assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_q=$3
-arg_v=$4
-arg_o=$5
-arg_pkg=${*:6}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+arg_q=$4
+arg_v=$5
+arg_o=$6
+arg_pkg=${*:7}
 
 
 # remove /tmp/log/update.log
@@ -82,22 +84,31 @@ else
         # All or Specified Packages
         case $name in
             all)
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate <<< $password ; echo
+
                 $logprefix printf "+ ${bold}mas upgrade $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
-                    sudo --stdin $logprefix mas upgrade $verbose $quiet > /dev/null 2>&1
+                    sudo $logprefix mas upgrade $verbose $quiet > /dev/null 2>&1
                 else
-                    sudo --stdin $logprefix mas upgrade $verbose $quiet
+                    sudo $logprefix mas upgrade $verbose $quiet
                 fi
                 $logprefix echo | $logsuffix ;;
             *)
                 flag=`mas list | sed "s/[0-9]* \(.*\)* ([0-9.]*)/\1/" | awk "/^$name$/"`
                 if [[ ! -z $flag ]] ; then
-                    $logprefix printf "+ ${bold}mas upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                     number=`mas list | grep "$name" | sed "s/\([0-9]*\)* .*/\1/"`
+
+                    # ask for password up-front
+                    sudo --reset-timestamp
+                    sudo --stdin --validate <<< $password ; echo
+
+                    $logprefix printf "+ ${bold}mas upgrade $name [$number] $verbose $quiet${reset}\n" | $logsuffix
                     if ( $arg_q ) ; then
-                        sudo --stdin $logprefix mas upgrade $number $verbose $quiet > /dev/null 2>&1
+                        sudo $logprefix mas upgrade $number $verbose $quiet > /dev/null 2>&1
                     else
-                        sudo --stdin $logprefix mas upgrade $number $verbose $quiet
+                        sudo $logprefix mas upgrade $number $verbose $quiet
                     fi
                     $logprefix echo | $logsuffix
                 else

@@ -5,7 +5,6 @@ import base64
 import calendar
 import datetime
 import functools
-import getpass
 import os
 import pathlib
 import shlex
@@ -26,10 +25,6 @@ red    = '\033[91m'     # bright red foreground
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
-
-
-# user name
-USER = getpass.getuser()
 
 
 def beholder(func):
@@ -83,7 +78,7 @@ def make_path(config, *, mode, logdate):
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        ['sudo', '--stdin', 'chown', '-R', USER, tmppath, os.path.expanduser(config['Path']['logdir'])],
+        ['sudo', '--stdin', 'chown', '-R', config['Account']['username'], tmppath, os.path.expanduser(config['Path']['logdir'])],
         stdin=make_pipe(config).stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     return tmppath, logpath, arcpath, tarpath
