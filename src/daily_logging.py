@@ -2,8 +2,8 @@
 
 
 import argparse
+import base64
 import datetime
-import getpass
 import os
 import pwd
 import shlex
@@ -15,7 +15,7 @@ from macdaily.liblogging import *
 
 
 # version string
-__version__ = '2018.08.29'
+__version__ = '2018.08.30'
 
 
 # mode actions
@@ -44,10 +44,6 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
-
-
-# user name
-USER = getpass.getuser()
 
 
 def get_parser():
@@ -146,13 +142,17 @@ def main(argv, config, *, logdate, logtime, today):
             except ValueError as error:
                 sys.tracebacklimit = 0
                 raise error from None
-            if flag and (not args.__getattribute__(f'no_{mode}')):
+            if flag and (not getattr(args, f'no_{mode}', False)):
                 modes.append(mode)
     args.mode = set(modes) or None
 
     if args.mode is None:
         parser.print_help()
         return
+
+    PIPE = make_pipe(config)
+    USER = config['Account']['username']
+    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
 
     arcflag = False
     for logmode in args.mode:
@@ -168,13 +168,13 @@ def main(argv, config, *, logdate, logtime, today):
 
         if pwd.getpwuid(os.stat(logname).st_uid) != USER:
             subprocess.run(
-                ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )
 
         try:
             logging = MODE.get(logmode)
-            log = logging(args, file=shlex.quote(logname))
+            log = logging(args, file=shlex.quote(logname), password=PASS)
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
                 logfile.write('\nERR: operation timeout\n')
@@ -202,3 +202,14 @@ def main(argv, config, *, logdate, logtime, today):
     if arcflag and not args.quiet:
         arcdir = config['Path']['logdir'] + '/archive/logging'
         print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+
+
+if __name__ == '__main__':
+    from macdaily.daily_config import parse
+
+    config = parse()
+    today = datetime.datetime.today()
+    argv = parser.parse_args(sys.argv[1:])
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    logtime = datetime.date.strftime(today, '%H%M%S')
+    sys.exit(main(argv, config, *, logdate=logdate, logtime=logtime, today=today))

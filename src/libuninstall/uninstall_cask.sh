@@ -17,24 +17,26 @@ yellow="\033[93m"       # bright yellow foreground
 # Uninstall Caskroom packages.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. Quiet Flag
-#   4. Verbose Flag
-#   5. Force Flag
-#   6. Package
+#   1. Encrypted Password
+#   2. Log File
+#   3. Temp File
+#   4. Quiet Flag
+#   5. Verbose Flag
+#   6. Force Flag
+#   7. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_q=$3
-arg_v=$4
-arg_f=$5
-arg_pkg=${*:6}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+arg_q=$4
+arg_v=$5
+arg_f=$6
+arg_pkg=${*:7}
 
 
 # remove /tmp/log/uninstall.log
@@ -89,6 +91,10 @@ for name in $arg_pkg ; do
         all)
             list=`brew cask list -1`
             for pkg in $list ; do
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate <<< $password ; echo
+
                 $logprefix printf "+ ${bold}brew cask uninstall $pkg $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $pkg $force $verbose $quiet > /dev/null 2>&1
@@ -101,6 +107,10 @@ for name in $arg_pkg ; do
             # check if package installed
             flag=`brew cask list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate <<< $password ; echo
+
                 $logprefix printf "+ ${bold}brew cask uninstall $name $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $name $force $verbose $quiet > /dev/null 2>&1

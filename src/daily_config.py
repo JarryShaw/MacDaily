@@ -16,7 +16,7 @@ import subprocess
 import sys
 import textwrap
 
-from macdaily.daily_utility import make_pipe
+from macdaily.daily_utility import check, make_pipe
 
 
 __all__ = ['parse', 'config', 'launch']
@@ -49,7 +49,7 @@ scpt = lambda mode, argv: f"""\
 #!/usr/bin/osascript
 
 -- show notification
-display notification "Daily scheduled script `{mode}` running..." with title "macdaily"
+display notification "Daily scheduled script `{mode}` running..." with title "MacDaily"
 
 -- run script
 do shell script "{sys.executable} -m macdaily {mode} {argv}"
@@ -114,7 +114,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --restart --show-log
+update  = --all --yes --pre --quiet --restart --show-log --no-cask
 logging = --all --quiet --show-log
 
 [Account]
@@ -166,6 +166,7 @@ def dumps(rcpath):
     return get_config()
 
 
+@check
 def parse():
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     if rcpath.exists() and rcpath.is_file():

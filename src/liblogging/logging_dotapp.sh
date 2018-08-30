@@ -9,13 +9,15 @@ sript -q /dev/null tput clear > /dev/null 2>&1
 # Log all applications (*.app) installed on this Mac.
 
 # Parameter list:
-#   1. Log Name
+#   1. Encrypted Password
+#   2. Log Name
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
 
 
 # log current status
@@ -51,8 +53,12 @@ function find_ng {
     #     done
     # )
 
+    # ask for password up-front
+    sudo --reset-timestamp
+    sudo --stdin --validate <<< $password ; echo
+
     # run python script
-    sudo --user root --set-home python << EOF
+    sudo python << EOF
 from __future__ import print_function
 import os, re
 

@@ -2,21 +2,16 @@
 
 
 import argparse
-import getpass
 import os
 import subprocess
 
 
 # version string
-__version__ = '2018.08.29'
+__version__ = '2018.08.30'
 
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
-
-
-# user name
-USER = getpass.getuser()
 
 
 def get_parser():
@@ -46,8 +41,25 @@ def main(argv, config, *, logdate, logtime, today):
         return
 
     if args.command in ('load'):
-        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'libbundle/load.sh')])
+        subprocess.run(
+            ['bash', os.path.join(ROOT, 'libbundle/load.sh')],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
     elif args.command in ('dump'):
-        subprocess.run(['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()])
+        subprocess.run(
+            ['bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
     else:
         parser.print_help()
+
+
+if __name__ == '__main__':
+    from macdaily.daily_config import parse
+
+    config = parse()
+    today = datetime.datetime.today()
+    argv = parser.parse_args(sys.argv[1:])
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    logtime = datetime.date.strftime(today, '%H%M%S')
+    sys.exit(main(argv, config, *, logdate=logdate, logtime=logtime, today=today))

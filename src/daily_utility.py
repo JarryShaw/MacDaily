@@ -27,6 +27,30 @@ red    = '\033[91m'     # bright red foreground
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
+class PasswordError(RuntimeError):
+    def __init__(self, message, *args, **kwargs):
+        sys.tracebacklimit = 0
+        super().__init__(message, *args, **kwargs)
+
+
+def check(parse):
+    @functools.wraps(parse)
+    def wrapper():
+        config = parse()
+        subprocess.run(
+            ['sudo', '--reset-timestamp'],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        PIPE = make_pipe(config)
+        SUDO = subprocess.run(
+            ['sudo', '--stdin', '--validate'],
+            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        if SUDO.returncode == 0:    return config
+        raise PasswordError(f"invalid sudo password for {config['Account']['username']!r}")
+    return wrapper
+
+
 def beholder(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):

@@ -2,7 +2,6 @@
 
 
 import collections
-import getpass
 import os
 import shlex
 import shutil
@@ -26,10 +25,6 @@ purple = '\033[104m'    # bright purple background
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
-
-
-# user name
-USER = getpass.getuser()
 
 
 def _merge_packages(args, *, mode):
@@ -61,21 +56,21 @@ def _merge_packages(args, *, mode):
     return packages
 
 
-def reinstall_all(args, *, file, temp, disk):
+def reinstall_all(args, *, file, temp, disk, password):
     glb = globals()
     log = collections.defaultdict(set)
     for mode in {'brew', 'cask'}:
         glb[mode] = False
         if not getattr(args, f'no_{mode}'):
             glb[mode] = True
-            log[mode] = eval(f'reinstall_{mode}')(args, file=file, temp=temp, disk=disk, retset=True)
+            log[mode] = eval(f'reinstall_{mode}')(args, file=file, temp=temp, disk=disk, password=password, retset=True)
 
     if not args.no_cleanup:
-        reinstall_cleanup(args, file=file, temp=temp, disk=disk, retset=True, brew=brew, cask=cask)
+        reinstall_cleanup(args, file=file, temp=temp, disk=disk, password=password, retset=True, brew=brew, cask=cask)
     return log
 
 
-def reinstall_brew(args, *, file, temp, disk, cleanup=True, retset=False):
+def reinstall_brew(args, *, file, temp, disk, password, cleanup=True, retset=False):
     if shutil.which('brew') is None:
         print(
             f'reinstall: {blush}{flash}brew{reset}: command not found\n'
@@ -107,8 +102,8 @@ def reinstall_brew(args, *, file, temp, disk, cleanup=True, retset=False):
             print(f'reinstall: ${green}brew${reset}: no reinstallation performed\n')
     else:
         logging = subprocess.run(
-            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         if (args.start is not None) or (args.end is not None):
@@ -118,7 +113,7 @@ def reinstall_brew(args, *, file, temp, disk, cleanup=True, retset=False):
 
         if log and all(log):
             subprocess.run(
-                ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'reinstall_brew.sh'), logname, tmpname, quiet, verbose, force] + list(pkg)
+                ['bash', os.path.join(ROOT, 'reinstall_brew.sh'), password, logname, tmpname, quiet, verbose, force] + list(pkg)
             )
         else:
             with open(file, 'a') as logfile:
@@ -128,13 +123,13 @@ def reinstall_brew(args, *, file, temp, disk, cleanup=True, retset=False):
 
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
-        reinstall_cleanup(args, file=file, temp=temp, disk=disk, brew=True, mode='reinstall')
+        reinstall_cleanup(args, file=file, temp=temp, disk=disk, password=password, brew=True, mode='reinstall')
     return log if retset else dict(brew=log)
 
 
-def reinstall_cask(args, *, file, temp, disk, cleanup=True, retset=False):
+def reinstall_cask(args, *, file, temp, disk, password, cleanup=True, retset=False):
     testing = subprocess.run(
-        ['sudo', '--user', USER, '--set-home', 'brew', 'command', 'cask'],
+        ['brew', 'command', 'cask'],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     if testing.returncode:
@@ -167,8 +162,8 @@ def reinstall_cask(args, *, file, temp, disk, cleanup=True, retset=False):
             print(f'reinstall: ${green}cask${reset}: no reinstallation performed\n')
     else:
         logging = subprocess.run(
-            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         if (args.start is not None) or (args.end is not None):
@@ -178,7 +173,7 @@ def reinstall_cask(args, *, file, temp, disk, cleanup=True, retset=False):
 
         if log and all(log):
             subprocess.run(
-                ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'reinstall_cask.sh'), logname, tmpname, quiet, verbose] + list(pkg)
+                ['bash', os.path.join(ROOT, 'reinstall_cask.sh'), password, logname, tmpname, quiet, verbose] + list(pkg)
             )
         else:
             with open(file, 'a') as logfile:
@@ -188,11 +183,11 @@ def reinstall_cask(args, *, file, temp, disk, cleanup=True, retset=False):
 
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
-        reinstall_cleanup(args, file=file, temp=temp, disk=disk, cask=True, mode='reinstall')
+        reinstall_cleanup(args, file=file, temp=temp, disk=disk, password=password, cask=True, mode='reinstall')
     return log if retset else dict(cask=log)
 
 
-def reinstall_cleanup(args, *, file, temp, disk, mode, brew=False, cask=False, retset=False):
+def reinstall_cleanup(args, *, file, temp, disk, password, mode, brew=False, cask=False, retset=False):
     logname = shlex.quote(file)
     tmpname = shlex.quote(temp)
     dskname = shlex.quote(disk)
@@ -207,13 +202,13 @@ def reinstall_cleanup(args, *, file, temp, disk, mode, brew=False, cask=False, r
         print(f'-*- {blue}Cleanup{reset} -*-\n')
 
     subprocess.run(
-        ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'cleanup.sh'), logname, tmpname, dskname, mode, brew, cask, quiet]
+        ['bash', os.path.join(ROOT, 'cleanup.sh'), logname, tmpname, dskname, mode, brew, cask, quiet]
     )
     if not args.quiet:  print()
     return set() if retset else dict(cleanup=set())
 
 
-def postinstall(args, *, file, temp, disk):
+def postinstall(args, *, file, temp, disk, password):
     if shutil.which('brew') is None:
         print(
             f'postinstall: {blush}{flash}brew{reset}: command not found\n'
@@ -244,8 +239,8 @@ def postinstall(args, *, file, temp, disk):
             print(f'reinstall: ${green}brew${reset}: no postinstallation performed\n')
     else:
         logging = subprocess.run(
-            ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'postinstall', start, end] + list(packages),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'postinstall', start, end] + list(packages),
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         if (args.start is not None) or (args.end is not None):
@@ -255,7 +250,7 @@ def postinstall(args, *, file, temp, disk):
 
         if log and all(log):
             subprocess.run(
-                ['sudo', '--user', USER, '--set-home', 'bash', os.path.join(ROOT, 'postinstall.sh'), logname, tmpname, quiet, verbose] + list(pkg)
+                ['bash', os.path.join(ROOT, 'postinstall.sh'), logname, tmpname, quiet, verbose] + list(pkg)
             )
         else:
             with open(file, 'a') as logfile:
@@ -265,7 +260,7 @@ def postinstall(args, *, file, temp, disk):
 
     if not args.quiet:  print()
     if not args.no_cleanup:
-        cleanup(args, file=file, temp=temp, disk=disk, brew=True, mode='postinstall')
+        cleanup(args, file=file, temp=temp, disk=disk, password=password, brew=True, mode='postinstall')
     return log
 
 

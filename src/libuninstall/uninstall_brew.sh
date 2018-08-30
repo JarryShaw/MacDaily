@@ -17,28 +17,30 @@ yellow="\033[93m"       # bright yellow foreground
 # Uninstall Homebrew packages.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. Force Flag
-#   4. Quiet Flag
-#   5. Verbose Flag
-#   6. Ignore-Dependencies Flag
-#   7. Yes Flag
-#   8. Package
+#   1. Encrypted Password
+#   2. Log File
+#   3. Temp File
+#   4. Force Flag
+#   5. Quiet Flag
+#   6. Verbose Flag
+#   7. Ignore-Dependencies Flag
+#   8. Yes Flag
+#   9. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_f=$3
-arg_q=$4
-arg_v=$5
-arg_i=$6
-arg_Y=$7
-arg_pkg=${*:8}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+arg_f=$4
+arg_q=$5
+arg_v=$6
+arg_i=$7
+arg_Y=$8
+arg_pkg=${*:9}
 
 
 # remove /tmp/log/uninstall.log
@@ -71,11 +73,15 @@ function brew_fixmissing {
 
     # reinstall missing packages
     for $name in $arg_pkg ; do
-        $logprefix printf "+ ${bold}brew install $name $force $verbose $quiet${reset}\n" | $logsuffix
+        # ask for password up-front
+        sudo --reset-timestamp
+        sudo --stdin --validate <<< $password ; echo
+
+        $logprefix printf "+ ${bold}brew reinstall $name $force $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            $logprefix brew install $name $force $verbose $quiet > /dev/null 2>&1
+            $logprefix brew reinstall $name $force $verbose $quiet > /dev/null 2>&1
         else
-            $logprefix brew install $name $force $verbose $quiet
+            $logprefix brew reinstall $name $force $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -115,6 +121,10 @@ for name in $arg_pkg ; do
         all)
             list=`brew list -1`
             for pkg in $list; do
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate <<< $password ; echo
+
                 $logprefix printf "+ ${bold}brew uninstall $pkg --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew uninstall $pkg --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1
@@ -127,7 +137,10 @@ for name in $arg_pkg ; do
             # check if package installed
             flag=`brew list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
-                # along with dependencies or not
+                # ask for password up-front
+                sudo --reset-timestamp
+                sudo --stdin --validate <<< $password ; echo
+
                 $logprefix printf "+ ${bold}brew uninstall $name --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew uninstall $name --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1
@@ -142,6 +155,10 @@ for name in $arg_pkg ; do
                     for pkg in $list; do
                         # check if package installed
                         if brew list --versions $pkg > /dev/null ; then
+                            # ask for password up-front
+                            sudo --reset-timestamp
+                            sudo --stdin --validate <<< $password ; echo
+
                             $logprefix printf "+ ${bold}brew uninstall $pkg --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
                                 $logprefix brew uninstall $pkg --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1

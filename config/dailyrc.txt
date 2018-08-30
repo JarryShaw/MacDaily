@@ -39,5 +39,12 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --restart --show-log
+update  = --all --yes --pre --quiet --restart --show-log --no-cask
 logging = --all --quiet --show-log
+
+
+[Account]
+# In this section, account information are stored.
+# You must not modify this part under any circumstances.
+username = ...
+password = ********

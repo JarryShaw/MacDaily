@@ -2,8 +2,8 @@
 
 
 import argparse
+import base64
 import datetime
-import getpass
 import os
 import pwd
 import subprocess
@@ -14,7 +14,7 @@ from macdaily.libuninstall import *
 
 
 # version string
-__version__ = '2018.08.29'
+__version__ = '2018.08.30'
 
 
 # display mode names
@@ -46,10 +46,6 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
-
-
-# user name
-USER = getpass.getuser()
 
 
 def get_parser():
@@ -255,6 +251,10 @@ def main(argv, config, *, logdate, logtime, today):
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = f'{tmppath}/uninstall.log'
 
+    PIPE = make_pipe(config)
+    USER = config['Account']['username']
+    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
@@ -265,8 +265,8 @@ def main(argv, config, *, logdate, logtime, today):
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(
-            ['sudo', '--user', 'root', '--set-home', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
 
     for mode in config['Mode'].keys():
@@ -276,7 +276,7 @@ def main(argv, config, *, logdate, logtime, today):
             sys.tracebacklimit = 0
             raise error from None
         if flag:
-            args.__setattr__(f'no_{mode}', flag)
+            setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -285,9 +285,8 @@ def main(argv, config, *, logdate, logtime, today):
     for mode in set(args.mode):
         uninstall = MODE.get(mode)
         log =  aftermath(logfile=logname, tmpfile=tmpname, command='uninstall'
-                )(uninstall)(args, file=logname, temp=tmpname)
+                )(uninstall)(args, file=logname, temp=tmpname, password=PASS)
 
-    if log == set():    return
     mode = '-*- Uninstall Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
@@ -313,9 +312,24 @@ def main(argv, config, *, logdate, logtime, today):
         filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
         if filelist:
             files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following old logs: {files}\n')
+            logfile.write(f'LOG: archived following ancient logs: {files}\n')
             if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+                print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+        else:
+            logfile.write(f'LOG: no ancient logs archived\n')
+            if not args.quiet:
+                print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+if __name__ == '__main__':
+    from macdaily.daily_config import parse
+
+    config = parse()
+    today = datetime.datetime.today()
+    argv = parser.parse_args(sys.argv[1:])
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    logtime = datetime.date.strftime(today, '%H%M%S')
+    sys.exit(main(argv, config, *, logdate=logdate, logtime=logtime, today=today))

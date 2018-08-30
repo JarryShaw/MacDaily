@@ -17,13 +17,14 @@ yellow="\033[93m"       # bright yellow foreground
 # Log Python site packages uninstallation.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. System Flag
-#   4. Cellar Flag
-#   5. CPython Flag
-#   6. PyPy Flag
-#   7. Version
+#   1. Encrypted Password
+#   2. Log File
+#   3. Temp File
+#   4. System Flag
+#   5. Cellar Flag
+#   6. CPython Flag
+#   7. PyPy Flag
+#   8. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -43,29 +44,30 @@ yellow="\033[93m"       # bright yellow foreground
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   8. Verbose Flag
-#   9. Quiet Flag
-#  10. Yes Flag
-#  11. Ignore-Dependencies Flag
-#  12. Package
+#   9. Verbose Flag
+#  10. Quiet Flag
+#  11. Yes Flag
+#  12. Ignore-Dependencies Flag
+#  13. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_s=$3
-arg_b=$4
-arg_c=$5
-arg_y=$6
-arg_V=$7
-arg_v=$8
-arg_q=$9
-arg_Y=${10}
-arg_i=${11}
-arg_pkg=${*:12}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+arg_s=$4
+arg_b=$5
+arg_c=$6
+arg_y=$7
+arg_V=$8
+arg_v=$9
+arg_q=${10}
+arg_Y=${11}
+arg_i=${12}
+arg_pkg=${*:13}
 
 
 # remove /tmp/log/uninstall.log
@@ -105,12 +107,16 @@ function pipuninstall {
     # dependency list
     list=`$prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"`
 
+    # ask for password up-front
+    sudo --reset-timestamp
+    sudo --stdin --validate <<< $password ; echo
+
     # uninstall procedure
     $logprefix printf "++ ${bold}pip$pprint uninstall $arg_pkg $idep $verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
-        sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet > /dev/null 2>&1
+        sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet > /dev/null 2>&1
     else
-        sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet
+        sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $arg_pkg $verbose $quiet
     fi
     # $logprefix echo | $logsuffix
 
@@ -125,11 +131,15 @@ function pipuninstall {
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ ! -z $flag ]]; then
-                        # $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
+                        # ask for password up-front
+                        sudo --reset-timestamp
+                        sudo --stdin --validate <<< $password ; echo
+
+                        $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
-                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
+                            sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
                         else
-                            sudo --user root --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet
+                            sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet
                         fi
                         # $logprefix echo | $logsuffix
                     fi ;;
@@ -154,11 +164,15 @@ function pip_fixmissing {
 
     # reinstall missing packages
     for name in $arg_pkg ; do
-        $logprefix printf "++ ${bold}pip$pprint install --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
+        # ask for password up-front
+        sudo --reset-timestamp
+        sudo --stdin --validate <<< $password ; echo
+
+        $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
+            sudo --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
         else
-            sudo --user root --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet
+            sudo --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet
         fi
         $logprefix echo | $logsuffix
     done
@@ -274,14 +288,18 @@ function piplogging {
                     for pkg in $list ; do
                         case $pkg in
                             # keep fundamental packages
-                            appdirs|packaging|pip|pyparsing|setuptools|six)
+                            appdirs|cffi|greenlet|packaging|pip|pyparsing|readline|setuptools|six|wheel)
                                 : ;;
                             *)
+                                # ask for password up-front
+                                sudo --reset-timestamp
+                                sudo --stdin --validate <<< $password ; echo
+
                                 $logprefix printf "++ ${bold}pip$pprint uninstall $pkg $yes $verbose $quiet${reset}\n" | $logsuffix
                                 if ( $arg_q ) ; then
-                                    sudo --user root --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet > /dev/null 2>&1
+                                    sudo --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet > /dev/null 2>&1
                                 else
-                                    sudo --user root --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet
+                                    sudo --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet
                                 fi
                                 $logprefix echo | $logsuffix ;;
                         esac

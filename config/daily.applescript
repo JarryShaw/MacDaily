@@ -1,7 +1,7 @@
 #!/usr/bin/osascript
 
 -- show notification
-display notification "Daily scheduled script `logging` running..." with title "macdaily"
+display notification "Daily scheduled script `{mode}` running..." with title "MacDaily"
 
 -- run script
 do shell script "{sys.executable} -m macdaily {mode} {argv}"

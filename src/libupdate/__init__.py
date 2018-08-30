@@ -93,7 +93,7 @@ def update_apm(args, *, file, temp, disk, password, retset=False):
     if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', os.path.join(ROOT, 'logging_apm.sh'), logname, tmpname],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         outdated = 'true' if log and all(log) else 'false'
@@ -132,7 +132,7 @@ def update_gem(args, *, file, temp, disk, password, cleanup=True, retset=False):
     if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', os.path.join(ROOT, 'logging_gem.sh'), logname, tmpname],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         outdated = 'true' if log and all(log) else 'false'
@@ -171,7 +171,7 @@ def update_mas(args, *, file, temp, disk, password, retset=False):
 
     logging = subprocess.run(
         ['bash', os.path.join(ROOT, 'logging_mas.sh'), logname, tmpname],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
         log = set(re.split('[\r\n]', logging.stdout.decode().strip()))
@@ -211,7 +211,7 @@ def update_npm(args, *, file, temp, disk, password, cleanup=True, retset=False):
         allflag = 'true'
         logging = subprocess.run(
             ['bash', os.path.join(ROOT, 'logging_npm.sh'), logname, tmpname],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         start = logging.stdout.find(b'{')
         end = logging.stdout.rfind(b'}')
@@ -262,7 +262,7 @@ def update_pip(args, *, file, temp, disk, password, cleanup=True, retset=False):
 
     logging = subprocess.run(
         ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, pre] + list(packages),
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     log = set(logging.stdout.decode().strip().split())
     if 'macdaily' in log:
@@ -314,7 +314,7 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
     if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         outdated = 'true' if log and all(log) else 'false'
@@ -369,7 +369,7 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
     if 'all' in packages or args.all:
         logging = subprocess.run(
             ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy, force],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         log = set(logging.stdout.decode().strip().split())
         outdated = 'true' if log and all(log) else 'false'
@@ -410,7 +410,7 @@ def update_system(args, *, file, temp, disk, password, retset=False):
 
     logging = subprocess.run(
         ['bash', os.path.join(ROOT, 'logging_system.sh'), logname, tmpname],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
         log = set(re.split('[\n\r]', logging.stdout.decode().strip()))

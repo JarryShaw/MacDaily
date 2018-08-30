@@ -503,7 +503,7 @@ def main(argv, config, *, logdate, logtime, today):
             sys.tracebacklimit = 0
             raise error from None
         if flag:
-            args.__setattr__(f'no_{mode}', flag)
+            setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -558,3 +558,14 @@ def main(argv, config, *, logdate, logtime, today):
             print(f'update: {green}macdaily{reset}: package is now up-to-date')
         else:
             print(f'update: {red}macdaily{reset}: process failed, please try manually')
+
+
+if __name__ == '__main__':
+    from macdaily.daily_config import parse
+
+    config = parse()
+    today = datetime.datetime.today()
+    argv = parser.parse_args(sys.argv[1:])
+    logdate = datetime.date.strftime(today, '%y%m%d')
+    logtime = datetime.date.strftime(today, '%H%M%S')
+    sys.exit(main(argv, config, *, logdate=logdate, logtime=logtime, today=today))
