@@ -5,6 +5,10 @@
 sript -q /dev/null tput clear > /dev/null 2>&1
 
 
+# sed command to remove unexpected output in launchd
+command=`python -c "print(r's/\^D%s%s//g' % (chr(8), chr(8)))"`
+
+
 ################################################################################
 # Move temporary logs into log files.
 #
@@ -32,7 +36,9 @@ if [ -e "$tmpfile" ] ; then
     # read /tmp/log/update.log line by line then migrate to log file
     while read -r line ; do
         # remove colourised characters
-        line=`sed "s/\[[0-9][;0-9]*m//g" <<< $line`
+        temp=`sed $command <<< $( python -c "print(__import__('re').sub(r'\x1b\[[0-9][0-9;]*m', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line )`
+        # line=`sed "s/\[[0-9][;0-9]*m//g" <<< $line`
+
         # plus `+` proceeds in line
         if [[ $line =~ ^(\+\+*\ )(.*)$ ]] ; then
             # add "+" in the beginning, then write to /Library/Logs/Scripts/update/logdate/logtime.log
@@ -76,21 +82,21 @@ if [ -e "$tmpfile" ] ; then
             fi
             # write to /Library/Logs/Scripts/update/logdate/logtime.log
             echo "$prefix: $suffix" >> "$logfile"
-        # colourised `[??m` line
-        elif [[ $line =~ ^(.*)(\[[0-9][;0-9]*m)(.*)$ ]] ; then
-            # error (red/[31m) line
-            if [[ $line =~ ^(.*)(\[[;0-9]*;*31;*[;0-9]*m)(.*)$ ]] ; then
-                # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "ERR: $line" >> "$logfile"
-            # warning (yellow/[[01;33m])
-            elif [[ $line =~ ^(.*)(\[[;0-9]*;*33;*[;0-9]*m)(.*)$ ]] ; then
-                # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "WAR: $line" >> "$logfile"
-            # other colourised line
-            else
-                # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
-                echo "INF: $line" >> "$logfile"
-            fi
+        # # colourised `[??m` line
+        # elif [[ $line =~ ^(.*)(\[[0-9][;0-9]*m)(.*)$ ]] ; then
+        #     # error (red/[31m) line
+        #     if [[ $line =~ ^(.*)(\[[;0-9]*;*31;*[;0-9]*m)(.*)$ ]] ; then
+        #         # add `ERR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
+        #         echo "ERR: $line" >> "$logfile"
+        #     # warning (yellow/[[01;33m])
+        #     elif [[ $line =~ ^(.*)(\[[;0-9]*;*33;*[;0-9]*m)(.*)$ ]] ; then
+        #         # add `WAR` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
+        #         echo "WAR: $line" >> "$logfile"
+        #     # other colourised line
+        #     else
+        #         # add `INF` tag and remove special characters then write to /Library/Logs/Scripts/update/logdate/logtime.log
+        #         echo "INF: $line" >> "$logfile"
+        #     fi
         # empty / blank line
         elif [[ $line =~ ^([[:space:]]*)$ ]] ; then
             # directly write to /Library/Logs/Scripts/update/logdate/logtime.log

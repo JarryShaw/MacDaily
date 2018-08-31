@@ -34,9 +34,9 @@ today = datetime.datetime.today()
 
 # error handling class
 class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 def get_parser():

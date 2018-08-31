@@ -96,7 +96,7 @@ def update_apm(args, *, file, temp, disk, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_apm.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -135,7 +135,7 @@ def update_gem(args, *, file, temp, disk, password, cleanup=True, retset=False):
             ['bash', os.path.join(ROOT, 'logging_gem.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -175,7 +175,7 @@ def update_mas(args, *, file, temp, disk, password, retset=False):
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
-        log = set(re.split('[\r\n]', logging.stdout.decode().strip()))
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), re.split('[\r\n]', logging.stdout.decode().strip())))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -265,7 +265,7 @@ def update_pip(args, *, file, temp, disk, password, cleanup=True, retset=False):
         ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, pre] + list(packages),
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
-    log = set(logging.stdout.decode().strip().split())
+    log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
     if 'macdaily' in log:
         os.kill(os.getpid(), signal.SIGUSR1)
 
@@ -306,7 +306,7 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
         print(f'-*- {blue}Homebrew{reset} -*-\n')
 
     global BREW_RENEW
-    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds > 300:
+    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds() > 300:
         subprocess.run(
             ['bash', os.path.join(ROOT, 'renew_brew.sh'), logname, tmpname, quiet, verbose, force, merge]
         )
@@ -317,7 +317,7 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -361,7 +361,7 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
         print(f'-*- {blue}Caskroom{reset} -*-\n')
 
     global BREW_RENEW
-    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds > 300:
+    if BREW_RENEW is None or (datetime.datetime.now() - BREW_RENEW).total_seconds() > 300:
         subprocess.run(
             ['bash', os.path.join(ROOT, 'renew_brew.sh'), logname, tmpname, quiet, verbose, force, merge]
         )
@@ -372,7 +372,7 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
             ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy, force],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -414,7 +414,7 @@ def update_system(args, *, file, temp, disk, password, retset=False):
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
-        log = set(re.split('[\n\r]', logging.stdout.decode().strip()))
+        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), re.split('[\n\r]', logging.stdout.decode().strip())))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages

@@ -62,7 +62,7 @@ plist = collections.OrderedDict(
     UserName = USER,
     Program = '/usr/bin/osascript',
     ProgramArguments = ['/usr/bin/osascript', '-e', ''],
-    RunAtLoad = True,
+    # RunAtLoad = True,
     RootDirectory = str(pathlib.Path.home()),
     EnvironmentVariables = dict(os.environ),
     StartCalendarInterval = [],
@@ -123,6 +123,12 @@ logging = --all --quiet --show-log
 """
 
 
+class ConfigNotFoundError(FileNotFoundError):
+    def __init__(self, *args, **kwargs):
+        sys.tracebacklimit = 0
+        super().__init__(*args, **kwargs)
+
+
 class StringIO(io.StringIO):
     def readlines(self, hint=-1):
         if hint >= 0:
@@ -154,6 +160,9 @@ def loads(rcpath):
 
 
 def dumps(rcpath):
+    if not sys.stdin.isatty():
+        raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
+
     global CONFIG
     try:
         PASS = base64.b85encode(getpass.getpass('Password:').encode()).decode()

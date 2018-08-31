@@ -27,10 +27,10 @@ red    = '\033[91m'     # bright red foreground
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-class PasswordError(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
+class PasswordError(PermissionError):
+    def __init__(self, *args, **kwargs):
         sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 def check(parse):
@@ -56,8 +56,8 @@ def beholder(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (KeyboardInterrupt, PermissionError):
-            print(f'macdaily: {red}error{reset}: operation interrupted')
+        except KeyboardInterrupt:
+            print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
         except BaseException as error:
             sys.tracebacklimit = 0
             raise error from None

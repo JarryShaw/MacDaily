@@ -177,14 +177,14 @@ def main(argv, config, *, logdate, logtime, today):
             log = logging(args, file=shlex.quote(logname), password=PASS)
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
-                logfile.write('\nERR: operation timeout\n')
+                logfile.write(f'\nERR: {error}\n')
             if not args.quiet:
-                print(f'logging: {red}{logmode}{reset}: operation timeout')
+                print(f'logging: {red}{logmode}{reset}: operation timeout', file=sys.stderr)
         except BaseException as error:
             with open(logname, 'a') as logfile:
                 logfile.write('\nWAR: procedure interrupted\n')
             if not args.quiet:
-                print(f'logging: {red}{logmode}{reset}: procedure interrupted')
+                print(f'logging: {red}{logmode}{reset}: procedure interrupted', file=sys.stderr)
             sys.tracebacklimit = 0
             raise error from None
 
