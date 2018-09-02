@@ -3,9 +3,11 @@
 
 import collections
 import os
+import re
 import shlex
 import shutil
 import subprocess
+import sys
 
 
 __all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'reinstall_cleanup']
@@ -75,7 +77,7 @@ def reinstall_brew(args, *, file, temp, disk, password, cleanup=True, retset=Fal
         print(
             f'reinstall: {blush}{flash}brew{reset}: command not found\n'
             f'reinstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(brew=set())
 
@@ -105,7 +107,7 @@ def reinstall_brew(args, *, file, temp, disk, password, cleanup=True, retset=Fal
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -136,7 +138,7 @@ def reinstall_cask(args, *, file, temp, disk, password, cleanup=True, retset=Fal
         print(
             f'reinstall: {blush}{flash}cask{reset}: command not found\n'
             f'reinstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
-            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n'
+            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(cask=set())
 
@@ -165,7 +167,7 @@ def reinstall_cask(args, *, file, temp, disk, password, cleanup=True, retset=Fal
             ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -213,7 +215,7 @@ def postinstall(args, *, file, temp, disk, password):
         print(
             f'postinstall: {blush}{flash}brew{reset}: command not found\n'
             f'postinstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(brew=set())
 
@@ -242,7 +244,7 @@ def postinstall(args, *, file, temp, disk, password):
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'postinstall', start, end] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:

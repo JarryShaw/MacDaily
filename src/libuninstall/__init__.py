@@ -3,6 +3,7 @@
 
 import collections
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -92,7 +93,7 @@ def uninstall_pip(args, *, file, temp, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(
             ['bash', os.path.join(ROOT, 'uninstall_pip.sh'), password, logname, tmpname, system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages)
@@ -110,7 +111,7 @@ def uninstall_brew(args, *, file, temp, password, retset=False):
         print(
             f'uninstall: {blush}{flash}brew{reset}: command not found\n'
             f'uninstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(brew=set())
 
@@ -140,7 +141,7 @@ def uninstall_brew(args, *, file, temp, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, idep] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(
             ['bash', os.path.join(ROOT, 'uninstall_brew.sh'), password, logname, tmpname, force, quiet, verbose, idep, yes] + list(packages)
@@ -158,7 +159,7 @@ def uninstall_cask(args, *, file, temp, password, retset=False):
         print(
             f'uninstall: {blush}{flash}cask{reset}: command not found\n'
             f'uninstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
-            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n'
+            f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(cask=set())
 
@@ -186,7 +187,7 @@ def uninstall_cask(args, *, file, temp, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(
             ['bash', os.path.join(ROOT, 'uninstall_cask.sh'), password, logname, tmpname, quiet, verbose, force] + list(packages)

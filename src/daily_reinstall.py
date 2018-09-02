@@ -14,7 +14,7 @@ from macdaily.libprinstall import *
 
 
 # version string
-__version__ = '2018.08.30'
+__version__ = '2018.09.02'
 
 
 # display mode names
@@ -251,7 +251,7 @@ def main(argv, config, *, logdate, logtime, today):
 
     for mode in set(args.mode):
         reinstall = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall'
+        log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='reinstall'
                 )(reinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS)
 
     mode = '-*- Reinstall Logs -*-'.center(80, ' ')

@@ -3,9 +3,11 @@
 
 import collections
 import os
+import re
 import shlex
 import shutil
 import subprocess
+import sys
 
 
 __all__ = ['dependency_all', 'dependency_pip', 'dependency_brew']
@@ -87,7 +89,7 @@ def dependency_pip(args, *, file, temp, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(
             ['bash', os.path.join(ROOT, 'dependency_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, tree] + list(packages)
@@ -105,7 +107,7 @@ def dependency_brew(args, *, file, temp, password, retset=False):
         print(
             f'dependency: {blush}{flash}brew{reset}: command not found\n'
             f'dependency: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(brew=set())
 
@@ -129,7 +131,7 @@ def dependency_brew(args, *, file, temp, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname] + list(packages),
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(logging.stdout.decode().strip().split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(
             ['bash', os.path.join(ROOT, 'dependency_brew.sh'), logname, tmpname, tree] + list(packages)

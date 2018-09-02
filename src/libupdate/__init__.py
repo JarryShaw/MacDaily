@@ -10,6 +10,7 @@ import shlex
 import shutil
 import signal
 import subprocess
+import sys
 
 
 __all__ = [
@@ -74,7 +75,7 @@ def update_apm(args, *, file, temp, disk, password, retset=False):
     if shutil.which('apm') is None:
         print(
             f'update: {blush}{flash}apm{reset}: command not found\n'
-            f'update: {red}apm{reset}: you may download Atom from {purple}{under}https://atom.io{reset}\n'
+            f'update: {red}apm{reset}: you may download Atom from {purple}{under}https://atom.io{reset}\n', file=sys.stderr
         )
         return set() if retset else dict(apm=set())
 
@@ -96,7 +97,7 @@ def update_apm(args, *, file, temp, disk, password, retset=False):
             ['bash', os.path.join(ROOT, 'logging_apm.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -113,7 +114,7 @@ def update_gem(args, *, file, temp, disk, password, cleanup=True, retset=False):
     if shutil.which('gem') is None:
         print(
             f'update: {blush}{flash}gem{reset}: command not found\n'
-            f'update: {red}gem{reset}: you may download Ruby from {purple}{under}https://www.ruby-lang.org/{reset}\n'
+            f'update: {red}gem{reset}: you may download Ruby from {purple}{under}https://www.ruby-lang.org/{reset}\n', file=sys.stderr
         )
         return set() if retset else dict(gem=set())
 
@@ -135,7 +136,7 @@ def update_gem(args, *, file, temp, disk, password, cleanup=True, retset=False):
             ['bash', os.path.join(ROOT, 'logging_gem.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -154,7 +155,7 @@ def update_mas(args, *, file, temp, disk, password, retset=False):
     if shutil.which('mas') is None:
         print(
             f'update: {blush}{flash}mas{reset}: command not found\n'
-            f'update: {red}cask{reset}: you may download MAS through following command --`{bold}brew install mas{reset}`\n'
+            f'update: {red}cask{reset}: you may download MAS through following command --`{bold}brew install mas{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(mas=set())
 
@@ -175,7 +176,7 @@ def update_mas(args, *, file, temp, disk, password, retset=False):
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), re.split('[\r\n]', logging.stdout.decode().strip())))
+        log = set(re.split(r'[\r\n]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE)))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -192,7 +193,7 @@ def update_npm(args, *, file, temp, disk, password, cleanup=True, retset=False):
     if shutil.which('npm') is None:
         print(
             f'update: {blush}{flash}npm{reset}: command not found\n'
-            f'update: {red}npm{reset}: you may download Node.js from {purple}{under}https://nodejs.org/{reset}\n'
+            f'update: {red}npm{reset}: you may download Node.js from {purple}{under}https://nodejs.org/{reset}\n', file=sys.stderr
         )
         return set() if retset else dict(npm=set())
 
@@ -217,10 +218,9 @@ def update_npm(args, *, file, temp, disk, password, cleanup=True, retset=False):
         start = logging.stdout.find(b'{')
         end = logging.stdout.rfind(b'}')
         if start == -1 or end == -1:
-            stdout = str()
+            stdict = dict()
         else:
-            stdout = logging.stdout[start:end+1].decode().strip()
-        stdict = json.loads(stdout) if stdout else dict()
+            stdict = json.loads(re.sub(r'\^D\x08\x08', '', logging.stdout[start:end+1].decode().strip(), re.IGNORECASE))
         log = set(stdict.keys())
         pkg = { f'{name}@{value["wanted"]}' for name, value in stdict.items() }
         outdated = 'true' if log and all(log) else 'false'
@@ -265,7 +265,7 @@ def update_pip(args, *, file, temp, disk, password, cleanup=True, retset=False):
         ['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, pre] + list(packages),
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
-    log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
+    log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
     if 'macdaily' in log:
         os.kill(os.getpid(), signal.SIGUSR1)
 
@@ -287,7 +287,7 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
         print(
             f'update: {blush}{flash}brew{reset}: command not found\n'
             f'update: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n'
+            f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(brew=set())
 
@@ -317,7 +317,7 @@ def update_brew(args, *, file, temp, disk, password, cleanup=True, retset=False)
             ['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -341,7 +341,7 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
         print(
             f'update: {blush}{flash}cask{reset}: command not found\n'
             f'update: {red}cask{reset}: you may find Caskroom on {purple}{under}https://caskroom.github.io{reset}, '
-            f'or install Caskroom through following command -- `{bold}brew tap homebrew/cask{reset}`\n'
+            f'or install Caskroom through following command -- `{bold}brew tap homebrew/cask{reset}`\n', file=sys.stderr
         )
         return set() if retset else dict(cask=set())
 
@@ -372,7 +372,7 @@ def update_cask(args, *, file, temp, disk, password, cleanup=True, retset=False)
             ['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy, force],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), logging.stdout.decode().strip().split()))
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -392,7 +392,7 @@ def update_system(args, *, file, temp, disk, password, retset=False):
         print(
             f'update: {blush}{flash}system{reset}: command not found\n'
             f"update: {red}system{reset}: you may add `softwareupdate' to $PATH through the following command -- "
-            f"`{bold}echo export PATH='/usr/sbin:$PATH' >> ~/.bash_profile{reset}'\n"
+            f"`{bold}echo export PATH='/usr/sbin:$PATH' >> ~/.bash_profile{reset}'\n", file=sys.stderr
         )
         return set() if retset else dict(system=set())
 
@@ -414,7 +414,7 @@ def update_system(args, *, file, temp, disk, password, retset=False):
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
     if 'all' in packages or args.all:
-        log = set(map(lambda s: re.sub(r'\^D\x08\x08', '', s, re.IGNORECASE), re.split('[\n\r]', logging.stdout.decode().strip())))
+        log = set(re.split(r'[\n\r]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE)))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages

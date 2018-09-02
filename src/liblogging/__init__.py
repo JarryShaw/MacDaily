@@ -5,6 +5,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import sys
 
 
 __all__ = [
@@ -31,8 +32,7 @@ def logging_apm(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}apm{reset}: {bold}Atom{reset} packages logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}apm{reset}: command not found')
+        print(f'logging: {red}apm{reset}: command not found', file=sys.stderr)
 
 
 def logging_appstore(args, *, file, password):
@@ -41,8 +41,7 @@ def logging_appstore(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}appstore{reset}: {bold}Mac App Store{reset} applications logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}appstore{reset}: command not found')
+        print(f'logging: {red}appstore{reset}: command not found', file=sys.stderr)
 
 
 def logging_brew(args, *, file, password):
@@ -51,8 +50,7 @@ def logging_brew(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}brew{reset}: {bold}Homebrew{reset} formulae logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}brew{reset}: command not found')
+        print(f'logging: {red}brew{reset}: command not found', file=sys.stderr)
 
 
 def logging_cask(args, *, file, password):
@@ -65,18 +63,16 @@ def logging_cask(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}cask{reset}: {bold}Caskroom{reset} binaries logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}cask{reset}: command not found')
+        print(f'logging: {red}cask{reset}: command not found', file=sys.stderr)
 
 
 def logging_dotapp(args, *, file, password):
-    if shutil.which('find') is not None:
+    if shutil.which('python') is not None:
         subprocess.run(['bash', os.path.join(ROOT, 'logging_dotapp.sh'), password, file], timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if not args.quiet:
             print(f'logging: {green}dotapp{reset}: all applications ({bold}*.app{reset}) logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}dotapp{reset}: command not found')
+        print(f'logging: {red}dotapp{reset}: command not found', file=sys.stderr)
 
 
 def logging_gem(args, *, file, password):
@@ -85,8 +81,7 @@ def logging_gem(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}gem{reset}: {bold}Ruby{reset} gems logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}gem{reset}: command not found')
+        print(f'logging: {red}gem{reset}: command not found', file=sys.stderr)
 
 
 def logging_macapp(args, *, file, password):
@@ -95,8 +90,7 @@ def logging_macapp(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}macapp{reset}: all applications placed in {bold}/Application{reset} folder logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}macapp{reset}: command not found')
+        print(f'logging: {red}macapp{reset}: command not found', file=sys.stderr)
 
 
 def logging_npm(args, *, file, password):
@@ -105,8 +99,7 @@ def logging_npm(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}npm{reset}: {bold}Node.js{reset} modules logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}npm{reset}: command not found')
+        print(f'logging: {red}npm{reset}: command not found', file=sys.stderr)
 
 
 def logging_pip(args, *, file, password):
@@ -129,5 +122,4 @@ def logging_pip(args, *, file, password):
         if not args.quiet:
             print(f'logging: {green}pip{reset}: {bold}Python{reset} packages logged in {under}{file}{reset}')
     else:
-        if not args.quiet:
-            print(f'logging: {red}pip{reset}: command not found')
+        print(f'logging: {red}pip{reset}: command not found', file=sys.stderr)

@@ -14,7 +14,7 @@ from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '2018.08.30'
+__version__ = '2018.09.02'
 
 
 # terminal commands
@@ -109,7 +109,7 @@ def main(argv, config, *, logdate, logtime, today):
             stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
 
-    log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall'
+    log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='postinstall'
             )(postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS)
 
     mode = '-*- Postinstall Logs -*-'.center(80, ' ')

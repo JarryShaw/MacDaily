@@ -83,13 +83,6 @@ else
         verbose=""
     fi
 
-    # if yes flag set
-    if ( $arg_Y ) ; then
-        yes="yes"
-    else
-        yes=":"
-    fi
-
     # update procedure
     for name in $arg_pkg ; do
         flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
@@ -100,9 +93,19 @@ else
 
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                sudo $logprefix $yes | gem update $name $verbose $quiet > /dev/null 2>&1
+                # if yes flag set
+                if ( $arg_Y ) ; then
+                    sudo $logprefix gem update $name $verbose $quiet <<< "yes" > /dev/null 2>&1
+                else
+                    sudo $logprefix agem update $name $verbose $quiet > /dev/null 2>&1
+                fi
             else
-                sudo $logprefix $yes | gem update $name $verbose $quiet
+                # if yes flag set
+                if ( $arg_Y ) ; then
+                    sudo $logprefix gem update $name $verbose $quiet <<< "yes"
+                else
+                    sudo $logprefix agem update $name $verbose $quiet
+                fi
             fi
             $logprefix echo | $logsuffix
         else

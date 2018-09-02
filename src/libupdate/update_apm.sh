@@ -79,22 +79,25 @@ else
         verbose=""
     fi
 
-    # if yes flag set
-    if ( $arg_Y ) ; then
-        yes="yes yes"
-    else
-        yes=":"
-    fi
-
     # update procedure
     for name in $arg_pkg ; do
         flag=`apm list --bare --no-color | sed "s/@.*//" | awk "/^$name$/"`
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}apm upgrade $name $verbose $quiet${reset}\n" | $logsuffix
             if ( $arg_q ) ; then
-                $logprefix $yes | apm upgrade $name $verbose $quiet > /dev/null 2>&1
+                # if yes flag set
+                if ( $arg_Y ) ; then
+                    $logprefix apm upgrade $name $verbose $quiet <<< "yes" > /dev/null 2>&1
+                else
+                    $logprefix apm upgrade $name $verbose $quiet > /dev/null 2>&1
+                fi
             else
-                $logprefix $yes | apm upgrade $name $verbose $quiet
+                # if yes flag set
+                if ( $arg_Y ) ; then
+                    $logprefix apm upgrade $name $verbose $quiet <<< "yes"
+                else
+                    $logprefix apm upgrade $name $verbose $quiet
+                fi
             fi
             $logprefix echo | $logsuffix
         else

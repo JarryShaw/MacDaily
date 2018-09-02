@@ -5,8 +5,8 @@
 sript -q /dev/null tput clear > /dev/null 2>&1
 
 
-# sed command to remove unexpected output in launchd
-command=`python -c "print(r's/\^D%s%s//g' % (chr(8), chr(8)))"`
+# # sed command to remove unexpected output in launchd
+# command=`python -c "print(r's/\^D%s%s//g' % (chr(8), chr(8)))"`
 
 
 ################################################################################
@@ -23,7 +23,7 @@ command=`python -c "print(r's/\^D%s%s//g' % (chr(8), chr(8)))"`
 # echo $1 | cut -c2- | rev | cut -c2- | rev
 logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
 tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-interrupred=$3
+interrupred=${3:-false}
 
 
 # create /tmp/log/update.log & /Library/Logs/Scripts/update/logdate/logtime.log
@@ -36,7 +36,8 @@ if [ -e "$tmpfile" ] ; then
     # read /tmp/log/update.log line by line then migrate to log file
     while read -r line ; do
         # remove colourised characters
-        temp=`sed $command <<< $( python -c "print(__import__('re').sub(r'\x1b\[[0-9][0-9;]*m', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line )`
+        line=`python -c "print(__import__('re').sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line`
+        # line=`sed $command <<< $( python -c "print(__import__('re').sub(r'\x1b\[[0-9][0-9;]*m', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line )`
         # line=`sed "s/\[[0-9][;0-9]*m//g" <<< $line`
 
         # plus `+` proceeds in line
@@ -76,7 +77,8 @@ if [ -e "$tmpfile" ] ; then
             # otherwise, extract its own tag
             else
                 # log tag
-                prefix=`echo $line | sed "s/\(.*\)*:\ .*/\1/" | cut -c 1-3 | tr "[:lower:]" "[:upper:]"`
+                # prefix=`echo $line | sed "s/\(.*\)*:\ .*/\1/" | cut -c 1-3 | tr "[:lower:]" "[:upper:]"`
+                prefix=`echo $line | sed "s/\(.*\)*:\ .*/\1/" | tr "[:lower:]" "[:upper:]"`
                 # log content
                 suffix=`echo $line | sed "s/.*:\ \(.*\)*.*/\1/"`
             fi
@@ -111,8 +113,8 @@ fi
 
 
 # if called after KeyboardInterrupt
-if [[ ! -z $interrupred ]] ; then
-    echo "ERR: update procedure interrupred" >> "$logfile"
+if ( $interrupred ) ; then
+    echo "ERR: $update procedure interrupred" >> "$logfile"
 fi
 
 

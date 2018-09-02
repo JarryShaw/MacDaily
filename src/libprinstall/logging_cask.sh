@@ -95,7 +95,7 @@ done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" $logmode
+bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "$logmode"
 
 
 # remove /tmp/log/logmode.log

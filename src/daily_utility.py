@@ -64,7 +64,7 @@ def beholder(func):
     return wrapper
 
 
-def aftermath(*, logfile, tmpfile, command):
+def aftermath(*, logfile, tmpfile, command, logmode='null'):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -72,7 +72,7 @@ def aftermath(*, logfile, tmpfile, command):
                 return func(*args, **kwargs)
             except BaseException as error:
                 subprocess.run(
-                    ['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true'],
+                    ['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
                 )
                 sys.tracebacklimit = 0

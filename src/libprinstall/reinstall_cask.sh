@@ -105,7 +105,7 @@ done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh ""$logfile"" ""$tmpfile"" "reinstall"
+bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "reinstall"
 
 
 # remove /tmp/log/reinstall.log

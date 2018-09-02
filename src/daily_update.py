@@ -16,7 +16,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.08.30'
+__version__ = '2018.09.02'
 
 
 # display mode names
@@ -547,17 +547,22 @@ def main(argv, config, *, logdate, logtime, today):
             if not args.quiet:
                 print(f'update: {green}cleanup{reset}: no ancient logs archived')
 
+        if reload_flag.value:
+            proc = subprocess.run(
+                ['sudo', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
+                stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+            if proc.returncode == 0:
+                if not args.quiet:
+                    print(f'update: {green}macdaily{reset}: package is now up-to-date')
+                logfile.write('LOG: macdaily is now up-to-date\n')
+            else:
+                if not args.quiet:
+                    print(f'update: {red}macdaily{reset}: process failed, please try manually')
+                logfile.write('ERR: please try manually update macdaily\n')
+
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if reload_flag.value:
-        proc = subprocess.run(
-            ['sudo', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
-            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
-        if proc.returncode == 0:
-            print(f'update: {green}macdaily{reset}: package is now up-to-date')
-        else:
-            print(f'update: {red}macdaily{reset}: process failed, please try manually')
 
 
 if __name__ == '__main__':

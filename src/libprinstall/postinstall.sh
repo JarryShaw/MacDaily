@@ -113,7 +113,7 @@ done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "postinstall"
+bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "postinstall"
 
 
 # remove /tmp/log/postinstall.log
