@@ -563,11 +563,10 @@ def main(argv, config, *, logdate, logtime, today):
                     print(f'update: {red}macdaily{reset}: process failed, please try manually')
                 logfile.write('ERR: please try manually update macdaily\n')
 
-    try:
-        tmpfile.close()
-    finally:
-        if args.show_log:
-            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:    tmpfile.close()
+    except: pass
+    if args.show_log:
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':

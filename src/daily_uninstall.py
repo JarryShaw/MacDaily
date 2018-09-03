@@ -322,11 +322,10 @@ def main(argv, config, *, logdate, logtime, today):
             if not args.quiet:
                 print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
-    try:
-        tmpfile.close()
-    finally:
-        if args.show_log:
-            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:    tmpfile.close()
+    except: pass
+    if args.show_log:
+        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':
