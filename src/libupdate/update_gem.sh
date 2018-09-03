@@ -95,16 +95,16 @@ else
             if ( $arg_q ) ; then
                 # if yes flag set
                 if ( $arg_Y ) ; then
-                    sudo $logprefix gem update $name $verbose $quiet <<< "yes" > /dev/null 2>&1
+                    sudo $logprefix gem update $name $verbose $quiet <<< "yyyyyyyyyyy" > /dev/null 2>&1
                 else
-                    sudo $logprefix agem update $name $verbose $quiet > /dev/null 2>&1
+                    sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
                 fi
             else
                 # if yes flag set
                 if ( $arg_Y ) ; then
-                    sudo $logprefix gem update $name $verbose $quiet <<< "yes"
+                    sudo $logprefix gem update $name $verbose $quiet <<< "yyyyyyyyyyy"
                 else
-                    sudo $logprefix agem update $name $verbose $quiet
+                    sudo $logprefix gem update $name $verbose $quiet
                 fi
             fi
             $logprefix echo | $logsuffix

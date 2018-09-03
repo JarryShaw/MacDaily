@@ -8,13 +8,14 @@ import os
 import pwd
 import subprocess
 import sys
+import tempfile
 
 from macdaily.daily_utility import *
 from macdaily.libprinstall import *
 
 
 # version string
-__version__ = '2018.09.02'
+__version__ = '2018.09.03'
 
 
 # display mode names
@@ -215,8 +216,9 @@ def main(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='reinstall', logdate=logdate)
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='reinstall-', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
-    tmpname = f'{tmppath}/reinstall.log'
+    tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
@@ -286,8 +288,11 @@ def main(argv, config, *, logdate, logtime, today):
             if not args.quiet:
                 print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
-    if args.show_log:
-        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        tmpfile.close()
+    finally:
+        if args.show_log:
+            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':

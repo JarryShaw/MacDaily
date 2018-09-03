@@ -10,13 +10,14 @@ import pwd
 import signal
 import subprocess
 import sys
+import tempfile
 
 from macdaily.daily_utility import *
 from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.09.02'
+__version__ = '2018.09.03'
 
 
 # display mode names
@@ -470,8 +471,9 @@ def main(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='update', logdate=logdate)
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='update-', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
-    tmpname = f'{tmppath}/update.log'
+    tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
@@ -561,8 +563,11 @@ def main(argv, config, *, logdate, logtime, today):
                     print(f'update: {red}macdaily{reset}: process failed, please try manually')
                 logfile.write('ERR: please try manually update macdaily\n')
 
-    if args.show_log:
-        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        tmpfile.close()
+    finally:
+        if args.show_log:
+            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':

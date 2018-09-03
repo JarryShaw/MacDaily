@@ -8,13 +8,14 @@ import os
 import pwd
 import subprocess
 import sys
+import tempfile
 
 from macdaily.daily_utility import *
 from macdaily.libdependency import *
 
 
 # version string
-__version__ = '2018.09.02'
+__version__ = '2018.09.03'
 
 
 # display mode names
@@ -165,8 +166,9 @@ def main(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency-', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
-    tmpname = f'{tmppath}/dependency.log'
+    tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
@@ -226,8 +228,11 @@ def main(argv, config, *, logdate, logtime, today):
             if not args.quiet:
                 print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
-    if args.show_log:
-        subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        tmpfile.close()
+    finally:
+        if args.show_log:
+            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':
