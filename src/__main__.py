@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '2018.09.03'
+__version__ = '2018.09.03.post1'
 
 
 # today

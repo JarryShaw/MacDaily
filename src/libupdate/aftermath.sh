@@ -36,7 +36,7 @@ if [ -e "$tmpfile" ] ; then
     # read /tmp/log/update.log line by line then migrate to log file
     while read -r line ; do
         # remove colourised characters
-        line=`python -c "print(__import__('re').sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line`
+        line=`python -c "print(__import__('re').sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', '', __import__('sys').stdin.readline().strip(), __import__('re').IGNORECASE))" <<< $line`
         # line=`sed $command <<< $( python -c "print(__import__('re').sub(r'\x1b\[[0-9][0-9;]*m', '', __import__('sys').stdin.readline().strip(), re.IGNORECASE))" <<< $line )`
         # line=`sed "s/\[[0-9][;0-9]*m//g" <<< $line`
 

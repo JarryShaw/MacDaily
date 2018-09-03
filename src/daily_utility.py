@@ -47,7 +47,7 @@ def check(parse):
             stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         if SUDO.returncode == 0:    return config
-        raise PasswordError(f"invalid sudo password for {config['Account']['username']!r}")
+        raise PasswordError(1, f"Invalid password for {config['Account']['username']!r}")
     return wrapper
 
 
