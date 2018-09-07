@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '2018.09.03.post2'
+__version__ = '2018.09.07'
 
 
 # set-up script for pip distribution

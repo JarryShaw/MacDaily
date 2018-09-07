@@ -15,7 +15,7 @@ from macdaily.libuninstall import *
 
 
 # version string
-__version__ = '2018.09.03'
+__version__ = '2018.09.07'
 
 
 # display mode names

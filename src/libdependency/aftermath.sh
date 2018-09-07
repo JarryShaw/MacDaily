@@ -61,7 +61,7 @@ if [ -e "$tmpfile" ] ; then
                 # log tag
                 prefix="WAR"
                 # log content
-                suffix=`echo $line | sed ".*warning: //"`
+                suffix=`echo $line | sed "s/.*warning: //"`
             # if this is an error
             elif [[ $( tr "[:upper:]" "[:lower:]" <<< $line ) =~ ^(.*)(error:\ )(.*)$ ]] ; then
                 # log tag
