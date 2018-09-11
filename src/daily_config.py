@@ -19,7 +19,7 @@ import textwrap
 from macdaily.daily_utility import check, make_pipe, sudo_timeout
 
 
-__all__ = ['parse', 'config', 'launch']
+__all__ = ['parse']
 
 
 # terminal display
@@ -297,3 +297,7 @@ def config():
         sys.tracebacklimit = 0
         raise error from None
     launch(parse())
+
+
+if __name__ == '__main__':
+    sys.exit(config())

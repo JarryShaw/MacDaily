@@ -7,17 +7,19 @@ import datetime
 import multiprocessing
 import os
 import pwd
+import shutil
 import signal
 import subprocess
 import sys
 import tempfile
 
+from macdaily.daily_config import *
 from macdaily.daily_utility import *
 from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.09.11.post2'
+__version__ = '2018.09.11.post3'
 
 
 # display mode names
@@ -60,6 +62,8 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+length = shutil.get_terminal_size().columns
+                        # terminal length
 
 
 def get_parser():
@@ -462,7 +466,7 @@ def get_parser():
     return parser
 
 
-def main(argv, config, *, logdate, logtime, today):
+def update(argv, config, *, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
@@ -500,7 +504,7 @@ def main(argv, config, *, logdate, logtime, today):
 
     for mode in config['Mode'].keys():
         try:
-            flag = not config['Mode'].getboolean(mode)
+            flag = not config['Mode'].getboolean(mode, fallback=False)
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
@@ -512,16 +516,17 @@ def main(argv, config, *, logdate, logtime, today):
 
     for mode in set(args.mode):
         update = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='update'
-                )(update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS,
-                            bash_timeout=config['Environment']['bash-timeout'], sudo_timeout=config['Environment']['sudo-timeout'])
+        log = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
+                update)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS,
+                        bash_timeout=config['Environment'].getint('bash-timeout', fallback=1_000),
+                        sudo_timeout=config['Environment']['sudo-timeout'])
 
     if log != set():
         mode = '-*- Update Logs -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
             logfile.write(f'\n\n{mode}\n\n')
             if not args.quiet:
-                print(f'-*- {blue}Update Logs{reset} -*-\n')
+                print(f'-*- {blue}Update Logs{reset} -*-'.center(length, ' '), '\n', sep='')
 
             for mode in log:
                 name = NAME.get(mode)
@@ -569,12 +574,15 @@ def main(argv, config, *, logdate, logtime, today):
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-if __name__ == '__main__':
-    from macdaily.daily_config import parse
-
+@beholder
+def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
     logtime = datetime.date.strftime(today, '%H%M%S')
-    sys.exit(main(argv, config, logdate=logdate, logtime=logtime, today=today))
+    update(argv, config, logdate=logdate, logtime=logtime, today=today)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

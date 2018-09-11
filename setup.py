@@ -24,7 +24,7 @@ with open('./README.md', 'r') as file:
 
 
 # version
-__version__ = '2018.09.11.post2'
+__version__ = '2018.09.11.post3'
 
 
 # set-up script for pip distribution
@@ -47,6 +47,15 @@ setuptools.setup(
     entry_points = {
         'console_scripts': [
             'macdaily = macdaily.__main__:main',
+            'macdaily-update = macdaily.daily_update:main',
+            'macdaily-uninstall = macdaily.daily_uninstall:main',
+            'macdaily-reinstall = macdaily.daily_reinstall:main',
+            'macdaily-postinstall = macdaily.daily_postinstall:main',
+            'macdaily-logging = macdaily.daily_logging:main',
+            'macdaily-dependency = macdaily.daily_dependency:main',
+            'macdaily-bundle = macdaily.daily_bundle:main',
+            'macdaily-config = macdaily.daily_config:main',
+            'macdaily-archive = macdaily.daily_archive:main',
         ]
     },
     packages = [

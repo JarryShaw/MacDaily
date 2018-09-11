@@ -42,7 +42,7 @@ BREW_RENEW = None
 
 def _make_mode(args, file, mode, *, flag=True):
     with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', f'-*- {mode} -*-'.center(length, ' '), '\n\n'])
+        logfile.writelines(['\n\n', f'-*- {mode} -*-'.center(80, ' '), '\n\n'])
     if (not args.quiet) and flag:
         print(f'-*- {blue}{mode}{reset} -*-'.center(length, ' '), '\n', sep='')
 

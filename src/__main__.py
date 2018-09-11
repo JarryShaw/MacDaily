@@ -8,15 +8,15 @@ import pathlib
 import platform
 import sys
 
-from macdaily.daily_archive import main as archive
-from macdaily.daily_bundle import main  as bundle
-from macdaily.daily_config import *
-from macdaily.daily_dependency import main as dependency
-from macdaily.daily_logging import main as logging
-from macdaily.daily_postinstall import main as postinstall
-from macdaily.daily_reinstall import main as reinstall
-from macdaily.daily_uninstall import main as uninstall
-from macdaily.daily_update import main as update
+from macdaily.daily_archive import archive
+from macdaily.daily_bundle import bundle
+from macdaily.daily_config import parse, config, launch
+from macdaily.daily_dependency import dependency
+from macdaily.daily_logging import logging
+from macdaily.daily_postinstall import postinstall
+from macdaily.daily_reinstall import reinstall
+from macdaily.daily_uninstall import uninstall
+from macdaily.daily_update import update
 from macdaily.daily_utility import beholder
 
 
@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '2018.09.11.post2'
+__version__ = '2018.09.11.post3'
 
 
 # today

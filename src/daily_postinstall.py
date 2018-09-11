@@ -10,12 +10,13 @@ import subprocess
 import sys
 import tempfile
 
-from macdaily.daily_utility import *
+from macdaily.daily_config import parse
+from macdaily.daily_utility import beholder, aftermath, make_pipe, make_path, archive, storage
 from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '2018.09.07'
+__version__ = '2018.09.11'
 
 
 # terminal commands
@@ -80,7 +81,7 @@ def get_parser():
     return parser
 
 
-def main(argv, config, *, logdate, logtime, today):
+def postinstall(argv, config, *, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
@@ -150,12 +151,15 @@ def main(argv, config, *, logdate, logtime, today):
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-if __name__ == '__main__':
-    from macdaily.daily_config import parse
-
+@beholder
+def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
     logtime = datetime.date.strftime(today, '%H%M%S')
-    sys.exit(main(argv, config, logdate=logdate, logtime=logtime, today=today))
+    postinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

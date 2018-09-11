@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
+import datetime
+import sys
+
+from macdaily.daily_config import parse
 from macdaily.daily_utility import *
 
 
@@ -11,7 +15,7 @@ red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 
 
-def main(config, *, logdate, today):
+def archive(config, *, logdate, today):
     filelist = list()
     for mode in {   'update', 'uninstall', 'reinstall', 'postinstall', 'dependency',
                     'logging/apm', 'logging/gem', 'logging/pip', 'logging/npm',
@@ -27,14 +31,15 @@ def main(config, *, logdate, today):
         print(f'macdaily: {red}archive{reset}: no ancient logs archived')
 
 
-if __name__ == '__main__':
-    import datetime
-    import sys
-
-    from macdaily.daily_config import parse
-
+@beholder
+def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
-    sys.exit(main(argv, config, logdate=logdate, today=today))
+
+    archive(argv, config, logdate=logdate, today=today)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

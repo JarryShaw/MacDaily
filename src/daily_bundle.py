@@ -5,9 +5,12 @@ import argparse
 import os
 import subprocess
 
+from macdaily.daily_config import parse
+from macdaily.daily_utility import beholder
+
 
 # version string
-__version__ = '2018.09.02'
+__version__ = '2018.09.11'
 
 
 # root path
@@ -32,34 +35,30 @@ def get_parser():
     return parser
 
 
-def main(argv, config, *, logdate, logtime, today):
+def bundle(argv, config, *, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
-    if args.command is None:
-        parser.print_help()
-        return
-
+    timeout = config['Environment'].getint('bash-timeout', fallback=1_000) * 4
     if args.command in ('load'):
-        subprocess.run(
-            ['bash', os.path.join(ROOT, 'libbundle/load.sh')],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run( ['bash', os.path.join(ROOT, 'libbundle/load.sh')],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout   )
     elif args.command in ('dump'):
-        subprocess.run(
-            ['bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run( ['bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout   )
     else:
         parser.print_help()
 
 
-if __name__ == '__main__':
-    from macdaily.daily_config import parse
-
+@beholder
+def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
     logtime = datetime.date.strftime(today, '%H%M%S')
-    sys.exit(main(argv, config, logdate=logdate, logtime=logtime, today=today))
+    bundle(argv, config, logdate=logdate, logtime=logtime, today=today)
+
+
+if __name__ == '__main__':    
+    sys.exit(main())

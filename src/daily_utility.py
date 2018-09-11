@@ -15,7 +15,7 @@ import tarfile
 import zipfile
 
 
-__all__ = ['aftermath', 'make_pipe', 'make_path', 'archive', 'storage', 'sudo_timeout']
+__all__ = ['beholder', 'aftermath', 'make_pipe', 'make_path', 'archive', 'storage']
 
 
 # terminal display

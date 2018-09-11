@@ -90,7 +90,7 @@ fi
 sudo --reset-timestamp
 while true ; do
     yes $password | sudo --stdin --validate
-    echo ; sleep ${timeout:-5m}
+    sleep ${timeout:-300}
 done &
 pid=$!
 

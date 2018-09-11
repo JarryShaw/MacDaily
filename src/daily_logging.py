@@ -10,12 +10,13 @@ import shlex
 import subprocess
 import sys
 
+from macdaily.daily_config import *
 from macdaily.daily_utility import *
 from macdaily.liblogging import *
 
 
 # version string
-__version__ = '2018.09.02'
+__version__ = '2018.09.11'
 
 
 # mode actions
@@ -127,7 +128,7 @@ def get_parser():
     return parser
 
 
-def main(argv, config, *, logdate, logtime, today):
+def logging(argv, config, *, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
@@ -204,12 +205,15 @@ def main(argv, config, *, logdate, logtime, today):
         print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
 
 
-if __name__ == '__main__':
-    from macdaily.daily_config import parse
-
+@beholder
+def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
     logtime = datetime.date.strftime(today, '%H%M%S')
-    sys.exit(main(argv, config, logdate=logdate, logtime=logtime, today=today))
+    logging(argv, config, logdate=logdate, logtime=logtime, today=today)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
