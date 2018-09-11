@@ -17,7 +17,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.11.post1'
 
 
 # display mode names

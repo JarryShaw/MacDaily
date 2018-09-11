@@ -24,8 +24,7 @@ yellow="\033[93m"       # bright yellow foreground
 #   5. Verbose Flag
 #   6. Yes Flag
 #   7. Outdated Flag
-#   8. Log User
-#   9. Package
+#   8. Package
 #       ............
 ################################################################################
 
@@ -39,8 +38,7 @@ arg_q=$4
 arg_v=$5
 arg_Y=$6
 arg_o=$7
-arg_u=$8
-arg_pkg=${*:9}
+arg_pkg=${*:8}
 
 
 # remove /tmp/log/update.log
