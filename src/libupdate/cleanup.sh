@@ -15,30 +15,32 @@ bold="\033[1m"          # bold
 #
 # Parameter List:
 #   1. Encrypted Password
-#   2. Log File
-#   3. Temp File
-#   4. Disk File
-#   5. Ruby Flag
-#   6. Node.js Flag
-#   7. Python Flag
-#   8. Homebrew Flag
-#   9. Caskroom Flag
-#  10. Quiet Flag
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Disk File
+#   6. Ruby Flag
+#   7. Node.js Flag
+#   8. Python Flag
+#   9. Homebrew Flag
+#  10. Caskroom Flag
+#  11. Quiet Flag
 ################################################################################
 
 
 # parameter assignment
 password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
-arg_gem=$5
-arg_npm=$6
-arg_pip=$7
-arg_brew=$8
-arg_cask=$9
-arg_q=${10}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $5`
+arg_gem=$6
+arg_npm=$7
+arg_pip=$8
+arg_brew=$9
+arg_cask=${10}
+arg_q=${11}
 # arg_v=${10}
 
 
@@ -84,12 +86,17 @@ fi
 # fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while true ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-5m}
+done &
+pid=$!
+
+
 # gem cleanup
 if ( $arg_gem ) ; then
-    # ask for password up-front
-    sudo --reset-timestamp
-    sudo --stdin --validate <<< $password ; echo
-
     $logprefix printf "+ ${bold}gem cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
         sudo $logprefix gem cleanup --verbose $quiet > /dev/null 2>&1
@@ -102,10 +109,6 @@ fi
 
 # npm dedupe & cache clean
 if ( $arg_npm ) ; then
-    # ask for password up-front
-    sudo --reset-timestamp
-    sudo --stdin --validate <<< $password ; echo
-
     $logprefix printf "+ ${bold}npm dedupe --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
         sudo $logprefix npm dedupe --global --verbose $quiet > /dev/null 2>&1
@@ -113,10 +116,6 @@ if ( $arg_npm ) ; then
         sudo $logprefix npm dedupe --global --verbose $quiet
     fi
     $logprefix echo | $logsuffix
-
-    # ask for password up-front
-    sudo --reset-timestamp
-    sudo --stdin --validate <<< $password ; echo
 
     $logprefix printf "+ ${bold}npm cache clean --force --global --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
@@ -130,10 +129,6 @@ fi
 
 # pip cleanup
 if ( $arg_pip ) ; then
-    # ask for password up-front
-    sudo --reset-timestamp
-    sudo --stdin --validate <<< $password ; echo
-
     $logprefix printf "+ ${bold}pip cleanup --verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
         sudo $logprefix rm -rf -v $cmd_q ~/Library/Caches/pip/*/ > /dev/null 2>&1
@@ -194,8 +189,8 @@ if [ -e "$dskfile" ] ; then
     #     $logprefix echo | $logsuffix
     # fi
 
-    # if cask flag set
-    if ( $arg_cask ) ; then
+    # if brew flag set
+    if ( $arg_brew ) ; then
         $logprefix printf "+ ${bold}brew cleanup $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix brew cleanup > /dev/null 2>&1
@@ -205,8 +200,8 @@ if [ -e "$dskfile" ] ; then
         $logprefix echo | $logsuffix
     fi
 
-    # if brew flag set
-    if ( $arg_brew ) ; then
+    # if brew or cask flag set
+    if ( $arg_brew || $arg_cask ) ; then
         $logprefix printf "+ ${bold}rm -rf -v cache $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
@@ -216,6 +211,10 @@ if [ -e "$dskfile" ] ; then
         $logprefix echo | $logsuffix
     fi
 fi
+
+
+# kill the validation daemon
+kill -2 $pid
 
 
 # aftermath works

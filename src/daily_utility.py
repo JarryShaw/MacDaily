@@ -15,7 +15,7 @@ import tarfile
 import zipfile
 
 
-__all__ = ['aftermath', 'make_pipe', 'make_path', 'archive', 'storage']
+__all__ = ['aftermath', 'make_pipe', 'make_path', 'archive', 'storage', 'sudo_timeout']
 
 
 # terminal display
@@ -57,7 +57,7 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            print(f'\nmacdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
         except BaseException as error:
             sys.tracebacklimit = 0
             raise error from None
@@ -70,6 +70,10 @@ def aftermath(*, logfile, tmpfile, command, logmode='null'):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
+            except subprocess.TimeoutExpired as error:
+                with open(logfile, 'a') as file:
+                    file.write(f'\nERR: {error}\n')
+                print(f'macdaily: {red}{command}{reset}: operation timeout', file=sys.stderr)
             except BaseException as error:
                 subprocess.run(
                     ['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
@@ -81,9 +85,16 @@ def aftermath(*, logfile, tmpfile, command, logmode='null'):
     return decorator
 
 
-def make_pipe(config):
-    username = config['Account']['username']
-    password = base64.b85decode(config['Account']['password']).decode()
+def sudo_timeout(password):
+    yes = make_pipe(password=password)
+    grep = subprocess.Popen(['sudo', '--stdin', 'grep', 'timestamp_timeout', '/etc/sudoers'], stdin=yes.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    sed = subprocess.run(['sed', r's/timestamp_timeout=\([-0-9.]*\)*/\1/'], stdin=grep.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    return (sed.stdout.strip().decode() or '5m')
+
+
+def make_pipe(config=None, *, password=None):
+    if password is None:
+        password = base64.b85decode(config['Account']['password']).decode()
     return subprocess.Popen(['yes', password], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
 
 

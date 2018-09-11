@@ -132,7 +132,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --restart --show-log --no-cask
+update  = --all --yes --pre --quiet --restart --show-log --no-gem --no-cask
 logging = --all --quiet --show-log
 
 [Account]
@@ -140,6 +140,12 @@ logging = --all --quiet --show-log
 # You must not modify this part under any circumstances.
 username = ...
 password = ********
+
+[Environment]
+# In this section, environment specifications are set up.
+# Please, under any circumstances, make sure all fields are valid.
+bash-timeout = 1_000    ; timeout limit for each shell script in seconds
+sudo-timeout = 5m       ; sudo command timeout as specified in /etc/sudoers
 ```
 
 &emsp; Above is the default content of `.dailyrc`, following the grammar of `INI` files. Lines and words after number sign (`'#'`) and semicolon (`';'`) are comments, whose main purpose is to help understanding the contents of this file.

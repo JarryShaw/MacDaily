@@ -18,27 +18,29 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Encrypted Password
-#   2. Log File
-#   3. Temp File
-#   4. Quiet Flag
-#   5. Verbose Flag
-#   6. Restart Flag
-#   7. Outdated Flag
-#   8. Package
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Quiet Flag
+#   6. Verbose Flag
+#   7. Restart Flag
+#   8. Outdated Flag
+#   9. Package
 #       ............
 ################################################################################
 
 
 # Parameter Assignment
 password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-arg_q=$4
-arg_v=$5
-arg_r=$6
-arg_o=$7
-arg_pkg=${*:8}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+arg_q=$5
+arg_v=$6
+arg_r=$7
+arg_o=$8
+arg_pkg=${*:9}
 
 
 # remove /tmp/log/update.log
@@ -81,15 +83,19 @@ else
         restart=""
     fi
 
+    # create deamon for validation
+    sudo --reset-timestamp
+    while true ; do
+        yes $password | sudo --stdin --validate
+        echo ; sleep ${timeout:-5m}
+    done &
+    pid=$!
+
     # update procedure
     for name in $arg_pkg ; do
         # All or Specified Packages
         case $name in
             all)
-                # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}softwareupdate --install --no-scan --all $restart $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     sudo $logprefix softwareupdate --install --no-scan --all $restart $verbose $quiet > /dev/null 2>&1
@@ -101,10 +107,6 @@ else
                 installed="find /Applications -path \"*Contents/_MASReceipt/receipt\" -maxdepth 4 -print | sed \"s#.app/Contents/_MASReceipt/receipt#.app#g; s#/Applications/##\""
                 flag=`$installed | sed "s/.app//" | awk "/^$name$/"`
                 if [[ ! -z $flag ]] ; then
-                    # ask for password up-front
-                    sudo --reset-timestamp
-                    sudo --stdin --validate <<< $password ; echo
-
                     $logprefix printf "+ ${bold}softwareupdate --install --no-scan $name $restart $verbose $quiet${reset}\n" | $logsuffix
                     if ( $arg_q ) ; then
                         sudo $logprefix softwareupdate --install --no-scan $name $restart $verbose $quiet > /dev/null 2>&1
@@ -125,6 +127,9 @@ else
                 fi ;;
         esac
     done
+
+    # kill the validation daemon
+    kill -2 $pid
 fi
 
 

@@ -19,13 +19,14 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Encrypted Password
-#   2. Log File
-#   3. Temp File
-#   4. System Flag
-#   5. Cellar Flag
-#   6. CPython Flag
-#   7. PyPy Flag
-#   8. Version
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. System Flag
+#   6. Cellar Flag
+#   7. CPython Flag
+#   8. PyPy Flag
+#   9. Version
 #       |-> 0  : None
 #       |-> 1  : All
 #       |-> 2  : Python 2.*
@@ -45,30 +46,31 @@ yellow="\033[93m"       # bright yellow foreground
 #       |-> 35 : Python 3.5.*
 #       |-> 36 : Python 3.6.*
 #       |-> 37 : Python 3.7.*
-#   9. Yes Flag
-#  10. Quiet Flag
-#  11. Verbose Flag
-#  12. Pre-release Flag
-#  13. Package
+#  10. Yes Flag
+#  11. Quiet Flag
+#  12. Verbose Flag
+#  13. Pre-release Flag
+#  14. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-arg_s=$4
-arg_b=$5
-arg_c=$6
-arg_y=$7
-arg_V=$8
-arg_Y=$9
-arg_q=${10}
-arg_v=${11}
-arg_P=${12}
-arg_pkg=${*:13}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+arg_s=$5
+arg_b=$6
+arg_c=$7
+arg_y=$8
+arg_V=$9
+arg_Y=${10}
+arg_q=${11}
+arg_v=${12}
+arg_P=${13}
+arg_pkg=${*:14}
 
 
 # remove /tmp/log/update.log
@@ -107,10 +109,6 @@ function pip_fixbroken {
 
     # reinstall broken dependencies
     for pkg in $arg_pkg ; do
-        # ask for password up-front
-        sudo --reset-timestamp
-        sudo --stdin --validate <<< $password ; echo
-
         $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir --ignore-installed $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $pkg $verbose $quiet > /dev/null 2>&1
@@ -238,10 +236,6 @@ function pipupdate {
                                 macdaily )
                                     $logprefix printf "update: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to update after\n\n" | $logsuffix ;;
                                 * )
-                                    # ask for password up-front
-                                    sudo --reset-timestamp
-                                    sudo --stdin --validate <<< $password ; echo
-
                                     $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $pkg $pre $verbose $quiet${reset}\n" | $logsuffix
                                     if ( $arg_q ) ; then
                                         sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $pkg $pre $verbose $quiet > /dev/null 2>&1
@@ -254,13 +248,11 @@ function pipupdate {
                     else
                         $logprefix printf "update: ${green}pip${reset}: all ${bold}pip$pprint packages${reset} have been up-to-date\n\n" | $logsuffix
                     fi ;;
+                macdaily)
+                    $logprefix printf "update: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to update after\n\n" | $logsuffix ;;
                 *)
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ ! -z $flag ]]; then
-                        # ask for password up-front
-                        sudo --reset-timestamp
-                        sudo --stdin --validate <<< $password ; echo
-
                         $logprefix printf "++ ${bold}pip$pprint install --upgrade --no-cache-dir $name $pre $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
                             sudo --set-home $logprefix $prefix/$suffix -m pip install --upgrade --no-cache-dir $name $pre $verbose $quiet > /dev/null 2>&1
@@ -491,6 +483,15 @@ if ( $arg_y ) ; then
 fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while true ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-5m}
+done &
+pid=$!
+
+
 # call piplogging function according to modes
 list=( \
     [1]=$mode_pip_sys20 $mode_pip_sys21 $mode_pip_sys22 $mode_pip_sys23 $mode_pip_sys24 $mode_pip_sys25 $mode_pip_sys26 $mode_pip_sys27 \
@@ -502,6 +503,10 @@ for index in ${!list[*]} ; do
         pipupdate $index
     fi
 done
+
+
+# kill the validation daemon
+kill -2 $pid
 
 
 # if no pip updated

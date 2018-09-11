@@ -18,29 +18,31 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Encrypted Password
-#   2. Log File
-#   3. Temp File
-#   4. Quiet Flag
-#   5. Verbose Flag
-#   6. Force Flag
-#   7. Greedy Flag
-#   8. Outdated Flag
-#   9. Package
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Quiet Flag
+#   6. Verbose Flag
+#   7. Force Flag
+#   8. Greedy Flag
+#   9. Outdated Flag
+#  10. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-arg_q=$4
-arg_v=$5
-arg_f=$6
-arg_g=$7
-arg_o=$8
-arg_pkg=${*:9}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+arg_q=$5
+arg_v=$6
+arg_f=$7
+arg_g=$8
+arg_o=$9
+arg_pkg=${*:10}
 
 
 # remove /tmp/log/update.log
@@ -90,12 +92,16 @@ else
         force=""
     fi
 
+    # create deamon for validation
+    sudo --reset-timestamp
+    while true ; do
+        yes $password | sudo --stdin --validate
+        echo ; sleep ${timeout:-5m}
+    done &
+    pid=$!
+
     # if greedy flag set
     if ( $arg_g ) ; then
-        # ask for password up-front
-        sudo --reset-timestamp
-        sudo --stdin --validate <<< $password ; echo
-
         $logprefix printf "+ ${bold}brew cask upgrade --greedy $force $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix brew cask upgrade --greedy $verbose $forc $quiet > /dev/null 2>&1
@@ -108,10 +114,6 @@ else
         for name in $arg_pkg ; do
             flag=`brew cask list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
-                # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}brew cask upgrade $name $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask upgrade --force $name $verbose $quiet > /dev/null 2>&1
@@ -136,6 +138,9 @@ else
             fi
         done
     fi
+
+    # kill the validation daemon
+    kill -2 $pid
 fi
 
 
