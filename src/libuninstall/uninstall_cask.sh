@@ -85,6 +85,21 @@ else
 fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while [ -f "$tmpfile" ] ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-150}
+done &
+pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
+
+
 # uninstall procedure
 for name in $arg_pkg ; do
     case $name in
@@ -92,9 +107,6 @@ for name in $arg_pkg ; do
             list=`brew cask list -1`
             for pkg in $list ; do
                 # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}brew cask uninstall $pkg $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $pkg $force $verbose $quiet > /dev/null 2>&1
@@ -107,10 +119,6 @@ for name in $arg_pkg ; do
             # check if package installed
             flag=`brew cask list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
-                # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}brew cask uninstall $name $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew cask uninstall $name $force $verbose $quiet > /dev/null 2>&1
@@ -133,8 +141,13 @@ for name in $arg_pkg ; do
 done
 
 
+# kill the validation daemon
+kill -0 $pid > /dev/null 2>&1
+
+
 # aftermath works
-bash ./libuninstall/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log

@@ -63,7 +63,8 @@ done
 
 
 # aftermath works
-bash ./libuninstall/aftermath.sh "$logfile" "$logdate"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log

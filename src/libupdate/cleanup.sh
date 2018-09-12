@@ -88,11 +88,17 @@ fi
 
 # create deamon for validation
 sudo --reset-timestamp
-while true ; do
+while [ -f "$tmpfile" ] ; do
     yes $password | sudo --stdin --validate
-    sleep ${timeout:-300}
+    echo ; sleep ${timeout:-150}
 done &
 pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
 
 
 # gem cleanup
@@ -214,7 +220,7 @@ fi
 
 
 # kill the validation daemon
-kill -2 $pid
+kill -0 $pid > /dev/null 2>&1
 
 
 # aftermath works

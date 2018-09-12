@@ -17,22 +17,26 @@ yellow="\033[93m"       # bright yellow foreground
 # Postinstall Homebrew packages.
 #
 # Parameter list:
-#   1. Log File
-#   2. Temp File
-#   3. Quiet Flag
-#   4. Verbose Flag
-#   5. Package
+#   1. Encrypted Password
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Quiet Flag
+#   6. Verbose Flag
+#   7. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-arg_q=$3
-arg_v=$4
-arg_pkg=${*:5}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+arg_q=$5
+arg_v=$6
+arg_pkg=${*:7}
 
 
 # remove /tmp/log/postinstall.log
@@ -71,6 +75,21 @@ if ( $arg_v ) ; then
 else
     verbose=""
 fi
+
+
+# create deamon for validation
+sudo --reset-timestamp
+while [ -f "$tmpfile" ] ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-150}
+done &
+pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
 
 
 # postinstall procedure
@@ -112,8 +131,13 @@ for name in $arg_pkg ; do
 done
 
 
+# kill the validation daemon
+kill -0 $pid > /dev/null 2>&1
+
+
 # aftermath works
-bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "postinstall"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile" "false" "postinstall"
 
 
 # remove /tmp/log/postinstall.log

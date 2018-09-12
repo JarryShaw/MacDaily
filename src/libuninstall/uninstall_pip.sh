@@ -107,10 +107,6 @@ function pipuninstall {
     # dependency list
     list=`$prefix/$suffix -m pip show $arg_pkg | grep "Requires: " | sed "s/Requires: //" | sed "s/,//g"`
 
-    # ask for password up-front
-    sudo --reset-timestamp
-    sudo --stdin --validate <<< $password ; echo
-
     # uninstall procedure
     $logprefix printf "++ ${bold}pip$pprint uninstall $arg_pkg $idep $verbose $quiet${reset}\n" | $logsuffix
     if ( $arg_q ) ; then
@@ -125,16 +121,12 @@ function pipuninstall {
         for name in $list ; do
             case $name in
                 # keep fundamental packages
-                appdirs|packaging|pip|pyparsing|setuptools|six)
+                appdirs|cffi|greenlet|packaging|pip|pyparsing|readline|setuptools|six|wheel)
                     : ;;
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
                     if [[ ! -z $flag ]]; then
-                        # ask for password up-front
-                        sudo --reset-timestamp
-                        sudo --stdin --validate <<< $password ; echo
-
                         $logprefix printf "++ ${bold}pip$pprint uninstall $name --yes $verbose $quiet${reset}\n" | $logsuffix
                         if ( $arg_q ) ; then
                             sudo --set-home $logprefix $prefix/$suffix -m pip uninstall --yes $name $verbose $quiet > /dev/null 2>&1
@@ -164,10 +156,6 @@ function pip_fixmissing {
 
     # reinstall missing packages
     for name in $arg_pkg ; do
-        # ask for password up-front
-        sudo --reset-timestamp
-        sudo --stdin --validate <<< $password ; echo
-
         $logprefix printf "++ ${bold}pip$pprint reinstall --no-cache-dir $name $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             sudo --set-home $logprefix $prefix/$suffix -m pip install --no-cache-dir $name $verbose $quiet > /dev/null 2>&1
@@ -290,11 +278,9 @@ function piplogging {
                             # keep fundamental packages
                             appdirs|cffi|greenlet|packaging|pip|pyparsing|readline|setuptools|six|wheel)
                                 : ;;
+                            macdaily)
+                                $logprefix printf "uninstall: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to uninstall after\n\n" | $logsuffix ;;
                             *)
-                                # ask for password up-front
-                                sudo --reset-timestamp
-                                sudo --stdin --validate <<< $password ; echo
-
                                 $logprefix printf "++ ${bold}pip$pprint uninstall $pkg $yes $verbose $quiet${reset}\n" | $logsuffix
                                 if ( $arg_q ) ; then
                                     sudo --set-home $logprefix $prefix/$suffix -m uninstall $pkg $yes $verbose $quiet > /dev/null 2>&1
@@ -304,6 +290,8 @@ function piplogging {
                                 $logprefix echo | $logsuffix ;;
                         esac
                     done ;;
+                macdaily)
+                    $logprefix printf "uninstall: ${yellow}pip${reset}: pip$pprint package \`${bold}${under}macdaily${reset}\` is to uninstall after\n\n" | $logsuffix ;;
                 *)
                     # check if package installed
                     flag=`$prefix/$suffix -m pip list --no-cache-dir --format freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/" | awk "/^$name$/"`
@@ -538,6 +526,21 @@ if ( $arg_y ) ; then
 fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while [ -f "$tmpfile" ] ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-150}
+done &
+pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
+
+
 # call piplogging function according to modes
 list=( \
     [1]=$mode_pip_sys20 $mode_pip_sys21 $mode_pip_sys22 $mode_pip_sys23 $mode_pip_sys24 $mode_pip_sys25 $mode_pip_sys26 $mode_pip_sys27 \
@@ -561,8 +564,13 @@ if ( ! $( \
 fi
 
 
+# kill the validation daemon
+kill -0 $pid > /dev/null 2>&1
+
+
 # aftermath works
-bash ./libuninstall/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log

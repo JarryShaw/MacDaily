@@ -94,7 +94,8 @@ done
 
 
 # aftermath works
-bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "$logmode"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile" "false" "$logmode"
 
 
 # remove /tmp/log/logmode.log

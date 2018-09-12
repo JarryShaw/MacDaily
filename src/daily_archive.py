@@ -17,9 +17,9 @@ green  = '\033[92m'     # bright green foreground
 
 def archive(config, *, logdate, today):
     filelist = list()
-    for mode in {   'update', 'uninstall', 'reinstall', 'postinstall', 'dependency',
-                    'logging/apm', 'logging/gem', 'logging/pip', 'logging/npm',
-                    'logging/brew', 'logging/cask', 'logging/dotapp', 'logging/macapp', 'logging/appstore'  }:
+    for mode in {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency',
+                 'logging/apm', 'logging/gem', 'logging/pip', 'logging/npm',
+                 'logging/brew', 'logging/cask', 'logging/dotapp', 'logging/macapp', 'logging/appstore'}:
         tmppath, logpath, arcpath, tarpath = make_path(config, mode=mode, logdate=logdate)
         filelist.extend(archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today, mvflag=False))
     filelist.extend(storage(config, logdate=logdate, today=today))

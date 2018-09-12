@@ -10,7 +10,7 @@ from macdaily.daily_utility import beholder
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.12'
 
 
 # root path
@@ -39,13 +39,13 @@ def bundle(argv, config, *, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
-    timeout = config['Environment'].getint('bash-timeout', fallback=1_000) * 4
+    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1_000) * 4
     if args.command in ('load'):
-        subprocess.run( ['bash', os.path.join(ROOT, 'libbundle/load.sh')],
-                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout   )
+        subprocess.run(['bash', os.path.join(ROOT, 'libbundle/load.sh')],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     elif args.command in ('dump'):
-        subprocess.run( ['bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()],
-                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout   )
+        subprocess.run(['bash', os.path.join(ROOT, 'libbundle/dump.sh'), str(args.verbose).lower()],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     else:
         parser.print_help()
 

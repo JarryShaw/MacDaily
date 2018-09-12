@@ -6,6 +6,7 @@ import base64
 import datetime
 import os
 import pwd
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,7 +17,7 @@ from macdaily.libprinstall import *
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.12'
 
 
 # display mode names
@@ -47,6 +48,8 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+length = shutil.get_terminal_size().columns
+                        # terminal length
 
 
 def get_parser():
@@ -217,7 +220,7 @@ def reinstall(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='reinstall', logdate=logdate)
-    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='reinstall-', suffix='.log')
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='reinstall@', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = tmpfile.name
 
@@ -234,60 +237,62 @@ def reinstall(argv, config, *, logdate, logtime, today):
             logfile.write(f'ARG: {key} = {value}\n')
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(
-            ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     for mode in config['Mode'].keys():
         try:
-            flag = not config['Mode'].getboolean(mode)
+            flag = not config['Mode'].getboolean(mode, fallback=False)
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:
-            setattr(args, f'no_{mode}', flag)
+        if flag:    setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
         args.mode = ['all']
 
+    arcdir = config['Path']['arcdir']
+    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1_000)
+    sudo_timeout = str(config['Environment'].getint('sudo-timeout', fallback=300) // 2)
+
     for mode in set(args.mode):
         reinstall = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='reinstall'
-                )(reinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS)
+        log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='reinstall')(
+                reinstall)(args, file=logname, temp=tmpname, disk=arcdir, password=PASS, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
-    mode = '-*- Reinstall Logs -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
+    if log != dict():
         if not args.quiet:
-            print(f'-*- {blue}Reinstall Logs{reset} -*-\n')
+            print(f'-*- {blue}Reinstall Logs{reset} -*-'.center(length, ' '), '\n', sep='')
+        mode = '-*- Reinstall Logs -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(f'\n\n{mode}\n\n')
 
-        for mode in log:
-            name = NAME.get(mode)
-            if name is None:    continue
-            if log[mode] and all(log[mode]):
-                pkgs = f', '.join(log[mode])
-                logfile.write(f'LOG: reinstalled following {name} packages: {pkgs}\n')
+            for mode in log:
+                name = NAME.get(mode)
+                if name is None:    continue
+                if log[mode] and all(log[mode]):
+                    pkgs = f', '.join(log[mode])
+                    logfile.write(f'LOG: reinstalled following {name} packages: {pkgs}\n')
+                    if not args.quiet:
+                        pkgs_coloured = f'{reset}, {red}'.join(log[mode])
+                        print(f'reinstall: {green}{mode}{reset}: '
+                              f'reinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}')
+                else:
+                    logfile.write(f"LOG: no package reinstalled in {name}\n")
+                    if not args.quiet:
+                        print(f'reinstall: {green}{mode}{reset}: no package reinstalled in {bold}{name}{reset}')
+
+            filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+            if filelist:
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following ancient logs: {files}\n')
                 if not args.quiet:
-                    pkgs_coloured = f'{reset}, {red}'.join(log[mode])
-                    print(  f'reinstall: {green}{mode}{reset}: '
-                            f'reinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'  )
+                    print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
             else:
-                logfile.write(f"LOG: no package reinstalled in {name}\n")
+                logfile.write(f'LOG: no ancient logs archived\n')
                 if not args.quiet:
-                    print(f'reinstall: {green}{mode}{reset}: no package reinstalled in {bold}{name}{reset}')
-
-        filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
-        if filelist:
-            files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following ancient logs: {files}\n')
-            if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
-        else:
-            logfile.write(f'LOG: no ancient logs archived\n')
-            if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
+                    print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
     try:    tmpfile.close()
     except: pass

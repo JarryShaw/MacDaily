@@ -18,29 +18,31 @@ yellow="\033[93m"       # bright yellow foreground
 #
 # Parameter list:
 #   1. Encrypted Password
-#   2. Log File
-#   3. Temp File
-#   4. Force Flag
-#   5. Quiet Flag
-#   6. Verbose Flag
-#   7. Ignore-Dependencies Flag
-#   8. Yes Flag
-#   9. Package
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Force Flag
+#   6. Quiet Flag
+#   7. Verbose Flag
+#   8. Ignore-Dependencies Flag
+#   9. Yes Flag
+#  10. Package
 #       ............
 ################################################################################
 
 
 # parameter assignment
 password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-arg_f=$4
-arg_q=$5
-arg_v=$6
-arg_i=$7
-arg_Y=$8
-arg_pkg=${*:9}
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+arg_f=$5
+arg_q=$6
+arg_v=$7
+arg_i=$8
+arg_Y=$9
+arg_pkg=${*:10}
 
 
 # remove /tmp/log/uninstall.log
@@ -73,10 +75,6 @@ function brew_fixmissing {
 
     # reinstall missing packages
     for $name in $arg_pkg ; do
-        # ask for password up-front
-        sudo --reset-timestamp
-        sudo --stdin --validate <<< $password ; echo
-
         $logprefix printf "+ ${bold}brew reinstall $name $force $verbose $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix brew reinstall $name $force $verbose $quiet > /dev/null 2>&1
@@ -115,16 +113,27 @@ else
 fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while [ -f "$tmpfile" ] ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-150}
+done &
+pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
+
+
 # uninstall procedure
 for name in $arg_pkg ; do
     case $name in
         all)
             list=`brew list -1`
             for pkg in $list; do
-                # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}brew uninstall $pkg --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew uninstall $pkg --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1
@@ -137,10 +146,6 @@ for name in $arg_pkg ; do
             # check if package installed
             flag=`brew list -1 | awk "/^$name$/"`
             if [[ ! -z $flag ]] ; then
-                # ask for password up-front
-                sudo --reset-timestamp
-                sudo --stdin --validate <<< $password ; echo
-
                 $logprefix printf "+ ${bold}brew uninstall $name --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                 if ( $arg_q ) ; then
                     $logprefix brew uninstall $name --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1
@@ -155,10 +160,6 @@ for name in $arg_pkg ; do
                     for pkg in $list; do
                         # check if package installed
                         if brew list --versions $pkg > /dev/null ; then
-                            # ask for password up-front
-                            sudo --reset-timestamp
-                            sudo --stdin --validate <<< $password ; echo
-
                             $logprefix printf "+ ${bold}brew uninstall $pkg --ignore-dependencies $force $verbose $quiet${reset}\n" | $logsuffix
                             if ( $arg_q ) ; then
                                 $logprefix brew uninstall $pkg --ignore-dependencies $force $verbose $quiet > /dev/null 2>&1
@@ -212,8 +213,13 @@ if [[ ! -z $tmparg ]] ; then
 fi
 
 
+# kill the validation daemon
+kill -0 $pid > /dev/null 2>&1
+
+
 # aftermath works
-bash ./libuninstall/aftermath.sh "$logfile" "$tmpfile"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile"
 
 
 # remove /tmp/log/uninstall.log

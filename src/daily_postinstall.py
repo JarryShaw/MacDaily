@@ -6,6 +6,7 @@ import base64
 import datetime
 import os
 import pwd
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,7 +17,7 @@ from macdaily.libprinstall import postinstall
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.12'
 
 
 # terminal commands
@@ -31,6 +32,8 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+length = shutil.get_terminal_size().columns
+                        # terminal length
 
 
 def get_parser():
@@ -107,43 +110,44 @@ def postinstall(argv, config, *, logdate, logtime, today):
             logfile.write(f'ARG: {key} = {value}\n')
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(
-            ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='postinstall'
-            )(postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS)
+    log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='postinstall')(
+            postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS,
+                         bash_timeout=config['Environment'].getint('bash-timeout', fallback=1_000),
+                         sudo_timeout=str(config['Environment'].getint('sudo-timeout', fallback=300) // 2))
 
-    mode = '-*- Postinstall Logs -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
+    if log != dict():
         if not args.quiet:
-            print(f'-*- {blue}Postinstall Logs{reset} -*-\n')
+            print(f'-*- {blue}Postinstall Logs{reset} -*-'.center(length, ' '), '\n', sep='')
+        mode = '-*- Postinstall Logs -*-'.center(80, ' ')
+        with open(logname, 'a') as logfile:
+            logfile.write(f'\n\n{mode}\n\n')
 
-        mode = 'brew';  name = 'Homebrew'
-        if log and all(log):
-            pkgs = f', '.join(log)
-            logfile.write(f'LOG: postinstalled following {name} packages: {pkgs}\n')
-            if not args.quiet:
-                pkgs_coloured = f'{reset}, {red}'.join(log)
-                print(  f'postinstall: {green}{mode}{reset}: '
-                        f'postinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}'    )
-        else:
-            logfile.write(f"LOG: no package postinstalled in {name}\n")
-            if not args.quiet:
-                print(f'postinstall: {green}{mode}{reset}: no package postinstalled in {bold}{name}{reset}')
+            mode = 'brew';  name = 'Homebrew'
+            if log and all(log):
+                pkgs = f', '.join(log)
+                logfile.write(f'LOG: postinstalled following {name} packages: {pkgs}\n')
+                if not args.quiet:
+                    pkgs_coloured = f'{reset}, {red}'.join(log)
+                    print(f'postinstall: {green}{mode}{reset}: '
+                          f'postinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}')
+            else:
+                logfile.write(f"LOG: no package postinstalled in {name}\n")
+                if not args.quiet:
+                    print(f'postinstall: {green}{mode}{reset}: no package postinstalled in {bold}{name}{reset}')
 
-        filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
-        if filelist:
-            files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following ancient logs: {files}\n')
-            if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
-        else:
-            logfile.write(f'LOG: no ancient logs archived\n')
-            if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
+            filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+            if filelist:
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following ancient logs: {files}\n')
+                if not args.quiet:
+                    print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+            else:
+                logfile.write(f'LOG: no ancient logs archived\n')
+                if not args.quiet:
+                    print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
     try:    tmpfile.close()
     except: pass

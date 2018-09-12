@@ -132,7 +132,7 @@ schedule    =           ; scheduled timing (in 24 hours)
 [Option]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --restart --show-log --no-gem --no-cask
+update  = --all --yes --pre --quiet --show-log --no-gem --no-cask
 logging = --all --quiet --show-log
 
 [Account]

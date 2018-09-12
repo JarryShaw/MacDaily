@@ -16,7 +16,7 @@ from macdaily.liblogging import *
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.12'
 
 
 # mode actions
@@ -139,7 +139,7 @@ def logging(argv, config, *, logdate, logtime, today):
     if args.all:
         for mode in {'apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore'}:
             try:
-                flag = config['Mode'].getboolean(mode)
+                flag = config['Mode'].getboolean(mode, fallback=False)
             except ValueError as error:
                 sys.tracebacklimit = 0
                 raise error from None
@@ -154,6 +154,7 @@ def logging(argv, config, *, logdate, logtime, today):
     PIPE = make_pipe(config)
     USER = config['Account']['username']
     PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+    BASH = config['Environment'].getint('bash-timeout', fallback=1_000)
 
     arcflag = False
     for logmode in args.mode:
@@ -168,14 +169,12 @@ def logging(argv, config, *, logdate, logtime, today):
             logfile.write('\n\n')
 
         if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-            subprocess.run(
-                ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
+            subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         try:
             logging = MODE.get(logmode)
-            log = logging(args, file=shlex.quote(logname), password=PASS)
+            log = logging(args, file=shlex.quote(logname), password=PASS, bash_timeout=BASH)
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
                 logfile.write(f'\nERR: {error}\n')
@@ -200,9 +199,12 @@ def logging(argv, config, *, logdate, logtime, today):
             subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     storage(config, logdate=logdate, today=today)
-    if arcflag and not args.quiet:
-        arcdir = config['Path']['logdir'] + '/archive/logging'
-        print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+    if not args.quiet:
+        if arcflag:
+            arcdir = config['Path']['logdir'] + '/archive/logging'
+            print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+        else:
+            print(f'logging: {green}cleanup{reset}: no ancient logs archived')
 
 
 @beholder

@@ -14,25 +14,29 @@ bold="\033[1m"          # bold
 # Clean up caches.
 #
 # Parameter List:
-#   1. Log File
-#   2. Temp File
-#   3. Disk File
-#   4. Log Mode
-#   5. Homebrew Flag
-#   6. Caskroom Flag
-#   7. Quiet Flag
+#   1. Encrypted Password
+#   2. Timeout Limit
+#   3. Log File
+#   4. Temp File
+#   5. Disk File
+#   6. Log Mode
+#   7. Homebrew Flag
+#   8. Caskroom Flag
+#   9. Quiet Flag
 ################################################################################
 
 
 # parameter assignment
+password=`python -c "print(__import__('base64').b64decode(__import__('sys').stdin.readline().strip()).decode())" <<< $1`
+timeout=$2
 # echo $1 | cut -c2- | rev | cut -c2- | rev
-logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $1`
-tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $2`
-dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
-logmode=$4
-arg_brew=$5
-arg_cask=$6
-arg_q=$7
+logfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $3`
+tmpfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $4`
+dskfile=`python -c "print(__import__('sys').stdin.readline().strip().strip('\''))" <<< $5`
+logmode=$6
+arg_brew=$7
+arg_cask=$8
+arg_q=$9
 # arg_v=$8
 
 
@@ -78,6 +82,21 @@ fi
 # fi
 
 
+# create deamon for validation
+sudo --reset-timestamp
+while [ -f "$tmpfile" ] ; do
+    yes $password | sudo --stdin --validate
+    echo ; sleep ${timeout:-150}
+done &
+pid=$!
+
+
+# make traps
+trap "exit 2" 1 2 3 15
+trap "rm -f $tmpfile" 1 2 3 15
+trap "kill $pid > /dev/null 2>&1" 0
+
+
 # brew prune
 if ( $arg_brew || $arg_cask ) ; then
     $logprefix printf "+ ${bold}brew prune --verbose $quiet${reset}\n" | $logsuffix
@@ -115,9 +134,20 @@ if [ -e "$dskfile" ] ; then
         $logprefix echo | $logsuffix
     fi
 
-    # if brew or cask flag set
-    if $( $arg_brew || $arg_cask ) ; then
-        $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
+    # # if brew or cask flag set
+    # if $( $arg_brew || $arg_cask ) ; then
+    #     $logprefix printf "+ ${bold}brew cleanup $quiet${reset}\n" | $logsuffix
+    #     if ( $arg_q ) ; then
+    #         $logprefix brew cleanup > /dev/null 2>&1
+    #     else
+    #         $logprefix brew cleanup
+    #     fi
+    #     $logprefix echo | $logsuffix
+    # fi
+
+    # if brew flag set
+    if ( $arg_brew ) ; then
+        $logprefix printf "+ ${bold}brew cleanup $quiet${reset}\n" | $logsuffix
         if ( $arg_q ) ; then
             $logprefix brew cleanup > /dev/null 2>&1
         else
@@ -126,32 +156,26 @@ if [ -e "$dskfile" ] ; then
         $logprefix echo | $logsuffix
     fi
 
-    # # if cask flag set
-    # if ( $arg_cask ) ; then
-    #     $logprefix printf "+ ${bold}brew cask cleanup --verbose $quiet${reset}\n" | $logsuffix
-    #     if ( $arg_q ) ; then
-    #         $logprefix brew cask cleanup --verbose > /dev/null 2>&1
-    #     else
-    #         $logprefix brew cask cleanup --verbose
-    #     fi
-    #     $logprefix echo | $logsuffix
-    # fi
-
-    # # if brew flag set
-    # if ( $arg_brew ) ; then
-    #     $logprefix printf "+ ${bold}brew cleanup --verbose $quiet${reset}\n" | $logsuffix
-    #     if ( $arg_q ) ; then
-    #         $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
-    #     else
-    #         $logprefix rm -rf -v $( brew --cache )
-    #     fi
-    #     $logprefix echo | $logsuffix
-    # fi
+    # if brew or cask flag set
+    if ( $arg_brew || $arg_cask ) ; then
+        $logprefix printf "+ ${bold}rm -rf -v cache $quiet${reset}\n" | $logsuffix
+        if ( $arg_q ) ; then
+            $logprefix rm -rf -v $( brew --cache ) > /dev/null 2>&1
+        else
+            $logprefix rm -rf -v $( brew --cache )
+        fi
+        $logprefix echo | $logsuffix
+    fi
 fi
 
 
+# kill the validation daemon
+kill -0 $pid > /dev/null 2>&1
+
+
 # aftermath works
-bash ./libprinstall/aftermath.sh "$logfile" "$tmpfile" "false" "$logmode"
+aftermath=`python -c "import os; print(os.path.join(os.path.dirname(os.path.abspath('$0')), 'aftermath.sh'))"`
+bash $aftermath "$logfile" "$tmpfile" "false" "$logmode"
 
 
 # remove /tmp/log/logmode.log

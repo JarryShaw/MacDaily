@@ -1,30 +1,28 @@
 # -*- coding: utf-8 -*-
 
 
+import os
 import platform
 import setuptools
 import sys
 
 
-# error handling class
-class UnsupoortedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
-
-
 # check platform
 if platform.system() != 'Darwin':
+    class UnsupoortedOS(RuntimeError):
+        def __init__(self, message, *args, **kwargs):
+            sys.tracebacklimit = 0
+            super().__init__(message, *args, **kwargs)
     raise UnsupoortedOS('macdaily: script runs only on macOS')
 
 
 # README
-with open('./README.md', 'r') as file:
+with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:
     long_desc = file.read()
 
 
 # version
-__version__ = '2018.09.11.post3'
+__version__ = '2018.09.12b1'
 
 
 # set-up script for pip distribution

@@ -6,6 +6,7 @@ import base64
 import datetime
 import os
 import pwd
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,7 +17,7 @@ from macdaily.libdependency import *
 
 
 # version string
-__version__ = '2018.09.11'
+__version__ = '2018.09.12'
 
 
 # display mode names
@@ -46,6 +47,8 @@ under  = '\033[4m'      # underline
 red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 blue   = '\033[96m'     # bright blue foreground
+length = shutil.get_terminal_size().columns
+                        # terminal length
 
 
 def get_parser():
@@ -167,13 +170,13 @@ def dependency(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
-    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency-', suffix='.log')
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency@', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
-    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+    BASH = config['Environment'].getint('bash-timeout', fallback=1_000)
 
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
@@ -184,19 +187,16 @@ def dependency(argv, config, *, logdate, logtime, today):
             logfile.write(f'ARG: {key} = {value}\n')
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(
-            ['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     for mode in config['Mode'].keys():
         try:
-            flag = not config['Mode'].getboolean(mode)
+            flag = not config['Mode'].getboolean(mode, fallback=False)
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:
-            setattr(args, f'no_{mode}', flag)
+        if flag:    setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -204,30 +204,31 @@ def dependency(argv, config, *, logdate, logtime, today):
 
     for mode in set(args.mode):
         dependency = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='update'
-                )(dependency)(args, file=logname, temp=tmpname, password=PASS)
+        log = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
+                dependency)(args, file=logname, temp=tmpname, bash_timeout=BASH)
 
     mode = '-*- Dependency Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
 
-        for mode in log:
-            name = NAME.get(mode)
-            if name is None:    continue
-            if log[mode] and all(log[mode]):
-                pkgs = f', '.join(log[mode])
-                logfile.write(f'LOG: showed dependencies of following {name} packages: {pkgs}\n')
-            else:
-                logfile.write(f'LOG: no dependencies showed in {name} packages\n')
+        if log != dict():
+            for mode in log:
+                name = NAME.get(mode)
+                if name is None:    continue
+                if log[mode] and all(log[mode]):
+                    pkgs = f', '.join(log[mode])
+                    logfile.write(f'LOG: showed dependencies of following {name} packages: {pkgs}\n')
+                else:
+                    logfile.write(f'LOG: no dependencies showed in {name} packages\n')
 
-        filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
-        if filelist:
-            files = ', '.join(filelist)
-            logfile.write(f'LOG: archived following old logs: {files}\n')
+            filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+            if filelist:
+                files = ', '.join(filelist)
+                logfile.write(f'LOG: archived following old logs: {files}\n')
+            else:
+                logfile.write('LOG: no ancient logs archived\n')
         else:
-            logfile.write(f'LOG: no ancient logs archived\n')
-            if not args.quiet:
-                print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
+            logfile.write('LOG: no dependencies showed\n')
 
     try:    tmpfile.close()
     except: pass
