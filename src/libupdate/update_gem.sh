@@ -83,6 +83,13 @@ else
         verbose=""
     fi
 
+    # if yes flag set
+    if ( $arg_Y ) ; then
+        yes="yes y |"
+    else
+        yes=""
+    fi
+
     # create deamon for validation
     sudo --reset-timestamp
     while [ -f "$tmpfile" ] ; do
@@ -101,26 +108,16 @@ else
         flag=`gem list | sed "s/\(.*\)* (.*)/\1/" | awk "/^$name$/"`
         if [[ ! -z $flag ]] ; then
             $logprefix printf "+ ${bold}gem update $name $verbose $quiet${reset}\n" | $logsuffix
-            if ( $arg_q ) ; then
-                sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
-            else
-                sudo $logprefix gem update $name $verbose $quiet
-            fi
             # if ( $arg_q ) ; then
-            #     # if yes flag set
-            #     if ( $arg_Y ) ; then
-            #         sudo $logprefix gem update $name $verbose $quiet <<< "yyyyyyyyyyy" > /dev/null 2>&1
-            #     else
-            #         sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
-            #     fi
+            #     sudo $logprefix gem update $name $verbose $quiet > /dev/null 2>&1
             # else
-            #     # if yes flag set
-            #     if ( $arg_Y ) ; then
-            #         sudo $logprefix gem update $name $verbose $quiet <<< "yyyyyyyyyyy"
-            #     else
-            #         sudo $logprefix gem update $name $verbose $quiet
-            #     fi
+            #     sudo $logprefix gem update $name $verbose $quiet
             # fi
+            if ( $arg_q ) ; then
+                sudo $logprefix bash -c "$yes gem update $name $verbose $quiet" > /dev/null 2>&1
+            else
+                sudo $logprefix bash -c "$yes gem update $name $verbose $quiet"
+            fi
             $logprefix echo | $logsuffix
         else
             $logprefix printf "update: ${yellow}gem${reset}: no gem names ${red}$name${reset} installed\n" | $logsuffix

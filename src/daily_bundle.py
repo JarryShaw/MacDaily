@@ -4,6 +4,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 from macdaily.daily_config import parse
 from macdaily.daily_utility import beholder
