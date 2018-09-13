@@ -37,15 +37,11 @@ def check(parse):
     @functools.wraps(parse)
     def wrapper():
         config = parse()
-        subprocess.run(
-            ['sudo', '--reset-timestamp'],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run(['sudo', '--reset-timestamp'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         PIPE = make_pipe(config)
-        SUDO = subprocess.run(
-            ['sudo', '--stdin', '--validate'],
-            stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        SUDO = subprocess.run(['sudo', '--stdin', '--validate'],
+                              stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if SUDO.returncode == 0:    return config
         raise PasswordError(1, f"Invalid password for {config['Account']['username']!r}")
     return wrapper
@@ -58,6 +54,7 @@ def beholder(func):
             return func(*args, **kwargs)
         except KeyboardInterrupt:
             print(f'\nmacdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            sys.exit(130)
         except BaseException as error:
             sys.tracebacklimit = 0
             raise error from None
@@ -74,11 +71,10 @@ def aftermath(*, logfile, tmpfile, command, logmode='null'):
                 with open(logfile, 'a') as file:
                     file.write(f'\nERR: {error}\n')
                 print(f'macdaily: {red}{command}{reset}: operation timeout', file=sys.stderr)
+                sys.exit(32)
             except BaseException as error:
-                subprocess.run(
-                    ['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-                )
+                subprocess.run(['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 sys.tracebacklimit = 0
                 raise error from None
         return wrapper
