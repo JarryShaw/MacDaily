@@ -3,6 +3,7 @@
 
 import argparse
 import base64
+import contextlib
 import datetime
 import multiprocessing
 import os
@@ -19,7 +20,7 @@ from macdaily.libupdate import *
 
 
 # version string
-__version__ = '2018.09.13'
+__version__ = '2018.09.14'
 
 
 # display mode names
@@ -566,8 +567,8 @@ def update(argv, config, *, logdate, logtime, today):
                         print(f'update: {red}macdaily{reset}: process failed, please try manually')
                     logfile.write('ERR: please try manually update macdaily\n')
 
-    try:    tmpfile.close()
-    except: pass
+    with contextlib.suppress(Exception):
+        tmpfile.close()
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 

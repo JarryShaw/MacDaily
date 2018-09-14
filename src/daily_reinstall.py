@@ -3,6 +3,7 @@
 
 import argparse
 import base64
+import contextlib
 import datetime
 import os
 import pwd
@@ -17,7 +18,7 @@ from macdaily.libprinstall import *
 
 
 # version string
-__version__ = '2018.09.12'
+__version__ = '2018.09.14'
 
 
 # display mode names
@@ -294,8 +295,8 @@ def reinstall(argv, config, *, logdate, logtime, today):
                 if not args.quiet:
                     print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
-    try:    tmpfile.close()
-    except: pass
+    with contextlib.suppress(Exception):
+        tmpfile.close()
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
