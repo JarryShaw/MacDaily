@@ -22,7 +22,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:
 
 
 # version
-__version__ = '2018.09.14'
+__version__ = '2018.09.16b1'
 
 
 # set-up script for pip distribution
@@ -37,7 +37,7 @@ setuptools.setup(
     description = 'Package day-care manager on macOS.',
     long_description = long_desc,
     long_description_content_type='text/markdown',
-    python_requires = '>=3.6',
+    python_requires = '>=3.5',
     install_requires = ['setuptools'],
     extras_require = {
         'pipdeptree': ['pipdeptree']
@@ -89,6 +89,7 @@ setuptools.setup(
         'Operating System :: Unix',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation',
