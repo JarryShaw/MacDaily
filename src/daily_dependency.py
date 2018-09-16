@@ -172,7 +172,7 @@ def dependency(argv, config, *, logdate, logtime, today):
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency@', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -182,10 +182,10 @@ def dependency(argv, config, *, logdate, logtime, today):
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
+        logfile.write(('\n\nCMD: {} {}').format((python), (program)))
+        logfile.write(('\n\n{}\n\n').format((mode)))
         for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
+            logfile.write(('ARG: {} = {}\n').format((key), (value)))
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
@@ -197,7 +197,7 @@ def dependency(argv, config, *, logdate, logtime, today):
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:    setattr(args, f'no_{mode}', flag)
+        if flag:    setattr(args, ('no_{}').format((mode)), flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -210,22 +210,22 @@ def dependency(argv, config, *, logdate, logtime, today):
 
     mode = '-*- Dependency Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
-        logfile.write(f'\n\n{mode}\n\n')
+        logfile.write(('\n\n{}\n\n').format((mode)))
 
         if log != dict():
             for mode in log:
                 name = NAME.get(mode)
                 if name is None:    continue
                 if log[mode] and all(log[mode]):
-                    pkgs = f', '.join(log[mode])
-                    logfile.write(f'LOG: showed dependencies of following {name} packages: {pkgs}\n')
+                    pkgs = (', ').format(()).join(log[mode])
+                    logfile.write(('LOG: showed dependencies of following {} packages: {}\n').format((name), (pkgs)))
                 else:
-                    logfile.write(f'LOG: no dependencies showed in {name} packages\n')
+                    logfile.write(('LOG: no dependencies showed in {} packages\n').format((name)))
 
             filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
             if filelist:
                 files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following old logs: {files}\n')
+                logfile.write(('LOG: archived following old logs: {}\n').format((files)))
             else:
                 logfile.write('LOG: no ancient logs archived\n')
         else:

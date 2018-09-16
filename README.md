@@ -74,7 +74,7 @@ pip install macdaily[pipdeptree]
 pip install macdaily pipdeptree
 ```
 
-&emsp; Do please __NOTE__ that, `macdaily` runs only with support of Python from version ***3.6*** and on. And it shall only work ideally on ***macOS***.
+&emsp; Do please __NOTE__ that, `macdaily` runs only with support of Python from version ***3.5*** and on. And it shall only work ideally on ***macOS***.
 
 &nbsp;
 

@@ -477,7 +477,7 @@ def update(argv, config, *, logdate, logtime, today):
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='update', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='update@', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -487,10 +487,10 @@ def update(argv, config, *, logdate, logtime, today):
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
+        logfile.write(('\n\nCMD: {} {}').format((python), (program)))
+        logfile.write(('\n\n{}\n\n').format((mode)))
         for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
+            logfile.write(('ARG: {} = {}\n').format((key), (value)))
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
@@ -507,7 +507,7 @@ def update(argv, config, *, logdate, logtime, today):
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:    setattr(args, f'no_{mode}', flag)
+        if flag:    setattr(args, ('no_{}').format((mode)), flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -524,47 +524,47 @@ def update(argv, config, *, logdate, logtime, today):
 
     if log != dict():
         if not args.quiet:
-            print(f'-*- {blue}Update Logs{reset} -*-'.center(length, ' '), '\n', sep='')
+            print(('-*- {}Update Logs{} -*-').format((blue), (reset)).center(length, ' '), '\n', sep='')
         mode = '-*- Update Logs -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
+            logfile.write(('\n\n{}\n\n').format((mode)))
 
             for mode in log:
                 name = NAME.get(mode)
                 if name is None:    continue
                 if log[mode] and all(log[mode]):
-                    pkgs = f', '.join(log[mode])
-                    logfile.write(f'LOG: updated following {name} packages: {pkgs}\n')
+                    pkgs = (', ').format(()).join(log[mode])
+                    logfile.write(('LOG: updated following {} packages: {}\n').format((name), (pkgs)))
                     if not args.quiet:
-                        pkgs_coloured = f'{reset}, {red}'.join(log[mode])
-                        print(f'update: {green}{mode}{reset}: '
-                              f'updated following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}')
+                        pkgs_coloured = ('{}, {}').format((reset), (red)).join(log[mode])
+                        print(('update: {}{}{}: '
+                              'updated following {}{}{} packages: {}{}{}').format((green), (mode), (reset), (bold), (name), (reset), (red), (pkgs_coloured), (reset)))
                 else:
-                    logfile.write(f"LOG: no package updated in {name}\n")
+                    logfile.write(("LOG: no package updated in {}\n").format((name)))
                     if not args.quiet:
-                        print(f'update: {green}{mode}{reset}: no package updated in {bold}{name}{reset}')
+                        print(('update: {}{}{}: no package updated in {}{}{}').format((green), (mode), (reset), (bold), (name), (reset)))
 
             filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
             if filelist:
                 files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following ancient logs: {files}\n')
+                logfile.write(('LOG: archived following ancient logs: {}\n').format((files)))
                 if not args.quiet:
-                    print(f'update: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+                    print(('update: {}cleanup{}: ancient logs archived into {}{}{}').format((green), (reset), (under), (arcpath), (reset)))
             else:
-                logfile.write(f'LOG: no ancient logs archived\n')
+                logfile.write(('LOG: no ancient logs archived\n').format(()))
                 if not args.quiet:
-                    print(f'update: {green}cleanup{reset}: no ancient logs archived')
+                    print(('update: {}cleanup{}: no ancient logs archived').format((green), (reset)))
 
             if reload_flag.value:
                 proc = subprocess.run(['sudo', '--set-home', sys.executable, '-m', 'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
                                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=config['Environment'].getint('bash-timeout', fallback=1_000))
                 if proc.returncode == 0:
                     if not args.quiet:
-                        print(f'update: {green}macdaily{reset}: package is now up-to-date')
+                        print(('update: {}macdaily{}: package is now up-to-date').format((green), (reset)))
                     logfile.write('LOG: macdaily is now up-to-date\n')
                 else:
                     if not args.quiet:
-                        print(f'update: {red}macdaily{reset}: process failed, please try manually')
+                        print(('update: {}macdaily{}: process failed, please try manually').format((red), (reset)))
                     logfile.write('ERR: please try manually update macdaily\n')
 
     with contextlib.suppress(Exception):

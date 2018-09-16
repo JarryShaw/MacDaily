@@ -33,9 +33,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def _make_mode(args, file, mode):
     with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', f'-*- {mode} -*-'.center(80, ' '), '\n\n'])
+        logfile.writelines(['\n\n', ('-*- {} -*-').format((mode)).center(80, ' '), '\n\n'])
     if not args.quiet:
-        print(f'-*- {blue}{mode}{reset} -*-'.center(length, ' '), '\n', sep='')
+        print(('-*- {}{}{} -*-').format((blue), (mode), (reset)).center(length, ' '), '\n', sep='')
 
 
 def _merge_packages(args):
@@ -63,8 +63,8 @@ def _merge_packages(args):
 
 def uninstall_all(args, *, file, temp, password, bash_timeout, sudo_timeout):
     log = collections.defaultdict(set)
-    for mode in filter(lambda mode: (not getattr(args, f'no_{mode}')), {'pip', 'brew', 'cask'}):
-        log[mode] = eval(f'uninstall_{mode}')(args, file=file, temp=temp, retset=True, password=password,
+    for mode in filter(lambda mode: (not getattr(args, ('no_{}').format((mode)))), {'pip', 'brew', 'cask'}):
+        log[mode] = eval(('uninstall_{}').format((mode)))(args, file=file, temp=temp, retset=True, password=password,
                                               bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
     return log
 
@@ -84,7 +84,7 @@ def uninstall_pip(args, *, file, temp, password, bash_timeout, sudo_timeout, ret
         with open(file, 'a') as logfile:
             logfile.write('INF: no uninstallation performed\n')
         if not args.quiet:
-            print(f'uninstall: ${green}pip${reset}: no uninstallation performed\n')
+            print(('uninstall: ${}pip${}: no uninstallation performed\n').format((green), (reset)))
     else:
         flag = not ('pip' in args.mode and any((args.version, args.system, args.brew, args.cpython, args.pypy)))
         if flag and packages:
@@ -111,9 +111,9 @@ def uninstall_pip(args, *, file, temp, password, bash_timeout, sudo_timeout, ret
 
 def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('brew') is None:
-        print(f'uninstall: {blush}{flash}brew{reset}: command not found\n'
-              f'uninstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-              f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr)
+        print(('uninstall: {}{}brew{}: command not found\n'
+              'uninstall: {}brew{}: you may find Homebrew on {}{}https://brew.sh{}, or install Homebrew through following command -- '
+              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset), (bold), (reset)), file=sys.stderr)
         return set() if retset else dict(brew=set())
 
     logname = shlex.quote(file)
@@ -131,7 +131,7 @@ def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, re
         with open(file, 'a') as logfile:
             logfile.write('INF: no uninstallation performed\n')
         if not args.quiet:
-            print(f'uninstall: ${green}brew${reset}: no uninstallation performed\n')
+            print(('uninstall: ${}brew${}: no uninstallation performed\n').format((green), (reset)))
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
@@ -148,9 +148,9 @@ def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, re
     testing = subprocess.run(['brew', 'command', 'cask'],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if testing.returncode != 0:
-        print(f'uninstall: {blush}{flash}cask{reset}: command not found\n'
-              f'uninstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
-              f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n', file=sys.stderr)
+        print(('uninstall: {}{}cask{}: command not found\n'
+              'uninstall: {}cask{}: you may find Caskroom on {}https://caskroom.github.io{}, '
+              'or install Caskroom through following command -- `{}brew tap caskroom/cask{}`\n').format((blush), (flash), (reset), (red), (reset), (under), (reset), (bold), (reset)), file=sys.stderr)
         return set() if retset else dict(cask=set())
 
     logname = shlex.quote(file)
@@ -166,7 +166,7 @@ def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, re
         with open(file, 'a') as logfile:
             logfile.write('INF: no uninstallation performed\n')
         if not args.quiet:
-            print(f'uninstall: ${green}cask${reset}: no uninstallation performed\n')
+            print(('uninstall: ${}cask${}: no uninstallation performed\n').format((green), (reset)))
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)

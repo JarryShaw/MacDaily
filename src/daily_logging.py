@@ -143,7 +143,7 @@ def logging(argv, config, *, logdate, logtime, today):
             except ValueError as error:
                 sys.tracebacklimit = 0
                 raise error from None
-            if flag and (not getattr(args, f'no_{mode}', False)):
+            if flag and (not getattr(args, ('no_{}').format((mode)), False)):
                 modes.append(mode)
     args.mode = set(modes) or None
 
@@ -158,14 +158,14 @@ def logging(argv, config, *, logdate, logtime, today):
 
     arcflag = False
     for logmode in args.mode:
-        tmppath, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
-        logname = f'{logpath}/{logdate}/{logtime}.log'
+        tmppath, logpath, arcpath, tarpath = make_path(config, mode=('logging/{}').format((logmode)), logdate=logdate)
+        logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
 
         with open(logname, 'a') as logfile:
             logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-            logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
+            logfile.write(('\n\n\nCMD: {} {}\n\n\n').format((python), (program)))
             for key, value in args.__dict__.items():
-                logfile.write(f'ARG: {key} = {value}\n')
+                logfile.write(('ARG: {} = {}\n').format((key), (value)))
             logfile.write('\n\n')
 
         if pwd.getpwuid(os.stat(logname).st_uid) != USER:
@@ -177,14 +177,14 @@ def logging(argv, config, *, logdate, logtime, today):
             log = logging(args, file=shlex.quote(logname), password=PASS, bash_timeout=BASH)
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
-                logfile.write(f'\nERR: {error}\n')
+                logfile.write(('\nERR: {}\n').format((error)))
             if not args.quiet:
-                print(f'logging: {red}{logmode}{reset}: operation timeout', file=sys.stderr)
+                print(('logging: {}{}{}: operation timeout').format((red), (logmode), (reset)), file=sys.stderr)
         except BaseException as error:
             with open(logname, 'a') as logfile:
                 logfile.write('\nWAR: procedure interrupted\n')
             if not args.quiet:
-                print(f'logging: {red}{logmode}{reset}: procedure interrupted', file=sys.stderr)
+                print(('logging: {}{}{}: procedure interrupted').format((red), (logmode), (reset)), file=sys.stderr)
             sys.tracebacklimit = 0
             raise error from None
 
@@ -193,7 +193,7 @@ def logging(argv, config, *, logdate, logtime, today):
             if filelist:
                 arcflag = True
                 files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following old logs: {files}\n')
+                logfile.write(('LOG: archived following old logs: {}\n').format((files)))
 
         if args.show_log:
             subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -202,9 +202,9 @@ def logging(argv, config, *, logdate, logtime, today):
     if not args.quiet:
         if arcflag:
             arcdir = config['Path']['logdir'] + '/archive/logging'
-            print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
+            print(('logging: {}cleanup{}: ancient logs archived into {}{}{}').format((green), (reset), (under), (arcdir), (reset)))
         else:
-            print(f'logging: {green}cleanup{reset}: no ancient logs archived')
+            print(('logging: {}cleanup{}: no ancient logs archived').format((green), (reset)))
 
 
 @beholder

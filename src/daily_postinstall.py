@@ -94,7 +94,7 @@ def postinstall(argv, config, *, logdate, logtime, today):
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='postinstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='postinstall-', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -104,10 +104,10 @@ def postinstall(argv, config, *, logdate, logtime, today):
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
+        logfile.write(('\n\nCMD: {} {}').format((python), (program)))
+        logfile.write(('\n\n{}\n\n').format((mode)))
         for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
+            logfile.write(('ARG: {} = {}\n').format((key), (value)))
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
@@ -120,34 +120,34 @@ def postinstall(argv, config, *, logdate, logtime, today):
 
     if log != dict():
         if not args.quiet:
-            print(f'-*- {blue}Postinstall Logs{reset} -*-'.center(length, ' '), '\n', sep='')
+            print(('-*- {}Postinstall Logs{} -*-').format((blue), (reset)).center(length, ' '), '\n', sep='')
         mode = '-*- Postinstall Logs -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
+            logfile.write(('\n\n{}\n\n').format((mode)))
 
             mode = 'brew';  name = 'Homebrew'
             if log and all(log):
-                pkgs = f', '.join(log)
-                logfile.write(f'LOG: postinstalled following {name} packages: {pkgs}\n')
+                pkgs = (', ').format(()).join(log)
+                logfile.write(('LOG: postinstalled following {} packages: {}\n').format((name), (pkgs)))
                 if not args.quiet:
-                    pkgs_coloured = f'{reset}, {red}'.join(log)
-                    print(f'postinstall: {green}{mode}{reset}: '
-                          f'postinstalled following {bold}{name}{reset} packages: {red}{pkgs_coloured}{reset}')
+                    pkgs_coloured = ('{}, {}').format((reset), (red)).join(log)
+                    print(('postinstall: {}{}{}: '
+                          'postinstalled following {}{}{} packages: {}{}{}').format((green), (mode), (reset), (bold), (name), (reset), (red), (pkgs_coloured), (reset)))
             else:
-                logfile.write(f"LOG: no package postinstalled in {name}\n")
+                logfile.write(("LOG: no package postinstalled in {}\n").format((name)))
                 if not args.quiet:
-                    print(f'postinstall: {green}{mode}{reset}: no package postinstalled in {bold}{name}{reset}')
+                    print(('postinstall: {}{}{}: no package postinstalled in {}{}{}').format((green), (mode), (reset), (bold), (name), (reset)))
 
             filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
             if filelist:
                 files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following ancient logs: {files}\n')
+                logfile.write(('LOG: archived following ancient logs: {}\n').format((files)))
                 if not args.quiet:
-                    print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+                    print(('uninstall: {}cleanup{}: ancient logs archived into {}{}{}').format((green), (reset), (under), (arcpath), (reset)))
             else:
-                logfile.write(f'LOG: no ancient logs archived\n')
+                logfile.write(('LOG: no ancient logs archived\n').format(()))
                 if not args.quiet:
-                    print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
+                    print(('uninstall: {}cleanup{}: no ancient logs archived').format((green), (reset)))
 
     with contextlib.suppress(Exception):
         tmpfile.close()

@@ -43,7 +43,7 @@ def check(parse):
         SUDO = subprocess.run(['sudo', '--stdin', '--validate'],
                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if SUDO.returncode == 0:    return config
-        raise PasswordError(1, f"Invalid password for {config['Account']['username']!r}")
+        raise PasswordError(1, ("Invalid password for {!r}").format((config['Account']['username'])))
     return wrapper
 
 
@@ -53,7 +53,7 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print(f'\nmacdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            print(('\nmacdaily: {}error{}: operation interrupted').format((red), (reset)), file=sys.stderr)
             sys.exit(130)
         except BaseException as error:
             sys.tracebacklimit = 0
@@ -69,11 +69,11 @@ def aftermath(*, logfile, tmpfile, command, logmode='null'):
                 return func(*args, **kwargs)
             except subprocess.TimeoutExpired as error:
                 with open(logfile, 'a') as file:
-                    file.write(f'\nERR: {error}\n')
-                print(f'macdaily: {red}{command}{reset}: operation timeout', file=sys.stderr)
+                    file.write(('\nERR: {}\n').format((error)))
+                print(('macdaily: {}{}{}: operation timeout').format((red), (command), (reset)), file=sys.stderr)
                 sys.exit(32)
             except BaseException as error:
-                subprocess.run(['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
+                subprocess.run(['bash', os.path.join(ROOT, ('lib{}/aftermath.sh').format((command))), shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 sys.tracebacklimit = 0
                 raise error from None
@@ -96,14 +96,14 @@ def make_pipe(config=None, *, password=None):
 
 def make_path(config, *, mode, logdate):
     tmppath = os.path.expanduser(config['Path']['tmpdir'])
-    logpath = os.path.expanduser(config['Path']['logdir']) + f'/{mode}'
-    arcpath = os.path.expanduser(config['Path']['logdir']) + f'/archive/{mode}'
-    tarpath = os.path.expanduser(config['Path']['logdir']) + f'/tarfile/{mode}'
+    logpath = os.path.expanduser(config['Path']['logdir']) + ('/{}').format((mode))
+    arcpath = os.path.expanduser(config['Path']['logdir']) + ('/archive/{}').format((mode))
+    tarpath = os.path.expanduser(config['Path']['logdir']) + ('/tarfile/{}').format((mode))
 
     pathlib.Path(arcpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tarpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tmppath).mkdir(parents=True, exist_ok=True)
-    pathlib.Path(f'{logpath}/{logdate}').expanduser().mkdir(parents=True, exist_ok=True)
+    pathlib.Path(('{}/{}').format((logpath), (logdate))).expanduser().mkdir(parents=True, exist_ok=True)
 
     dskpath = pathlib.Path(config['Path']['dskdir'])
     if dskpath.exists() and dskpath.is_dir():
@@ -124,7 +124,7 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
         if not os.path.isdir(absdir):
             continue
         if subdir != logdate:
-            tarname = f'{arcpath}/{subdir}.tar.gz'
+            tarname = ('{}/{}.tar.gz').format((arcpath), (subdir))
             with tarfile.open(tarname, 'w:gz') as tf:
                 abs_src = os.path.abspath(absdir)
                 for dirname, subdirs, files in os.walk(absdir):
@@ -142,7 +142,7 @@ def archive(config, *, logpath, arcpath, tarpath, logdate, today, mvflag=True):
     delta = today - ctime
     if delta > datetime.timedelta(7):
         arcdate = datetime.date.strftime(ctime, '%y%m%d')
-        tarname = f'{tarpath}/{arcdate}-{logdate}.tar.bz'
+        tarname = ('{}/{}-{}.tar.bz').format((tarpath), (arcdate), (logdate))
         with tarfile.open(tarname, 'w:bz2') as tf:
             abs_src = os.path.abspath(arcpath)
             for dirname, subdirs, files in os.walk(arcpath):
@@ -171,7 +171,7 @@ def storage(config, *, logdate, today):
         delta = today - ctime
         if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
             arcdate = datetime.date.strftime(ctime, '%y%m%d')
-            tarname = f'{tmppath}/{arcdate}-{logdate}.tar.xz'
+            tarname = ('{}/{}-{}.tar.xz').format((tmppath), (arcdate), (logdate))
             with tarfile.open(tarname, 'w:xz') as tf:
                 abs_src = os.path.abspath(tarpath)
                 for dirname, subdirs, files in os.walk(tarpath):
