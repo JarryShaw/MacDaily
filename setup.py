@@ -22,7 +22,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:
 
 
 # version
-__version__ = '2018.09.16b1'
+__version__ = '2018.09.16'
 
 
 # set-up script for pip distribution
