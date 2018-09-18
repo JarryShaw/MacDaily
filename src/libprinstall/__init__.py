@@ -33,9 +33,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def _make_mode(args, file, mode):
     with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', ('-*- {} -*-').format((mode)).center(80, ' '), '\n\n'])
+        logfile.writelines(['\n\n', '-*- {} -*-'.format(mode).center(80, ' '), '\n\n'])
     if not args.quiet:
-        print(('-*- {}{}{} -*-').format((blue), (mode), (reset)).center(length, ' '), '\n', sep='')
+        print('-*- {}{}{} -*-'.format(blue, mode, reset).center(length, ' '), '\n', sep='')
 
 
 def _merge_packages(args, *, mode):
@@ -72,9 +72,9 @@ def reinstall_all(args, *, file, temp, disk, password, bash_timeout, sudo_timeou
     log = collections.defaultdict(set)
     for mode in {'brew', 'cask'}:
         glb[mode] = False
-        if not getattr(args, ('no_{}').format((mode))):
+        if not getattr(args, 'no_{}'.format(mode)):
             glb[mode] = True
-            log[mode] = eval(('reinstall_{}').format((mode)))(args, file=file, temp=temp, disk=disk, retset=True,
+            log[mode] = eval('reinstall_{}'.format(mode))(args, file=file, temp=temp, disk=disk, retset=True,
                                                   password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
     if not args.no_cleanup:
@@ -85,9 +85,9 @@ def reinstall_all(args, *, file, temp, disk, password, bash_timeout, sudo_timeou
 
 def reinstall_brew(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
     if shutil.which('brew') is None:
-        print(('reinstall: {}{}brew{}: command not found\n'
+        print('reinstall: {}{}brew{}: command not found\n'
               'reinstall: {}brew{}: you may find Homebrew on {}{}https://brew.sh{}, or install Homebrew through following command -- '
-              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset), (bold), (reset)), file=sys.stderr)
+              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n'.format(blush, flash, reset, red, reset, purple, under, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(brew=set())
 
     logname = shlex.quote(file)
@@ -105,7 +105,7 @@ def reinstall_brew(args, *, file, temp, disk, password, bash_timeout, sudo_timeo
         with open(file, 'a') as logfile:
             logfile.write('INF: no reinstallation performed\n')
         if not args.quiet:
-            print(('reinstall: ${}brew${}: no reinstallation performed\n').format((green), (reset)))
+            print('reinstall: ${}brew${}: no reinstallation performed\n'.format(green, reset))
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
@@ -122,7 +122,7 @@ def reinstall_brew(args, *, file, temp, disk, password, bash_timeout, sudo_timeo
             with open(file, 'a') as logfile:
                 logfile.write('INF: no reinstallation performed\n')
             if not args.quiet:
-                print(('reinstall: ${}brew${}: no reinstallation performed\n').format((green), (reset)))
+                print('reinstall: ${}brew${}: no reinstallation performed\n'.format(green, reset))
 
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -135,9 +135,9 @@ def reinstall_cask(args, *, file, temp, disk, password, bash_timeout, sudo_timeo
     testing = subprocess.run(['brew', 'command', 'cask'],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if testing.returncode != 0:
-        print(('reinstall: {}{}cask{}: command not found\n'
+        print('reinstall: {}{}cask{}: command not found\n'
               'reinstall: {}cask{}: you may find Caskroom on {}https://caskroom.github.io{}, '
-              'or install Caskroom through following command -- `{}brew tap caskroom/cask{}`\n').format((blush), (flash), (reset), (red), (reset), (under), (reset), (bold), (reset)), file=sys.stderr)
+              'or install Caskroom through following command -- `{}brew tap caskroom/cask{}`\n'.format(blush, flash, reset, red, reset, under, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(cask=set())
 
     logname = shlex.quote(file)
@@ -154,7 +154,7 @@ def reinstall_cask(args, *, file, temp, disk, password, bash_timeout, sudo_timeo
         with open(file, 'a') as logfile:
             logfile.write('INF: no reinstallation performed\n')
         if not args.quiet:
-            print(('reinstall: ${}cask${}: no reinstallation performed\n').format((green), (reset)))
+            print('reinstall: ${}cask${}: no reinstallation performed\n'.format(green, reset))
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, 'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
@@ -171,7 +171,7 @@ def reinstall_cask(args, *, file, temp, disk, password, bash_timeout, sudo_timeo
             with open(file, 'a') as logfile:
                 logfile.write('INF: no reinstallation performed\n')
             if not args.quiet:
-                print(('reinstall: ${}cask${}: no reinstallation performed\n').format((green), (reset)))
+                print('reinstall: ${}cask${}: no reinstallation performed\n'.format(green, reset))
 
     if not args.quiet:  print()
     if not retset and not args.no_cleanup:
@@ -198,9 +198,9 @@ def reinstall_cleanup(args, *, file, temp, disk, password, bash_timeout, sudo_ti
 
 def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout):
     if shutil.which('brew') is None:
-        print(('postinstall: {}{}brew{}: command not found\n'
+        print('postinstall: {}{}brew{}: command not found\n'
               'postinstall: {}brew{}: you may find Homebrew on {}{}https://brew.sh{}, or install Homebrew through following command -- '
-              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset), (bold), (reset)), file=sys.stderr)
+              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n'.format(blush, flash, reset, red, reset, purple, under, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(brew=set())
 
     logname = shlex.quote(file)
@@ -217,7 +217,7 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
         with open(file, 'a') as logfile:
             logfile.write('INF: no postinstallation performed\n')
         if not args.quiet:
-            print(('reinstall: ${}brew${}: no postinstallation performed\n').format((green), (reset)))
+            print('reinstall: ${}brew${}: no postinstallation performed\n'.format(green, reset))
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, 'postinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
@@ -234,7 +234,7 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
             with open(file, 'a') as logfile:
                 logfile.write('INF: no postinstallation performed\n')
             if not args.quiet:
-                print(('reinstall: ${}brew${}: no postinstallation performed\n').format((green), (reset)))
+                print('reinstall: ${}brew${}: no postinstallation performed\n'.format(green, reset))
 
     if not args.quiet:  print()
     if not args.no_cleanup:

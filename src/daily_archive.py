@@ -25,10 +25,10 @@ def archive(config, *, logdate, today):
     filelist.extend(storage(config, logdate=logdate, today=today))
 
     if filelist:
-        files = ('{}, {}').format((reset), (under)).join(filelist)
-        print(('macdaily: {}archive{}: archived following old logs: {}{}{}').format((green), (reset), (under), (files), (reset)))
+        files = '{}, {}'.format(reset, under).join(filelist)
+        print('macdaily: {}archive{}: archived following old logs: {}{}{}'.format(green, reset, under, files, reset))
     else:
-        print(('macdaily: {}archive{}: no ancient logs archived').format((red), (reset)))
+        print('macdaily: {}archive{}: no ancient logs archived'.format(red, reset))
 
 
 @beholder

@@ -222,7 +222,7 @@ def reinstall(argv, config, *, logdate, logtime, today):
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='reinstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='reinstall@', suffix='.log')
-    logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
+    logname = '{}/{}/{}.log'.format(logpath, logdate, logtime)
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -232,10 +232,10 @@ def reinstall(argv, config, *, logdate, logtime, today):
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(('\n\nCMD: {} {}').format((python), (program)))
-        logfile.write(('\n\n{}\n\n').format((mode)))
+        logfile.write('\n\nCMD: {} {}'.format(python, program))
+        logfile.write('\n\n{}\n\n'.format(mode))
         for key, value in args.__dict__.items():
-            logfile.write(('ARG: {} = {}\n').format((key), (value)))
+            logfile.write('ARG: {} = {}\n'.format(key, value))
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
@@ -247,7 +247,7 @@ def reinstall(argv, config, *, logdate, logtime, today):
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:    setattr(args, ('no_{}').format((mode)), flag)
+        if flag:    setattr(args, 'no_{}'.format(mode), flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -264,36 +264,36 @@ def reinstall(argv, config, *, logdate, logtime, today):
 
     if log != dict():
         if not args.quiet:
-            print(('-*- {}Reinstall Logs{} -*-').format((blue), (reset)).center(length, ' '), '\n', sep='')
+            print('-*- {}Reinstall Logs{} -*-'.format(blue, reset).center(length, ' '), '\n', sep='')
         mode = '-*- Reinstall Logs -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
-            logfile.write(('\n\n{}\n\n').format((mode)))
+            logfile.write('\n\n{}\n\n'.format(mode))
 
             for mode in log:
                 name = NAME.get(mode)
                 if name is None:    continue
                 if log[mode] and all(log[mode]):
-                    pkgs = (', ').format(()).join(log[mode])
-                    logfile.write(('LOG: reinstalled following {} packages: {}\n').format((name), (pkgs)))
+                    pkgs = ', '.format().join(log[mode])
+                    logfile.write('LOG: reinstalled following {} packages: {}\n'.format(name, pkgs))
                     if not args.quiet:
-                        pkgs_coloured = ('{}, {}').format((reset), (red)).join(log[mode])
-                        print(('reinstall: {}{}{}: '
-                              'reinstalled following {}{}{} packages: {}{}{}').format((green), (mode), (reset), (bold), (name), (reset), (red), (pkgs_coloured), (reset)))
+                        pkgs_coloured = '{}, {}'.format(reset, red).join(log[mode])
+                        print('reinstall: {}{}{}: '
+                              'reinstalled following {}{}{} packages: {}{}{}'.format(green, mode, reset, bold, name, reset, red, pkgs_coloured, reset))
                 else:
-                    logfile.write(("LOG: no package reinstalled in {}\n").format((name)))
+                    logfile.write("LOG: no package reinstalled in {}\n".format(name))
                     if not args.quiet:
-                        print(('reinstall: {}{}{}: no package reinstalled in {}{}{}').format((green), (mode), (reset), (bold), (name), (reset)))
+                        print('reinstall: {}{}{}: no package reinstalled in {}{}{}'.format(green, mode, reset, bold, name, reset))
 
             filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
             if filelist:
                 files = ', '.join(filelist)
-                logfile.write(('LOG: archived following ancient logs: {}\n').format((files)))
+                logfile.write('LOG: archived following ancient logs: {}\n'.format(files))
                 if not args.quiet:
-                    print(('uninstall: {}cleanup{}: ancient logs archived into {}{}{}').format((green), (reset), (under), (arcpath), (reset)))
+                    print('uninstall: {}cleanup{}: ancient logs archived into {}{}{}'.format(green, reset, under, arcpath, reset))
             else:
-                logfile.write(('LOG: no ancient logs archived\n').format(()))
+                logfile.write('LOG: no ancient logs archived\n'.format())
                 if not args.quiet:
-                    print(('uninstall: {}cleanup{}: no ancient logs archived').format((green), (reset)))
+                    print('uninstall: {}cleanup{}: no ancient logs archived'.format(green, reset))
 
     with contextlib.suppress(Exception):
         tmpfile.close()

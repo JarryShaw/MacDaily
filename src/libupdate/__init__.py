@@ -42,9 +42,9 @@ BREW_RENEW = None
 
 def _make_mode(args, file, mode, *, flag=True):
     with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', ('-*- {} -*-').format((mode)).center(80, ' '), '\n\n'])
+        logfile.writelines(['\n\n', '-*- {} -*-'.format(mode).center(80, ' '), '\n\n'])
     if (not args.quiet) and flag:
-        print(('-*- {}{}{} -*-').format((blue), (mode), (reset)).center(length, ' '), '\n', sep='')
+        print('-*- {}{}{} -*-'.format(blue, mode, reset).center(length, ' '), '\n', sep='')
 
 
 def _merge_packages(args):
@@ -71,9 +71,9 @@ def update_all(args, *, file, temp, disk, password, bash_timeout, sudo_timeout):
     log = collections.defaultdict(set)
     for mode in {'apm', 'gem', 'mas', 'npm', 'pip', 'brew', 'cask', 'system'}:
         glb[mode] = False
-        if not getattr(args, ('no_{}').format((mode))):
+        if not getattr(args, 'no_{}'.format(mode)):
             glb[mode] = True
-            log[mode] = eval(('update_{}').format((mode)))(args, file=file, temp=temp, disk=disk, retset=True,
+            log[mode] = eval('update_{}'.format(mode))(args, file=file, temp=temp, disk=disk, retset=True,
                                                password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
     if not args.no_cleanup:
@@ -84,8 +84,8 @@ def update_all(args, *, file, temp, disk, password, bash_timeout, sudo_timeout):
 
 def update_apm(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('apm') is None:
-        print(('update: {}{}apm{}: command not found\n'
-              'update: {}apm{}: you may download Atom from {}{}https://atom.io{}\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset)), file=sys.stderr)
+        print('update: {}{}apm{}: command not found\n'
+              'update: {}apm{}: you may download Atom from {}{}https://atom.io{}\n'.format(blush, flash, reset, red, reset, purple, under, reset), file=sys.stderr)
         return set() if retset else dict(apm=set())
 
     logname = shlex.quote(file)
@@ -114,8 +114,8 @@ def update_apm(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, 
 
 def update_gem(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
     if shutil.which('gem') is None:
-        print(('update: {}{}gem{}: command not found\n'
-              'update: {}gem{}: you may download Ruby from {}{}https://www.ruby-lang.org/{}\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset)), file=sys.stderr)
+        print('update: {}{}gem{}: command not found\n'
+              'update: {}gem{}: you may download Ruby from {}{}https://www.ruby-lang.org/{}\n'.format(blush, flash, reset, red, reset, purple, under, reset), file=sys.stderr)
         return set() if retset else dict(gem=set())
 
     logname = shlex.quote(file)
@@ -147,8 +147,8 @@ def update_gem(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, 
 
 def update_mas(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('mas') is None:
-        print(('update: {}{}mas{}: command not found\n'
-              'update: {}cask{}: you may download MAS through following command --`{}brew install mas{}`\n').format((blush), (flash), (reset), (red), (reset), (bold), (reset)), file=sys.stderr)
+        print('update: {}{}mas{}: command not found\n'
+              'update: {}cask{}: you may download MAS through following command --`{}brew install mas{}`\n'.format(blush, flash, reset, red, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(mas=set())
 
     logname = shlex.quote(file)
@@ -176,8 +176,8 @@ def update_mas(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, 
 
 def update_npm(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
     if shutil.which('npm') is None:
-        print(('update: {}{}npm{}: command not found\n'
-              'update: {}npm{}: you may download Node.js from {}{}https://nodejs.org/{}\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset)), file=sys.stderr)
+        print('update: {}{}npm{}: command not found\n'
+              'update: {}npm{}: you may download Node.js from {}{}https://nodejs.org/{}\n'.format(blush, flash, reset, red, reset, purple, under, reset), file=sys.stderr)
         return set() if retset else dict(npm=set())
 
     logname = shlex.quote(file)
@@ -198,7 +198,7 @@ def update_npm(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, 
         else:
             stdict = json.loads(re.sub(r'\^D\x08\x08', '', logging.stdout[start:end+1].decode().strip(), re.IGNORECASE))
         log = set(stdict.keys())
-        pkg = { ('{}@{}').format((name), (value["wanted"])) for name, value in stdict.items() }
+        pkg = { '{}@{}'.format(name, value["wanted"]) for name, value in stdict.items() }
         outdated = 'true' if log and all(log) else 'false'
     else:
         allflag = 'false'
@@ -253,9 +253,9 @@ def update_pip(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, 
 
 def update_brew(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
     if shutil.which('brew') is None:
-        print(('update: {}{}brew{}: command not found\n'
+        print('update: {}{}brew{}: command not found\n'
               'update: {}brew{}: you may find Homebrew on {}{}https://brew.sh{}, or install Homebrew through following command -- '
-              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset), (bold), (reset)), file=sys.stderr)
+              '`{}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{}`\n'.format(blush, flash, reset, red, reset, purple, under, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(brew=set())
 
     logname = shlex.quote(file)
@@ -295,9 +295,9 @@ def update_cask(args, *, file, temp, disk, password, bash_timeout, sudo_timeout,
     testing = subprocess.run(['brew', 'command', 'cask'],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if testing.returncode != 0:
-        print(('update: {}{}cask{}: command not found\n'
+        print('update: {}{}cask{}: command not found\n'
               'update: {}cask{}: you may find Caskroom on {}{}https://caskroom.github.io{}, '
-              'or install Caskroom through following command -- `{}brew tap homebrew/cask{}`\n').format((blush), (flash), (reset), (red), (reset), (purple), (under), (reset), (bold), (reset)), file=sys.stderr)
+              'or install Caskroom through following command -- `{}brew tap homebrew/cask{}`\n'.format(blush, flash, reset, red, reset, purple, under, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(cask=set())
 
     logname = shlex.quote(file)
@@ -336,9 +336,9 @@ def update_cask(args, *, file, temp, disk, password, bash_timeout, sudo_timeout,
 
 def update_system(args, *, file, temp, disk, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('softwareupdate') is None:
-        print(('update: {}{}system{}: command not found\n'
+        print('update: {}{}system{}: command not found\n'
               "update: {}system{}: you may add `softwareupdate' to $PATH through the following command -- "
-              "`{}echo export PATH='/usr/sbin:$PATH' >> ~/.bash_profile{}'\n").format((blush), (flash), (reset), (red), (reset), (bold), (reset)), file=sys.stderr)
+              "`{}echo export PATH='/usr/sbin:$PATH' >> ~/.bash_profile{}'\n".format(blush, flash, reset, red, reset, bold, reset), file=sys.stderr)
         return set() if retset else dict(system=set())
 
     logname = shlex.quote(file)

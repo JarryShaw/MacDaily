@@ -257,7 +257,7 @@ def uninstall(argv, config, *, logdate, logtime, today):
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='uninstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='uninstall@', suffix='.log')
-    logname = ('{}/{}/{}.log').format((logpath), (logdate), (logtime))
+    logname = '{}/{}/{}.log'.format(logpath, logdate, logtime)
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -267,10 +267,10 @@ def uninstall(argv, config, *, logdate, logtime, today):
     mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(('\n\nCMD: {} {}').format((python), (program)))
-        logfile.write(('\n\n{}\n\n').format((mode)))
+        logfile.write('\n\nCMD: {} {}'.format(python, program))
+        logfile.write('\n\n{}\n\n'.format(mode))
         for key, value in args.__dict__.items():
-            logfile.write(('ARG: {} = {}\n').format((key), (value)))
+            logfile.write('ARG: {} = {}\n'.format(key, value))
 
     if pwd.getpwuid(os.stat(logname).st_uid) != USER:
         subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
@@ -287,7 +287,7 @@ def uninstall(argv, config, *, logdate, logtime, today):
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:    setattr(args, ('no_{}').format((mode)), flag)
+        if flag:    setattr(args, 'no_{}'.format(mode), flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -303,48 +303,48 @@ def uninstall(argv, config, *, logdate, logtime, today):
 
     if log != dict():
         if not args.quiet:
-            print(('-*- {}Uninstall Logs{} -*-').format((blue), (reset)).center(length, ' '), '\n', sep='')
+            print('-*- {}Uninstall Logs{} -*-'.format(blue, reset).center(length, ' '), '\n', sep='')
         mode = '-*- Uninstall Logs -*-'.center(80, ' ')
         with open(logname, 'a') as logfile:
-            logfile.write(('\n\n{}\n\n').format((mode)))
+            logfile.write('\n\n{}\n\n'.format(mode))
 
             for mode in log:
                 name = NAME.get(mode)
                 if name is None:    continue
                 if log[mode] and all(log[mode]):
-                    pkgs = (', ').format(()).join(log[mode])
+                    pkgs = ', '.format().join(log[mode])
                     comment = '' if args.idep else ' (including dependencies)'
-                    logfile.write(('LOG: uninstalled following {} packages: {}{}\n').format((name), (pkgs), (comment)))
+                    logfile.write('LOG: uninstalled following {} packages: {}{}\n'.format(name, pkgs, comment))
                     if not args.quiet:
-                        pkgs_coloured = ('{}, {}').format((reset), (red)).join(log[mode])
-                        print(('uninstall: {}{}{}: '
-                              'uninstalled following {}{}{} packages: {}{}{}{}').format((green), (mode), (reset), (bold), (name), (reset), (red), (pkgs_coloured), (reset), (comment)))
+                        pkgs_coloured = '{}, {}'.format(reset, red).join(log[mode])
+                        print('uninstall: {}{}{}: '
+                              'uninstalled following {}{}{} packages: {}{}{}{}'.format(green, mode, reset, bold, name, reset, red, pkgs_coloured, reset, comment))
                 else:
-                    logfile.write(('LOG: no package uninstalled in {}\n').format((name)))
+                    logfile.write('LOG: no package uninstalled in {}\n'.format(name))
                     if not args.quiet:
-                        print(('uninstall: {}{}{}: no package uninstalled in {}{}{}').format((green), (mode), (reset), (bold), (name), (reset)))
+                        print('uninstall: {}{}{}: no package uninstalled in {}{}{}'.format(green, mode, reset, bold, name, reset))
 
             filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
             if filelist:
                 files = ', '.join(filelist)
-                logfile.write(('LOG: archived following ancient logs: {}\n').format((files)))
+                logfile.write('LOG: archived following ancient logs: {}\n'.format(files))
                 if not args.quiet:
-                    print(('uninstall: {}cleanup{}: ancient logs archived into {}{}{}').format((green), (reset), (under), (arcpath), (reset)))
+                    print('uninstall: {}cleanup{}: ancient logs archived into {}{}{}'.format(green, reset, under, arcpath, reset))
             else:
-                logfile.write(('LOG: no ancient logs archived\n').format(()))
+                logfile.write('LOG: no ancient logs archived\n'.format())
                 if not args.quiet:
-                    print(('uninstall: {}cleanup{}: no ancient logs archived').format((green), (reset)))
+                    print('uninstall: {}cleanup{}: no ancient logs archived'.format(green, reset))
 
             if reload_flag.value:
                 proc = subprocess.run(['sudo', '--set-home', sys.executable, '-m', 'pip', 'uninstall', 'macdaily', '--yes'],
                                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
                 if proc.returncode == 0:
                     if not args.quiet:
-                        print(('uninstall: {}macdaily{}: package is now uninstalled').format((green), (reset)))
+                        print('uninstall: {}macdaily{}: package is now uninstalled'.format(green, reset))
                     logfile.write('LOG: macdaily is now uninstalled\n')
                 else:
                     if not args.quiet:
-                        print(('uninstall: {}macdaily{}: process failed, please try manually').format((red), (reset)))
+                        print('uninstall: {}macdaily{}: process failed, please try manually'.format(red, reset))
                     logfile.write('ERR: please try manually uninstall macdaily\n')
 
     with contextlib.suppress(Exception):
