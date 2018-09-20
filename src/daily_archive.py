@@ -15,7 +15,7 @@ red    = '\033[91m'     # bright red foreground
 green  = '\033[92m'     # bright green foreground
 
 
-def archive(config, *, logdate, today):
+def archive_(config, *, logdate, today):
     filelist = list()
     for mode in {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency',
                  'logging/apm', 'logging/gem', 'logging/pip', 'logging/npm',
@@ -38,7 +38,7 @@ def main():
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
 
-    archive(argv, config, logdate=logdate, today=today)
+    archive_(argv, config, logdate=logdate, today=today)
 
 
 if __name__ == '__main__':
