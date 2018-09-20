@@ -8,7 +8,7 @@ import pathlib
 import platform
 import sys
 
-from macdaily.daily_archive import archive
+from macdaily.daily_archive import archive_ as archive
 from macdaily.daily_bundle import bundle
 from macdaily.daily_config import parse, config, launch
 from macdaily.daily_dependency import dependency
@@ -25,7 +25,7 @@ os.chdir(os.path.dirname(__file__))
 
 
 # version string
-__version__ = '2018.09.18'
+__version__ = '2018.09.20'
 
 
 # today
