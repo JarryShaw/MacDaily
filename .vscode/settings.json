@@ -1,0 +1,37 @@
+{
+    "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/python",
+    "python.linting.pep8Path": "pycodestyle",
+    "python.linting.pep8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.pep8Args": [
+        "--max-line-length=120"
+    ],
+    "cSpell.language": "en,en-GB",
+    "cSpell.words": [
+        "cfgmode",
+        "bcsy",
+        "cfgdct",
+        "ctime",
+        "dailyrc",
+        "deps",
+        "dskdir",
+        "dskname",
+        "dskpath",
+        "idep",
+        "ldpath",
+        "libprinstall",
+        "mdargs",
+        "mvflag",
+        "nocleanup",
+        "pkgs",
+        "pltmode",
+        "prinstall",
+        "printw",
+        "ptime",
+        "rcpath",
+        "scpt",
+        "shtout",
+        "stdict",
+        "tmpath"
+    ]
+}

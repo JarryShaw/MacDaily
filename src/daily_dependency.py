@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import argparse
 import base64
 import contextlib
@@ -12,60 +11,37 @@ import subprocess
 import sys
 import tempfile
 
-from macdaily.daily_config import *
-from macdaily.daily_utility import *
+from macdaily.daily_config import parse
+from macdaily.daily_utility import (archive, beholder, blue, bold, green,
+                                    length, make_path, make_pipe, program,
+                                    python, red, reset, under)
 from macdaily.libdependency import *
-
 
 # version string
 __version__ = '2018.09.14'
 
-
 # display mode names
 NAME = dict(
-    pip = 'Python',
-    brew = 'Homebrew',
+    pip='Python',
+    brew='Homebrew',
 )
-
 
 # mode actions
 MODE = dict(
-    all = lambda *args, **kwargs: dependency_all(*args, **kwargs),
-    pip = lambda *args, **kwargs: dependency_pip(*args, **kwargs),
-    brew = lambda *args, **kwargs: dependency_brew(*args, **kwargs),
+    all=lambda *args, **kwargs: dependency_all(*args, **kwargs),
+    pip=lambda *args, **kwargs: dependency_pip(*args, **kwargs),
+    brew=lambda *args, **kwargs: dependency_brew(*args, **kwargs),
 )
 
 
-# terminal commands
-python = sys.executable         # Python version
-program = ' '.join(sys.argv)    # arguments
-
-
-# terminal display
-reset  = '\033[0m'      # reset
-bold   = '\033[1m'      # bold
-under  = '\033[4m'      # underline
-red    = '\033[91m'     # bright red foreground
-green  = '\033[92m'     # bright green foreground
-blue   = '\033[96m'     # bright blue foreground
-length = shutil.get_terminal_size().columns
-                        # terminal length
-
-
 def get_parser():
-    parser = argparse.ArgumentParser(prog='dependency', description=(
-                    'Trivial Package Dependency Manager'
-                ), usage=(
-                    'macdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ... '
-                ), epilog=(
-                    'aliases: dependency, deps, dep, dp, de, d'
-                ))
+    parser = argparse.ArgumentParser(prog='dependency',
+                                     description='Trivial Package Dependency Manager',
+                                     usage='macdaily dependency [-hV] [-t] [-a] [--[no-]MODE] MODE ...',
+                                     epilog='aliases: dependency, deps, dp')
     parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('-a', '--all', action='append_const', const='all',
-                        dest='mode', help=(
-                            'show dependencies of all packages installed '
-                            'through pip and Homebrew'
-                        ))
+    parser.add_argument('-a', '--all', action='append_const', const='all', dest='mode',
+                        help='show dependencies of all packages installed through pip and Homebrew')
 
     parser.add_argument('--pip', action='append_const', const='pip', dest='mode', help=argparse.SUPPRESS)
     parser.add_argument('--brew', action='append_const', const='brew', dest='mode', help=argparse.SUPPRESS)
@@ -73,96 +49,54 @@ def get_parser():
     parser.add_argument('--no-pip', action='store_true', default=False, help=argparse.SUPPRESS)
     parser.add_argument('--no-brew', action='store_true', default=False, help=argparse.SUPPRESS)
 
-    subparser = parser.add_subparsers(title='mode selection', metavar='MODE',
-                        dest='mode', help=(
-                            'show dependencies of packages installed through '
-                            'a specified method, e.g.: pip or brew'
-                        ))
+    subparser = parser.add_subparsers(title='mode selection', metavar='MODE', dest='mode',
+                                      help=('show dependencies of packages installed through a specified method, '
+                                            'e.g.: pip or brew'))
 
-    parser_pip = subparser.add_parser('pip', description=(
-                            'Show Dependencies of Python Packages'
-                        ), usage=(
-                            'macdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]'
-                        ))
-    parser_pip.add_argument('-a', '--all', action='store_true', default=True,
-                        dest='all', help=(
-                            'show dependencies of all packages installed through pip'
-                        ))
-    parser_pip.add_argument('-v', '--python_version', action='store', metavar='VER',
-                        choices=[
-                            1, 2, 20, 21, 22, 23, 24, 25, 26, 27,
-                            0, 3, 30, 31, 32, 33, 34, 35, 36, 37,
-                        ], dest='version', type=int, default=0, help=(
-                            'indicate which version of pip will be updated'
-                        ))
-    parser_pip.add_argument('-s', '--system', action='store_true', default=False,
-                        dest='system', help=(
-                            'show dependencies of pip packages on system level, i.e. python '
-                            'installed through official installer'
-                        ))
-    parser_pip.add_argument('-b', '--brew', action='store_true', default=False,
-                        dest='brew', help=(
-                            'show dependencies of pip packages on Cellar level, i.e. python '
-                            'installed through Homebrew'
-                        ))
-    parser_pip.add_argument('-c', '--cpython', action='store_true', default=False,
-                        dest='cpython', help=(
-                            'show dependencies of pip packages on CPython environment'
-                        ))
-    parser_pip.add_argument('-y', '--pypy', action='store_true', default=False,
-                        dest='pypy', help=(
-                            'show dependencies of pip packages on PyPy environment'
-                        ))
-    parser_pip.add_argument('-p', '--package', metavar='PKG', action='append',
-                        dest='package', help=(
-                            'name of packages to be shown, default is all'
-                        ))
+    parser_pip = subparser.add_parser('pip', description='Show Dependencies of Python Packages',
+                                      usage='macdaily dependency pip [-h] [-qv] [-bcsy] [-V VER] [-a] [-p PKG]')
+    parser_pip.add_argument('-a', '--all', action='store_true', default=True, dest='all',
+                            help='show dependencies of all packages installed through pip')
+    parser_pip.add_argument('-v', '--python_version', action='store', metavar='VER', dest='version', type=int,
+                            choices=[0, 1, 2, 20, 21, 22, 23, 24, 25, 26, 27, 3, 30, 31, 32, 33, 34, 35, 36, 37],
+                            default=0, help='indicate which version of pip will be updated')
+    parser_pip.add_argument('-s', '--system', action='store_true', default=False, dest='system',
+                            help=('show dependencies of pip packages on system level, '
+                                  'i.e. python installed through official installer'))
+    parser_pip.add_argument('-b', '--brew', action='store_true', default=False, dest='brew',
+                            help=('show dependencies of pip packages on Cellar level, '
+                                  'i.e. python installed through Homebrew'))
+    parser_pip.add_argument('-c', '--cpython', action='store_true', default=False, dest='cpython',
+                            help='show dependencies of pip packages on CPython environment')
+    parser_pip.add_argument('-y', '--pypy', action='store_true', default=False, dest='pypy',
+                            help='show dependencies of pip packages on PyPy environment')
+    parser_pip.add_argument('-p', '--package', metavar='PKG', action='append', dest='package',
+                            help='name of packages to be shown, default is all')
     parser_pip.add_argument('-t', '--tree', action='store_true', default=False,
-                        help=(
-                            'show dependencies as a tree. This feature requests '
-                            '`pipdeptree`'
-                        ))
+                            help='show dependencies as a tree. This feature requests `pipdeptree`')
     parser_pip.add_argument('--show-log', action='store_true', default=False,
-                        help=(
-                            'open log in Console upon completion of command'
-                        ))
+                            help='open log in Console upon completion of command')
 
-    parser_brew = subparser.add_parser('brew', description=(
-                            'Show Dependencies of Homebrew Packages'
-                        ), usage=(
-                            'macdaily dependency brew [-h] [-t] [-a] [-p PKG]'
-                        ))
-    parser_brew.add_argument('-a', '--all', action='store_true', default=True,
-                        dest='all', help=(
-                            'show dependencies of all packages installed through Homebrew'
-                        ))
-    parser_brew.add_argument('-p', '--package', metavar='PKG', action='append',
-                        dest='package', help=(
-                            'name of packages to be shown, default is all'
-                        ))
+    parser_brew = subparser.add_parser('brew', description='Show Dependencies of Homebrew Packages',
+                                       usage='macdaily dependency brew [-h] [-t] [-a] [-p PKG]')
+    parser_brew.add_argument('-a', '--all', action='store_true', default=True, dest='all',
+                             help='show dependencies of all packages installed through Homebrew')
+    parser_brew.add_argument('-p', '--package', metavar='PKG', action='append', dest='package',
+                             help='name of packages to be shown, default is all')
     parser_brew.add_argument('-t', '--tree', action='store_true', default=False,
-                        help=(
-                            'show dependencies as a tree'
-                        ))
+                             help='show dependencies as a tree')
     parser_brew.add_argument('--show-log', action='store_true', default=False,
-                        help=(
-                            'open log in Console upon completion of command'
-                        ))
+                             help='open log in Console upon completion of command')
 
     parser.add_argument('-t', '--tree', action='store_true', default=False,
-                        help=(
-                            'show dependencies as a tree. This feature may request '
-                            '`pipdeptree`'
-                        ))
+                        help='show dependencies as a tree. This feature may request `pipdeptree`')
     parser.add_argument('--show-log', action='store_true', default=False,
-                        help=(
-                            'open log in Console upon completion of command'
-                        ))
+                        help='open log in Console upon completion of command')
 
     return parser
 
 
-def dependency(argv, config, *, logdate, logtime, today):
+def dependency(argv, config, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
@@ -171,19 +105,18 @@ def dependency(argv, config, *, logdate, logtime, today):
         return
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
-    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency@', suffix='.log')
+    tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency-', suffix='.log')
     logname = f'{logpath}/{logdate}/{logtime}.log'
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
-    BASH = config['Environment'].getint('bash-timeout', fallback=1_000)
+    BASH = config['Environment'].getint('bash-timeout', fallback=1000)
 
-    mode = '-*- Arguments -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
         logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f'\n\n{mode}\n\n')
+        logfile.write(f"\n\n{'-*- Arguments -*-'.center(80, ' ')}\n\n")
         for key, value in args.__dict__.items():
             logfile.write(f'ARG: {key} = {value}\n')
 
@@ -193,11 +126,12 @@ def dependency(argv, config, *, logdate, logtime, today):
 
     for mode in config['Mode'].keys():
         try:
-            flag = not config['Mode'].getboolean(mode, fallback=False)
+            flag = (not config['Mode'].getboolean(mode, fallback=False))
         except ValueError as error:
             sys.tracebacklimit = 0
             raise error from None
-        if flag:    setattr(args, f'no_{mode}', flag)
+        if flag:
+            setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -211,18 +145,16 @@ def dependency(argv, config, *, logdate, logtime, today):
     mode = '-*- Dependency Logs -*-'.center(80, ' ')
     with open(logname, 'a') as logfile:
         logfile.write(f'\n\n{mode}\n\n')
-
         if log != dict():
             for mode in log:
                 name = NAME.get(mode)
-                if name is None:    continue
                 if log[mode] and all(log[mode]):
                     pkgs = f', '.join(log[mode])
                     logfile.write(f'LOG: showed dependencies of following {name} packages: {pkgs}\n')
                 else:
                     logfile.write(f'LOG: no dependencies showed in {name} packages\n')
 
-            filelist = archive(config, logpath=logpath, arcpath=arcpath, tarpath=tarpath, logdate=logdate, today=today)
+            filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
             if filelist:
                 files = ', '.join(filelist)
                 logfile.write(f'LOG: archived following old logs: {files}\n')
@@ -231,7 +163,7 @@ def dependency(argv, config, *, logdate, logtime, today):
         else:
             logfile.write('LOG: no dependencies showed\n')
 
-    with contextlib.suppress(Exception):
+    with contextlib.suppress(OSError):
         tmpfile.close()
     if args.show_log:
         subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -242,9 +174,9 @@ def main():
     config = parse()
     argv = sys.argv[1:]
     today = datetime.datetime.today()
-    logdate = datetime.date.strftime(today, '%y%m%d')
-    logtime = datetime.date.strftime(today, '%H%M%S')
-    dependency(argv, config, logdate=logdate, logtime=logtime, today=today)
+    logdate = datetime.date.strftime(today, r'%y%m%d')
+    logtime = datetime.date.strftime(today, r'%H%M%S')
+    dependency(argv, config, logdate, logtime, today)
 
 
 if __name__ == '__main__':
