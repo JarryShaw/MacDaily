@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import base64
 import collections
 import configparser
@@ -16,119 +15,86 @@ import subprocess
 import sys
 import textwrap
 
-from macdaily.daily_utility import check, make_pipe, sudo_timeout
-
-
-__all__ = ['parse']
-
-
-# terminal display
-reset  = '\033[0m'      # reset
-bold   = '\033[1m'      # bold
-under  = '\033[4m'      # underline
-red    = '\033[91m'     # bright red foreground
-green  = '\033[92m'     # bright green foreground
-length = shutil.get_terminal_size().columns
-                        # terminal length
-
+from macdaily.daily_utility import (bold, check, green, length, make_pipe, red,
+                                    reset, sudo_timeout, under)
 
 # user name
 USER = getpass.getuser()
 
-
-# wrapped print
-printw = lambda string: print('\n'.join(textwrap.wrap(string, length)))
-
-
 # mode list
 MODES = {'update', 'uninstall', 'reinstall', 'postinstall', 'dependency', 'logging'}
 
-
-# AppleScript
-scpt = lambda mode, argv: f"""\
-#!/usr/bin/osascript
-
--- show notification
-display notification "Daily scheduled script `{mode}` running..." with title "MacDaily"
-
--- run script
-do shell script "{sys.executable} -m macdaily {mode} {argv}"
-"""
-
+# default config
+CONFIG = ['[Path]\n',
+          '# In this section, paths for log files are specified.\n',
+          '# Please, under any circumstances, make sure they are valid.\n',
+          'logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored\n',
+          'tmpdir = /tmp/dailylog              ; path where temporary runtime logs go\n',
+          'dskdir = /Volumes/Your Disk         ; path where your hard disk lies\n',
+          'arcdir = ${dskdir}/Developers       ; path where ancient logs archive\n',
+          '\n',
+          '[Mode]\n',
+          '# In this section, flags for modes are configured.\n',
+          '# If you would like to disable the mode, set it to "false".\n',
+          'apm      = true     ; Atom packages\n',
+          'gem      = true     ; Ruby gems\n',
+          'mas      = true     ; Mac App Store applications\n',
+          'npm      = true     ; Node.js modules\n',
+          'pip      = true     ; Python packages\n',
+          'brew     = true     ; Homebrew Cellars\n',
+          'cask     = true     ; Caskroom Casks\n',
+          'dotapp   = true     ; Applications (*.app)\n',
+          'macapp   = true     ; all applications in /Application folder\n',
+          'system   = true     ; macOS system packages\n',
+          'cleanup  = true     ; cleanup caches\n',
+          'appstore = true     ; Mac App Store applications in /Application folder\n',
+          '\n',
+          '[Daemon]\n',
+          '# In this section, scheduled tasks are set up.\n',
+          '# You may append and/or remove the time intervals.\n',
+          'update      = true      ; run update on schedule\n',
+          "uninstall   = false     ; don't run uninstall\n",
+          "reinstall   = false     ; don't run reinstall\n",
+          "postinstall = false     ; don't run postinstall\n",
+          "dependency  = false     ; don't run dependency\n",
+          'logging     = true      ; run logging on schedule\n',
+          'schedule    =           ; scheduled timing (in 24 hours)\n',
+          '    8:00                ; update & logging at 8:00\n',
+          '    22:30-update        ; update at 22:30\n',
+          '    23:00-logging       ; logging at 23:00\n',
+          '\n',
+          '[Option]\n',
+          '# In this section, command options are picked.\n',
+          '# Do make sure these options are available for commands.\n',
+          'update  = --all --yes --pre --quiet --show-log --no-cask\n',
+          'logging = --all --quiet --show-log\n',
+          '\n',
+          '[Account]\n',
+          '# In this section, account information are stored.\n',
+          '# You must not modify this part under any circumstances.\n',
+          'username = ...\n',
+          'password = ********\n',
+          '\n',
+          '[Environment]\n',
+          '# In this section, environment specifications are set up.\n',
+          '# Please, under any circumstances, make sure all fields are valid.\n',
+          'bash-timeout = 1_000    ; timeout limit for each shell script in seconds\n',
+          'sudo-timeout = 5m       ; sudo command timeout as specified in '
+          '/etc/sudoers\n']
 
 # Property List
 plist = collections.OrderedDict(
-    Label = '',
-    UserName = USER,
-    Program = '/usr/bin/osascript',
-    ProgramArguments = ['/usr/bin/osascript', '-e', ''],
-    # RunAtLoad = True,
-    RootDirectory = str(pathlib.Path.home()),
-    EnvironmentVariables = dict(os.environ),
-    StartCalendarInterval = [],
-    StandardOutPath = '',
-    StandardErrorPath = '',
+    Label='',
+    UserName=USER,
+    Program='/usr/bin/osascript',
+    ProgramArguments=['/usr/bin/osascript', '-e', ''],
+    # RunAtLoad=True,
+    RootDirectory=str(pathlib.Path.home()),
+    EnvironmentVariables=dict(os.environ),
+    StartCalendarInterval=[],
+    StandardOutPath='',
+    StandardErrorPath='',
 )
-
-
-# default config
-CONFIG = """\
-[Path]
-# In this section, paths for log files are specified.
-# Please, under any circumstances, make sure they are valid.
-logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored
-tmpdir = /tmp/dailylog              ; path where temporary runtime logs go
-dskdir = /Volumes/Your Disk         ; path where your hard disk lies
-arcdir = ${dskdir}/Developers       ; path where ancient logs archive
-
-[Mode]
-# In this section, flags for modes are configured.
-# If you would like to disable the mode, set it to "false".
-apm      = true     ; Atom packages
-gem      = true     ; Ruby gems
-mas      = true     ; Mac App Store applications
-npm      = true     ; Node.js modules
-pip      = true     ; Python packages
-brew     = true     ; Homebrew Cellars
-cask     = true     ; Caskroom Casks
-dotapp   = true     ; Applications (*.app)
-macapp   = true     ; all applications in /Application folder
-system   = true     ; macOS system packages
-cleanup  = true     ; cleanup caches
-appstore = true     ; Mac App Store applications in /Application folder
-
-[Daemon]
-# In this section, scheduled tasks are set up.
-# You may append and/or remove the time intervals.
-update      = true      ; run update on schedule
-uninstall   = false     ; don't run uninstall
-reinstall   = false     ; don't run reinstall
-postinstall = false     ; don't run postinstall
-dependency  = false     ; don't run dependency
-logging     = true      ; run logging on schedule
-schedule    =           ; scheduled timing (in 24 hours)
-    8:00                ; update & logging at 8:00
-    22:30-update        ; update at 22:30
-    23:00-logging       ; logging at 23:00
-
-[Option]
-# In this section, command options are picked.
-# Do make sure these options are available for commands.
-update  = --all --yes --pre --quiet --show-log --no-cask
-logging = --all --quiet --show-log
-
-[Account]
-# In this section, account information are stored.
-# You must not modify this part under any circumstances.
-username = ...
-password = ********
-
-[Environment]
-# In this section, environment specifications are set up.
-# Please, under any circumstances, make sure all fields are valid.
-bash-timeout = 1_000    ; timeout limit for each shell script in seconds
-sudo-timeout = 5m       ; sudo command timeout as specified in /etc/sudoers
-"""
 
 
 class ConfigNotFoundError(FileNotFoundError):
@@ -137,20 +103,25 @@ class ConfigNotFoundError(FileNotFoundError):
         super().__init__(*args, **kwargs)
 
 
-class StringIO(io.StringIO):
-    def readlines(self, hint=-1):
-        if hint >= 0:
-            lines = list()
-            for _ in range(hint):
-                lines.append(super().readline())
-            return lines
-        return super().readlines()
+def printw(string):
+    """Wrapped print."""
+    print('\n'.join(textwrap.wrap(string, length)))
+
+
+def scpt(mode, argv):
+    """AppleScript"""
+    return ('#!/usr/bin/osascript\n'
+            '\n'
+            '-- show notification\n'
+            f'display notification "Daily scheduled script `{mode}` running..." with title "MacDaily"\n'
+            '\n'
+            '-- run script\n'
+            f'do shell script "{sys.executable} -m macdaily {mode} {argv}"\n')
 
 
 def get_config():
-    config = configparser.ConfigParser(
-        inline_comment_prefixes=(';',),
-        interpolation=configparser.ExtendedInterpolation())
+    config = configparser.ConfigParser(inline_comment_prefixes=(';',),
+                                       interpolation=configparser.ExtendedInterpolation())
     config.SECTCRE = re.compile(r'\[\s*(?P<header>[^]]+?)\s*\]')
     config.read_string(CONFIG)
     return config
@@ -171,20 +142,18 @@ def dumps(rcpath):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    global CONFIG
     try:
         password = getpass.getpass('Password:')
         timeout = sudo_timeout(password).rjust(8)
         PASS = base64.b85encode(password.encode()).decode()
 
-        config = CONFIG.splitlines(True)
-        config[47] = f'username = {USER}\n'
-        config[48] = f'password = {PASS}\n'
-        config[54] = f'sudo-timeout = {timeout} ; sudo command timeout as specified in /etc/sudoers'
-        CONFIG = ''.join(config)
+        CONFIG[47] = f'username = {USER}\n'
+        CONFIG[48] = f'password = {PASS}\n'
+        CONFIG[54] = f'sudo-timeout = {timeout} ; sudo command timeout as specified in /etc/sudoers\n'
+        config = ''.join(CONFIG)
 
         with open(rcpath, 'w') as config_file:
-            config_file.write(CONFIG)
+            config_file.write(config)
     except BaseException as error:
         sys.tracebacklimit = 0
         raise error from None
@@ -206,8 +175,10 @@ def launch(config):
         for mode in MODES:
             ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
             if ldpath.exists() and ldpath.is_file():
-                subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath],
+                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath],
+                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             cfgmode[mode] = config['Daemon'].getboolean(mode)
     except BaseException as error:
         sys.tracebacklimit = 0
@@ -217,13 +188,16 @@ def launch(config):
     try:
         timing = config['Daemon']['schedule'].strip().split('\n')
         for line in timing:
-            if not line:    continue
+            if not line:
+                continue
+
             temp = re.split(r'\s*-\s*', line)
             time, mode = temp if len(temp) == 2 else (temp[0], 'any')
-            ptime = datetime.datetime.strptime(time, '%H:%M')
+            ptime = datetime.datetime.strptime(time, r'%H:%M')
             if mode == 'any':
                 for tmpmode, boolean in cfgmode.items():
-                    if boolean: pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+                    if boolean:
+                        pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
             elif mode in MODES:
                 pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
             else:
@@ -245,16 +219,18 @@ def launch(config):
         plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
         with open(tmpath, 'wb') as plist_file:
             plistlib.dump(plist, plist_file, sort_keys=False)
-        subprocess.run(['sudo', '--stdin', 'mv', tmpath, ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '--stdin', 'chown', 'root', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '--stdin', 'launchctl', 'load', '-w', ldpath], stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'mv', tmpath, ldpath],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'chown', 'root', ldpath],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sudo', '--stdin', 'launchctl', 'load', '-w', ldpath],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
     if not pltmode:
         print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
 
 
 def config():
-    config = StringIO(CONFIG)
     printw(f'Entering interactive command line setup procedure...')
     printw(f'Default settings are shown as in the square brackets.')
     printw(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
@@ -262,35 +238,45 @@ def config():
     rcpath = pathlib.Path('~/.dailyrc').expanduser()
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.writelines(config.readlines(5));    config.readline();  print()
+            config_file.writelines(CONFIG[:5])
+            print()
             printw(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             printw(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
             printw(f'Please note that all paths must be valid under all circumstances.')
             dskdir = input('Name of your external hard disk []: ').ljust(17)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.writelines(config.readlines(28));   print()
+            config_file.writelines(CONFIG[7:34])
+            print()
             printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            printw(f'Please enter schedule as {bold}{under}HH:MM-CMD{reset} format, and each separates with {under}comma{reset}.')
-            timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ') or '8:00,22:30-update,23:00-logging').split(',')
+            printw(f'Please enter schedule as {bold}{under}HH:MM-CMD{reset} format, '
+                   'and each separates with {under}comma{reset}.')
+            timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ')
+                      or '8:00,22:30-update,23:00-logging').split(',')
             config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing)), '\n'])
 
-            config.readlines(3);    config_file.writelines(config.readlines(10));    print()
+            config_file.writelines(CONFIG[37:47])
+            print()
             printw(f'To make sure the daemons will launch as expected, we will record your account information.')
             printw(f'You {bold}must not{reset} modify the information generated by {under}MacDaily{reset}.')
             printw(f'Please enter your login password, and we will keep it in a safe place.')
-            passwd = getpass.getpass('Password:');  PASS = base64.b85encode(passwd.encode()).decode()
+            passwd = getpass.getpass('Password:')
+            PASS = base64.b85encode(passwd.encode()).decode()
             config_file.write(f'username = {USER}\npassword = {PASS}\n')
 
-            config.readlines(2);    config_file.writelines(config.readlines(4));    print()
+            config_file.writelines(CONFIG[49:53])
+            print()
             printw(f'Also, {under}MacDaily{reset} supports several different environment setups.')
-            printw(f'You may set up these variables here, or later manually in configuration `{under}~/.dailyrc{reset}`.')
+            printw(f'You may set up these variables here, '
+                   'or later manually in configuration `{under}~/.dailyrc{reset}`.')
             printw(f'Please enter these specifications as instructed below.')
-            shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1_000').ljust(8)
+            shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(8)
             config_file.write(f'bash-timeout = {shtout} ; timeout limit for each shell script in seconds\n')
-            config_file.write(f'sudo-timeout = {sudo_timeout(passwd).ljust(8)} ; sudo command timeout as specified in /etc/sudoers\n'); print()
+            config_file.write(f'sudo-timeout = {sudo_timeout(passwd).ljust(8)} '
+                              '; sudo command timeout as specified in /etc/sudoers\n')
 
+            print()
             printw(f'Configuration for {under}MacDaily{reset} finished. Now launching...\n')
     except BaseException as error:
         os.remove(rcpath)

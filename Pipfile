@@ -4,14 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sphinx = "*"
-sphinx-autobuild = "*"
-recommonmark = "*"
 pipdeptree = "*"
-pexpect = "*"
 
 [dev-packages]
 pylint = "*"
+recommonmark = "*"
+sphinx-autobuild = "*"
+pexpect = "*"
+sphinx = "*"
+pycodestyle = "*"
+"autopep8" = "*"
 
 [requires]
 python_version = "3.7"

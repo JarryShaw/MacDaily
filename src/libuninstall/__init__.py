@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import collections
 import os
 import re
@@ -9,59 +8,36 @@ import shutil
 import signal
 import subprocess
 
+from macdaily.daily_utility import (blue, blush, bold, flash, green, make_mode,
+                                    purple, red, reset, under)
 
 __all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
-
-
-# terminal display
-reset  = '\033[0m'      # reset
-bold   = '\033[1m'      # bold
-under  = '\033[4m'      # underline
-flash  = '\033[5m'      # flash
-red    = '\033[91m'     # bright red foreground
-green  = '\033[92m'     # bright green foreground
-blue   = '\033[96m'     # bright blue foreground
-blush  = '\033[101m'    # bright red background
-purple = '\033[104m'    # bright purple background
-length = shutil.get_terminal_size().columns
-                        # terminal length
-
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-def _make_mode(args, file, mode):
-    with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', f'-*- {mode} -*-'.center(80, ' '), '\n\n'])
-    if not args.quiet:
-        print(f'-*- {blue}{mode}{reset} -*-'.center(length, ' '), '\n', sep='')
-
-
 def _merge_packages(args):
     if 'package' in args and args.package:
-        allflag = False
-        nullflag = False
-        packages = set()
-        for pkg in args.package:
-            if allflag or nullflag: break
-            mapping = map(shlex.split, pkg.split(','))
-            for list_ in mapping:
-                if 'all' in list_:
-                    packages = {'all'}
-                    allflag = True; break
-                if 'null' in list_:
-                    packages = {'null'}
-                    nullflag = True; break
-                packages = packages.union(set(list_))
+        packages = list()
+        for pkg in map(lambda s: re.split(r'\W*,\W*', s), args.package):
+            if 'all' in pkg:
+                setattr(args, 'all', True)
+                packages = {'all'}
+                break
+            if 'null' in pkg:
+                setattr(args, 'all', False)
+                packages = {'null'}
+                break
+            packages.extend(pkg)
     elif 'all' in args.mode or args.all:
         packages = {'all'}
     else:
         packages = {'null'}
-    return packages
+    return set(packages)
 
 
-def uninstall_all(args, *, file, temp, password, bash_timeout, sudo_timeout):
+def uninstall_all(args, file, temp, password, bash_timeout, sudo_timeout):
     log = collections.defaultdict(set)
     for mode in filter(lambda mode: (not getattr(args, f'no_{mode}')), {'pip', 'brew', 'cask'}):
         log[mode] = eval(f'uninstall_{mode}')(args, file=file, temp=temp, retset=True, password=password,
@@ -69,7 +45,7 @@ def uninstall_all(args, *, file, temp, password, bash_timeout, sudo_timeout):
     return log
 
 
-def uninstall_pip(args, *, file, temp, password, bash_timeout, sudo_timeout, retset=False):
+def uninstall_pip(args, file, temp, password, bash_timeout, sudo_timeout, retset=False):
     logname = shlex.quote(file)
     tmpname = shlex.quote(temp)
     quiet = str(args.quiet).lower()
@@ -78,7 +54,7 @@ def uninstall_pip(args, *, file, temp, password, bash_timeout, sudo_timeout, ret
     idep = str(args.idep).lower()
     packages = _merge_packages(args)
 
-    _make_mode(args, file, 'Python')
+    make_mode(args, file, 'Python')
     if 'null' in packages:
         log = set()
         with open(file, 'a') as logfile:
@@ -94,26 +70,30 @@ def uninstall_pip(args, *, file, temp, password, bash_timeout, sudo_timeout, ret
                 str(args.system).lower(), str(args.brew).lower(), \
                 str(args.cpython).lower(), str(args.pypy).lower(), str(args.version)
 
-        logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname, system, brew, cpython, pypy, version, idep] + list(packages),
+        logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
+                                  system, brew, cpython, pypy, version, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
         log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
         if 'macdaily' in log:
             os.kill(os.getpid(), signal.SIGUSR1)
 
-        subprocess.run(['bash', os.path.join(ROOT, 'uninstall_pip.sh'), password, sudo_timeout,
-                       logname, tmpname, system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages), timeout=bash_timeout)
+        subprocess.run(['bash', os.path.join(ROOT, 'uninstall_pip.sh'), password, sudo_timeout, logname, tmpname,
+                        system, brew, cpython, pypy, version, verbose, quiet, yes, idep] + list(packages),
+                       timeout=bash_timeout)
         subprocess.run(['bash', os.path.join(ROOT, 'relink_pip.sh')],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
 
-    if not args.quiet:  print()
+    (lambda: None if args.quiet else print())()
     return log if retset else dict(pip=log)
 
 
 def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('brew') is None:
         print(f'uninstall: {blush}{flash}brew{reset}: command not found\n'
-              f'uninstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
-              f'`{bold}/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n', file=sys.stderr)
+              f'uninstall: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, '
+              f'or install Homebrew through following command -- `{bold}/usr/bin/ruby -e '
+              f'"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n',
+              file=sys.stderr)
         return set() if retset else dict(brew=set())
 
     logname = shlex.quote(file)
@@ -125,7 +105,7 @@ def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, re
     idep = str(args.idep).lower()
     packages = _merge_packages(args)
 
-    _make_mode(args, file, 'Homebrew')
+    make_mode(args, file, 'Homebrew')
     if 'null' in packages:
         log = set()
         with open(file, 'a') as logfile:
@@ -133,14 +113,15 @@ def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, re
         if not args.quiet:
             print(f'uninstall: ${green}brew${reset}: no uninstallation performed\n')
     else:
-        logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname, idep] + list(packages),
+        logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'),
+                                  logname, tmpname, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
         log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_brew.sh'), password, sudo_timeout,
                        logname, tmpname, force, quiet, verbose, idep, yes] + list(packages), timeout=bash_timeout)
 
-    if not args.quiet:  print()
+    (lambda: None if args.quiet else print())()
     return log if retset else dict(brew=log)
 
 
@@ -150,7 +131,8 @@ def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, re
     if testing.returncode != 0:
         print(f'uninstall: {blush}{flash}cask{reset}: command not found\n'
               f'uninstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
-              f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n', file=sys.stderr)
+              'or install Caskroom through following command -- '
+              f'`{bold}brew tap caskroom/cask{reset}`\n', file=sys.stderr)
         return set() if retset else dict(cask=set())
 
     logname = shlex.quote(file)
@@ -160,7 +142,7 @@ def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, re
     force = str(args.force).lower()
     packages = _merge_packages(args)
 
-    _make_mode(args, file, 'Caskroom')
+    make_mode(args, file, 'Caskroom')
     if 'null' in packages:
         log = set()
         with open(file, 'a') as logfile:
@@ -175,5 +157,5 @@ def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, re
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_cask.sh'), password, sudo_timeout,
                        logname, tmpname, quiet, verbose, force] + list(packages), timeout=bash_timeout)
 
-    if not args.quiet:  print()
+    (lambda: None if args.quiet else print())()
     return log if retset else dict(cask=log)
