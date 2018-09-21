@@ -15,7 +15,8 @@ import subprocess
 import sys
 import textwrap
 
-from macdaily.daily_utility import (bold, check, green, length, make_pipe, red,
+from macdaily.daily_utility import (ConfigNotFoundError, NameError, bold,
+                                    check, green, length, make_pipe, red,
                                     reset, sudo_timeout, under)
 
 # user name
@@ -97,12 +98,6 @@ plist = collections.OrderedDict(
 )
 
 
-class ConfigNotFoundError(FileNotFoundError):
-    def __init__(self, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(*args, **kwargs)
-
-
 def printw(string):
     """Wrapped print."""
     print('\n'.join(textwrap.wrap(string, length)))
@@ -129,12 +124,8 @@ def get_config():
 
 def loads(rcpath):
     config = get_config()
-    try:
-        with open(rcpath, 'r') as config_file:
-            config.read_file(config_file)
-    except configparser.Error as error:
-        sys.tracebacklimit = 0
-        raise error from None
+    with open(rcpath, 'r') as config_file:
+        config.read_file(config_file)
     return config
 
 
@@ -142,21 +133,16 @@ def dumps(rcpath):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    try:
-        password = getpass.getpass('Password:')
-        timeout = sudo_timeout(password).rjust(8)
-        PASS = base64.b85encode(password.encode()).decode()
+    password = getpass.getpass('Password:')
+    timeout = sudo_timeout(password).rjust(8)
+    PASS = base64.b85encode(password.encode()).decode()
 
-        CONFIG[47] = f'username = {USER}\n'
-        CONFIG[48] = f'password = {PASS}\n'
-        CONFIG[54] = f'sudo-timeout = {timeout} ; sudo command timeout as specified in /etc/sudoers\n'
-        config = ''.join(CONFIG)
+    CONFIG[47] = f'username = {USER}\n'
+    CONFIG[48] = f'password = {PASS}\n'
+    CONFIG[54] = f'sudo-timeout = {timeout} ; sudo command timeout as specified in /etc/sudoers\n'
 
-        with open(rcpath, 'w') as config_file:
-            config_file.write(config)
-    except BaseException as error:
-        sys.tracebacklimit = 0
-        raise error from None
+    with open(rcpath, 'w') as config_file:
+        config_file.writelines(CONFIG)
     return get_config()
 
 
@@ -171,40 +157,28 @@ def parse():
 def launch(config):
     PIPE = make_pipe(config)
     cfgmode = dict()
-    try:
-        for mode in MODES:
-            ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
-            if ldpath.exists() and ldpath.is_file():
-                subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath],
-                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath],
-                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            cfgmode[mode] = config['Daemon'].getboolean(mode)
-    except BaseException as error:
-        sys.tracebacklimit = 0
-        raise error from None
+    for mode in MODES:
+        ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
+        if ldpath.exists() and ldpath.is_file():
+            subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        cfgmode[mode] = config['Daemon'].getboolean(mode)
 
     pltmode = collections.defaultdict(list)
-    try:
-        timing = config['Daemon']['schedule'].strip().split('\n')
-        for line in timing:
-            if not line:
-                continue
-
-            temp = re.split(r'\s*-\s*', line)
-            time, mode = temp if len(temp) == 2 else (temp[0], 'any')
-            ptime = datetime.datetime.strptime(time, r'%H:%M')
-            if mode == 'any':
-                for tmpmode, boolean in cfgmode.items():
-                    if boolean:
-                        pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
-            elif mode in MODES:
-                pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
-            else:
-                raise NameError(f'unrecognised mode {mode}')
-    except BaseException as error:
-        sys.tracebacklimit = 0
-        raise error from None
+    timing = config['Daemon']['schedule'].strip().split('\n')
+    for line in filter(None, timing):
+        temp = re.split(r'\s*-\s*', line)
+        time, mode = temp if len(temp) == 2 else (temp[0], 'any')
+        ptime = datetime.datetime.strptime(time, r'%H:%M')
+        if mode == 'any':
+            for tmpmode, boolean in filter(lambda _, b: b, cfgmode.items()):
+                pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+        elif mode in MODES:
+            pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+        else:
+            raise ModeError(f'unrecognised mode: {mode!r}')
 
     tmpdir = os.path.expanduser(config['Path']['tmpdir'])
     logdir = os.path.expanduser(config['Path']['logdir'])
@@ -251,7 +225,7 @@ def config():
             printw(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             printw(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
             printw(f'Please enter schedule as {bold}{under}HH:MM-CMD{reset} format, '
-                   'and each separates with {under}comma{reset}.')
+                   f'and each separates with {under}comma{reset}.')
             timing = (input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ')
                       or '8:00,22:30-update,23:00-logging').split(',')
             config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing)), '\n'])
@@ -268,22 +242,21 @@ def config():
             config_file.writelines(CONFIG[49:53])
             print()
             printw(f'Also, {under}MacDaily{reset} supports several different environment setups.')
-            printw(f'You may set up these variables here, '
-                   'or later manually in configuration `{under}~/.dailyrc{reset}`.')
+            printw('You may set up these variables here, '
+                   f'or later manually in configuration `{under}~/.dailyrc{reset}`.')
             printw(f'Please enter these specifications as instructed below.')
             shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(8)
             config_file.write(f'bash-timeout = {shtout} ; timeout limit for each shell script in seconds\n')
             config_file.write(f'sudo-timeout = {sudo_timeout(passwd).ljust(8)} '
                               '; sudo command timeout as specified in /etc/sudoers\n')
-
             print()
             printw(f'Configuration for {under}MacDaily{reset} finished. Now launching...\n')
-    except BaseException as error:
+    except BaseException:
         os.remove(rcpath)
-        sys.tracebacklimit = 0
-        raise error from None
+        raise
     launch(parse())
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(config())

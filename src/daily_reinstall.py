@@ -18,7 +18,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libprinstall import *
 
 # version string
-__version__ = '2018.09.14'
+__version__ = '2018.09.21b2'
 
 # display mode names
 NAME = dict(
@@ -128,11 +128,11 @@ def reinstall(argv, config, logdate, logtime, today):
 
     if args.mode is None:
         parser.print_help()
-        return
+        exit(1)
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='reinstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='reinstall-', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = os.path.join(logpath, logdate, f'{logtime}.log')
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -151,13 +151,8 @@ def reinstall(argv, config, logdate, logtime, today):
                        stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     for mode in config['Mode'].keys():
-        try:
-            flag = (not config['Mode'].getboolean(mode, fallback=False))
-        except ValueError as error:
-            sys.tracebacklimit = 0
-            raise error from None
-        if flag:
-            setattr(args, f'no_{mode}', flag)
+        if (not config['Mode'].getboolean(mode, fallback=False)):
+            setattr(args, f'no_{mode}', True)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:

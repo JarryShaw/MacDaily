@@ -18,7 +18,7 @@ from macdaily.daily_utility import (archive, beholder, blue, bold, green,
 from macdaily.libdependency import *
 
 # version string
-__version__ = '2018.09.14'
+__version__ = '2018.09.21b2'
 
 # display mode names
 NAME = dict(
@@ -102,11 +102,11 @@ def dependency(argv, config, logdate, logtime, today):
 
     if args.mode is None:
         parser.print_help()
-        return
+        exit(1)
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency-', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = os.path.join(logpath, logdate, f'{logtime}.log')
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -125,12 +125,7 @@ def dependency(argv, config, logdate, logtime, today):
                        stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     for mode in config['Mode'].keys():
-        try:
-            flag = (not config['Mode'].getboolean(mode, fallback=False))
-        except ValueError as error:
-            sys.tracebacklimit = 0
-            raise error from None
-        if flag:
+        if not config['Mode'].getboolean(mode, fallback=False):
             setattr(args, f'no_{mode}', flag)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
@@ -180,4 +175,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())

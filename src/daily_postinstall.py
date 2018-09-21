@@ -17,7 +17,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libprinstall import postinstall
 
 # version string
-__version__ = '2018.09.14'
+__version__ = '2018.09.21b2'
 
 
 def get_parser():
@@ -54,11 +54,11 @@ def postinstall(argv, config, logdate, logtime, today):
 
     if args.package is None:
         parser.print_help()
-        return
+        exit(1)
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='postinstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='postinstall-', suffix='.log')
-    logname = f'{logpath}/{logdate}/{logtime}.log'
+    logname = os.path.join(logpath, logdate, f'{logtime}.log')
     tmpname = tmpfile.name
 
     PIPE = make_pipe(config)
@@ -127,4 +127,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())

@@ -20,7 +20,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libuninstall import *
 
 # version string
-__version__ = '2018.09.14'
+__version__ = '2018.09.21b2'
 
 # display mode names
 NAME = dict(
@@ -147,7 +147,7 @@ def uninstall(argv, config, logdate, logtime, today):
 
     if args.mode is None:
         parser.print_help()
-        return
+        exit(1)
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='uninstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='uninstall-', suffix='.log')
@@ -176,13 +176,8 @@ def uninstall(argv, config, logdate, logtime, today):
     signal.signal(signal.SIGUSR1, reload)
 
     for mode in config['Mode'].keys():
-        try:
-            flag = (not config['Mode'].getboolean(mode, fallback=False))
-        except ValueError as error:
-            sys.tracebacklimit = 0
-            raise error from None
-        if flag:
-            setattr(args, f'no_{mode}', flag)
+        if (not config['Mode'].getboolean(mode, fallback=False)):
+            setattr(args, f'no_{mode}', True)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:
@@ -263,4 +258,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())
