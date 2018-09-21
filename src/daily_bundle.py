@@ -9,7 +9,7 @@ from macdaily.daily_config import parse
 from macdaily.daily_utility import beholder
 
 # version string
-__version__ = '2018.09.12'
+__version__ = '2018.09.21b2'
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +40,7 @@ def bundle(argv, config, *, logdate, logtime, today):
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     else:
         parser.print_help()
+        exit(1)
 
 
 @beholder
@@ -53,4 +54,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())

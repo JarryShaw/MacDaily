@@ -7,6 +7,7 @@ import functools
 import glob
 import os
 import pathlib
+import platform
 import shlex
 import shutil
 import subprocess
@@ -34,10 +35,20 @@ program = ' '.join(sys.argv)    # arguments
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
+class ModeError(NameError):
+    pass
+
+
+class UnsupportedOS(RuntimeError):
+    pass
+
+
 class PasswordError(PermissionError):
-    def __init__(self, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(*args, **kwargs)
+    pass
+
+
+class ConfigNotFoundError(FileNotFoundError):
+    pass
 
 
 def check(parse):
@@ -59,14 +70,13 @@ def check(parse):
 def beholder(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        if platform.system() != 'Darwin':
+            raise UnsupportedOS('macdaily: script runs only on macOS')
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
             print(f'\nmacdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
             exit(130)
-        except BaseException as error:
-            sys.tracebacklimit = 0
-            raise error from None
     return wrapper
 
 
@@ -81,18 +91,17 @@ def aftermath(logfile, tmpfile=None, command='null', logmode=None):
                     file.write(f'\nERR: {error}\n')
                 print(f'macdaily: {red}{command}{reset}: operation timeout', file=sys.stderr)
                 exit(32)
-            except BaseException as error:
+            except BaseException:
                 if logmode is not None:
                     subprocess.run(['bash', os.path.join(ROOT, f'lib{command}/aftermath.sh'),
                                     shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                sys.tracebacklimit = 0
-                raise error from None
+                raise
         return wrapper
     return decorator
 
 
-def make_mode(args, file, mode, *, flag=True):
+def make_mode(args, file, mode, flag=True):
     with open(file, 'a') as logfile:
         logfile.writelines(['\n\n', f'-*- {mode} -*-'.center(80, ' '), '\n\n'])
     if (not args.quiet) and flag:
@@ -115,24 +124,26 @@ def make_pipe(config=None, password=None):
 
 
 def make_path(config, mode, logdate):
-    tmppath = os.path.expanduser(config['Path']['tmpdir'])
-    logpath = os.path.expanduser(config['Path']['logdir']) + f'/{mode}'
-    arcpath = os.path.expanduser(config['Path']['logdir']) + f'/archive/{mode}'
-    tarpath = os.path.expanduser(config['Path']['logdir']) + f'/tarfile/{mode}'
+    tmpdir = os.path.expanduser(config['Path']['tmpdir'])
+    logdir = os.path.expanduser(config['Path']['logdir'])
+    dskdir = os.path.expanduser(config['Path']['dskdir'])
+    arcdir = os.path.expanduser(config['Path']['arcdir'])
+
+    tmppath = tmpdir
+    logpath = os.path.join(logdir, mode)
+    arcpath = os.path.join(logdir, 'archive', mode)
+    tarpath = os.path.join(logdir, 'tarfile', mode)
 
     pathlib.Path(arcpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tarpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tmppath).mkdir(parents=True, exist_ok=True)
-    pathlib.Path(f'{logpath}/{logdate}').expanduser().mkdir(parents=True, exist_ok=True)
+    pathlib.Path(os.path.join(logpath, logdate)).mkdir(parents=True, exist_ok=True)
 
-    dskpath = pathlib.Path(config['Path']['dskdir'])
+    dskpath = pathlib.Path(dskdir)
     if dskpath.exists() and dskpath.is_dir():
-        pathlib.Path(config['Path']['arcdir']).mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ['sudo', '--stdin', 'chown', '-R', config['Account']['username'],
-         tmppath, os.path.expanduser(config['Path']['logdir'])],
-        stdin=make_pipe(config).stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+        pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
+    subprocess.run(['sudo', '--stdin', 'chown', '-R', config['Account']['username'], tmppath, logdir],
+                   stdin=make_pipe(config).stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return tmppath, logpath, arcpath, tarpath
 
 
@@ -158,7 +169,7 @@ def archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=True):
 
     ctime = datetime.datetime.fromtimestamp(os.stat(arcpath).st_birthtime)
     if (today - ctime) > datetime.timedelta(7):
-        arcdate = datetime.date.strftime(ctime, '%y%m%d')
+        arcdate = datetime.date.strftime(ctime, r'%y%m%d')
         tarname = f'{tarpath}/{arcdate}-{logdate}.tar.bz'
         with tarfile.open(tarname, 'w:bz2') as tf:
             abs_src = os.path.abspath(arcpath)
@@ -178,13 +189,13 @@ def archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=True):
 def storage(config, logdate, today):
     filelist = list()
     tmppath = os.path.expanduser(config['Path']['tmpdir'])
-    tarpath = os.path.expanduser(config['Path']['logdir']) + '/tarfile'
+    tarpath = os.path.expanduser(os.path.join(config['Path']['logdir'], 'tarfile'))
+
     dskpath = pathlib.Path(config['Path']['dskdir'])
     if dskpath.exists() and dskpath.is_dir():
         ctime = datetime.datetime.fromtimestamp(os.stat(tarpath).st_birthtime)
-        delta = today - ctime
-        if delta > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
-            arcdate = datetime.date.strftime(ctime, '%y%m%d')
+        if (today - ctime) > datetime.timedelta(calendar.monthrange(today.year, today.month)[1]):
+            arcdate = datetime.date.strftime(ctime, r'%y%m%d')
             tarname = f'{tmppath}/{arcdate}-{logdate}.tar.xz'
             with tarfile.open(tarname, 'w:xz') as tf:
                 abs_src = os.path.abspath(tarpath)
@@ -196,7 +207,7 @@ def storage(config, logdate, today):
                         filelist.append(absname)
                 shutil.rmtree(tarpath)
 
-            arcfile = os.path.expanduser(config['Path']['arcdir']) + '/archive.zip'
+            arcfile = os.path.expanduser(os.path.join(config['Path']['arcdir'], 'archive.zip'))
             with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                 arcname = os.path.split(tarname)[1]
                 zf.write(tarname, arcname)

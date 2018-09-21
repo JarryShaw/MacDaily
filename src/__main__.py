@@ -5,7 +5,6 @@ import datetime
 import importlib
 import os
 import pathlib
-import platform
 import sys
 
 from macdaily.daily_archive import archive_ as archive
@@ -18,13 +17,13 @@ from macdaily.daily_postinstall import postinstall
 from macdaily.daily_reinstall import reinstall
 from macdaily.daily_uninstall import uninstall
 from macdaily.daily_update import update
-from macdaily.daily_utility import beholder
+from macdaily.daily_utility import UnsupportedOS, beholder
 
 # change working directory
 os.chdir(os.path.dirname(__file__))
 
 # version string
-__version__ = '2018.09.20'
+__version__ = '2018.09.21b2'
 
 # today
 today = datetime.datetime.today()
@@ -45,13 +44,6 @@ MacDaily commands & corresponding subsidiaries:
 '''
 
 
-# error handling class
-class UnsupportedOS(RuntimeError):
-    def __init__(self, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(*args, **kwargs)
-
-
 def get_parser():
     parser = argparse.ArgumentParser(prog='MacDaily',
                                      description='Package Day-Care Manager',
@@ -69,7 +61,7 @@ def get_parser():
 def help_(argv, parser):
     if argv == []:
         parser.print_help()
-        return
+        exit(1)
 
     def module(name):
         return importlib.import_module(f'macdaily.daily_{name}')
@@ -94,14 +86,12 @@ def help_(argv, parser):
     elif command in ('archive',):
         print(f'macdaily: {bold}archive{reset}: re-storing ancient logs')
     else:
-        get_parser().print_help()
+        print(COMMANDS)
+        exit(1)
 
 
 @beholder
 def main():
-    if platform.system() != 'Darwin':
-        raise UnsupportedOS('macdaily: script runs only on macOS')
-
     cfgdct = parse()
     parser = get_parser()
     mdargs = parser.parse_args(sys.argv[1:2])
@@ -136,7 +126,9 @@ def main():
         print(COMMANDS)
     else:
         parser.print_help()
+        exit(1)
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())

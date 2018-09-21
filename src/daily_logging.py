@@ -16,7 +16,7 @@ from macdaily.daily_utility import (archive, blue, bold, green, make_path,
 from macdaily.liblogging import *
 
 # version string
-__version__ = '2018.09.12'
+__version__ = '2018.09.21b2'
 
 # mode actions
 MODE = dict(
@@ -98,18 +98,14 @@ def logging(argv, config, logdate, logtime, today):
             modes.extend(mode)
     if args.all:
         for mode in {'apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore'}:
-            try:
-                flag = config['Mode'].getboolean(mode, fallback=False)
-            except ValueError as error:
-                sys.tracebacklimit = 0
-                raise error from None
-            if flag and (not getattr(args, f'no_{mode}', False)):
+            if (config['Mode'].getboolean(mode, fallback=False)
+                    and (not getattr(args, f'no_{mode}', False))):
                 modes.append(mode)
     args.mode = set(modes) or None
 
     if args.mode is None:
         parser.print_help()
-        return
+        exit(1)
 
     PIPE = make_pipe(config)
     USER = config['Account']['username']
@@ -139,12 +135,11 @@ def logging(argv, config, logdate, logtime, today):
             with open(logname, 'a') as logfile:
                 logfile.write(f'\nERR: {error}\n')
             print(f'logging: {red}{logmode}{reset}: operation timeout', file=sys.stderr)
-        except BaseException as error:
+        except BaseException:
             with open(logname, 'a') as logfile:
                 logfile.write('\nWAR: procedure interrupted\n')
             print(f'logging: {red}{logmode}{reset}: procedure interrupted', file=sys.stderr)
-            sys.tracebacklimit = 0
-            raise error from None
+            raise
 
         with open(logname, 'a') as logfile:
             filelist = archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=False)
@@ -161,7 +156,7 @@ def logging(argv, config, logdate, logtime, today):
     storage(config, logdate, today)
     if not args.quiet:
         if arcflag:
-            arcdir = config['Path']['logdir'] + '/archive/logging'
+            arcdir = os.path.join(config['Path']['logdir'], 'archive/logging')
             print(f'logging: {green}cleanup{reset}: ancient logs archived into {under}{arcdir}{reset}')
         else:
             print(f'logging: {green}cleanup{reset}: no ancient logs archived')
@@ -178,4 +173,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(main())
