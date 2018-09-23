@@ -1,11 +1,5 @@
 {
     "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/python",
-    "python.linting.pep8Path": "pycodestyle",
-    "python.linting.pep8Enabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.pep8Args": [
-        "--max-line-length=120"
-    ],
     "cSpell.language": "en,en-GB",
     "cSpell.words": [
         "cfgmode",

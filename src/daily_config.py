@@ -15,7 +15,7 @@ import subprocess
 import sys
 import textwrap
 
-from macdaily.daily_utility import (ConfigNotFoundError, NameError, bold,
+from macdaily.daily_utility import (ConfigNotFoundError, ModeError, bold,
                                     check, green, length, make_pipe, red,
                                     reset, sudo_timeout, under)
 
@@ -173,7 +173,7 @@ def launch(config):
         time, mode = temp if len(temp) == 2 else (temp[0], 'any')
         ptime = datetime.datetime.strptime(time, r'%H:%M')
         if mode == 'any':
-            for tmpmode, boolean in filter(lambda _, b: b, cfgmode.items()):
+            for tmpmode, _ in filter(lambda _, b: b, cfgmode.items()):
                 pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
         elif mode in MODES:
             pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))

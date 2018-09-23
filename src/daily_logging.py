@@ -10,13 +10,13 @@ import subprocess
 import sys
 
 from macdaily.daily_config import parse
-from macdaily.daily_utility import (archive, blue, bold, green, make_path,
-                                    make_pipe, program, python, red, reset,
-                                    storage, under)
+from macdaily.daily_utility import (archive, beholder, blue, bold, green,
+                                    make_path, make_pipe, program, python, red,
+                                    reset, storage, under)
 from macdaily.liblogging import *
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23'
 
 # mode actions
 MODE = dict(
@@ -114,7 +114,7 @@ def logging(argv, config, logdate, logtime, today):
 
     arcflag = False
     for logmode in args.mode:
-        tmppath, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
+        _, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
         logname = f'{logpath}/{logdate}/{logtime}.log'
 
         with open(logname, 'a') as logfile:
@@ -130,7 +130,7 @@ def logging(argv, config, logdate, logtime, today):
 
         try:
             logging = MODE.get(logmode)
-            log = logging(args, file=shlex.quote(logname), password=PASS, bash_timeout=BASH)
+            logging(args, file=shlex.quote(logname), password=PASS, bash_timeout=BASH)
         except subprocess.TimeoutExpired as error:
             with open(logname, 'a') as logfile:
                 logfile.write(f'\nERR: {error}\n')

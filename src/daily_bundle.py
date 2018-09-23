@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import datetime
 import os
 import subprocess
 import sys
@@ -9,7 +10,7 @@ from macdaily.daily_config import parse
 from macdaily.daily_utility import beholder
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23'
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +28,7 @@ def get_parser():
     return parser
 
 
-def bundle(argv, config, *, logdate, logtime, today):
+def bundle(argv, config, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
