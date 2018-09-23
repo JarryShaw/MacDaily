@@ -9,21 +9,20 @@ import sys
 
 from macdaily.daily_archive import archive_ as archive
 from macdaily.daily_bundle import bundle
-from macdaily.daily_colour import bold, reset
 from macdaily.daily_config import config, launch, parse
 from macdaily.daily_dependency import dependency
 from macdaily.daily_logging import logging
-from macdaily.daily_postinstall import postinstall
+from macdaily.daily_postinstall import postinstall_ as postinstall
 from macdaily.daily_reinstall import reinstall
 from macdaily.daily_uninstall import uninstall
 from macdaily.daily_update import update
-from macdaily.daily_utility import UnsupportedOS, beholder
+from macdaily.daily_utility import UnsupportedOS, beholder, bold, reset
 
 # change working directory
 os.chdir(os.path.dirname(__file__))
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23b1'
 
 # today
 today = datetime.datetime.today()

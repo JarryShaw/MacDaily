@@ -50,7 +50,7 @@ def dependency_pip(args, file, temp, bash_timeout, retset=False):
     tree = str(args.tree).lower()
     packages = _merge_packages(args)
 
-    _make_mode(args, file, 'Python')
+    make_mode(args, file, 'Python')
     if 'null' in packages:
         log = set()
         with open(file, 'a') as logfile:
@@ -93,7 +93,7 @@ def dependency_brew(args, file, temp, bash_timeout, retset=False):
     tree = str(args.tree).lower()
     packages = _merge_packages(args)
 
-    _make_mode(args, file, 'Homebrew')
+    make_mode(args, file, 'Homebrew')
     if 'null' in packages:
         log = set()
         with open(file, 'a') as logfile:

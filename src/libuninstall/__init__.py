@@ -7,6 +7,7 @@ import shlex
 import shutil
 import signal
 import subprocess
+import sys
 
 from macdaily.daily_utility import (blue, blush, bold, flash, green, make_mode,
                                     purple, red, reset, under)
@@ -87,7 +88,7 @@ def uninstall_pip(args, file, temp, password, bash_timeout, sudo_timeout, retset
     return log if retset else dict(pip=log)
 
 
-def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, retset=False):
+def uninstall_brew(args, file, temp, password, bash_timeout, sudo_timeout, retset=False):
     if shutil.which('brew') is None:
         print('uninstall: {}{}brew{}: command not found\n'
               'uninstall: {}brew{}: you may find Homebrew on {}{}https://brew.sh{}, '
@@ -125,7 +126,7 @@ def uninstall_brew(args, *, file, temp, password, bash_timeout, sudo_timeout, re
     return log if retset else dict(brew=log)
 
 
-def uninstall_cask(args, *, file, temp, password, bash_timeout, sudo_timeout, retset=False):
+def uninstall_cask(args, file, temp, password, bash_timeout, sudo_timeout, retset=False):
     testing = subprocess.run(['brew', 'command', 'cask'],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if testing.returncode != 0:

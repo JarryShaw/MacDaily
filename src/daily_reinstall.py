@@ -18,7 +18,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libprinstall import *
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23'
 
 # display mode names
 NAME = dict(

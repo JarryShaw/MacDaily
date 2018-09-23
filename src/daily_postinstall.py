@@ -2,6 +2,7 @@
 
 import argparse
 import base64
+import contextlib
 import datetime
 import os
 import pwd
@@ -17,7 +18,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libprinstall import postinstall
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23'
 
 
 def get_parser():
@@ -48,7 +49,7 @@ def get_parser():
     return parser
 
 
-def postinstall(argv, config, logdate, logtime, today):
+def postinstall_(argv, config, logdate, logtime, today):
     parser = get_parser()
     args = parser.parse_args(argv)
 
@@ -81,7 +82,7 @@ def postinstall(argv, config, logdate, logtime, today):
                          bash_timeout=config['Environment'].getint('bash-timeout', fallback=1000),
                          sudo_timeout=str(config['Environment'].getint('sudo-timeout', fallback=300) // 2))
 
-    if log != dict():
+    if log != set():
         if not args.quiet:
             print('-*- {}Postinstall Logs{} -*-'.format(blue, reset).center(length, ' '), '\n', sep='')
         mode = '-*- Postinstall Logs -*-'.center(80, ' ')
@@ -123,7 +124,7 @@ def main():
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, '%y%m%d')
     logtime = datetime.date.strftime(today, '%H%M%S')
-    postinstall(argv, config, logdate=logdate, logtime=logtime, today=today)
+    postinstall_(argv, config, logdate=logdate, logtime=logtime, today=today)
 
 
 if __name__ == '__main__':
