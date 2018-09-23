@@ -41,12 +41,12 @@ def _merge_packages(args):
 
 
 def update_all(args, file, temp, disk, password, bash_timeout, sudo_timeout):
-    lcl = locals()
+    glb = globals()
     log = collections.defaultdict(set)
     for mode in {'apm', 'gem', 'mas', 'npm', 'pip', 'brew', 'cask', 'system'}:
-        lcl[mode] = False
+        glb[mode] = False
         if not getattr(args, f'no_{mode}'):
-            lcl[mode] = True
+            glb[mode] = True
             log[mode] = eval(f'update_{mode}')(args, file=file, temp=temp, disk=disk, retset=True,
                                                password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
