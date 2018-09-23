@@ -15,7 +15,7 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version
-__version__ = '2018.09.23b1'
+__version__ = '2018.09.23b2'
 
 # README
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:

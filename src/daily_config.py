@@ -118,7 +118,7 @@ def get_config():
     config = configparser.ConfigParser(inline_comment_prefixes=(';',),
                                        interpolation=configparser.ExtendedInterpolation())
     config.SECTCRE = re.compile(r'\[\s*(?P<header>[^]]+?)\s*\]')
-    config.read_string(CONFIG)
+    config.read_string(''.join(CONFIG))
     return config
 
 
