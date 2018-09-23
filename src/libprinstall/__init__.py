@@ -38,12 +38,12 @@ def _merge_packages(args, mode):
 
 
 def reinstall_all(args, file, temp, disk, password, bash_timeout, sudo_timeout):
-    lcl = locals()
+    glb = globals()
     log = collections.defaultdict(set)
     for mode in {'brew', 'cask'}:
-        lcl[mode] = False
+        glb[mode] = False
         if not getattr(args, 'no_{}'.format(mode)):
-            lcl[mode] = True
+            glb[mode] = True
             log[mode] = eval('reinstall_{}'.format(mode))(args, file=file, temp=temp, disk=disk, retset=True, password=password,
                                                   bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
