@@ -12,13 +12,13 @@ import sys
 import tempfile
 
 from macdaily.daily_config import parse
-from macdaily.daily_utility import (archive, beholder, blue, bold, green,
-                                    length, make_path, make_pipe, program,
-                                    python, red, reset, under)
+from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
+                                    green, length, make_path, make_pipe,
+                                    program, python, red, reset, under)
 from macdaily.libdependency import *
 
 # version string
-__version__ = '2018.09.21b2'
+__version__ = '2018.09.23'
 
 # display mode names
 NAME = dict(
@@ -126,7 +126,7 @@ def dependency(argv, config, logdate, logtime, today):
 
     for mode in config['Mode'].keys():
         if not config['Mode'].getboolean(mode, fallback=False):
-            setattr(args, f'no_{mode}', flag)
+            setattr(args, f'no_{mode}', True)
     if isinstance(args.mode, str):
         args.mode = [args.mode]
     if 'all' in args.mode:

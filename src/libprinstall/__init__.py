@@ -48,7 +48,7 @@ def reinstall_all(args, file, temp, disk, password, bash_timeout, sudo_timeout):
                                                   bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
     if not args.no_cleanup:
-        reinstall_cleanup(args, file=file, temp=temp, disk=disk, retset=True, brew=brew, cask=cask,
+        reinstall_cleanup(args, file=file, temp=temp, disk=disk, retset=True, brew=brew, cask=cask, mode='reinstall',
                           password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
     return log
 
@@ -179,7 +179,7 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
               'or install Homebrew through following command -- `{bold}/usr/bin/ruby -e '
               f'"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n',
               file=sys.stderr)
-        return set() if retset else dict(brew=set())
+        return set()
 
     logname = shlex.quote(file)
     tmpname = shlex.quote(temp)
