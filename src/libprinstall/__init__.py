@@ -82,7 +82,7 @@ def reinstall_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname,
                                   'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -133,7 +133,7 @@ def reinstall_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname,
                                   'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -200,7 +200,7 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname,
                                   'postinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:

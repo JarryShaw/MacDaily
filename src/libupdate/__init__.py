@@ -74,7 +74,7 @@ def update_apm(args, file, temp, disk, password, bash_timeout, sudo_timeout, ret
     if 'all' in packages or args.all:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_apm.sh'), logname, tmpname],
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -105,7 +105,7 @@ def update_gem(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
     if 'all' in packages or args.all:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_gem.sh'), logname, tmpname],
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -138,7 +138,7 @@ def update_mas(args, file, temp, disk, password, bash_timeout, sudo_timeout, ret
     logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_mas.sh'), logname, tmpname],
                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     if 'all' in packages or args.all:
-        log = set(re.split(r'[\r\n]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE)))
+        log = set(re.split(r'[\r\n]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE)))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -174,7 +174,7 @@ def update_npm(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
         if start == -1 or end == -1:
             stdict = dict()
         else:
-            stdict = json.loads(re.sub(r'\^D\x08\x08', '', logging.stdout[start:end+1].decode().strip(), re.IGNORECASE))
+            stdict = json.loads(re.sub(r'\^D\x08\x08', '', logging.stdout[start:end+1].decode().strip(), flags=re.IGNORECASE))
         log = set(stdict.keys())
         pkg = {f'{name}@{value["wanted"]}' for name, value in stdict.items()}
         outdated = 'true' if log and all(log) else 'false'
@@ -214,7 +214,7 @@ def update_pip(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
     logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
                               system, brew, cpython, pypy, version, pre] + list(packages),
                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-    log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+    log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
     if 'macdaily' in log:
         os.kill(os.getpid(), signal.SIGUSR1)
 
@@ -258,7 +258,7 @@ def update_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout, cl
     if 'all' in packages or args.all:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname],
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -304,7 +304,7 @@ def update_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout, cl
     if 'all' in packages or args.all:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname, greedy, force],
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
@@ -338,7 +338,7 @@ def update_system(args, file, temp, disk, password, bash_timeout, sudo_timeout, 
     logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_system.sh'), logname, tmpname],
                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     if 'all' in packages or args.all:
-        log = set(re.split(r'[\n\r]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE)))
+        log = set(re.split(r'[\n\r]', re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE)))
         outdated = 'true' if log and all(log) else 'false'
     else:
         log = packages
