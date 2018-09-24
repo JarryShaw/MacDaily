@@ -22,7 +22,7 @@ from macdaily.daily_utility import UnsupportedOS, beholder, bold, reset
 os.chdir(os.path.dirname(__file__))
 
 # version string
-__version__ = '2018.09.23'
+__version__ = '2018.09.24'
 
 # today
 today = datetime.datetime.today()

@@ -68,7 +68,7 @@ def dependency_pip(args, file, temp, bash_timeout, retset=False):
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
                                   system, brew, cpython, pypy, version] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'dependency_pip.sh'), logname, tmpname,
                        system, brew, cpython, pypy, version, tree] + list(packages), timeout=bash_timeout)
@@ -102,7 +102,7 @@ def dependency_brew(args, file, temp, bash_timeout, retset=False):
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'dependency_brew.sh'),
                        logname, tmpname, tree] + list(packages), timeout=bash_timeout)
