@@ -18,7 +18,7 @@ from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
 from macdaily.libprinstall import postinstall
 
 # version string
-__version__ = '2018.09.23'
+__version__ = '2018.09.24'
 
 
 def get_parser():

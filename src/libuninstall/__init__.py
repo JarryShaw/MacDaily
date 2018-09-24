@@ -74,7 +74,7 @@ def uninstall_pip(args, file, temp, password, bash_timeout, sudo_timeout, retset
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
                                   system, brew, cpython, pypy, version, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
         if 'macdaily' in log:
             os.kill(os.getpid(), signal.SIGUSR1)
 
@@ -117,7 +117,7 @@ def uninstall_brew(args, file, temp, password, bash_timeout, sudo_timeout, retse
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'),
                                   logname, tmpname, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_brew.sh'), password, sudo_timeout,
                        logname, tmpname, force, quiet, verbose, idep, yes] + list(packages), timeout=bash_timeout)
@@ -153,7 +153,7 @@ def uninstall_cask(args, file, temp, password, bash_timeout, sudo_timeout, retse
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), re.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_cask.sh'), password, sudo_timeout,
                        logname, tmpname, quiet, verbose, force] + list(packages), timeout=bash_timeout)
