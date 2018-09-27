@@ -18,19 +18,19 @@ MacDaily
 
 - `About <#about>`__
 
-- `Installation <#install>`__
+- `Installation <#installation>`__
 
-- `Configuration <#config>`__
+- `Configuration <#configuration>`__
 
-- `Usage Manual <#usage>`__
+- `Usage Manual <#usage-manual>`__
 
-  - `Start-Up <#startup>`__
+  - `Start-Up <#startup-up>`__
 
-  - `Commands <#command>`__
+  - `Commands <#commands>`__
 
-  - `Generals <#general>`__
+  - `Generals <#generals>`__
 
-- `Troubleshooting <#issue>`__
+- `Troubleshooting <#troubleshooting>`__
 
 - `TODO <#todo>`__
 
@@ -47,8 +47,6 @@ housekeeper for Mac to update all packages outdated, ``macdaily`` is now
 fully functioned and end-user oriented. Without being aware of
 everything about your Mac, one can easily work around and manage
 packages out of no pain using ``macdaily``.
-
-.. _install:
 
 Installation
 ------------
@@ -85,8 +83,6 @@ so.
 Do please **NOTE** that, ``macdaily`` runs only with support of Python
 from version **3.5** and on. And it shall only work ideally on
 **macOS**.
-
-.. _config:
 
 Configuration
 -------------
@@ -202,12 +198,8 @@ Last but no least, in section ``[Account]``, you should **NEVER**
 modify any contents under this section in order to keep ``macdaily``
 working. However, you may setup this part with ``config`` command.
 
-.. _usage:
-
 Usage Manual
 ------------
-
-.. _startup:
 
 Start-Up
 ~~~~~~~~
@@ -303,8 +295,6 @@ get our hands dirty with some simple commands.
 
    $ macdaily bundle dump
 
-.. _command:
-
 Commands
 ~~~~~~~~
 
@@ -337,8 +327,6 @@ reckoned as valid.
 +-----------------+-------------------------------------------+
 | ``logging``     | ``log``                                   |
 +-----------------+-------------------------------------------+
-
-.. _general:
 
 Generals
 ~~~~~~~~
@@ -485,8 +473,6 @@ And here is a brief catalogue for the manual.
   - `Load
     Macfile <https://github.com/JarryShaw/MacDaily/tree/master/src/libbundle#bundle_load>`__
 
-.. _issue:
-
 Troubleshooting
 ---------------
 
@@ -521,8 +507,6 @@ Troubleshooting
    **NO** blank characters (``\t\n\r\f\v``) in the path, except
    ``dskdir``.
 
-.. _todo:
-
 TODO
 ----
 
@@ -555,4 +539,4 @@ TODO
 .. |image6| image:: https://img.shields.io/pypi/pyversions/macdaily.svg
    :target: https://python.org
 .. |image7| image:: https://img.shields.io/pypi/implementation/macdaily.svg
-   :target: http://pypy.orgt
+   :target: http://pypy.org
