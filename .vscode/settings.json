@@ -2,9 +2,9 @@
     "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/python",
     "cSpell.language": "en,en-GB",
     "cSpell.words": [
-        "cfgmode",
         "bcsy",
         "cfgdct",
+        "cfgmode",
         "ctime",
         "dailyrc",
         "deps",
@@ -26,6 +26,7 @@
         "scpt",
         "shtout",
         "stdict",
-        "tmpath"
+        "tmpath",
+        "tmpdir"
     ]
 }
