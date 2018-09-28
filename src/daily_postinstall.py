@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import base64
 import contextlib
 import datetime
 import os
-import pwd
-import shutil
-import subprocess
 import sys
 import tempfile
 
 from macdaily.daily_config import parse
 from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
-                                    green, length, make_path, make_pipe,
-                                    program, python, red, reset, under)
+                                    get_pass, green, length, make_context,
+                                    make_path, record_args, red, reset, under)
 from macdaily.libprinstall import postinstall
 
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
+
 # version string
-__version__ = '2018.09.24'
+__version__ = '2018.09.28'
 
 
 def get_parser():
@@ -55,62 +56,55 @@ def postinstall_(argv, config, logdate, logtime, today):
 
     if args.package is None:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
+
+    def _postinstall():
+        return aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='postinstall')(
+                postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS,
+                             bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
+
+    def _record_logs():
+        if not log:
+            logfile.write('LOG: no packages postinstalled\n')
+            return
+        logfile.write(f"\n\n{'-*- Postinstall Logs -*-'.center(80, ' ')}\n\n")
+        print(f'-*- {blue}Postinstall Logs{reset} -*-'.center(length, ' '), '\n', sep='')
+
+        if log and all(log):
+            pkgs = f', '.join(log)
+            pkgs_coloured = f'{reset}, {red}'.join(log)
+            logfile.write(f'LOG: postinstalled following Homebrew packages: {pkgs}\n')
+            print(f'postinstall: {green}brew{reset}: '
+                  f'postinstalled following {bold}Homebrew{reset} packages: {red}{pkgs_coloured}{reset}')
+        else:
+            logfile.write(f"LOG: no package postinstalled in Homebrew\n")
+            print(f'postinstall: {green}brew{reset}: no package postinstalled in {bold}Homebrew{reset}')
+
+        filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: archived following ancient logs: {files}\n')
+            print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
+        else:
+            logfile.write(f'LOG: no ancient logs archived\n')
+            print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='postinstall', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='postinstall-', suffix='.log')
     logname = os.path.join(logpath, logdate, f'{logtime}.log')
     tmpname = tmpfile.name
 
-    PIPE = make_pipe(config)
-    USER = config['Account']['username']
-    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1000)
+    sudo_timeout = str(config['Environment'].getint('sudo-timeout', fallback=300) // 2)
 
-    with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write(f'\n\nCMD: {python} {program}')
-        logfile.write(f"\n\n{'-*- Arguments - *-'.center(80, ' ')}\n\n")
-        for key, value in args.__dict__.items():
-            logfile.write(f'ARG: {key} = {value}\n')
-
-    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    log = aftermath(logfile=logname, tmpfile=tmpname, command='prinstall', logmode='postinstall')(
-            postinstall)(args, file=logname, temp=tmpname, disk=config['Path']['arcdir'], password=PASS,
-                         bash_timeout=config['Environment'].getint('bash-timeout', fallback=1000),
-                         sudo_timeout=str(config['Environment'].getint('sudo-timeout', fallback=300) // 2))
-
-    if log != set():
-        if not args.quiet:
-            print(f'-*- {blue}Postinstall Logs{reset} -*-'.center(length, ' '), '\n', sep='')
-        mode = '-*- Postinstall Logs -*-'.center(80, ' ')
-        with open(logname, 'a') as logfile:
-            logfile.write(f'\n\n{mode}\n\n')
-            if log and all(log):
-                pkgs = f', '.join(log)
-                logfile.write(f'LOG: postinstalled following Homebrew packages: {pkgs}\n')
-                if not args.quiet:
-                    pkgs_coloured = f'{reset}, {red}'.join(log)
-                    print(f'postinstall: {green}brew{reset}: '
-                          f'postinstalled following {bold}Homebrew{reset} packages: {red}{pkgs_coloured}{reset}')
-            else:
-                logfile.write(f"LOG: no package postinstalled in Homebrew\n")
-                if not args.quiet:
-                    print(f'postinstall: {green}brew{reset}: no package postinstalled in {bold}Homebrew{reset}')
-
-            filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
-            if filelist:
-                files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following ancient logs: {files}\n')
-                if not args.quiet:
-                    print(f'uninstall: {green}cleanup{reset}: ancient logs archived into {under}{arcpath}{reset}')
-            else:
-                logfile.write(f'LOG: no ancient logs archived\n')
-                if not args.quiet:
-                    print(f'uninstall: {green}cleanup{reset}: no ancient logs archived')
-
+    with open(logname, 'w') as logfile:
+        record_args(args, today, logfile)
+    PASS = get_pass(config, logname)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(args, devnull):
+            log = _postinstall()
+            with open(logname, 'a') as logfile:
+                _record_logs()
     with contextlib.suppress(OSError):
         tmpfile.close()
     if args.show_log:

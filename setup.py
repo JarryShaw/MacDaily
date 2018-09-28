@@ -15,7 +15,7 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version
-__version__ = '2018.09.24'
+__version__ = '2018.09.28'
 
 # README
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:
@@ -33,23 +33,24 @@ setuptools.setup(
     description='Package day-care manager on macOS.',
     long_description=long_desc,
     long_description_content_type='text/markdown',
-    python_requires='>=3.5',
+    python_requires='>=3.4',
     install_requires=['setuptools'],
     extras_require={
-        'pipdeptree': ['pipdeptree']
+        'pipdeptree': ['pipdeptree'],
+        ':python_version == "3.4"': ['pathlib2', 'subprocess32'],
     },
     entry_points={
         'console_scripts': [
             'macdaily = macdaily.__main__:main',
-            'macdaily-update = macdaily.daily_update:main',
-            'macdaily-uninstall = macdaily.daily_uninstall:main',
-            'macdaily-reinstall = macdaily.daily_reinstall:main',
-            'macdaily-postinstall = macdaily.daily_postinstall:main',
-            'macdaily-logging = macdaily.daily_logging:main',
-            'macdaily-dependency = macdaily.daily_dependency:main',
-            'macdaily-bundle = macdaily.daily_bundle:main',
-            'macdaily-config = macdaily.daily_config:main',
-            'macdaily-archive = macdaily.daily_archive:main',
+            'md-update = macdaily.daily_update:main',
+            'md-uninstall = macdaily.daily_uninstall:main',
+            'md-reinstall = macdaily.daily_reinstall:main',
+            'md-postinstall = macdaily.daily_postinstall:main',
+            'md-logging = macdaily.daily_logging:main',
+            'md-dependency = macdaily.daily_dependency:main',
+            'md-bundle = macdaily.daily_bundle:main',
+            'md-config = macdaily.daily_config:main',
+            'md-archive = macdaily.daily_archive:main',
         ]
     },
     packages=[
@@ -84,8 +85,10 @@ setuptools.setup(
         'Operating System :: MacOS',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',

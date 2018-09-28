@@ -5,11 +5,15 @@ import os
 import re
 import shlex
 import shutil
-import subprocess
 import sys
 
 from macdaily.daily_utility import (blue, blush, bold, flash, green, make_mode,
                                     purple, red, reset, under)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 __all__ = ['reinstall_all', 'reinstall_brew', 'reinstall_cask', 'reinstall_cleanup']
 
@@ -48,7 +52,8 @@ def reinstall_all(args, file, temp, disk, password, bash_timeout, sudo_timeout):
                                                   bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
     if not args.no_cleanup:
-        reinstall_cleanup(args, file=file, temp=temp, disk=disk, retset=True, brew=brew, cask=cask, mode='reinstall',
+        reinstall_cleanup(args, file=file, temp=temp, disk=disk, retset=True,
+                          brew=brew, cask=cask, mode='reinstall',  # pylint: disable=E0602
                           password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
     return log
 
@@ -76,13 +81,12 @@ def reinstall_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         log = set()
         with open(file, 'a') as logfile:
             logfile.write('INF: no reinstallation performed\n')
-        if not args.quiet:
-            print(f'reinstall: ${green}brew${reset}: no reinstallation performed\n')
+        print(f'reinstall: ${green}brew${reset}: no reinstallation performed\n')
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname,
                                   'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -94,10 +98,9 @@ def reinstall_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         else:
             with open(file, 'a') as logfile:
                 logfile.write('INF: no reinstallation performed\n')
-            if not args.quiet:
-                print(f'reinstall: ${green}brew${reset}: no reinstallation performed\n')
+            print(f'reinstall: ${green}brew${reset}: no reinstallation performed\n')
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         reinstall_cleanup(args, file=file, temp=temp, disk=disk, brew=True, mode='reinstall',
                           password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -105,9 +108,9 @@ def reinstall_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout,
 
 
 def reinstall_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
-    testing = subprocess.run(['brew', 'command', 'cask'],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if testing.returncode != 0:
+    try:
+        subprocess.run(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
         print(f'reinstall: {blush}{flash}cask{reset}: command not found\n'
               f'reinstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
               f'or install Caskroom through following command -- `{bold}brew tap caskroom/cask{reset}`\n',
@@ -127,13 +130,12 @@ def reinstall_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         log = set()
         with open(file, 'a') as logfile:
             logfile.write('INF: no reinstallation performed\n')
-        if not args.quiet:
-            print(f'reinstall: ${green}cask${reset}: no reinstallation performed\n')
+        print(f'reinstall: ${green}cask${reset}: no reinstallation performed\n')
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname,
                                   'reinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -145,10 +147,9 @@ def reinstall_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout,
         else:
             with open(file, 'a') as logfile:
                 logfile.write('INF: no reinstallation performed\n')
-            if not args.quiet:
-                print(f'reinstall: ${green}cask${reset}: no reinstallation performed\n')
+            print(f'reinstall: ${green}cask${reset}: no reinstallation performed\n')
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         reinstall_cleanup(args, file=file, temp=temp, disk=disk, cask=True, mode='reinstall',
                           password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -168,7 +169,7 @@ def reinstall_cleanup(args, file, temp, disk, password, bash_timeout, sudo_timeo
     subprocess.run(['bash', os.path.join(ROOT, 'cleanup.sh'), password, sudo_timeout,
                     logname, tmpname, dskname, mode, brew, cask, quiet], timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return set() if retset else dict(cleanup=set())
 
 
@@ -194,13 +195,12 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
         log = set()
         with open(file, 'a') as logfile:
             logfile.write('INF: no postinstallation performed\n')
-        if not args.quiet:
-            print(f'reinstall: ${green}brew${reset}: no postinstallation performed\n')
+        print(f'reinstall: ${green}brew${reset}: no postinstallation performed\n')
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname,
                                   'postinstall', start, end] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         if (args.start is not None) or (args.end is not None):
             pkg = set(logging.stdout.decode().strip().split())
         else:
@@ -212,10 +212,9 @@ def postinstall(args, *, file, temp, disk, password, bash_timeout, sudo_timeout)
         else:
             with open(file, 'a') as logfile:
                 logfile.write('INF: no postinstallation performed\n')
-            if not args.quiet:
-                print(f'reinstall: ${green}brew${reset}: no postinstallation performed\n')
+            print(f'reinstall: ${green}brew${reset}: no postinstallation performed\n')
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not args.no_cleanup:
         cleanup(args, file=file, temp=temp, disk=disk, brew=True, mode='postinstall',
                 password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
