@@ -8,11 +8,15 @@ import re
 import shlex
 import shutil
 import signal
-import subprocess
 import sys
 
-from macdaily.daily_utility import (blue, blush, bold, flash, make_mode,
-                                    purple, red, reset, under)
+from macdaily.daily_utility import (blush, bold, flash, make_mode, purple, red,
+                                    reset, under)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 __all__ = [
     'update_all', 'update_apm', 'update_mas', 'update_npm', 'update_gem',
@@ -51,8 +55,9 @@ def update_all(args, file, temp, disk, password, bash_timeout, sudo_timeout):
                                                password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
 
     if not args.no_cleanup:
-        update_cleanup(args, file=file, temp=temp, disk=disk, retset=True, gem=gem, npm=npm, pip=pip,
-                       brew=brew, cask=cask, password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
+        update_cleanup(args, file=file, temp=temp, disk=disk, retset=True,
+                       gem=gem, npm=npm, pip=pip, brew=brew, cask=cask,  # pylint: disable=E0602
+                       password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
     return log
 
 
@@ -83,7 +88,7 @@ def update_apm(args, file, temp, disk, password, bash_timeout, sudo_timeout, ret
     subprocess.run(['bash', os.path.join(ROOT, 'update_apm.sh'),
                    logname, tmpname, quiet, verbose, outdated, yes] + list(log), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(apm=log)
 
 
@@ -114,8 +119,8 @@ def update_gem(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
     subprocess.run(['bash', os.path.join(ROOT, 'update_gem.sh'), password, sudo_timeout,
                    logname, tmpname, quiet, verbose, yes, outdated] + list(log), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
-    if not retset and not args.no_cleanup:
+    print()
+    if not (retset or args.no_cleanup):
         update_cleanup(args, file=file, temp=temp, disk=disk, gem=True,
                        password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
     return log if retset else dict(gem=log)
@@ -147,7 +152,7 @@ def update_mas(args, file, temp, disk, password, bash_timeout, sudo_timeout, ret
     subprocess.run(['bash', os.path.join(ROOT, 'update_mas.sh'), password, sudo_timeout,
                    logname, tmpname, quiet, verbose, outdated] + list(packages), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(mas=log)
 
 
@@ -169,12 +174,13 @@ def update_npm(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
         allflag = 'true'
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_npm.sh'), logname, tmpname],
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        start = logging.stdout.find(b'{')
-        end = logging.stdout.rfind(b'}')
+        stdout = logging.stdout.decode().strip()
+        start = stdout.find('{')
+        end = stdout.rfind('}')
         if start == -1 or end == -1:
             stdict = dict()
         else:
-            stdict = json.loads(re.sub(r'\^D\x08\x08', '', logging.stdout[start:end+1].decode().strip(), flags=re.IGNORECASE))
+            stdict = json.loads(re.sub(r'\^D\x08\x08', '', stdout[start:end+1], flags=re.I))
         log = set(stdict.keys())
         pkg = {f'{name}@{value["wanted"]}' for name, value in stdict.items()}
         outdated = 'true' if log and all(log) else 'false'
@@ -186,7 +192,7 @@ def update_npm(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
     subprocess.run(['bash', os.path.join(ROOT, 'update_npm.sh'), password, sudo_timeout,
                    logname, tmpname, allflag, quiet, verbose, outdated] + list(pkg), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         update_cleanup(args, file=file, temp=temp, disk=disk, npm=True,
                        password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -224,7 +230,7 @@ def update_pip(args, file, temp, disk, password, bash_timeout, sudo_timeout, cle
     subprocess.run(['bash', os.path.join(ROOT, 'relink_pip.sh')],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         update_cleanup(args, file=file, temp=temp, disk=disk, pip=True,
                        password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -267,7 +273,7 @@ def update_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout, cl
     subprocess.run(['bash', os.path.join(ROOT, 'update_brew.sh'), password, sudo_timeout,
                    logname, tmpname, quiet, verbose, outdated] + list(log), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         update_cleanup(args, file=file, temp=temp, disk=disk, brew=True,
                        password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -275,9 +281,9 @@ def update_brew(args, file, temp, disk, password, bash_timeout, sudo_timeout, cl
 
 
 def update_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout, cleanup=True, retset=False):
-    testing = subprocess.run(['brew', 'command', 'cask'],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if testing.returncode != 0:
+    try:
+        subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
         print(f'update: {blush}{flash}cask{reset}: command not found\n'
               f'update: {red}cask{reset}: you may find Caskroom on '
               f'{purple}{under}https://caskroom.github.io{reset}, '
@@ -313,7 +319,7 @@ def update_cask(args, file, temp, disk, password, bash_timeout, sudo_timeout, cl
     subprocess.run(['bash', os.path.join(ROOT, 'update_cask.sh'), password, sudo_timeout,
                    logname, tmpname, quiet, verbose, force, greedy, outdated] + list(log), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     if not retset and not args.no_cleanup:
         update_cleanup(args, file=file, temp=temp, disk=disk, cask=True,
                        password=password, bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
@@ -347,7 +353,7 @@ def update_system(args, file, temp, disk, password, bash_timeout, sudo_timeout, 
     subprocess.run(['bash', os.path.join(ROOT, 'update_system.sh'), password, sudo_timeout,
                    logname, tmpname, quiet, verbose, restart, outdated] + list(packages), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(system=log)
 
 
@@ -368,5 +374,5 @@ def update_cleanup(args, file, temp, disk, password, bash_timeout, sudo_timeout,
     subprocess.run(['bash', os.path.join(ROOT, 'cleanup.sh'), password, sudo_timeout,
                    logname, tmpname, dskname, gem, npm, pip, brew, cask, quiet], timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return set() if retset else dict(cleanup=set())

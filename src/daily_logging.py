@@ -6,17 +6,24 @@ import datetime
 import os
 import pwd
 import shlex
-import subprocess
 import sys
+import traceback
 
 from macdaily.daily_config import parse
-from macdaily.daily_utility import (archive, beholder, blue, bold, green,
-                                    make_path, make_pipe, program, python, red,
+from macdaily.daily_utility import (archive, beholder, green, make_context,
+                                    make_path, make_pipe, record_args, red,
                                     reset, storage, under)
-from macdaily.liblogging import *
+from macdaily.liblogging import (logging_apm, logging_appstore, logging_brew,
+                                 logging_cask, logging_dotapp, logging_gem,
+                                 logging_macapp, logging_npm, logging_pip)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 # version string
-__version__ = '2018.09.23'
+__version__ = '2018.09.28'
 
 # mode actions
 MODE = dict(
@@ -97,43 +104,22 @@ def logging(argv, config, logdate, logtime, today):
         else:
             modes.extend(mode)
     if args.all:
-        for mode in {'apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore'}:
-            if (config['Mode'].getboolean(mode, fallback=False)
-                    and (not getattr(args, f'no_{mode}', False))):
-                modes.append(mode)
-    args.mode = set(modes) or None
+        modes.extend(filter(lambda mode: (config['Mode'].getboolean(mode, fallback=False) and
+                                          (not getattr(args, f'no_{mode}', False))),
+                            {'apm', 'gem', 'pip', 'npm', 'brew', 'cask', 'dotapp', 'macapp', 'appstore'}))
+    args_mode = set(modes)
 
-    if args.mode is None:
+    if args_mode == set():
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
-    PIPE = make_pipe(config)
-    USER = config['Account']['username']
-    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
-    BASH = config['Environment'].getint('bash-timeout', fallback=1000)
-
-    arcflag = False
-    for logmode in args.mode:
-        _, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
-        logname = f'{logpath}/{logdate}/{logtime}.log'
-
-        with open(logname, 'a') as logfile:
-            logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-            logfile.write(f'\n\n\nCMD: {python} {program}\n\n\n')
-            for key, value in args.__dict__.items():
-                logfile.write(f'ARG: {key} = {value}\n')
-            logfile.write('\n\n')
-
-        if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-            subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+    def _logging():
         try:
             logging = MODE.get(logmode)
             logging(args, file=shlex.quote(logname), password=PASS, bash_timeout=BASH)
-        except subprocess.TimeoutExpired as error:
+        except subprocess.TimeoutExpired:
             with open(logname, 'a') as logfile:
-                logfile.write(f'\nERR: {error}\n')
+                logfile.write(f'\nERR: {traceback.format_exc().splitlines()[-1]}\n')
             print(f'logging: {red}{logmode}{reset}: operation timeout', file=sys.stderr)
         except BaseException:
             with open(logname, 'a') as logfile:
@@ -141,17 +127,37 @@ def logging(argv, config, logdate, logtime, today):
             print(f'logging: {red}{logmode}{reset}: procedure interrupted', file=sys.stderr)
             raise
 
-        with open(logname, 'a') as logfile:
-            filelist = archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=False)
-            if filelist:
-                arcflag = True
-                files = ', '.join(filelist)
-                logfile.write(f'LOG: archived following old logs: {files}\n')
-            else:
-                logfile.write('LOG: no ancient logs archived\n')
+    def _record_logs():
+        filelist = archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=False)
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write(f'LOG: archived following old logs: {files}\n')
+        else:
+            logfile.write('LOG: no ancient logs archived\n')
+        return bool(filelist)
 
-        if args.show_log:
-            subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    arcflag = False
+    with make_pipe(config) as PIPE:
+        USER = config['Account']['username']
+        PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+        BASH = config['Environment'].getint('bash-timeout', fallback=1000)
+
+    for logmode in args_mode:
+        _, logpath, arcpath, tarpath = make_path(config, mode=f'logging/{logmode}', logdate=logdate)
+        logname = os.path.join(logpath, logdate, f'{logtime}.log')
+        with open(logname, 'w') as logfile:
+            record_args(args, today, logfile)
+        if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+            subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        with open(os.devnull, 'w') as devnull:
+            with make_context(config, devnull):
+                _logging()
+                with open(logname, 'a') as logfile:
+                    tmpflag = _record_logs()
+                arcflag = arcflag or tmpflag
+            if args.show_log:
+                subprocess.run(['open', '-a', 'Console', logname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     storage(config, logdate, today)
     if not args.quiet:

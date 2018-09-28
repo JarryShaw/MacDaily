@@ -7,17 +7,25 @@ import datetime
 import getpass
 import io
 import os
-import pathlib
 import plistlib
 import re
 import shutil
-import subprocess
 import sys
 import textwrap
 
 from macdaily.daily_utility import (ConfigNotFoundError, ModeError, bold,
                                     check, green, length, make_pipe, red,
                                     reset, sudo_timeout, under)
+
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 # user name
 USER = getpass.getuser()
@@ -155,53 +163,63 @@ def parse():
 
 
 def launch(config):
-    PIPE = make_pipe(config)
-    cfgmode = dict()
-    for mode in MODES:
-        ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
-        if ldpath.exists() and ldpath.is_file():
-            subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath],
-                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath],
-                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        cfgmode[mode] = config['Daemon'].getboolean(mode)
+    def _config_mode():
+        cfgmode = dict()
+        for mode in MODES:
+            ldpath = pathlib.Path(f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist')
+            if ldpath.exists() and ldpath.is_file():
+                subprocess.run(['sudo', '--stdin', 'launchctl', 'unload', '-w', ldpath],
+                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['sudo', '--stdin', 'rm', '-f', ldpath],
+                               stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cfgmode[mode] = config['Daemon'].getboolean(mode)
+        return cfgmode
 
-    pltmode = collections.defaultdict(list)
-    timing = config['Daemon']['schedule'].strip().split('\n')
-    for line in filter(None, timing):
-        temp = re.split(r'\s*-\s*', line)
-        time, mode = temp if len(temp) == 2 else (temp[0], 'any')
-        ptime = datetime.datetime.strptime(time, r'%H:%M')
-        if mode == 'any':
-            for tmpmode, _ in filter(lambda _, b: b, cfgmode.items()):
-                pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
-        elif mode in MODES:
-            pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
-        else:
-            raise ModeError(f'unrecognised mode: {mode!r}')
+    def _plist_mode():
+        pltmode = collections.defaultdict(list)
+        timing = config['Daemon']['schedule'].strip().split('\n')
+        for line in filter(None, timing):
+            temp = re.split(r'\s*-\s*', line)
+            time, mode = temp if len(temp) == 2 else (temp[0], 'any')
+            ptime = datetime.datetime.strptime(time, r'%H:%M')
+            if mode == 'any':
+                for tmpmode, _ in filter(lambda i: i[1], cfgmode.items()):
+                    pltmode[tmpmode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            elif mode in MODES:
+                pltmode[mode].append(dict(Hour=ptime.hour, Minute=ptime.minute))
+            else:
+                raise ModeError(f'unrecognised mode: {mode!r}')
+        return pltmode
 
-    tmpdir = os.path.expanduser(config['Path']['tmpdir'])
-    logdir = os.path.expanduser(config['Path']['logdir'])
-    pathlib.Path(tmpdir).mkdir(exist_ok=True, parents=True)
-    for mode, schedule in pltmode.items():
-        tmpath = f'{tmpdir}/com.macdaily.{mode}.{USER}.plist'
-        ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist'
-        plist['Label'] = f'com.macdaily.{mode}.{USER}.plist'
-        plist['ProgramArguments'][2] = scpt(mode, config['Option'].get(mode, ''))
-        plist['StartCalendarInterval'] = schedule
-        plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
-        plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
-        with open(tmpath, 'wb') as plist_file:
-            plistlib.dump(plist, plist_file, sort_keys=False)
-        subprocess.run(['sudo', '--stdin', 'mv', tmpath, ldpath],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '--stdin', 'chown', 'root', ldpath],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sudo', '--stdin', 'launchctl', 'load', '-w', ldpath],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
-    if not pltmode:
-        print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
+    def _launch_daemon():
+        if not pltmode:
+            print(f'macdaily: {red}launch{reset}: no scheduled services loaded')
+            return
+        tmpdir = os.path.expanduser(config['Path']['tmpdir'])
+        logdir = os.path.expanduser(config['Path']['logdir'])
+        pathlib.Path(tmpdir).mkdir(exist_ok=True, parents=True)
+        for mode, schedule in pltmode.items():
+            tmpath = f'{tmpdir}/com.macdaily.{mode}.{USER}.plist'
+            ldpath = f'/Library/LaunchDaemons/com.macdaily.{mode}.{USER}.plist'
+            plist['Label'] = f'com.macdaily.{mode}.{USER}.plist'
+            plist['ProgramArguments'][2] = scpt(mode, config['Option'].get(mode, ''))
+            plist['StartCalendarInterval'] = schedule
+            plist['StandardOutPath'] = f'{logdir}/{mode}/stdout.log'
+            plist['StandardErrorPath'] = f'{logdir}/{mode}/stderr.log'
+            with open(tmpath, 'wb') as plist_file:
+                plistlib.dump(plist, plist_file, sort_keys=False)
+            subprocess.run(['sudo', '--stdin', 'mv', tmpath, ldpath],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['sudo', '--stdin', 'chown', 'root', ldpath],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['sudo', '--stdin', 'launchctl', 'load', '-w', ldpath],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print(f'macdaily: {green}launch{reset}: new scheduled service for {bold}{mode}{reset} loaded')
+
+    with make_pipe(config) as PIPE:
+        cfgmode = _config_mode()
+        pltmode = _plist_mode()
+        _launch_daemon()
 
 
 def config():

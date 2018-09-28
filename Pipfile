@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pipdeptree = "*"
+ptyng = "*"
 
 [dev-packages]
 pylint = "*"

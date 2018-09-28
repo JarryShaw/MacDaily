@@ -5,11 +5,15 @@ import os
 import re
 import shlex
 import shutil
-import subprocess
 import sys
 
-from macdaily.daily_utility import (blue, blush, bold, flash, green, make_mode,
+from macdaily.daily_utility import (blush, bold, flash, green, make_mode,
                                     purple, red, reset, under)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 __all__ = ['dependency_all', 'dependency_pip', 'dependency_brew']
 
@@ -68,10 +72,10 @@ def dependency_pip(args, file, temp, bash_timeout, retset=False):
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
                                   system, brew, cpython, pypy, version] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'dependency_pip.sh'), logname, tmpname,
-                       system, brew, cpython, pypy, version, tree] + list(packages), timeout=bash_timeout)
+                        system, brew, cpython, pypy, version, tree] + list(packages), timeout=bash_timeout)
         subprocess.run(['bash', os.path.join(ROOT, 'relink_pip.sh')],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -102,10 +106,10 @@ def dependency_brew(args, file, temp, bash_timeout, retset=False):
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'), logname, tmpname] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'dependency_brew.sh'),
-                       logname, tmpname, tree] + list(packages), timeout=bash_timeout)
+                        logname, tmpname, tree] + list(packages), timeout=bash_timeout)
 
     print()
     return log if retset else dict(brew=log)

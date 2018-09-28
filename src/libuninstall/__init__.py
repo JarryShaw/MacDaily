@@ -6,11 +6,15 @@ import re
 import shlex
 import shutil
 import signal
-import subprocess
 import sys
 
-from macdaily.daily_utility import (blue, blush, bold, flash, green, make_mode,
+from macdaily.daily_utility import (blush, bold, flash, green, make_mode,
                                     purple, red, reset, under)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 __all__ = ['uninstall_all', 'uninstall_pip', 'uninstall_brew', 'uninstall_cask']
 
@@ -74,7 +78,7 @@ def uninstall_pip(args, file, temp, password, bash_timeout, sudo_timeout, retset
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_pip.sh'), logname, tmpname,
                                   system, brew, cpython, pypy, version, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
         if 'macdaily' in log:
             os.kill(os.getpid(), signal.SIGUSR1)
 
@@ -84,7 +88,7 @@ def uninstall_pip(args, file, temp, password, bash_timeout, sudo_timeout, retset
         subprocess.run(['bash', os.path.join(ROOT, 'relink_pip.sh')],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(pip=log)
 
 
@@ -117,19 +121,19 @@ def uninstall_brew(args, file, temp, password, bash_timeout, sudo_timeout, retse
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_brew.sh'),
                                   logname, tmpname, idep] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_brew.sh'), password, sudo_timeout,
                        logname, tmpname, force, quiet, verbose, idep, yes] + list(packages), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(brew=log)
 
 
 def uninstall_cask(args, file, temp, password, bash_timeout, sudo_timeout, retset=False):
-    testing = subprocess.run(['brew', 'command', 'cask'],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if testing.returncode != 0:
+    try:
+        subprocess.run(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
         print(f'uninstall: {blush}{flash}cask{reset}: command not found\n'
               f'uninstall: {red}cask{reset}: you may find Caskroom on {under}https://caskroom.github.io{reset}, '
               'or install Caskroom through following command -- '
@@ -153,10 +157,10 @@ def uninstall_cask(args, file, temp, password, bash_timeout, sudo_timeout, retse
     else:
         logging = subprocess.run(['bash', os.path.join(ROOT, 'logging_cask.sh'), logname, tmpname] + list(packages),
                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=bash_timeout)
-        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flaGS=RE.IGNORECASE).split())
+        log = set(re.sub(r'\^D\x08\x08', '', logging.stdout.decode().strip(), flags=re.IGNORECASE).split())
 
         subprocess.run(['bash', os.path.join(ROOT, 'uninstall_cask.sh'), password, sudo_timeout,
                        logname, tmpname, quiet, verbose, force] + list(packages), timeout=bash_timeout)
 
-    (lambda: None if args.quiet else print())()
+    print()
     return log if retset else dict(cask=log)
