@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import base64
 import contextlib
 import datetime
 import multiprocessing
 import os
-import pwd
-import shutil
 import signal
-import subprocess
 import sys
 import tempfile
 
 from macdaily.daily_config import parse
 from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
-                                    green, length, make_path, make_pipe,
-                                    program, python, red, reset, under)
-from macdaily.libupdate import *
+                                    get_pass, green, length, make_context,
+                                    make_path, make_pipe, parse_mode,
+                                    record_args, red, reset, under)
+from macdaily.libupdate import (update_all, update_apm, update_brew,
+                                update_cask, update_cleanup, update_gem,
+                                update_mas, update_npm, update_pip,
+                                update_system)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 # version string
-__version__ = '2018.09.24'
+__version__ = '2018.09.28'
 
 # display mode names
 NAME = dict(
@@ -271,99 +276,87 @@ def update(argv, config, logdate, logtime, today):
 
     if args.mode is None:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
+
+    def _reload(*args, **kwargs):
+        reload_flag.value = True
+
+    def _update():
+        log = dict()
+        for mode in set(args.mode):
+            update = MODE.get(mode)
+            retlog = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
+                        update)(args, file=logname, temp=tmpname, disk=arcdir, password=PASS,
+                                bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
+            log.update(retlog)
+        return log
+
+    def _record_logs():
+        if not log:
+            logfile.write('LOG: no packages updated\n')
+            return
+        logfile.write("\n\n{}\n\n".format('-*- Update Logs -*-'.center(80, ' ')))
+        print('-*- {}Update Logs{} -*-'.format(blue, reset).center(length, ' '), '\n', sep='')
+
+        for mode in log:
+            name = NAME.get(mode)
+            if log[mode] and all(log[mode]):
+                pkgs = ', '.format().join(log[mode])
+                pkgs_coloured = '{}, {}'.format(reset, red).join(log[mode])
+                logfile.write('LOG: updated following {} packages: {}\n'.format(name, pkgs))
+                print('update: {}{}{}: '
+                      'updated following {}{}{} packages: {}{}{}'.format(green, mode, reset, bold, name, reset, red, pkgs_coloured, reset))
+            else:
+                logfile.write("LOG: no package updated in {}\n".format(name))
+                print('update: {}{}{}: no package updated in {}{}{}'.format(green, mode, reset, bold, name, reset))
+
+        filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write('LOG: archived following ancient logs: {}\n'.format(files))
+            print('update: {}cleanup{}: ancient logs archived into {}{}{}'.format(green, reset, under, arcpath, reset))
+        else:
+            logfile.write('LOG: no ancient logs archived\n'.format())
+            print('update: {}cleanup{}: no ancient logs archived'.format(green, reset))
+
+    def _update_self():
+        if not reload_flag.value:
+            return
+        try:
+            with make_pipe(password=PASS) as PIPE:
+                subprocess.check_call(['sudo', '--set-home', sys.executable, '-m',
+                                       'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
+                                      stdin=PIPE.stdout, timeout=bash_timeout,
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            logfile.write('ERR: please try manually update macdaily\n')
+            print('update: {}macdaily{}: process failed, please try manually'.format(red, reset))
+        else:
+            logfile.write('LOG: macdaily is now up-to-date\n')
+            print('update: {}macdaily{}: package is now up-to-date'.format(green, reset))
+
+    reload_flag = multiprocessing.Value('B', False)
+    signal.signal(signal.SIGUSR1, _reload)
 
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='update', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='update-', suffix='.log')
     logname = os.path.join(logpath, logdate, '{}.log'.format(logtime))
     tmpname = tmpfile.name
 
-    PIPE = make_pipe(config)
-    USER = config['Account']['username']
-    PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
-
-    with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write('\n\nCMD: {} {}'.format(python, program))
-        logfile.write("\n\n{}\n\n".format('-*- Arguments - *-'.center(80, ' ')))
-        for key, value in args.__dict__.items():
-            logfile.write('ARG: {} = {}\n'.format(key, value))
-
-    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    def reload(*args, **kwargs):
-        reload_flag.value = True
-
-    reload_flag = multiprocessing.Value('B', False)
-    signal.signal(signal.SIGUSR1, reload)
-
-    for mode in config['Mode'].keys():
-        if (not config['Mode'].getboolean(mode, fallback=False)):
-            setattr(args, 'no_{}'.format(mode), True)
-    if isinstance(args.mode, str):
-        args.mode = [args.mode]
-    if 'all' in args.mode:
-        args.mode = ['all']
-
     arcdir = config['Path']['arcdir']
-    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1_000)
+    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1000)
     sudo_timeout = str(config['Environment'].getint('sudo-timeout', fallback=300) // 2)
 
-    for mode in set(args.mode):
-        update = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
-                update)(args, file=logname, temp=tmpname, disk=arcdir, password=PASS,
-                        bash_timeout=bash_timeout, sudo_timeout=sudo_timeout)
-
-    if log != dict():
-        if not args.quiet:
-            print('-*- {}Update Logs{} -*-'.format(blue, reset).center(length, ' '), '\n', sep='')
-        mode = '-*- Update Logs -*-'.center(80, ' ')
-        with open(logname, 'a') as logfile:
-            logfile.write('\n\n{}\n\n'.format(mode))
-            for mode in log:
-                name = NAME.get(mode)
-                if log[mode] and all(log[mode]):
-                    pkgs = ', '.format().join(log[mode])
-                    logfile.write('LOG: updated following {} packages: {}\n'.format(name, pkgs))
-                    if not args.quiet:
-                        pkgs_coloured = '{}, {}'.format(reset, red).join(log[mode])
-                        print('update: {}{}{}: '
-                              'updated following {}{}{} packages: {}{}{}'.format(green, mode, reset, bold, name, reset, red, pkgs_coloured, reset))
-                else:
-                    logfile.write("LOG: no package updated in {}\n".format(name))
-                    if not args.quiet:
-                        print('update: {}{}{}: no package updated in {}{}{}'.format(green, mode, reset, bold, name, reset))
-
-            filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
-            if filelist:
-                files = ', '.join(filelist)
-                logfile.write('LOG: archived following ancient logs: {}\n'.format(files))
-                if not args.quiet:
-                    print('update: {}cleanup{}: ancient logs archived into {}{}{}'.format(green, reset, under, arcpath, reset))
-            else:
-                logfile.write('LOG: no ancient logs archived\n'.format())
-                if not args.quiet:
-                    print('update: {}cleanup{}: no ancient logs archived'.format(green, reset))
-
-            if reload_flag.value:
-                proc = subprocess.run(['sudo', '--set-home', sys.executable, '-m',
-                                       'pip', 'install', '--upgrade', '--no-cache-dir', '--pre', 'macdaily'],
-                                      stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                      timeout=config['Environment'].getint('bash-timeout', fallback=1_000))
-                try:
-                    proc.check_returncode()
-                except subprocess.CalledProcessError:
-                    if not args.quiet:
-                        print('update: {}macdaily{}: process failed, please try manually'.format(red, reset))
-                    logfile.write('ERR: please try manually update macdaily\n')
-                else:
-                    if not args.quiet:
-                        print('update: {}macdaily{}: package is now up-to-date'.format(green, reset))
-                    logfile.write('LOG: macdaily is now up-to-date\n')
-
+    with open(logname, 'w') as logfile:
+        record_args(args, today, logfile)
+    PASS = get_pass(config, logname)
+    args = parse_mode(args, config)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(args, devnull):
+            log = _update()
+            with open(logname, 'a') as logfile:
+                _record_logs()
+                _update_self()
     with contextlib.suppress(OSError):
         tmpfile.close()
     if args.show_log:

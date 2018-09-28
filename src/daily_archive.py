@@ -4,7 +4,8 @@ import datetime
 import sys
 
 from macdaily.daily_config import parse
-from macdaily.daily_utility import archive, green, red, reset, storage, under, make_path, beholder
+from macdaily.daily_utility import (archive, beholder, green, make_path, red,
+                                    reset, storage, under)
 
 
 def archive_(config, logdate, today):

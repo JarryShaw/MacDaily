@@ -4,7 +4,6 @@ import argparse
 import datetime
 import importlib
 import os
-import pathlib
 import sys
 
 from macdaily.daily_archive import archive_ as archive
@@ -16,13 +15,18 @@ from macdaily.daily_postinstall import postinstall_ as postinstall
 from macdaily.daily_reinstall import reinstall
 from macdaily.daily_uninstall import uninstall
 from macdaily.daily_update import update
-from macdaily.daily_utility import UnsupportedOS, beholder, bold, reset
+from macdaily.daily_utility import UnsupportedOS, beholder, bold, red, reset
+
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
 
 # change working directory
 os.chdir(os.path.dirname(__file__))
 
 # version string
-__version__ = '2018.09.24'
+__version__ = '2018.09.28'
 
 # today
 today = datetime.datetime.today()
@@ -39,7 +43,7 @@ MacDaily commands & corresponding subsidiaries:
     bundle                          dump, load
     launch, init
     config, cfg
-    archive
+    archive\
 '''
 
 
@@ -47,7 +51,8 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='MacDaily',
                                      description='Package Day-Care Manager',
                                      usage='macdaily [-h] command')
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version',
+                        action='version', version=__version__)
 
     group = parser.add_argument_group('Commands',
                                       'MacDaily provides a friendly CLI workflow for the '
@@ -65,7 +70,7 @@ def help_(argv, parser):
     def module(name):
         return importlib.import_module('macdaily.daily_{}'.format(name))
 
-    command = argv[1].lower()
+    command = argv[0].lower()
     if command in ('update', 'up', 'upgrade',):
         module('update').get_parser().print_help()
     elif command in ('uninstall', 'remove', 'rm', 'r', 'un',):
@@ -81,12 +86,13 @@ def help_(argv, parser):
     elif command in ('launch', 'init',):
         print('macdaily: {}launch{}: launch new scheduled daemons'.format(bold, reset))
     elif command in ('config', 'cfg',):
-        print('macdaily: {}config{}: manage your own preferences'.format(bold, reset))
+        print('macdaily: {bold}config{reset}: manage your own preferences')
     elif command in ('archive',):
         print('macdaily: {}archive{}: re-storing ancient logs'.format(bold, reset))
     else:
+        print('macdaily: unknown command: {}{}{}'.format(red, command, reset))
         print(COMMANDS)
-        exit(1)
+        sys.exit(1)
 
 
 @beholder
@@ -125,7 +131,7 @@ def main():
         print(COMMANDS)
     else:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

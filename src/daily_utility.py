@@ -2,18 +2,33 @@
 
 import base64
 import calendar
+import contextlib
+import copy
 import datetime
 import functools
 import glob
 import os
-import pathlib
 import platform
+import pwd
+import re
 import shlex
 import shutil
-import subprocess
 import sys
 import tarfile
+import traceback
 import zipfile
+
+import ptyng
+
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 # terminal display
 reset = '\033[0m'       # reset
@@ -31,8 +46,9 @@ length = shutil.get_terminal_size().columns         # terminal length
 python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments
 
-# root path
+# environment macros
 ROOT = os.path.dirname(os.path.abspath(__file__))
+SHELL = os.environ.get('SHELL', shutil.which('sh'))
 
 
 class ModeError(NameError):
@@ -56,11 +72,10 @@ def check(parse):
     def wrapper():
         config = parse()
         subprocess.run(['sudo', '--reset-timestamp'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        PIPE = make_pipe(config)
-        SUDO = subprocess.run(['sudo', '--stdin', '--validate'],
-                              stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
-            SUDO.check_returncode()
+            with make_pipe(config) as PIPE:
+                subprocess.check_call(['sudo', '--stdin', '--validate'],
+                                      stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
             raise PasswordError(1, "Invalid password for {!r}".format(config['Account']['username'])) from None
         return config
@@ -75,52 +90,112 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print('\nmacdaily: {}error{}: operation interrupted'.format(red, reset), file=sys.stderr)
-            exit(130)
+            print('\nmacdaily: {}error{}: operation interrupted\n'.format(red, reset), file=sys.stderr)
+            raise
     return wrapper
 
 
-def aftermath(logfile, tmpfile=None, command='null', logmode=None):
+def aftermath(logfile, tmpfile=None, command=None, logmode='null'):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except subprocess.TimeoutExpired as error:
+            except subprocess.TimeoutExpired:
                 with open(logfile, 'a') as file:
-                    file.write('\nERR: {}\n'.format(error))
-                print('macdaily: {}{}{}: operation timeout'.format(red, command, reset), file=sys.stderr)
-                exit(32)
+                    file.write('\nERR: {}\n'.format(traceback.format_exc().splitlines()[-1]))
+                if command is not None:
+                    print('\nmacdaily: {}{}{}: operation timeout\n'.format(red, command, reset), file=sys.stderr)
+                raise
             except BaseException:
-                if logmode is not None:
-                    subprocess.run(['bash', os.path.join(ROOT, 'lib{}/aftermath.sh'.format(command)),
-                                    shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
+                path = os.path.join(ROOT, 'lib{}/aftermath.sh'.format(command))
+                if os.path.isfile(path):
+                    subprocess.run(['bash', path, shlex.quote(logfile), shlex.quote(tmpfile), 'true', logmode],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 raise
         return wrapper
     return decorator
 
 
-def make_mode(args, file, mode, flag=True):
-    with open(file, 'a') as logfile:
-        logfile.writelines(['\n\n', '-*- {} -*-'.format(mode).center(80, ' '), '\n\n'])
-    if (not args.quiet) and flag:
-        print('-*- {}{}{} -*-'.format(blue, mode, reset).center(length, ' '), '\n', sep='')
+def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executable=None):
+    def stdin_read(fd):
+        text = '\x00'
+        data = list()
+        while text and text != '\n':
+            text = os.read(fd, 1)
+            data.append(text)
+        return ''.join(filter(None, data))
+
+    if shell:
+        argv = [SHELL, '-c'] + argv
+    if executable:
+        argv[0] = executable
+
+    with open(file, 'a') as script:
+        def master_read(fd):
+            data = os.read(fd, 1024)
+            text = re.sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'', data, flags=re.IGNORECASE)
+            script.write(text)
+            return data
+        ptyng.spawn(argv, master_read, stdin_read, timeout)
 
 
 def sudo_timeout(password):
-    yes = make_pipe(password=password)
-    grep = subprocess.Popen(['sudo', '--stdin', 'grep', 'timestamp_timeout', '/etc/sudoers'],
-                            stdin=yes.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-    sed = subprocess.run(['sed', r's/timestamp_timeout=\([-0-9.]*\)*/\1/'],
-                         stdin=grep.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    with make_pipe(password=password) as yes:
+        grep = subprocess.Popen(['sudo', '--stdin', 'grep', 'timestamp_timeout', '/etc/sudoers'],
+                                stdin=yes.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        sed = subprocess.run(['sed', r's/timestamp_timeout=\([-0-9.]*\)*/\1/'],
+                             stdin=grep.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     return (sed.stdout.strip().decode() or '300')
+
+
+def record_args(args, today, logfile):
+    logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
+    logfile.write('\n\nCMD: {} {}'.format(python, program))
+    logfile.write("\n\n{}\n\n".format('-*- Arguments - *-'.center(80, ' ')))
+    for key, value in vars(args).items():
+        logfile.write('ARG: {} = {}\n'.format(key, value))
+
+
+def get_pass(config, logname):
+    with make_pipe(config) as PIPE:
+        USER = config['Account']['username']
+        PASS = base64.b64encode(PIPE.stdout.readline().strip()).decode()
+        if pwd.getpwuid(os.stat(logname).st_uid) != USER:
+            subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
+                           stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return PASS
+
+
+def parse_mode(args, config):
+    temp = copy.deepcopy(args)
+    for mode in config['Mode'].keys():
+        if (not config['Mode'].getboolean(mode, fallback=False)):
+            setattr(temp, 'no_{}'.format(mode), True)
+    if isinstance(args.mode, str):
+        temp.mode = [args.mode]
+    if 'all' in args.mode:
+        temp.mode = ['all']
+    return temp
+
+
+def make_mode(args, file, mode, *, flag=True):
+    with open(file, 'a') as logfile:
+        logfile.writelines(['\n\n', '-*- {} -*-'.format(mode).center(80, ' '), '\n\n'])
+    if flag:
+        print('-*- {}{}{} -*-'.format(blue, mode, reset).center(length, ' '), '\n', sep='')
 
 
 def make_pipe(config=None, password=None):
     if password is None:
         password = base64.b85decode(config['Account']['password']).decode()
     return subprocess.Popen(['yes', password], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+
+
+def make_context(args, devnull):
+    if args.quiet:
+        return contextlib.redirect_stdout(devnull)
+    return contextlib.nullcontext()
 
 
 def make_path(config, mode, logdate):
@@ -142,12 +217,14 @@ def make_path(config, mode, logdate):
     dskpath = pathlib.Path(dskdir)
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
-    subprocess.run(['sudo', '--stdin', 'chown', '-R', config['Account']['username'], tmppath, logdir],
-                   stdin=make_pipe(config).stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    with make_pipe(config) as PIPE:
+        subprocess.run(['sudo', '--stdin', 'chown', '-R', config['Account']['username'], tmppath, logdir],
+                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return tmppath, logpath, arcpath, tarpath
 
 
-def archive(config, logpath, arcpath, tarpath, logdate, today, mvflag=True):
+def archive(config, logpath, arcpath, tarpath, logdate, today, *, mvflag=True):
     filelist = list()
     for subdir in os.listdir(logpath):
         if subdir == '.DS_Store':

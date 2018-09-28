@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import base64
 import contextlib
 import datetime
 import os
-import pwd
-import shutil
-import subprocess
 import sys
 import tempfile
 
 from macdaily.daily_config import parse
-from macdaily.daily_utility import (aftermath, archive, beholder, blue, bold,
-                                    green, length, make_path, make_pipe,
-                                    program, python, red, reset, under)
-from macdaily.libdependency import *
+from macdaily.daily_utility import (aftermath, archive, beholder, get_pass,
+                                    make_context, make_path, parse_mode,
+                                    record_args)
+from macdaily.libdependency import (dependency_all, dependency_brew,
+                                    dependency_pip)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 # version string
-__version__ = '2018.09.24'
+__version__ = '2018.09.28'
 
 # display mode names
 NAME = dict(
@@ -104,60 +106,51 @@ def dependency(argv, config, logdate, logtime, today):
         parser.print_help()
         exit(1)
 
+    def _dependency():
+        log = dict()
+        for mode in set(args.mode):
+            dependency = MODE.get(mode)
+            retlog = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
+                        dependency)(args, file=logname, temp=tmpname, bash_timeout=bash_timeout)
+            log.update(retlog)
+        return log
+
+    def _record_logs():
+        if not log:
+            logfile.write('LOG: no dependencies showed\n')
+            return
+
+        logfile.write("\n\n{}\n\n".format('-*- Dependency Logs -*-'.center(80, ' ')))
+        for mode in log:
+            name = NAME.get(mode)
+            if log[mode] and all(log[mode]):
+                pkgs = ', '.format().join(log[mode])
+                logfile.write('LOG: showed dependencies of following {} packages: {}\n'.format(name, pkgs))
+            else:
+                logfile.write('LOG: no dependencies showed in {} packages\n'.format(name))
+
+        filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
+        if filelist:
+            files = ', '.join(filelist)
+            logfile.write('LOG: archived following old logs: {}\n'.format(files))
+        else:
+            logfile.write('LOG: no ancient logs archived\n')
+
     tmppath, logpath, arcpath, tarpath = make_path(config, mode='dependency', logdate=logdate)
     tmpfile = tempfile.NamedTemporaryFile(dir=tmppath, prefix='dependency-', suffix='.log')
     logname = os.path.join(logpath, logdate, '{}.log'.format(logtime))
     tmpname = tmpfile.name
 
-    PIPE = make_pipe(config)
-    USER = config['Account']['username']
-    BASH = config['Environment'].getint('bash-timeout', fallback=1000)
-
-    with open(logname, 'a') as logfile:
-        logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
-        logfile.write('\n\nCMD: {} {}'.format(python, program))
-        logfile.write("\n\n{}\n\n".format('-*- Arguments -*-'.center(80, ' ')))
-        for key, value in args.__dict__.items():
-            logfile.write('ARG: {} = {}\n'.format(key, value))
-
-    if pwd.getpwuid(os.stat(logname).st_uid) != USER:
-        subprocess.run(['sudo', 'chown', '-R', USER, config['Path']['tmpdir'], config['Path']['logdir']],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    for mode in config['Mode'].keys():
-        if not config['Mode'].getboolean(mode, fallback=False):
-            setattr(args, 'no_{}'.format(mode), True)
-    if isinstance(args.mode, str):
-        args.mode = [args.mode]
-    if 'all' in args.mode:
-        args.mode = ['all']
-
-    for mode in set(args.mode):
-        dependency = MODE.get(mode)
-        log = aftermath(logfile=logname, tmpfile=tmpname, command='update')(
-                dependency)(args, file=logname, temp=tmpname, bash_timeout=BASH)
-
-    mode = '-*- Dependency Logs -*-'.center(80, ' ')
-    with open(logname, 'a') as logfile:
-        logfile.write('\n\n{}\n\n'.format(mode))
-        if log != dict():
-            for mode in log:
-                name = NAME.get(mode)
-                if log[mode] and all(log[mode]):
-                    pkgs = ', '.format().join(log[mode])
-                    logfile.write('LOG: showed dependencies of following {} packages: {}\n'.format(name, pkgs))
-                else:
-                    logfile.write('LOG: no dependencies showed in {} packages\n'.format(name))
-
-            filelist = archive(config, logpath, arcpath, tarpath, logdate, today)
-            if filelist:
-                files = ', '.join(filelist)
-                logfile.write('LOG: archived following old logs: {}\n'.format(files))
-            else:
-                logfile.write('LOG: no ancient logs archived\n')
-        else:
-            logfile.write('LOG: no dependencies showed\n')
-
+    bash_timeout = config['Environment'].getint('bash-timeout', fallback=1000)
+    with open(logname, 'w') as logfile:
+        record_args(args, today, logfile)
+    get_pass(config, logname)
+    args = parse_mode(args, config)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(args, devnull):
+            log = _dependency()
+            with open(logname, 'a') as logfile:
+                _record_logs()
     with contextlib.suppress(OSError):
         tmpfile.close()
     if args.show_log:

@@ -3,14 +3,18 @@
 import argparse
 import datetime
 import os
-import subprocess
 import sys
 
 from macdaily.daily_config import parse
 from macdaily.daily_utility import beholder
 
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
+
 # version string
-__version__ = '2018.09.23'
+__version__ = '2018.09.28'
 
 # root path
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +45,7 @@ def bundle(argv, config, logdate, logtime, today):
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=bash_timeout)
     else:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
 
 @beholder
