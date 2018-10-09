@@ -65,7 +65,7 @@ setuptools.setup(
     package_data={
         '': [
             'LICENSE',
-            'README.md',
+            'README',
         ],
         'macdaily': ['*.py', '*.sh'],
         'macdaily.libbundle': ['*.py', '*.sh'],
