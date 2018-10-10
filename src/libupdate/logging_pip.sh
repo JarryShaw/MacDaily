@@ -180,7 +180,7 @@ function piplogging {
             case $name in
                 all)
                     echo -e "++ pip$pprint list --no-cache-dir --format freeze --outdated $pre | grep \"==\" | sed \"s/\(.*\)*==.*/\1/\"" >> "$tmpfile"
-                    $logprefix $prefix/$suffix -m pip list --no-cache-dir --format freeze --outdate $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
+                    $logprefix $prefix/$suffix -m pip list --no-cache-dir --format freeze --outdated $pre 2>/dev/null | grep "==" | sed "s/\(.*\)*==.*/\1/"
                     echo >> "$tmpfile" ;;
                 *)
                     # check if package installed
