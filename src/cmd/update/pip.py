@@ -1,91 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import abc
 import collections
 import glob
 import re
-import subprocess
 
+from macdaily.cmd.update.command import UpdateCommand
 
-class Command(metaclass=abc.ABCMeta):
-    """Base command.
-
-    1. keep namespace
-    2. decide executable
-    3. enumerate and start processors
-
-    """
-    @property
-    @abc.abstractmethod
-    def mode(self):
-        return NotImplemented
-
-    @property
-    def packages(self):
-        return set(self._pkgs)
-
-    def __init__(self, args):
-        self._pkg_args(args)
-        self._loc_exec()
-        self._run_proc()
-
-    def _pkg_args(self, args):
-        self._args = args
-        namespace = vars(args)
-
-        self._merge_packages(namespace)
-        self._parse_args(namespace)
-
-    def _merge_packages(self, namespace):
-        temp_pkg = list()
-        args_pkg = namespace.pop(f'{self.mode}_pkgs', list())
-        for pkgs in args_pkg:
-            temp_pkg.extend(filter(None, pkgs.split(',')))
-        self._packages = set(temp_pkg)
-
-    @abc.abstractmethod
-    def _parse_args(self, namespace):
-        pass
-
-    @abc.abstractmethod
-    def _loc_exec(self):
-        self._exec = list()
-
-    @abc.abstractmethod
-    def _run_proc(self):
-        self._pkgs = list()
-
-
-class UpdateCommand(Command):
-
-    @property
-    def failed(self):
-        return set(self._fail)
-
-    def _run_proc(self):
-        self._pkgs = list()
-        self._fail = list()
-        for path in self._exec:
-            self._proc_logging(path)
-            self._proc_update(path)
-
-    def _proc_logging(self, path):
-        if self._packages:
-            self._check_pkgs(path)
-        else:
-            self._check_list(path)
-
-    @abc.abstractmethod
-    def _check_pkgs(self, path):
-        self.__temp_pkgs = self._packages
-
-    @abc.abstractmethod
-    def _check_list(self, path):
-        self.__temp_pkgs = set()
-
-    @abc.abstractmethod
-    def _proc_update(self, path):
-        pass
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 
 class PipUpdate(UpdateCommand):
@@ -194,14 +118,14 @@ class PipUpdate(UpdateCommand):
             _extend_version(EXEC_PATH['version'])
         elif (any([self._brew, self._system]) and not any([self._cpython, self._pypy])):
             if self._brew:
-                _extend_version(EXEC_PATH['brew'])
+                _extend_version(EXEC_PATH['source']['brew'])
             if self._system:
-                _extend_version(EXEC_PATH['system'])
+                _extend_version(EXEC_PATH['source']['system'])
         elif (any([self._cpython, self._pypy]) and not any([self._brew, self._system])):
             if self._cpython:
-                _extend_version(EXEC_PATH['cpython'])
+                _extend_version(EXEC_PATH['implementation']['cpython'])
             if self._pypy:
-                _extend_version(EXEC_PATH['pypy'])
+                _extend_version(EXEC_PATH['implementation']['pypy'])
         else:
             if self._brew and self._cpython:
                 _extend_version(EXEC_PATH['combination'][(True, True)])
@@ -240,7 +164,8 @@ class PipUpdate(UpdateCommand):
             self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
 
     def _proc_update(self, path):
-        args = ['sudo', '--set-home', path, '-m', 'pip', 'install', '--upgrade']
+        args = ['sudo', '--set-home', path,
+                '-m', 'pip', 'install', '--upgrade']
         if self._pre:
             args.append('--pre')
         if self._quiet:
@@ -258,10 +183,3 @@ class PipUpdate(UpdateCommand):
             else:
                 self._pkgs.append(package)
         del self.__temp_pkgs
-
-
-if __name__ == '__main__':
-    import argparse
-    arg = argparse.Namespace()
-    cmd = PipUpdate(arg)
-    print(cmd.packages, cmd.failed)
