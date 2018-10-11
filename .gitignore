@@ -2,6 +2,7 @@
 dev_*
 typescript
 deprecated/
+# __archive__/
 
 # Created by https://www.gitignore.io/api/python,macos,visualstudiocode
 
