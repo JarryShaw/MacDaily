@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import os
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -20,10 +21,12 @@ class Command(metaclass=abc.ABCMeta):
     def packages(self):
         return set(self._pkgs)
 
-    def __init__(self, args):
-        self._pkg_args(args)
-        self._loc_exec()
-        self._run_proc()
+    def __init__(self, args, filename, timeout):
+        self._timeout = timeout
+        with open(filename, 'a', 1) as self._log:
+            self._pkg_args(args)
+            self._loc_exec()
+            self._run_proc()
 
     def _pkg_args(self, args):
         self._args = args

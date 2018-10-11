@@ -84,7 +84,8 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
             text = re.sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'', data, flags=re.IGNORECASE)
             script.write(text)
             return data
-        ptyng.spawn(argv, master_read, stdin_read, timeout)
+        returncode = ptyng.spawn(argv, master_read, stdin_read, timeout)
+    return returncode
 
 
 def storage(config, logdate, today):

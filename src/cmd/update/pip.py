@@ -2,9 +2,11 @@
 
 import collections
 import glob
+import json
 import re
 
 from macdaily.cmd.update.command import UpdateCommand
+from macdaily.util.tools import script
 
 try:
     import subprocess32 as subprocess
@@ -137,8 +139,8 @@ class PipUpdate(UpdateCommand):
                 _extend_version(EXEC_PATH['combination'][(False, False)])
         self._exec = set(temp_exec)
 
-        import pprint
-        pprint.pprint(self._exec)
+        # import pprint  # ###
+        # pprint.pprint(self._exec)  # ###
 
     def _check_pkgs(self, path):
         temp_pkgs = list()
@@ -151,17 +153,41 @@ class PipUpdate(UpdateCommand):
         self.__temp_pkgs = set(package)
 
     def _check_list(self, path):
-        args = [path, '-m', 'pip', 'list', '--format=freeze', '--outdated']
+        args = [path, '-m', 'pip', 'list', '--outdated']
         if self._pre:
             args.append('--pre')
         args.extend(self._logging_opts)
+        self._log.write(f'+ {" ".join(args)}\n')
+        args.append('--format=json')
 
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
-        except subprocess.CalledProcessError:
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
+        except subprocess.SubprocessError:
             self.__temp_pkgs = set()
         else:
-            self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
+            # self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
+            context = json.loads(proc.decode().strip())
+            self.__temp_pkgs = set(map(lambda item: item['name'], context))
+
+            if context:
+                name_len = max(7, max(map(lambda item: len(item['name']), context), default=7))
+                version_len = max(7, max(map(lambda item: len(item['version']), context), default=7))
+                latest_version_len = max(6, max(map(lambda item: len(item['latest_version']), context), default=6))
+                latest_filetype_len = max(4, max(map(lambda item: len(item['latest_filetype']), context), default=4))
+
+                def _pprint(package, version, latest, type):
+                    text = [package.ljust(name_len), version.ljust(version_len),
+                            latest.ljust(latest_version_len), type.ljust(latest_filetype_len)]
+                    return (' '.join(text) + '\n')
+
+                self._log.write(_pprint('Package', 'Version', 'Latest', 'Type'))
+                self._log.write(' '.join(map(lambda length: '-' * length,
+                                             [name_len, version_len, latest_version_len, latest_filetype_len])) + '\n')
+                for item in context:
+                    self._log.write(_pprint(item['name'], item['version'],
+                                            item['latest_version'], item['latest_filetype']))
+        finally:
+            self._log.write('\n')
 
     def _proc_update(self, path):
         args = ['sudo', '--set-home', path,
