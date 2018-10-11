@@ -21,8 +21,9 @@ class Command(metaclass=abc.ABCMeta):
     def packages(self):
         return set(self._pkgs)
 
-    def __init__(self, args, filename, timeout):
+    def __init__(self, args, filename, timeout, password):
         self._timeout = timeout
+        self._password = password
         with open(filename, 'a', 1) as self._log:
             self._pkg_args(args)
             self._loc_exec()

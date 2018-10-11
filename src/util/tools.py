@@ -65,26 +65,28 @@ def record_args(args, today, logfile):
 
 
 def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executable=None):
-    def stdin_read(fd):
-        text = '\x00'
-        data = list()
-        while text and text != '\n':
-            text = os.read(fd, 1)
-            data.append(text)
-        return ''.join(filter(None, data))
-
+    # def stdin_read(fd):
+    #     text = b'\x00'
+    #     data = list()
+    #     while text and text != b'\n':
+    #         text = os.read(fd, 1)
+    #         data.append(text)
+    #     return b''.join(filter(None, data))
+    if isinstance(argv, (str, bytes)):
+        argv = [argv]
+    else:
+        argv = list(argv)
     if shell:
         argv = [SHELL, '-c'] + argv
     if executable:
         argv[0] = executable
-
-    with open(file, 'a') as script:
+    with open(file, 'ab') as script:
         def master_read(fd):
             data = os.read(fd, 1024)
-            text = re.sub(r'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'', data, flags=re.IGNORECASE)
+            text = re.sub(rb'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
             script.write(text)
             return data
-        returncode = ptyng.spawn(argv, master_read, stdin_read, timeout)
+        returncode = ptyng.spawn(argv, master_read, timeout=timeout)
     return returncode
 
 

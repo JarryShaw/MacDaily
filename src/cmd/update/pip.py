@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import copy
 import glob
 import json
 import re
@@ -157,8 +158,11 @@ class PipUpdate(UpdateCommand):
         if self._pre:
             args.append('--pre')
         args.extend(self._logging_opts)
-        self._log.write(f'+ {" ".join(args)}\n')
         args.append('--format=json')
+
+        temp = copy.copy(args)
+        temp[-1] = '--format=columns'
+        self._log.write(f'+ {" ".join(temp)}\n')
 
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
@@ -190,8 +194,8 @@ class PipUpdate(UpdateCommand):
             self._log.write('\n')
 
     def _proc_update(self, path):
-        args = ['sudo', '--set-home', path,
-                '-m', 'pip', 'install', '--upgrade']
+        args = ['sudo', '--set-home', '--stdin', '--prompt=""',
+                path, '-m', 'pip', 'install', '--upgrade']
         if self._pre:
             args.append('--pre')
         if self._quiet:
@@ -199,13 +203,15 @@ class PipUpdate(UpdateCommand):
         if self._verbose:
             args.append('--verbose')
         args.extend(self._update_opts)
+        args.append(NotImplemented)
 
         for package in self.__temp_pkgs:
-            args.append(package)
-            try:
-                subprocess.check_call(args)
-            except subprocess.CalledProcessError:
+            args[-1] = package
+            argv = f"{' '.join(args)} <<< {self._password}"
+            self._log.write(f'+ {argv}\n')
+            if script(argv, self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
+            self._log.write('\n')
         del self.__temp_pkgs
