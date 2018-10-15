@@ -24,7 +24,7 @@ class PipUpdate(UpdateCommand):
 
     @property
     def desc(self):
-        return 'packages'
+        return ('Python package', 'Python packages')
 
     def _check_exec(self):
         return False
@@ -153,15 +153,27 @@ class PipUpdate(UpdateCommand):
         # pprint.pprint(self._exec)  # ###
 
     def _check_pkgs(self, path):
-        temp_pkgs = list()
+        _temp_pkgs = list()
+        _lost_pkgs = list()
         for package in self._packages:
             try:
                 subprocess.check_call([path, '-m', 'pip', 'show', package],
                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
-                self._lost.append(package)
-                continue
-            temp_pkgs.append(package)
+                _lost_pkgs.append(package)
+            else:
+                _temp_pkgs.append(package)
+
+        if _lost_pkgs:
+            try:
+                proc = subprocess.check_output([path, '-m', 'pip', 'list'])
+            except subprocess.CalledProcessError:
+                self.__real_pkgs = set()
+            else:
+                self.__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
+        else:
+            self.__real_pkgs = set()
+        self.__lost_pkgs = set(_lost_pkgs)
         self.__temp_pkgs = set(package)
 
     def _check_list(self, path):

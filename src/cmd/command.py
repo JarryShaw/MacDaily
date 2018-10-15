@@ -2,8 +2,10 @@
 
 import abc
 import os
+import re
+import sys
 
-from macdaily.util.colours import bold, reset, yellow
+from macdaily.util.colours import bold, red, reset, yellow
 from macdaily.util.tools import script
 
 
@@ -24,7 +26,7 @@ class Command(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def act(self):
         """noun, verb, verb pp."""
-        return [NotImplemented, NotImplemented, NotImplemented]
+        return (NotImplemented, NotImplemented, NotImplemented)
 
     @property
     @abc.abstractmethod
@@ -34,7 +36,8 @@ class Command(metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def desc(self):
-        return NotImplemented
+        """singular, plural"""
+        return (NotImplemented, NotImplemented)
 
     @property
     def packages(self):
@@ -64,7 +67,7 @@ class Command(metaclass=abc.ABCMeta):
 
         if no_proc or self._packages:
             script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                    f'no {bold}{self.desc}{reset} to {self.act[1]}'], filename)
+                    f'no {bold}{self.desc[1]}{reset} to {self.act[1]}'], filename)
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -100,3 +103,19 @@ class Command(metaclass=abc.ABCMeta):
         self._pkgs = list()
         self._fail = list()
         self._lost = list()
+        for path in self._exec:
+            self.__lost_pkgs = set()
+            self.__real_pkgs = set()
+            self._did_you_mean()
+
+    def _did_you_mean(self):
+        for package in self.__lost_pkgs:
+            pattern = rf'.*{r".*".join(package)}.*'
+            matches = filter(lambda s: re.match(pattern, s), self.__real_pkgs)
+            colours = f'{reset}, {bold}'.join(matches)
+            print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
+                  f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
+            print(f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                  f'did you mean any of the following {self.desc[1]}: {bold}{colours}{reset}?')
+        del self.__lost_pkgs
+        del self.__real_pkgs

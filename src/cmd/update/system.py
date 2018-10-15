@@ -5,7 +5,7 @@ import shutil
 import sys
 
 from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import blush, flash, reset, red, bold
+from macdaily.util.colours import blush, bold, flash, red, reset
 from macdaily.util.tools import script
 
 try:
@@ -22,11 +22,11 @@ class SystemUpdate(UpdateCommand):
 
     @property
     def desc(self):
-        return 'software'
+        return ('system software', 'system software')
 
     def _check_exec(self):
-        self.__exec__ = shutil.which('softwareupdate')
-        flag = (self.__exec__ is None)
+        self._exec = shutil.which('softwareupdate')
+        flag = (self._exec is None)
         if flag:
             print(f'macdaily-update: {blush}{flash}system{reset}: command not found\n'
                   f'macdaily-update: {red}system{reset}: '
@@ -45,19 +45,24 @@ class SystemUpdate(UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _loc_exec(self):
-        return [self.__exec__]
+        pass
 
     def _check_pkgs(self, path):
         self._check_list(path)
 
         _rcmd_pkgs = list()
         _none_pkgs = list()
+        _lost_pkgs = list()
         for package in self._packages:
             if package in self.__rcmd_pkgs:
                 _rcmd_pkgs.append(package)
-            if package in self.__none_pkgs:
+            elif package in self.__none_pkgs:
                 _none_pkgs.append(package)
+            else:
+                _lost_pkgs.append(package)
 
+        self.__real_pkgs = self.__rcmd_pkgs | self.__none_pkgs
+        self.__lost_pkgs = set(_lost_pkgs)
         self.__rcmd_pkgs = set(_rcmd_pkgs)
         self.__none_pkgs = set(_none_pkgs)
 

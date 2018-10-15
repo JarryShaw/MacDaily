@@ -13,7 +13,7 @@ class UpdateCommand(Command):
 
     @property
     def act(self):
-        return ['update', 'upgrade', 'updated']
+        return ('update', 'upgrade', 'updated')
 
     def _run_proc(self):
         self._pkgs = list()
@@ -22,6 +22,7 @@ class UpdateCommand(Command):
         for path in self._exec:
             self._proc_logging(path)
             self._proc_update(path)
+            self._did_you_mean()
 
     def _proc_logging(self, path):
         if self._packages:
