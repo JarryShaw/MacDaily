@@ -10,6 +10,7 @@ under = '\033[4m'       # underline
 flash = '\033[5m'       # flash
 red = '\033[91m'        # bright red foreground
 green = '\033[92m'      # bright green foreground
+yellow = '\033[93m'     # bright yellow foreground
 blue = '\033[96m'       # bright blue foreground
 blush = '\033[101m'     # bright red background
 purple = '\033[104m'    # bright purple background

@@ -7,6 +7,7 @@ import json
 import re
 
 from macdaily.cmd.update.command import UpdateCommand
+from macdaily.util.colours import bold, reset
 from macdaily.util.tools import script
 
 try:
@@ -21,9 +22,14 @@ class PipUpdate(UpdateCommand):
     def mode(self):
         return 'pip'
 
-    def _pkg_args(self, args):
-        super()._pkg_args(args)
+    @property
+    def desc(self):
+        return 'packages'
 
+    def _check_exec(self):
+        return False
+
+    def _pkg_args(self, args):
         def match(version):
             return re.fullmatch(r'\d(\.\d)?', version)
 
@@ -33,7 +39,10 @@ class PipUpdate(UpdateCommand):
             temp_ver.extend(filter(match, item.split(',')))
         self._version = set(temp_ver)
 
+        return super()._pkg_args(args)
+
     def _parse_args(self, namespace):
+        self._all = namespace.pop('all', False)
         self._brew = namespace.pop('brew', False)
         self._cpython = namespace.pop('cpython', False)
         self._pre = namespace.pop('pre', False)
@@ -147,8 +156,10 @@ class PipUpdate(UpdateCommand):
         temp_pkgs = list()
         for package in self._packages:
             try:
-                subprocess.check_call([path, 'show', package], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.check_call([path, '-m', 'pip', 'show', package],
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
+                self._lost.append(package)
                 continue
             temp_pkgs.append(package)
         self.__temp_pkgs = set(package)
@@ -194,8 +205,7 @@ class PipUpdate(UpdateCommand):
             self._log.write('\n')
 
     def _proc_update(self, path):
-        args = ['sudo', '--set-home', '--stdin', '--prompt=""',
-                path, '-m', 'pip', 'install', '--upgrade']
+        args = [path, '-m', 'pip', 'install', '--upgrade']
         if self._pre:
             args.append('--pre')
         if self._quiet:
@@ -203,13 +213,13 @@ class PipUpdate(UpdateCommand):
         if self._verbose:
             args.append('--verbose')
         args.extend(self._update_opts)
-        args.append(NotImplemented)
 
+        argc = ' '.join(args)
         for package in self.__temp_pkgs:
-            args[-1] = package
-            argv = f"{' '.join(args)} <<< {self._password}"
-            self._log.write(f'+ {argv}\n')
-            if script(argv, self._log.name, shell=True, timeout=self._timeout):
+            argv = f"{argc} {package}"
+            script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
+            if script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
+                      self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

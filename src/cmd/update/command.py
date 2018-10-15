@@ -8,12 +8,17 @@ from macdaily.cmd.command import Command
 class UpdateCommand(Command):
 
     @property
-    def failed(self):
-        return set(self._fail)
+    def cmd(self):
+        return 'update'
+
+    @property
+    def act(self):
+        return ['update', 'upgrade', 'updated']
 
     def _run_proc(self):
         self._pkgs = list()
         self._fail = list()
+        self._lost = list()
         for path in self._exec:
             self._proc_logging(path)
             self._proc_update(path)
