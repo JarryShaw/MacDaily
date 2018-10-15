@@ -228,7 +228,7 @@ class PipUpdate(UpdateCommand):
 
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
-            argv = f"{argc} {package}"
+            argv = f'{argc} {package}'
             script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):

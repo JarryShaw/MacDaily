@@ -110,8 +110,8 @@ class Command(metaclass=abc.ABCMeta):
 
     def _did_you_mean(self):
         for package in self.__lost_pkgs:
-            pattern = rf'.*{r".*".join(package)}.*'
-            matches = filter(lambda s: re.match(pattern, s), self.__real_pkgs)
+            pattern = rf'.*{package}.*'
+            matches = filter(lambda s: re.match(pattern, s), self.__real_pkgs, flags=re.IGNORECASE)
             colours = f'{reset}, {bold}'.join(matches)
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)

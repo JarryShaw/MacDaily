@@ -46,8 +46,9 @@ class NpmUpdate(UpdateCommand):
         pass
 
     def _check_pkgs(self, path):
+        args = [path, 'list', '--global', '--parseable']
         try:
-            proc = subprocess.check_output([path, 'list', '--global', '--parseable'], stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
             _real_pkgs = set()
         else:
@@ -102,7 +103,7 @@ class NpmUpdate(UpdateCommand):
 
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
-            argv = f"{argc} {package}"
+            argv = f'{argc} {package}'
             script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
