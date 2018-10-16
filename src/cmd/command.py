@@ -25,7 +25,7 @@ class Command(metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def act(self):
-        """noun, verb, verb pp."""
+        """verb, past participle, adjective"""
         return (NotImplemented, NotImplemented, NotImplemented)
 
     @property
@@ -67,7 +67,7 @@ class Command(metaclass=abc.ABCMeta):
 
         if no_proc or self._packages:
             script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                    f'no {bold}{self.desc[1]}{reset} to {self.act[1]}'], filename)
+                    f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
 
     @abc.abstractmethod
     def _check_exec(self):

@@ -13,7 +13,7 @@ class UpdateCommand(Command):
 
     @property
     def act(self):
-        return ('update', 'upgrade', 'updated')
+        return ('upgrade', 'upgraded', 'up-to-date')
 
     def _run_proc(self):
         self._pkgs = list()
