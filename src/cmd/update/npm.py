@@ -25,8 +25,8 @@ class NpmUpdate(UpdateCommand):
         return ('node module', 'node modules')
 
     def _check_exec(self):
-        self._exec = shutil.which('npm')
-        flag = (self._exec is None)
+        self.__exec_path = shutil.which('npm')
+        flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {blush}{flash}npm{reset}: command not found\n'
                   f'macdaily-update: {red}npm{reset}: you may download Node.js from '
@@ -43,7 +43,8 @@ class NpmUpdate(UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _loc_exec(self):
-        pass
+        self._exec = {self.__exec_path}
+        del self.__exec_path
 
     def _check_pkgs(self, path):
         args = [path, 'list', '--global', '--parseable']
@@ -65,6 +66,7 @@ class NpmUpdate(UpdateCommand):
                 _temp_pkgs.append(package)
             else:
                 _lost_pkgs.append(package)
+        self._lost.extend(_lost_pkgs)
 
         self.__real_pkgs = set(_real_pkgs)
         self.__lost_pkgs = set(_lost_pkgs)
@@ -104,7 +106,7 @@ class NpmUpdate(UpdateCommand):
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)

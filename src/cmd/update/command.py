@@ -22,11 +22,11 @@ class UpdateCommand(Command):
         for path in self._exec:
             self._proc_logging(path)
             self._proc_update(path)
-            self._did_you_mean()
 
     def _proc_logging(self, path):
         if self._packages:
             self._check_pkgs(path)
+            self._did_you_mean()
         else:
             self._check_list(path)
 

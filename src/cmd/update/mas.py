@@ -3,9 +3,8 @@
 import shutil
 import sys
 
-
 from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import blush, bold, flash, purple, red, reset, under
+from macdaily.util.colours import blush, bold, flash, red, reset
 from macdaily.util.tools import script
 
 try:
@@ -25,8 +24,8 @@ class MasUpdate(UpdateCommand):
         return ('macOS application', 'macOS applications')
 
     def _check_exec(self):
-        self._exec = shutil.which('mas')
-        flag = (self._exec is None)
+        self.__exec_path = shutil.which('mas')
+        flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {blush}{flash}mas{reset}: command not found\n'
                   f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
@@ -41,7 +40,8 @@ class MasUpdate(UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _loc_exec(self):
-        pass
+        self._exec = {self.__exec_path}
+        del self.__exec_path
 
     def _check_pkgs(self, path):
         args = [path, 'list']
@@ -59,10 +59,11 @@ class MasUpdate(UpdateCommand):
         _temp_pkgs = list()
         _lost_pkgs = list()
         for package in self._packages:
-            if package in _list_pkgs:
+            if package in _real_pkgs:
                 _temp_pkgs.append((_list_pkgs[package], package))
             else:
                 _lost_pkgs.append(package)
+        self._lost.extend(_lost_pkgs)
 
         self.__real_pkgs = set(_real_pkgs)
         self.__lost_pkgs = set(_lost_pkgs)
@@ -96,7 +97,7 @@ class MasUpdate(UpdateCommand):
         argc = ' '.join(args)
         for (code, package) in self.__temp_pkgs:
             argv = f'{argc} {code}'
-            script(['echo', '-e', f'+ {bold}{argc} {package} [{code}]{reset}'], self._log.name)
+            script(['echo', '-e', f'\n+ {bold}{argc} {package} [{code}]{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)

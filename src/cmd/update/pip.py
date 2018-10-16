@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import contextlib
 import copy
 import glob
 import json
 import re
 
 from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import bold, reset
+from macdaily.util.colours import bold, green, red, reset, yellow
 from macdaily.util.tools import script
 
 try:
@@ -165,6 +166,7 @@ class PipUpdate(UpdateCommand):
                 _temp_pkgs.append(package)
 
         if _lost_pkgs:
+            self._lost.extend(_lost_pkgs)
             try:
                 proc = subprocess.check_output([path, '-m', 'pip', 'list'])
             except subprocess.CalledProcessError:
@@ -229,7 +231,7 @@ class PipUpdate(UpdateCommand):
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
@@ -237,3 +239,53 @@ class PipUpdate(UpdateCommand):
                 self._pkgs.append(package)
             self._log.write('\n')
         del self.__temp_pkgs
+
+        def _proc_check():
+            try:
+                proc = subprocess.check_output([path], '-m', 'pip', 'check',
+                                               stderr=subprocess.DEVNULL, timeout=self._timeout)
+            except subprocess.SubprocessError:
+                return set()
+
+            _deps_pkgs = list()
+            for line in filter(None, proc.decode().split('\n')):
+                if line == 'No broken requirements found.':
+                    return set()
+                if 'which is not installed' in line:
+                    _deps_pkgs.append(line.split()[3][:-1])
+                else:
+                    _deps_pkgs.append(line.split()[4][:-1])
+            return set(_deps_pkgs)
+
+        def _proc_confirm():
+            pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
+            print(f'macdaily-update: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}')
+            if not self._yes:
+                while True:
+                    ans = input('Would you like to reinstall? (y/N)')
+                    if re.match(r'[yY]', ans):
+                        return True
+                    elif re.match(r'[nN]', ans):
+                        return False
+                    else:
+                        print('Invalid input.')
+
+        _deps_pkgs = _proc_check()
+        if not _deps_pkgs:
+            return
+
+        if _proc_confirm():
+            while _deps_pkgs:
+                for package in _deps_pkgs:
+                    argv = f'{argc} {package}'
+                    script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+                    returncode = script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
+                                        self._log.name, shell=True, timeout=self._timeout)
+                    if returncode == 0:
+                        with contextlib.suppress(ValueError):
+                            self._pkgs.remove(re.split(r'[<>=!]', package, maxsplit=1)[0])
+                    self._log.write('\n')
+                _deps_pkgs = _proc_check()
+            print(f'macdaily-update: {green}pip{reset}: all broken dependencies fixed')
+        else:
+            print(f'macdaily-update: {red}pip{reset}: all broken dependencies remain')

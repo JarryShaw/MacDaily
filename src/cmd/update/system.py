@@ -25,8 +25,8 @@ class SystemUpdate(UpdateCommand):
         return ('system software', 'system software')
 
     def _check_exec(self):
-        self._exec = shutil.which('softwareupdate')
-        flag = (self._exec is None)
+        self.__exec_path = shutil.which('softwareupdate')
+        flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {blush}{flash}system{reset}: command not found\n'
                   f'macdaily-update: {red}system{reset}: '
@@ -45,7 +45,8 @@ class SystemUpdate(UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _loc_exec(self):
-        pass
+        self._exec = {self.__exec_path}
+        del self.__exec_path
 
     def _check_pkgs(self, path):
         self._check_list(path)
@@ -60,6 +61,7 @@ class SystemUpdate(UpdateCommand):
                 _none_pkgs.append(package)
             else:
                 _lost_pkgs.append(package)
+        self._lost.extend(_lost_pkgs)
 
         self.__real_pkgs = self.__rcmd_pkgs | self.__none_pkgs
         self.__lost_pkgs = set(_lost_pkgs)
@@ -110,7 +112,7 @@ class SystemUpdate(UpdateCommand):
         argc = ' '.join(args)
         for package in _temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if script(f"yes {self._password} | sudo --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
