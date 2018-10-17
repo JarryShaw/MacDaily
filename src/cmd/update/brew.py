@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import glob
 import os
 import shutil
 import sys
@@ -161,7 +162,7 @@ class BrewUpdate(UpdateCommand):
         for path in self._exec:
             logs = os.path.expanduser('~/Library/Logs/Homebrew/')
             if os.path.isdir(logs):
-                args = ['brew', 'cleanup', 'logs']
+                args = ['brew', 'logs', 'cleanup']
                 if self._verbose:
                     args.append('--verbose')
                 if self._quiet:
@@ -186,7 +187,7 @@ class BrewUpdate(UpdateCommand):
 
             cache = proc.decode().strip()
             if os.path.isdir(cache):
-                args = ['brew', 'archive', 'caches']
+                args = ['brew', 'caches', 'archive']
                 if self._verbose:
                     args.append('--verbose')
                 if self._quiet:
@@ -201,16 +202,17 @@ class BrewUpdate(UpdateCommand):
                     file_list = list()
                     for name in os.listdir(root):
                         path = os.path.join(root, name)
-                        if os.path.isdir(path):
+                        if os.path.isdir(path) and name != 'Cask':
                             file_list.extend(_move(path, os.path.join(stem, name)))
-                        elif os.path.splitext(name)[1] != '.incomplete':
+                        elif os.path.splitext(name)[1] != '.incomplete' and path not in cask_list:
                             shutil.move(path, os.path.join(arch, name))
                             file_list.append(path)
                     return file_list
 
+                cask_list = [os.path.realpath(name) for name in glob.glob(os.path.join(cache, 'Cask/*'))]
                 file_list = _move(cache, 'Homebrew')
                 if self._verbose:
-                    script(['echo', '-e', '\n'.join(file_list)], self._log.name)
+                    script(['echo', '-e', '\n'.join(sorted(file_list))], self._log.name)
 
         if not flag:
             script(['echo', '-e', f'macdaily-update: {yellow}brew{reset}: '
