@@ -107,7 +107,7 @@ class BrewUpdate(UpdateCommand):
         else:
             context = proc.decode()
             self._log.write(context)
-            self.__temp_pkgs = set(context.split('\n'))
+            self.__temp_pkgs = set(context.split())
         finally:
             self._log.write('\n')
 
@@ -137,16 +137,16 @@ class BrewUpdate(UpdateCommand):
         args.append('')
         for package in self.__temp_pkgs:
             args[-1] = package
-            argv = " ".join(args)
+            argv = ' '.join(args)
             script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-            if script(argv, self._log.name, shell=True, timeout=self._timeout):
+            if script(args, self._log.name, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
             self._log.write('\n')
         del self.__temp_pkgs
 
-    def _proc_cleanup(self, path):
+    def _proc_cleanup(self):
         if self._cleanup():
             return
 
@@ -162,7 +162,7 @@ class BrewUpdate(UpdateCommand):
         for path in self._exec:
             logs = os.path.expanduser('~/Library/Logs/Homebrew/')
             if os.path.isdir(logs):
-                args = ['brew', 'logs', 'cleanup']
+                args = [path, 'logs', 'cleanup']
                 if self._verbose:
                     args.append('--verbose')
                 if self._quiet:
@@ -180,14 +180,14 @@ class BrewUpdate(UpdateCommand):
             if not flag:
                 continue
             try:
-                proc = subprocess.check_output(['brew', '--cache'], stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output([path, '--cache'], stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
                 self._log.write(traceback.format_exc())
                 continue
 
             cache = proc.decode().strip()
             if os.path.isdir(cache):
-                args = ['brew', 'caches', 'archive']
+                args = [path, 'caches', 'archive']
                 if self._verbose:
                     args.append('--verbose')
                 if self._quiet:
@@ -216,4 +216,4 @@ class BrewUpdate(UpdateCommand):
 
         if not flag:
             script(['echo', '-e', f'macdaily-update: {yellow}brew{reset}: '
-                    f'{self._disk_dir} not found'], self._log.name)
+                    f'archive directory {bold}{self._disk_dir}{reset} not found'], self._log.name)
