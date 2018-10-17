@@ -23,7 +23,7 @@ class SystemUpdate(UpdateCommand):
 
     @property
     def name(self):
-        return 'macOS'
+        return 'macOS Software Update'
 
     @property
     def desc(self):
@@ -90,7 +90,7 @@ class SystemUpdate(UpdateCommand):
 
             _rcmd_pkgs = list()
             _none_pkgs = list()
-            for package in filter(lambda s: re.match(r'^\W*[-*]', s), context.split('\n')):
+            for package in filter(lambda s: re.match(r'^\W*[-*]', s), context.strip().split('\n')):
                 flag, name = package.split(maxsplit=1)
                 if flag == '*':
                     _rcmd_pkgs.append(name)

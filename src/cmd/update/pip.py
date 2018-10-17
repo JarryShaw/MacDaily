@@ -28,7 +28,7 @@ class PipUpdate(UpdateCommand):
 
     @property
     def name(self):
-        return 'Python'
+        return 'Pip Installs Packages'
 
     @property
     def desc(self):
@@ -89,8 +89,8 @@ class PipUpdate(UpdateCommand):
             glob_path = glob.glob(path)
             if not glob_path:
                 return
-            glob_path.sort()
-            path = glob_path[-1]
+            glob_path.sort(reverse=True)
+            path = glob_path[0]
 
             try:
                 ver_proc = subprocess.check_output([path, '--version'], stderr=subprocess.STDOUT)
@@ -110,10 +110,17 @@ class PipUpdate(UpdateCommand):
             _append_path(EXEC_PATH['source']['brew'])
             _append_path(EXEC_PATH['version'])
 
-        _sort_glob('/usr/local/Cellar/pypy/*/bin/pypy', flag=False)
-        _sort_glob('/usr/local/Cellar/pypy3/*/bin/pypy3', flag=False)
-        _sort_glob('/usr/local/Cellar/python@2/*/bin/python2.?', flag=True)
-        _sort_glob('/usr/local/Cellar/python/*/bin/python3.?', flag=True)
+        try:
+            proc = subprocess.check_output(['brew', '--prefix'], stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            prefix = '/usr/local'
+        else:
+            prefix = proc.decode().strip()
+
+        _sort_glob(os.path.join(prefix, 'Cellar/pypy/*/bin/pypy'), flag=False)
+        _sort_glob(os.path.join(prefix, 'Cellar/pypy3/*/bin/pypy3'), flag=False)
+        _sort_glob(os.path.join(prefix, 'Cellar/python@2/*/bin/python2.?'), flag=True)
+        _sort_glob(os.path.join(prefix, 'Cellar/python/*/bin/python3.?'), flag=True)
 
         def _append_path(exec_path):
             exec_path[version[0]].append(path)
@@ -257,7 +264,7 @@ class PipUpdate(UpdateCommand):
                 return set()
 
             _deps_pkgs = list()
-            for line in filter(None, proc.decode().split('\n')):
+            for line in filter(None, proc.decode().strip().split('\n')):
                 if line == 'No broken requirements found.':
                     return set()
                 if 'which is not installed' in line:

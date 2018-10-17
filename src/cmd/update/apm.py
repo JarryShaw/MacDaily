@@ -23,7 +23,7 @@ class ApmUpdate(UpdateCommand):
 
     @property
     def name(self):
-        return 'Atom'
+        return 'Atom Package Manager'
 
     @property
     def desc(self):
@@ -72,7 +72,7 @@ class ApmUpdate(UpdateCommand):
             _real_pkgs = set()
         else:
             _list_pkgs = list()
-            for line in filter(None, proc.decode().split('\n')):
+            for line in filter(None, proc.decode().strip().split('\n')):
                 _list_pkgs.append(line.split('@')[0])
             _real_pkgs = set(_list_pkgs)
 
@@ -106,7 +106,7 @@ class ApmUpdate(UpdateCommand):
             self._log.write(context)
 
             _temp_pkgs = list()
-            for line in filter(lambda s: '->' in s, context.split('\n')):
+            for line in filter(lambda s: '->' in s, context.strip().split('\n')):
                 _temp_pkgs.append(re.sub(r'.* \(.*\)* .* -> .*', r'\1', line))
             self.__temp_pkgs = set(_temp_pkgs)
         finally:

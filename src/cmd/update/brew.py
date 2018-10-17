@@ -121,8 +121,6 @@ class BrewUpdate(UpdateCommand):
             args.append('--quiet')
         if self._verbose:
             args.append('--verbose')
-        args.extend(self._logging_opts)
-
         script(['echo', '-e', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
         script(args, self._log.name, timeout=self._timeout)
 

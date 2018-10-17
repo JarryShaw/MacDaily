@@ -23,7 +23,7 @@ class NpmUpdate(UpdateCommand):
 
     @property
     def name(self):
-        return 'Node.js'
+        return 'Node.js Package Manager'
 
     @property
     def desc(self):
@@ -60,7 +60,7 @@ class NpmUpdate(UpdateCommand):
             _real_pkgs = set()
         else:
             _list_pkgs = list()
-            for line in proc.decode().split('\n'):
+            for line in proc.decode().strip().split('\n'):
                 _, name = os.path.split(line)
                 _list_pkgs.append(name)
             _real_pkgs = set(_list_pkgs)
@@ -95,7 +95,7 @@ class NpmUpdate(UpdateCommand):
             self._log.write(context)
 
             _temp_pkgs = list()
-            for line in context.split('\n')[1:]:
+            for line in context.strip().split('\n')[1:]:
                 name, _, want, _ = line.split(maxsplit=3)
                 _temp_pkgs.append(f'{name}@{want}')
             self.__temp_pkgs = set(_temp_pkgs)
