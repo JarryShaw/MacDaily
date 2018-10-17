@@ -30,8 +30,17 @@ class Command(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
+    def name(self):
+        return NotImplemented
+
+    @property
+    @abc.abstractmethod
     def mode(self):
         return NotImplemented
+
+    @property
+    def time(self):
+        return self._brew_renew
 
     @property
     @abc.abstractmethod
@@ -51,12 +60,14 @@ class Command(metaclass=abc.ABCMeta):
     def notfound(self):
         return set(self._lost)
 
-    def __init__(self, args, filename, timeout, password):
+    def __init__(self, args, filename, timeout, password, disk_dir, brew_renew):
         if self._check_exec():
             return
 
         self._timeout = timeout
         self._password = password
+        self._disk_dir = disk_dir
+        self._brew_renew = brew_renew
         with open(filename, 'a', 1) as self._log:
             no_proc = False
             if self._pkg_args(args):
@@ -107,15 +118,18 @@ class Command(metaclass=abc.ABCMeta):
             self.__lost_pkgs = set()
             self.__real_pkgs = set()
             self._did_you_mean()
+        self._proc_cleanup()
 
     def _did_you_mean(self):
         for package in self.__lost_pkgs:
             pattern = rf'.*{package}.*'
-            matches = filter(lambda s: re.match(pattern, s), self.__real_pkgs, flags=re.IGNORECASE)
-            colours = f'{reset}, {bold}'.join(matches)
+            matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), self.__real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
             print(f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                  f'did you mean any of the following {self.desc[1]}: {bold}{colours}{reset}?')
+                  f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
         del self.__lost_pkgs
         del self.__real_pkgs
+
+    def _proc_cleanup(self):
+        pass

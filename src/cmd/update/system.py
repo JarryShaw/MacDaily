@@ -3,6 +3,7 @@
 import re
 import shutil
 import sys
+import traceback
 
 from macdaily.cmd.update.command import UpdateCommand
 from macdaily.util.colours import blush, bold, flash, red, reset
@@ -21,6 +22,10 @@ class SystemUpdate(UpdateCommand):
         return 'system'
 
     @property
+    def name(self):
+        return 'macOS'
+
+    @property
     def desc(self):
         return ('system software', 'system software')
 
@@ -28,10 +33,10 @@ class SystemUpdate(UpdateCommand):
         self.__exec_path = shutil.which('softwareupdate')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'macdaily-update: {blush}{flash}system{reset}: command not found\n'
-                  f'macdaily-update: {red}system{reset}: '
+            print(f'macdaily-update: {blush}{flash}system{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}system{reset}: '
                   "you may add `softwareupdate' to PATH through the following command -- "
-                  f'''`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'\n''', file=sys.stderr)
+                  f'''`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'\n''')
         return flag
 
     def _parse_args(self, namespace):
@@ -76,6 +81,7 @@ class SystemUpdate(UpdateCommand):
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
         except subprocess.SubprocessError:
+            self._log.write(traceback.format_exc())
             self.__rcmd_pkgs = set()
             self.__none_pkgs = set()
         else:

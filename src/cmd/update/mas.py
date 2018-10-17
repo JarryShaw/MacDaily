@@ -2,6 +2,7 @@
 
 import shutil
 import sys
+import traceback
 
 from macdaily.cmd.update.command import UpdateCommand
 from macdaily.util.colours import blush, bold, flash, red, reset
@@ -20,6 +21,10 @@ class MasUpdate(UpdateCommand):
         return 'mas'
 
     @property
+    def name(self):
+        return 'Mac App Store'
+
+    @property
     def desc(self):
         return ('macOS application', 'macOS applications')
 
@@ -27,9 +32,9 @@ class MasUpdate(UpdateCommand):
         self.__exec_path = shutil.which('mas')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'macdaily-update: {blush}{flash}mas{reset}: command not found\n'
-                  f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
-                  f"`{bold}brew install mas{reset}'\n", file=sys.stderr)
+            print(f'macdaily-update: {blush}{flash}mas{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
+                  f"`{bold}brew install mas{reset}'\n")
         return flag
 
     def _parse_args(self, namespace):
@@ -77,6 +82,7 @@ class MasUpdate(UpdateCommand):
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
         except subprocess.SubprocessError:
+            self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
         else:
             context = proc.decode()

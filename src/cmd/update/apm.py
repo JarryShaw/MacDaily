@@ -3,6 +3,7 @@
 import re
 import shutil
 import sys
+import traceback
 
 from macdaily.cmd.update.command import UpdateCommand
 from macdaily.util.colours import blush, bold, flash, purple, red, reset, under
@@ -21,6 +22,10 @@ class ApmUpdate(UpdateCommand):
         return 'apm'
 
     @property
+    def name(self):
+        return 'Atom'
+
+    @property
     def desc(self):
         return ('Atom plug-in', 'Atom plug-ins')
 
@@ -28,9 +33,9 @@ class ApmUpdate(UpdateCommand):
         self.__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
         flag = (self.__exec_path == (None, None))
         if flag:
-            print(f'macdaily-update: {blush}{flash}apm{reset}: command not found\n'
-                  f'macdaily-update: {red}apm{reset}: you may download Atom from '
-                  f'{purple}{under}https://atom.io{reset}\n', file=sys.stderr)
+            print(f'macdaily-update: {blush}{flash}apm{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}apm{reset}: you may download Atom from '
+                  f'{purple}{under}https://atom.io{reset}\n')
         return flag
 
     def _pkg_args(self, args):
@@ -94,6 +99,7 @@ class ApmUpdate(UpdateCommand):
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
         except subprocess.SubprocessError:
+            self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
@@ -108,12 +114,13 @@ class ApmUpdate(UpdateCommand):
 
     def _proc_update(self, path):
         args = [path, 'upgrade']
+        if self._yes:
+            args.append('--no-confirm')
         if self._verbose:
             args.append('--verbose')
         if self._quiet:
             args.append('--quiet')
         args.extend(self._update_opts)
-        args.append('--no-confirm')
         args.append('--no-list')
         args.append('--no-json')
 
@@ -121,7 +128,9 @@ class ApmUpdate(UpdateCommand):
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
             script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-            if script(f"yes yes | {argv}", self._log.name, shell=True, timeout=self._timeout):
+            if self._yes:
+                argv = f"yes yes | {argv}"
+            if script(argv, self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

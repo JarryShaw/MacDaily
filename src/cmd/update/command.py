@@ -22,6 +22,7 @@ class UpdateCommand(Command):
         for path in self._exec:
             self._proc_logging(path)
             self._proc_update(path)
+        self._proc_cleanup()
 
     def _proc_logging(self, path):
         if self._packages:

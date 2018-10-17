@@ -4,8 +4,11 @@ import collections
 import contextlib
 import copy
 import glob
+import itertools
 import json
+import os
 import re
+import traceback
 
 from macdaily.cmd.update.command import UpdateCommand
 from macdaily.util.colours import bold, green, red, reset, yellow
@@ -22,6 +25,10 @@ class PipUpdate(UpdateCommand):
     @property
     def mode(self):
         return 'pip'
+
+    @property
+    def name(self):
+        return 'Python'
 
     @property
     def desc(self):
@@ -45,6 +52,7 @@ class PipUpdate(UpdateCommand):
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
         self._brew = namespace.pop('brew', False)
+        self._cleanup = namespace.pop('cleanup', True)
         self._cpython = namespace.pop('cpython', False)
         self._pre = namespace.pop('pre', False)
         self._pypy = namespace.pop('pypy', False)
@@ -192,6 +200,7 @@ class PipUpdate(UpdateCommand):
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
         except subprocess.SubprocessError:
+            self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
         else:
             # self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
@@ -260,15 +269,16 @@ class PipUpdate(UpdateCommand):
         def _proc_confirm():
             pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
             print(f'macdaily-update: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}')
-            if not self._yes:
-                while True:
-                    ans = input('Would you like to reinstall? (y/N)')
-                    if re.match(r'[yY]', ans):
-                        return True
-                    elif re.match(r'[nN]', ans):
-                        return False
-                    else:
-                        print('Invalid input.')
+            if self._yes or self._quiet:
+                return True
+            while True:
+                ans = input('Would you like to reinstall? (y/N)')
+                if re.match(r'[yY]', ans):
+                    return True
+                elif re.match(r'[nN]', ans):
+                    return False
+                else:
+                    print('Invalid input.')
 
         _deps_pkgs = _proc_check()
         if not _deps_pkgs:
@@ -289,3 +299,25 @@ class PipUpdate(UpdateCommand):
             print(f'macdaily-update: {green}pip{reset}: all broken dependencies fixed')
         else:
             print(f'macdaily-update: {red}pip{reset}: all broken dependencies remain')
+
+    def _proc_cleanup(self):
+        if not self._cleanup:
+            return
+
+        args = ['pip', 'cleanup']
+        if self._verbose:
+            args.append('--verbose')
+        if self._quiet:
+            args.append('--quiet')
+        argv = ' '.join(args)
+        script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+
+        args = ['rm', '-rf']
+        if self._verbose:
+            args.append('-v')
+        argc = ' '.join(args)
+        for path in itertools.chain(glob.glob('/var/root/Library/Caches/pip/*/'),
+                                    glob.glob(os.path.expanduser('~/Library/Caches/pip/*/'))):
+            argv = f'{argc} {path}'
+            script(['echo', '-e', f'++ {argv}'], self._log.name)
+            script(f'yes {self._password} | sudo --stdin --prompt="" {argv}', self._log.name, shell=True)

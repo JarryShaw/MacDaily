@@ -3,6 +3,7 @@
 import os
 import shutil
 import sys
+import traceback
 
 from macdaily.cmd.update.command import UpdateCommand
 from macdaily.util.colours import blush, bold, flash, purple, red, reset, under
@@ -21,6 +22,10 @@ class NpmUpdate(UpdateCommand):
         return 'npm'
 
     @property
+    def name(self):
+        return 'Node.js'
+
+    @property
     def desc(self):
         return ('node module', 'node modules')
 
@@ -28,13 +33,14 @@ class NpmUpdate(UpdateCommand):
         self.__exec_path = shutil.which('npm')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'macdaily-update: {blush}{flash}npm{reset}: command not found\n'
-                  f'macdaily-update: {red}npm{reset}: you may download Node.js from '
-                  f'{purple}{under}https://nodejs.org/{reset}\n', file=sys.stderr)
+            print(f'macdaily-update: {blush}{flash}npm{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}npm{reset}: you may download Node.js from '
+                  f'{purple}{under}https://nodejs.org/{reset}\n')
         return flag
 
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
+        self._cleanup = namespace.pop('cleanup', True)
         self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
         self._verbose = namespace.pop('verbose', False)
@@ -82,6 +88,7 @@ class NpmUpdate(UpdateCommand):
         try:
             proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
         except subprocess.SubprocessError:
+            self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
@@ -114,3 +121,28 @@ class NpmUpdate(UpdateCommand):
                 self._pkgs.append(package)
             self._log.write('\n')
         del self.__temp_pkgs
+
+    def _proc_cleanup(self):
+        if self._cleanup():
+            return
+
+        args = ['npm', 'cleanup']
+        if self._verbose:
+            args.append('--verbose')
+        if self._quiet:
+            args.append('--quiet')
+        argv = ' '.join(args)
+        script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+
+        def _cleanup(args):
+            if self._verbose:
+                args.append('--verbose')
+            if self._quiet:
+                args.append('--quiet')
+            argv = ' '.join(args)
+            script(['echo', '-e', f'++ {argv}'], self._log.name)
+            script(f'yes {self._password} | sudo --stdin --prompt="" {argv}', self._log.name, shell=True)
+
+        for path in self._exec:
+            _cleanup([path, 'dedupe', '--global'])
+            _cleanup([path, 'cache', 'clean', '--force'])
