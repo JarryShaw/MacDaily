@@ -157,7 +157,10 @@ class Command(metaclass=abc.ABCMeta):
         temp_pkg = list()
         args_pkg = namespace.pop(f'{self.mode}_pkgs', list())
         for pkgs in args_pkg:
-            temp_pkg.extend(filter(None, pkgs.split(',')))
+            if isinstance(pkgs, str):
+                temp_pkg.extend(filter(None, pkgs.split(',')))
+            else:
+                temp_pkg.extend(pkgs)
         self._packages = set(temp_pkg)
 
     @abc.abstractmethod

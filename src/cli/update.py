@@ -2,8 +2,11 @@
 
 import argparse
 
-from macdaily.util.colours import bold, reset
-from macdaily.util.helpers import __version__
+# from macdaily.util.colours import bold, reset
+# from macdaily.util.helpers import __version__
+reset = '\033[0m'
+bold = '\033[1m'
+__version__ = '2018.10.18a1'
 
 
 def get_parser():
@@ -11,9 +14,24 @@ def get_parser():
                                      description='macOS Package Update Automator',
                                      usage='macdaily update [options] [mode-options] <mode-selection> ...',
                                      epilog='aliases: up, upgrade')
-    parser.add_argument('-V', '--version', action='version', version=__version__)
 
-    pkgs_group = parser.add_argument_group(title='mode packages',
+    parser.add_argument('-a', '--all', action='store_true', default=False,
+                        help=('update all packages installed through Atom, RubyGem, Node.js, '
+                              'Homebrew, Caskroom, Mac App Store, and etc'))
+    parser.add_argument('-q', '--quiet', action='store_true', default=False,
+                        help='run in quiet mode, with no output information')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help='run in verbose mode, with detailed output information')
+    parser.add_argument('-l', '--show-log', action='store_true',
+                        help='open log in Console.app upon completion of command')
+    parser.add_argument('-Y', '--yes', action='store_true',
+                        help='yes for all selections')
+    parser.add_argument('-N', '--no-cleanup', action='store_true',
+                        help='do not run cleanup process')
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('unknown_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
+
+    pkgs_group = parser.add_argument_group(title='mode packages options',
                                            description='options used to specify packages of each mode')
     pkgs_group.add_argument('--apm', action='append', metavar='PI', dest='apm_pkgs',
                             help='name of Atom plug-ins to update')
@@ -32,7 +50,7 @@ def get_parser():
     pkgs_group.add_argument('--system', action='append', metavar='SW', dest='system_pkgs',
                             help='name of system software to update')
 
-    swch_group = parser.add_argument_group(title='mode switches',
+    swch_group = parser.add_argument_group(title='mode switches options',
                                            description='options used to disable update of certain mode')
     swch_group.add_argument('--no-apm', action='store_true', help='do not update Atom plug-ins')
     swch_group.add_argument('--no-gem', action='store_true', help='do not update Ruby gems')
@@ -63,9 +81,9 @@ def get_parser():
                             help='open log in Console.app upon completion of command')
     parser_apm.add_argument('-Y', '--yes', action='store_true',
                             help='yes for all selections')
-    parser_apm.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_apm.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                             help=f"options for `{bold}apm upgrade --list{reset}' command")
-    parser_apm.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_apm.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                             help=f"options for `{bold}apm upgrade <plug-in>{reset}' command")
     parser_apm.add_argument('-V', '--version', action='version', version=__version__)
     parser_apm.add_argument('apm_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -88,9 +106,9 @@ def get_parser():
                             help='open log in Console.app upon completion of command')
     parser_gem.add_argument('-Y', '--yes', action='store_true',
                             help='yes for all selections')
-    parser_gem.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_gem.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                             help=f"options for `{bold}gem outdated{reset}' command")
-    parser_gem.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_gem.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                             help=f"options for `{bold}gem update <gem>{reset}' command")
     parser_gem.add_argument('-V', '--version', action='version', version=__version__)
     parser_gem.add_argument('gem_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -109,9 +127,9 @@ def get_parser():
                             help='open log in Console.app upon completion of command')
     parser_mas.add_argument('-Y', '--yes', action='store_true',
                             help='yes for all selections')
-    parser_mas.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_mas.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                             help=f"options for `{bold}mas outdated' command{reset}")
-    parser_mas.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_mas.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                             help=f"options for `{bold}mas upgrade <application>{reset}' command")
     parser_mas.add_argument('-V', '--version', action='version', version=__version__)
     parser_mas.add_argument('mas_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -132,9 +150,9 @@ def get_parser():
                             help='yes for all selections')
     parser_npm.add_argument('-N', '--no-cleanup', action='store_true',
                             help='do not run cleanup process')
-    parser_npm.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_npm.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                             help=f"options for `{bold}npm outdated --global{reset}' command")
-    parser_npm.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_npm.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                             help=f"options for `{bold}npm upgrade --global <module>{reset}' command")
     parser_npm.add_argument('-V', '--version', action='version', version=__version__)
     parser_npm.add_argument('npm_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -167,9 +185,9 @@ def get_parser():
                             help='yes for all selections')
     parser_pip.add_argument('-N', '--no-cleanup', action='store_true',
                             help='do not run cleanup process')
-    parser_pip.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_pip.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                             help=f"options for `{bold}pip list --outdated{reset}' command")
-    parser_pip.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_pip.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                             help=f"options for `{bold}pip install --upgrade <package>{reset}' command")
     parser_pip.add_argument('-V', '--version', action='version', version=__version__)
     parser_pip.add_argument('pip_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -195,9 +213,9 @@ def get_parser():
                              help='yes for all selections')
     parser_brew.add_argument('-N', '--no-cleanup', action='store_true',
                              help='do not run cleanup process')
-    parser_brew.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_brew.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                              help=f"options for `{bold}brew outdated{reset}' command")
-    parser_brew.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_brew.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                              help=f"options for `{bold}brew upgrade <formula>{reset}' command")
     parser_brew.add_argument('-V', '--version', action='version', version=__version__)
     parser_brew.add_argument('brew_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -229,9 +247,9 @@ def get_parser():
                              help='yes for all selections')
     parser_cask.add_argument('-N', '--no-cleanup', action='store_true',
                              help='do not run cleanup process')
-    parser_cask.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_cask.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                              help=f"options for `{bold}brew cask outdated{reset}' command")
-    parser_cask.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_cask.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                              help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
     parser_cask.add_argument('-V', '--version', action='version', version=__version__)
     parser_cask.add_argument('cask_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
@@ -252,27 +270,11 @@ def get_parser():
                                help='open log in Console.app upon completion of command')
     parser_system.add_argument('-Y', '--yes', action='store_true',
                                help='yes for all selections')
-    parser_system.add_argument('-L', '--logging', action='store', dest='logging_opts',
+    parser_system.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
                                help=f"options for `{bold}softwareupdate --list{reset}' command")
-    parser_system.add_argument('-U', '--update', action='store', dest='update_opts',
+    parser_system.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
                                help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
     parser_system.add_argument('-V', '--version', action='version', version=__version__)
     parser_system.add_argument('cask_pkgs', action='append', nargs='*', help=argparse.SUPPRESS)
-
-    parser.add_argument('-a', '--all', action='store_true', default=False,
-                        help=('update all packages installed through Atom, RubyGem, Node.js, '
-                              'Homebrew, Caskroom, Mac App Store, and etc'))
-    parser.add_argument('-q', '--quiet', action='store_true', default=False,
-                        help='run in quiet mode, with no output information')
-    parser.add_argument('-v', '--verbose', action='store_true', default=False,
-                        help='run in verbose mode, with detailed output information')
-    parser.add_argument('-l', '--show-log', action='store_true',
-                        help='open log in Console.app upon completion of command')
-    parser.add_argument('-Y', '--yes', action='store_true',
-                        help='yes for all selections')
-    parser.add_argument('-N', '--no-cleanup', action='store_true',
-                        help='do not run cleanup process')
-    parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('unknown_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     return parser
