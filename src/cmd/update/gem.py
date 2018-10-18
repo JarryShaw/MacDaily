@@ -103,7 +103,7 @@ class GemUpdate(UpdateCommand):
             args.append('--verbose')
         argv = ' '.join(args)
         script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-        script(f'yes {self._password} | sudo --stdin --prompt="" {argv}', self._log.name, timeout=self._timeout)
+        script(f'yes {self._password} | sudo --stdin --prompt="" {argv}', self._log.name)
 
         args = [path, 'outdated']
         if self._quiet:
@@ -115,7 +115,7 @@ class GemUpdate(UpdateCommand):
 
         self._log.write(f'+ {" ".join(args)}\n')
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()

@@ -15,6 +15,10 @@ class UpdateCommand(Command):
     def act(self):
         return ('upgrade', 'upgraded', 'up-to-date')
 
+    @property
+    def job(self):
+        return ('update', 'updates')
+
     def _run_proc(self):
         self._pkgs = list()
         self._fail = list()
@@ -30,6 +34,7 @@ class UpdateCommand(Command):
             self._did_you_mean()
         else:
             self._check_list(path)
+        self._check_confirm()
 
     @abc.abstractmethod
     def _check_pkgs(self, path):

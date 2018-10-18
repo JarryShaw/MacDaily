@@ -86,7 +86,7 @@ class NpmUpdate(UpdateCommand):
 
         self._log.write(f'+ {" ".join(args)}\n')
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()

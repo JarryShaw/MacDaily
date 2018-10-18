@@ -205,7 +205,7 @@ class PipUpdate(UpdateCommand):
         self._log.write(f'+ {" ".join(temp)}\n')
 
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
@@ -258,8 +258,7 @@ class PipUpdate(UpdateCommand):
 
         def _proc_check():
             try:
-                proc = subprocess.check_output([path], '-m', 'pip', 'check',
-                                               stderr=subprocess.DEVNULL, timeout=self._timeout)
+                proc = subprocess.check_output([path], '-m', 'pip', 'check', stderr=subprocess.DEVNULL)
             except subprocess.SubprocessError:
                 return set()
 
@@ -292,15 +291,29 @@ class PipUpdate(UpdateCommand):
             return
 
         if _proc_confirm():
+            args = [path, '-m', 'pip', 'reinstall']
+            if self._quiet:
+                args.append('--quiet')
+            if self._verbose:
+                args.append('--verbose')
+
             while _deps_pkgs:
                 for package in _deps_pkgs:
-                    argv = f'{argc} {package}'
-                    script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-                    returncode = script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
-                                        self._log.name, shell=True, timeout=self._timeout)
-                    if returncode == 0:
+                    real_name = re.split(r'[<>=!]', package, maxsplit=1)[0]
+                    script(['echo', '-e', f'\n+ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
+
+                    args[3] = 'uninstall'
+                    script(['echo', '-e', f'++ {bold}{" ".join(args)} {real_name}{reset}'], self._log.name)
+                    script(f'yes {self._password} | sudo --set-home --stdin --prompt="" '
+                           f'{path} -m pip uninstall {real_name} --yes', self._log.name, shell=True)
+
+                    args[3] = 'install'
+                    script(['echo', '-e', f'++ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
+                    if not script(f'yes {self._password} | sudo --set-home --stdin --prompt="" '
+                                  f'{path} -m pip install {package}', self._log.name,
+                                  shell=True, timeout=self._timeout):
                         with contextlib.suppress(ValueError):
-                            self._pkgs.remove(re.split(r'[<>=!]', package, maxsplit=1)[0])
+                            self._pkgs.remove(real_name)
                     self._log.write('\n')
                 _deps_pkgs = _proc_check()
             print(f'macdaily-update: {green}pip{reset}: all broken dependencies fixed')

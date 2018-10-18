@@ -111,7 +111,7 @@ class CaskUpdate(UpdateCommand):
 
         self._log.write(f'+ {" ".join(args)}\n')
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL, timeout=self._timeout)
+            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             self._log.write(traceback.format_exc())
             self.__temp_pkgs = set()
@@ -133,7 +133,7 @@ class CaskUpdate(UpdateCommand):
         if self._verbose:
             args.append('--verbose')
         script(['echo', '-e', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
-        script(args, self._log.name, timeout=self._timeout)
+        script(args, self._log.name)
 
     def _exhaust_check(self, path):
         args = ['brew', 'cask', 'outdated', '--exhaust']

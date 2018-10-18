@@ -5,7 +5,7 @@ import os
 import re
 import sys
 
-from macdaily.util.colours import bold, red, reset, yellow
+from macdaily.util.colours import bold, green, red, reset, yellow
 from macdaily.util.tools import script
 
 
@@ -27,6 +27,12 @@ class Command(metaclass=abc.ABCMeta):
     def act(self):
         """verb, past participle, adjective"""
         return (NotImplemented, NotImplemented, NotImplemented)
+
+    @property
+    @abc.abstractmethod
+    def job(self):
+        """noun singular, noun plural"""
+        return (NotImplemented, NotImplemented)
 
     @property
     @abc.abstractmethod
@@ -104,6 +110,8 @@ class Command(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         self._all = False
+        self._quiet = False
+        self._yes = False
 
     @abc.abstractmethod
     def _loc_exec(self):
@@ -117,8 +125,27 @@ class Command(metaclass=abc.ABCMeta):
         for path in self._exec:
             self.__lost_pkgs = set()
             self.__real_pkgs = set()
+            self.__temp_pkgs = set()
+            self._check_confirm()
             self._did_you_mean()
         self._proc_cleanup()
+
+    def _check_confirm(self):
+        job = self.job[1] if len(self.__temp_pkgs) else self.job[0]
+        bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
+        script(['echo', '-e', f'\nmacdaily-{self.cmd}: {green}{self.mode}{reset}: '
+                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}'], self._log.name)
+        if self._yes or self._quiet:
+            return
+        while True:
+            ans = input(f'Would you like to {self.act[0]}? (y/N)')
+            if re.match(r'[yY]', ans):
+                break
+            elif re.match(r'[nN]', ans):
+                self.__temp_pkgs = set()
+                break
+            else:
+                print('Invalid input.')
 
     def _did_you_mean(self):
         for package in self.__lost_pkgs:
