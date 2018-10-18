@@ -39,7 +39,9 @@ class MasUpdate(UpdateCommand):
 
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
+        self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
+        self._yes = namespace.pop('yes', False)
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()

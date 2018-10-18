@@ -12,9 +12,52 @@ from macdaily.util.tools import script
 class Command(metaclass=abc.ABCMeta):
     """Base command.
 
-    1. keep namespace
-    2. decide executable
-    3. enumerate and start processors
+    Process
+    ~~~~~~~
+
+    1. check executable
+        1. if none exits, exit
+        2. else continue
+    2. parse options and packages
+        1. merge package specification in options
+        2. extract command line options
+        3. if no package specifications and ``all`` flag NOT set, exit
+        4. else continue
+    3. locate executables
+    4. run command-specified processors
+        1. for each executable
+            1. command-specified logging process (optional)
+                1. fetch packages for main process
+                2. if found package specifications, provide trivial did-you-mean function
+                3. else continue
+            2. ask for comfirmation on main process
+                1. if cancelled, exit
+                2. else continue
+            3. command-specified main process
+                1. run main process for each package
+                2. run checkout process (optional)
+        2. run cleanup process (optional)
+
+    Properties
+    ~~~~~~~~~~
+
+    - ``cmd`` -- ``str``, command type
+    - ``act`` -- ``tuple<str>``, command actions
+        0. verb
+        1. verb (past participle)
+        2. adjective
+    - ``job`` -- ``tuple<str>``, command jobs
+        0. noun (singular)
+        1. noun (plural)
+    - ``name`` -- ``str``, command name (full name)
+    - ``mode`` -- ``str``, command mode (acronym)
+    - ``time`` -- ``float`` / ``None``, Homebrew renew timestamp
+    - ``desc`` -- ``tuple<str>``, command description
+        0. singular
+        1. plural
+    - ``packages`` -- ``set<str>``, process succeeded packages
+    - ``failed`` -- ``set<str>``, process failed packages
+    - ``notfound`` -- ``set<str>``, unknown packages (not found in registry)
 
     """
     @property
@@ -67,6 +110,18 @@ class Command(metaclass=abc.ABCMeta):
         return set(self._lost)
 
     def __init__(self, args, filename, timeout, password, disk_dir, brew_renew):
+        """Initialisation.
+
+        Args:
+
+        - ``args`` -- ``argparse.Namespace``
+        - ``filename`` -- ``str``, real path of log file
+        - ``timeout`` -- ``int``, timeout interval for main process
+        - ``password`` -- ``str``, ``sudo`` password
+        - ``disk_dir`` -- ``str``, real root path of archive directory
+        - ``brew_renew`` -- ``float``, Homebrew renew timestamp
+
+        """
         if self._check_exec():
             return
 
@@ -75,16 +130,13 @@ class Command(metaclass=abc.ABCMeta):
         self._disk_dir = disk_dir
         self._brew_renew = brew_renew
         with open(filename, 'a', 1) as self._log:
-            no_proc = False
-            if self._pkg_args(args):
+            flag = self._pkg_args(args)
+            if flag:
                 self._loc_exec()
                 self._run_proc()
             else:
-                no_proc = True
-
-        if no_proc or self._packages:
-            script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                    f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
+                script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -92,6 +144,7 @@ class Command(metaclass=abc.ABCMeta):
         return True
 
     def _pkg_args(self, args):
+        """Return if there's packages for main process."""
         self._args = args
         namespace = vars(args)
 
@@ -115,7 +168,7 @@ class Command(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def _loc_exec(self):
-        self._exec = list()
+        self._exec = set()
 
     @abc.abstractmethod
     def _run_proc(self):
@@ -142,6 +195,8 @@ class Command(metaclass=abc.ABCMeta):
             if re.match(r'[yY]', ans):
                 break
             elif re.match(r'[nN]', ans):
+                script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'{self.desc[0]} {job} postponed due to user cancellation'], self._log.name)
                 self.__temp_pkgs = set()
                 break
             else:

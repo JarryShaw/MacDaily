@@ -20,6 +20,9 @@ try:
 except ImportError:
     import subprocess
 
+# version string
+__version__ = '2018.10.18.dev1'
+
 # terminal commands
 python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments

@@ -32,11 +32,11 @@ class CaskUpdate(UpdateCommand):
 
     @property
     def name(self):
-        return 'Caskroom'
+        return 'Homebrew Casks'
 
     @property
     def desc(self):
-        return ('Homebrew Cask', 'Homebrew Casks')
+        return ('Caskroom binary', 'Caskroom binaries')
 
     def _check_exec(self):
         try:
@@ -53,7 +53,7 @@ class CaskUpdate(UpdateCommand):
 
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
-        self._cleanup = namespace.pop('cleanup', True)
+        self._no_cleanup = namespace.pop('no_cleanup', False)
         self._exhaust = namespace.pop('exhaust', False)
         self._force = namespace.pop('force', False)
         self._greedy = namespace.pop('greedy', False)
@@ -61,6 +61,7 @@ class CaskUpdate(UpdateCommand):
         self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
         self._verbose = namespace.pop('verbose', False)
+        self._yes = namespace.pop('yes', False)
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
@@ -118,7 +119,11 @@ class CaskUpdate(UpdateCommand):
         else:
             context = proc.decode()
             self._log.write(context)
-            self.__temp_pkgs = set(context.split())
+
+            _temp_pkgs = list()
+            for line in context.strip().split('\n'):
+                _temp_pkgs.append(line.split(maxsplit=1)[0])
+            self.__temp_pkgs = set(_temp_pkgs)
         finally:
             self._log.write('\n')
 
@@ -225,7 +230,7 @@ class CaskUpdate(UpdateCommand):
         del self.__temp_pkgs
 
     def _proc_cleanup(self):
-        if self._cleanup():
+        if self._no_cleanup:
             return
 
         if not os.path.isdir(self._disk_dir):

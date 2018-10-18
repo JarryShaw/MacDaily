@@ -40,10 +40,11 @@ class NpmUpdate(UpdateCommand):
 
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
-        self._cleanup = namespace.pop('cleanup', True)
+        self._no_cleanup = namespace.pop('no_cleanup', False)
         self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
         self._verbose = namespace.pop('verbose', False)
+        self._yes = namespace.pop('yes', False)
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
@@ -79,10 +80,11 @@ class NpmUpdate(UpdateCommand):
         self.__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
-        args = [path, 'outdated', '--global']
+        args = [path, 'outdated']
         args.extend(self._logging_opts)
         args.append('--no-parseable')
         args.append('--no-json')
+        args.append('--global')
 
         self._log.write(f'+ {" ".join(args)}\n')
         try:
@@ -109,6 +111,7 @@ class NpmUpdate(UpdateCommand):
         if self._verbose:
             args.append('--verbose')
         args.extend(self._update_opts)
+        args.append('--global')
 
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
@@ -123,7 +126,7 @@ class NpmUpdate(UpdateCommand):
         del self.__temp_pkgs
 
     def _proc_cleanup(self):
-        if self._cleanup():
+        if self._no_cleanup:
             return
 
         args = ['npm', 'cleanup']

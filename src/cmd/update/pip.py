@@ -52,7 +52,7 @@ class PipUpdate(UpdateCommand):
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
         self._brew = namespace.pop('brew', False)
-        self._cleanup = namespace.pop('cleanup', True)
+        self._no_cleanup = namespace.pop('no_cleanup', False)
         self._cpython = namespace.pop('cpython', False)
         self._pre = namespace.pop('pre', False)
         self._pypy = namespace.pop('pypy', False)
@@ -321,7 +321,7 @@ class PipUpdate(UpdateCommand):
             print(f'macdaily-update: {red}pip{reset}: all broken dependencies remain')
 
     def _proc_cleanup(self):
-        if not self._cleanup:
+        if self._no_cleanup:
             return
 
         args = ['pip', 'cleanup']
