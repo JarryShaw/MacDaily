@@ -29,7 +29,6 @@ class PipUpdate(PipCommand, UpdateCommand):
 
         self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
-        self._show_log = namespace.pop('show_log', False)
         self._verbose = namespace.pop('verbose', False)
         self._yes = namespace.pop('yes', False)
 

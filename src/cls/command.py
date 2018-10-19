@@ -109,12 +109,12 @@ class Command(metaclass=abc.ABCMeta):
     def notfound(self):
         return set(self._lost)
 
-    def __init__(self, args, filename, timeout, password, disk_dir, brew_renew):
+    def __init__(self, namespace, filename, timeout, password, disk_dir, brew_renew):
         """Initialisation.
 
         Args:
 
-        - ``args`` -- ``argparse.Namespace``
+        - ``namespace`` -- ``dict``, converted argparse.Namespace
         - ``filename`` -- ``str``, real path of log file
         - ``timeout`` -- ``int``, timeout interval for main process
         - ``password`` -- ``str``, ``sudo`` password
@@ -130,7 +130,7 @@ class Command(metaclass=abc.ABCMeta):
         self._disk_dir = disk_dir
         self._brew_renew = brew_renew
         with open(filename, 'a', 1) as self._log:
-            flag = self._pkg_args(args)
+            flag = self._pkg_args(namespace)
             if flag:
                 self._loc_exec()
                 self._run_proc()
@@ -143,11 +143,8 @@ class Command(metaclass=abc.ABCMeta):
         """Return if no executable found."""
         return True
 
-    def _pkg_args(self, args):
+    def _pkg_args(self, namespace):
         """Return if there's packages for main process."""
-        self._args = args
-        namespace = vars(args)
-
         self._merge_packages(namespace)
         self._parse_args(namespace)
 

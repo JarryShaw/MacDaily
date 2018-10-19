@@ -31,8 +31,8 @@ class ApmCommand(Command):
                   f'{purple}{under}https://atom.io{reset}\n')
         return flag
 
-    def _pkg_args(self, args):
-        flag = super()._pkg_args(args)
+    def _pkg_args(self, namespace):
+        flag = super()._pkg_args(namespace)
         if not self._beta and self.__exec_path[0] is None:
             return True
         return flag

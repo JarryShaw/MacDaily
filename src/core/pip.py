@@ -34,17 +34,17 @@ class PipCommand(Command):
     def _check_exec(self):
         return False
 
-    def _pkg_args(self, args):
+    def _pkg_args(self, namespace):
         def match(version):
             return re.fullmatch(r'\d(\.\d)?', version)
 
         temp_ver = list()
-        args_ver = getattr(args, 'version', list())
+        args_ver = namespace.pop('version', list())
         for item in args_ver:
             temp_ver.extend(filter(match, item.split(',')))
         self._version = set(temp_ver)
 
-        return super()._pkg_args(args)
+        return super()._pkg_args(namespace)
 
     @abc.abstractmethod
     def _parse_args(self, namespace):

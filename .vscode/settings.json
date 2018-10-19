@@ -29,6 +29,7 @@
         "stdict",
         "swch",
         "tmpath",
-        "tmpdir"
+        "tmpdir",
+        "genl"
     ]
 }
