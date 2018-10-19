@@ -5,8 +5,8 @@ import os
 import re
 import sys
 
-from macdaily.util.colours import bold, green, red, reset, yellow
-from macdaily.util.tools import script
+from macdaily.util.colour import bold, green, red, reset, yellow
+from macdaily.util.tool import script
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -165,9 +165,9 @@ class Command(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def _parse_args(self, namespace):
-        self._all = False
-        self._quiet = False
-        self._yes = False
+        self._all = namespace.pop('all', False)
+        self._quiet = namespace.pop('quiet', False)
+        self._yes = namespace.pop('yes', False)
 
     @abc.abstractmethod
     def _loc_exec(self):

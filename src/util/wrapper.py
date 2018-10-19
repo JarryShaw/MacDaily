@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""function decorators"""
 
 import functools
 import os

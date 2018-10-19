@@ -2,7 +2,7 @@
 
 import abc
 
-from macdaily.cmd.command import Command
+from macdaily.cls.command import Command
 
 
 class UpdateCommand(Command):

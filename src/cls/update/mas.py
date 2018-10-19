@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import shutil
-import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
-from macdaily.util.colour import blush, bold, flash, red, reset
+from macdaily.core.mas import MasCommand
+from macdaily.util.colour import bold, reset
 from macdaily.util.tool import script
 
 try:
@@ -16,27 +15,6 @@ except ImportError:
 
 class MasUpdate(UpdateCommand):
 
-    @property
-    def mode(self):
-        return 'mas'
-
-    @property
-    def name(self):
-        return 'Mac App Store CLI'
-
-    @property
-    def desc(self):
-        return ('macOS application', 'macOS applications')
-
-    def _check_exec(self):
-        self.__exec_path = shutil.which('mas')
-        flag = (self.__exec_path is None)
-        if flag:
-            print(f'macdaily-update: {blush}{flash}mas{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
-                  f"`{bold}brew install mas{reset}'\n")
-        return flag
-
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
@@ -45,10 +23,6 @@ class MasUpdate(UpdateCommand):
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
-
-    def _loc_exec(self):
-        self._exec = {self.__exec_path}
-        del self.__exec_path
 
     def _check_pkgs(self, path):
         args = [path, 'list']

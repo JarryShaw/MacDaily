@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import re
-import shutil
-import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
-from macdaily.util.colour import blush, bold, flash, purple, red, reset, under
+from macdaily.core.apm import ApmCommand
+from macdaily.util.colour import bold, reset
 from macdaily.util.tool import script
 
 try:
@@ -15,37 +14,12 @@ except ImportError:
     import subprocess
 
 
-class ApmUpdate(UpdateCommand):
-
-    @property
-    def mode(self):
-        return 'apm'
-
-    @property
-    def name(self):
-        return 'Atom Package Manager'
-
-    @property
-    def desc(self):
-        return ('Atom plug-in', 'Atom plug-ins')
-
-    def _check_exec(self):
-        self.__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
-        flag = (self.__exec_path == (None, None))
-        if flag:
-            print(f'macdaily-update: {blush}{flash}apm{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}apm{reset}: you may download Atom from '
-                  f'{purple}{under}https://atom.io{reset}\n')
-        return flag
-
-    def _pkg_args(self, args):
-        if self._beta and self.__exec_path[1] is None:
-            return True
-        return super()._pkg_args(args)
+class ApmUpdate(ApmCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._all = namespace.pop('all', False)
         self._beta = namespace.pop('beta', False)
+
+        self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
         self._verbose = namespace.pop('verbose', False)
@@ -53,16 +27,6 @@ class ApmUpdate(UpdateCommand):
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
-
-    def _loc_exec(self):
-        if self._beta:
-            if self.__exec_path[1] is None:
-                self._exec = set()
-            else:
-                self._exec = {self.__exec_path[1]}
-        else:
-            self._exec = set(filter(None, self.__exec_path))
-        del self.__exec_path
 
     def _check_pkgs(self, path):
         args = [path, 'list', '--bare', '--no-color']

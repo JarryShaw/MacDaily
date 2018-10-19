@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import re
-import shutil
-import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
-from macdaily.util.colour import blush, bold, flash, red, reset
+from macdaily.core.system import SystemCommand
+from macdaily.util.colour import bold, reset
 from macdaily.util.tool import script
 
 try:
@@ -15,44 +14,19 @@ except ImportError:
     import subprocess
 
 
-class SystemUpdate(UpdateCommand):
-
-    @property
-    def mode(self):
-        return 'system'
-
-    @property
-    def name(self):
-        return 'macOS Software Update'
-
-    @property
-    def desc(self):
-        return ('system software', 'system software')
-
-    def _check_exec(self):
-        self.__exec_path = shutil.which('softwareupdate')
-        flag = (self.__exec_path is None)
-        if flag:
-            print(f'macdaily-update: {blush}{flash}system{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}system{reset}: '
-                  "you may add `softwareupdate' to PATH through the following command -- "
-                  f'''`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'\n''')
-        return flag
+class SystemUpdate(SystemCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
         self._recommend = namespace.pop('recommended', False)
         self._restart = namespace.pop('restart', False)
+
+        self._all = namespace.pop('all', False)
+        self._quiet = namespace.pop('quiet', False)
         self._show_log = namespace.pop('show_log', False)
         self._yes = namespace.pop('yes', False)
 
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
-
-    def _loc_exec(self):
-        self._exec = {self.__exec_path}
-        del self.__exec_path
 
     def _check_pkgs(self, path):
         self._check_list(path)

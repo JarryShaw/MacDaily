@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""utility constants"""
 
 import os
 import shutil
