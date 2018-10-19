@@ -7,14 +7,29 @@ import shlex
 import sys
 import traceback
 
-from macdaily.util.colours import red, reset
-from macdaily.util.exceptions import PasswordError, UnsupportedOS
-from macdaily.util.helpers import ROOT, make_pipe
+from macdaily.util.colour import red, reset
+from macdaily.util.const import ROOT
+from macdaily.util.error import PasswordError, UnsupportedOS
+from macdaily.util.helper import make_pipe
 
 try:
     import subprocess32 as subprocess
 except ImportError:
     import subprocess
+
+
+def beholder(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if platform.system() != 'Darwin':
+            raise UnsupportedOS('macdaily: script runs only on macOS')
+        try:
+            return func(*args, **kwargs)
+        except KeyboardInterrupt:
+            print(
+                f'\nmacdaily: {red}error{reset}: operation interrupted\n', file=sys.stderr)
+            raise
+    return wrapper
 
 
 def check(parse):
@@ -31,20 +46,6 @@ def check(parse):
             raise PasswordError(
                 1, f"Invalid password for {config['Account']['username']!r}") from None
         return config
-    return wrapper
-
-
-def beholder(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        if platform.system() != 'Darwin':
-            raise UnsupportedOS('macdaily: script runs only on macOS')
-        try:
-            return func(*args, **kwargs)
-        except KeyboardInterrupt:
-            print(
-                f'\nmacdaily: {red}error{reset}: operation interrupted\n', file=sys.stderr)
-            raise
     return wrapper
 
 

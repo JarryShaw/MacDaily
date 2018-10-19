@@ -5,10 +5,8 @@ import contextlib
 import copy
 import os
 import pwd
-import shutil
-import sys
 
-from macdaily.util.colours import blue, reset, length
+from macdaily.util.colour import blue, reset, length
 
 try:
     import pathlib2 as pathlib
@@ -19,17 +17,6 @@ try:
     import subprocess32 as subprocess
 except ImportError:
     import subprocess
-
-# version string
-__version__ = '2018.10.18.dev1'
-
-# terminal commands
-python = sys.executable         # Python version
-program = ' '.join(sys.argv)    # arguments
-
-# environment macros
-ROOT = os.path.dirname(os.path.abspath(__file__))
-SHELL = os.environ.get('SHELL', shutil.which('sh'))
 
 
 def get_pass(config, logname):

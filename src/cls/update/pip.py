@@ -10,9 +10,9 @@ import os
 import re
 import traceback
 
-from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import bold, green, red, reset, yellow
-from macdaily.util.tools import script
+from macdaily.cmd.update import UpdateCommand
+from macdaily.util.colour import bold, green, red, reset, yellow
+from macdaily.util.tool import script
 
 try:
     import subprocess32 as subprocess
@@ -164,9 +164,6 @@ class PipUpdate(UpdateCommand):
             if self._system and self._pypy:
                 _extend_version(EXEC_PATH['combination'][(False, False)])
         self._exec = set(temp_exec)
-
-        # import pprint  # ###
-        # pprint.pprint(self._exec)  # ###
 
     def _check_pkgs(self, path):
         _temp_pkgs = list()

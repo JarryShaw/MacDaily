@@ -2,11 +2,8 @@
 
 import argparse
 
-# from macdaily.util.colours import bold, reset
-# from macdaily.util.helpers import __version__
-reset = '\033[0m'
-bold = '\033[1m'
-__version__ = '2018.10.18a1'
+from macdaily.util.colour import bold, reset
+from macdaily.util.const import __version__
 
 
 def get_parser():

@@ -9,7 +9,7 @@ import tarfile
 import zipfile
 
 import ptyng
-from macdaily.util.helpers import SHELL, program, python
+from macdaily.util.const import SHELL, program, python
 
 try:
     import pathlib2 as pathlib
@@ -56,7 +56,7 @@ def archive(config, logpath, arcpath, tarpath, logdate, today, *, mvflag=True):
     return filelist
 
 
-def record_args(args, today, logfile):
+def record(args, today, logfile):
     logfile.write(datetime.date.strftime(today, ' %+ ').center(80, '—'))
     logfile.write(f'\n\nCMD: {python} {program}')
     logfile.write(f"\n\n{'-*- Arguments - *-'.center(80, ' ')}\n\n")

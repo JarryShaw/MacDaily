@@ -6,10 +6,10 @@ import shutil
 import sys
 import traceback
 
-from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import blush, bold, flash, purple, red, reset, under
-from macdaily.util.helpers import SHELL
-from macdaily.util.tools import script
+from macdaily.cmd.update import UpdateCommand
+from macdaily.util.colour import blush, bold, flash, purple, red, reset, under
+from macdaily.util.const import SHELL
+from macdaily.util.tool import script
 
 try:
     import subprocess32 as subprocess

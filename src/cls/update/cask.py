@@ -8,10 +8,10 @@ import textwrap
 import time
 import traceback
 
-from macdaily.cmd.update.command import UpdateCommand
-from macdaily.util.colours import (blush, bold, flash, length, purple, red,
-                                   reset, under, yellow)
-from macdaily.util.tools import script
+from macdaily.cmd.update import UpdateCommand
+from macdaily.util.colour import (blush, bold, flash, length, purple, red,
+                                  reset, under, yellow)
+from macdaily.util.tool import script
 
 try:
     import pathlib2 as pathlib
