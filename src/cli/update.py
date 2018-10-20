@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import sys
 
 from macdaily.util.colour import bold, reset
 from macdaily.util.const import __version__
 
 
-def get_parser():
-    """Return ArgumentParser for update command."""
+def get_update_parser():
     #######################################################
     # Update CLI
     #   * options
@@ -18,20 +18,20 @@ def get_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='update',
+    parser = argparse.ArgumentParser(prog='macdaily-update',
                                      description='macOS Package Update Automator',
                                      usage='macdaily update [options] <mode-selection> ...',
                                      epilog='aliases: up, upgrade')
     parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('unknown_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
+    parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
-    genl_group.add_argument('-a', '--all', action='store_true', default=False,
+    genl_group.add_argument('-a', '--all', action='store_true',
                             help=('update all packages installed through Atom, RubyGem, Node.js, '
                                   'Homebrew, Caskroom, Mac App Store, and etc'))
-    genl_group.add_argument('-q', '--quiet', action='store_true', default=False,
+    genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true', default=False,
+    genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
@@ -42,21 +42,21 @@ def get_parser():
 
     pkgs_group = parser.add_argument_group(title='package arguments',
                                            description='options used to specify packages of each mode')
-    pkgs_group.add_argument('--apm', action='append', metavar='PI', dest='apm_pkgs',
+    pkgs_group.add_argument('--apm', action='append', nargs='+', default=list(), metavar='PI', dest='apm_pkgs',
                             help='name of Atom plug-ins to update')
-    pkgs_group.add_argument('--gem', action='append', metavar='GEM', dest='gem_pkgs',
+    pkgs_group.add_argument('--gem', action='append', nargs='+', default=list(), metavar='GEM', dest='gem_pkgs',
                             help='name of Ruby gems to update')
-    pkgs_group.add_argument('--mas', action='append', metavar='APP', dest='mas_pkgs',
+    pkgs_group.add_argument('--mas', action='append', nargs='+', default=list(), metavar='APP', dest='mas_pkgs',
                             help='name of macOS applications to update')
-    pkgs_group.add_argument('--npm', action='append', metavar='MOD', dest='npm_pkgs',
+    pkgs_group.add_argument('--npm', action='append', nargs='+', default=list(), metavar='MOD', dest='npm_pkgs',
                             help='name of Node.js modules to update')
-    pkgs_group.add_argument('--pip', action='append', metavar='PKG', dest='pip_pkgs',
+    pkgs_group.add_argument('--pip', action='append', nargs='+', default=list(), metavar='PKG', dest='pip_pkgs',
                             help='name of Python packages to update')
-    pkgs_group.add_argument('--brew', action='append', metavar='FORM', dest='brew_pkgs',
+    pkgs_group.add_argument('--brew', action='append', nargs='+', default=list(), metavar='FORM', dest='brew_pkgs',
                             help='name of Homebrew formulae to update')
-    pkgs_group.add_argument('--cask', action='append', metavar='CASK', dest='cask_pkgs',
+    pkgs_group.add_argument('--cask', action='append', nargs='+', default=list(), metavar='CASK', dest='cask_pkgs',
                             help='name of Caskroom binaries to update')
-    pkgs_group.add_argument('--system', action='append', metavar='SW', dest='system_pkgs',
+    pkgs_group.add_argument('--system', action='append', nargs='+', default=list(), metavar='SW', dest='system_pkgs',
                             help='name of system software to update')
 
     ctrl_group = parser.add_argument_group(title='control arguments',
@@ -70,10 +70,14 @@ def get_parser():
     ctrl_group.add_argument('--no-cask', action='store_true', help='do not update Caskroom binaries')
     ctrl_group.add_argument('--no-system', action='store_true', help='do not update system software')
 
-    subparser = parser.add_subparsers(title='mode selection', metavar='MODE', dest='mode',
-                                      help=('update outdated packages installed through a specified method, '
-                                            'e.g.: apm, gem, mas, npm, pip, brew, cask, system'))
+    parser.add_argument_group(title='mode selection',
+                              description=('update outdated packages installed through a specified method, '
+                                           'e.g.: apm, gem, mas, npm, pip, brew, cask, system'))
 
+    return parser
+
+
+def get_apm_parser():
     #######################################################
     # Apm Update CLI
     #   * options
@@ -84,36 +88,38 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_apm = subparser.add_parser('apm', description='Atom Plug-In Update Automator',
-                                      usage='macdaily update apm [options] <plug-ins>')
-    parser_apm.add_argument('-V', '--version', action='version', version=__version__)
-    parser_apm.add_argument('-p', '--package', metavar='PI', action='append', dest='apm_pkgs', nargs='+',
-                            help='name of Atom plug-ins to update')
-    parser_apm.add_argument('apm_pkgs', action='append', nargs='*', metavar='plug-in',
-                            help='name of Atom plug-ins to update')
+    apm_parser = argparse.ArgumentParser(prog='macdaily-update-apm',
+                                         description='Atom Plug-In Update Automator',
+                                         usage='macdaily update apm [options] <plug-ins>')
+    apm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    apm_spec_group = parser_apm.add_argument_group(title='specification arguments')
+    apm_spec_group = apm_parser.add_argument_group(title='specification arguments')
     apm_spec_group.add_argument('-b', '--beta', action='store_true',
                                 help='update Atom Beta plug-ins')
+    apm_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='PI',
+                                help='name of Atom plug-ins to update')
 
-    apm_genl_group = parser_apm.add_argument_group(title='general arguments')
+    apm_genl_group = apm_parser.add_argument_group(title='general arguments')
     apm_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='update all plug-ins installed through Atom Package Manager')
     apm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     apm_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
-    apm_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                help='open log in Console.app upon completion of command')
     apm_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
 
-    apm_misc_group = parser_apm.add_argument_group(title='miscellaneous arguments')
-    apm_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
+    apm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                 help=f"options for `{bold}apm upgrade --list{reset}' command")
-    apm_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    apm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                 help=f"options for `{bold}apm upgrade <plug-in>{reset}' command")
 
+    return apm_parser
+
+
+def get_gem_parser():
     #######################################################
     # Gem Update CLI
     #   * options
@@ -124,38 +130,40 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_gem = subparser.add_parser('gem', description='Ruby Gem Update Automator',
-                                      usage='macdaily update gem [options] <gems>')
-    parser_gem.add_argument('-V', '--version', action='version', version=__version__)
-    parser_gem.add_argument('-p', '--package', metavar='GEM', action='append', dest='gem_pkgs', nargs='+',
-                            help='name of Ruby gems to update')
-    parser_gem.add_argument('gem_pkgs', action='append', nargs='*', metavar='gem',
-                            help='name of Ruby gems to update')
+    gem_parser = argparse.ArgumentParser(prog='macdaily-update-gem',
+                                         description='Ruby Gem Update Automator',
+                                         usage='macdaily update gem [options] <gems>')
+    gem_parser.add_argument('-V', '--version', action='version', version=__version__)
+    gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    gem_spec_group = parser_gem.add_argument_group(title='specification arguments')
+    gem_spec_group = gem_parser.add_argument_group(title='specification arguments')
     gem_spec_group.add_argument('-b', '--brew', action='store_true',
                                 help='update gems of Ruby installed from Homebrew')
     gem_spec_group.add_argument('-s', '--system', action='store_true',
                                 help='update gems of Ruby provided by macOS system')
+    gem_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='GEM',
+                                help='name of Ruby gems to update')
 
-    gem_genl_group = parser_gem.add_argument_group(title='general arguments')
+    gem_genl_group = gem_parser.add_argument_group(title='general arguments')
     gem_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='update all gems installed through RubyGems')
     gem_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     gem_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
-    gem_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                help='open log in Console.app upon completion of command')
     gem_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
 
-    gem_misc_group = parser_gem.add_argument_group(title='miscellaneous arguments')
-    gem_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
+    gem_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                 help=f"options for `{bold}gem outdated{reset}' command")
-    gem_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    gem_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                 help=f"options for `{bold}gem update <gem>{reset}' command")
 
+    return gem_parser
+
+
+def get_mas_parser():
     #######################################################
     # Mas Update CLI
     #   * options
@@ -165,32 +173,36 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_mas = subparser.add_parser('mas', description='macOS Application Update Automator',
-                                      usage='macdaily update mas [options] <applications>')
-    parser_mas.add_argument('-V', '--version', action='version', version=__version__)
-    parser_mas.add_argument('-p', '--package', metavar='APP', action='append', dest='mas_pkgs', nargs='+',
-                            help='name of macOS applications to update')
-    parser_mas.add_argument('mas_pkgs', action='append', nargs='*', metavar='application',
-                            help='name of macOS applications to update')
+    mas_parser = argparse.ArgumentParser(prog='macdaily-update-mas',
+                                         description='macOS Application Update Automator',
+                                         usage='macdaily update mas [options] <applications>')
+    mas_parser.add_argument('-V', '--version', action='version', version=__version__)
+    mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    mas_genl_group = parser_mas.add_argument_group(title='general arguments')
+    mas_spec_group = mas_parser.add_argument_group(title='specification arguments')
+    mas_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='APP',
+                                help='name of macOS applications to update')
+
+    mas_genl_group = mas_parser.add_argument_group(title='general arguments')
     mas_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='update all macOS applications installed through Mac App Store')
     mas_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     mas_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
-    mas_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                help='open log in Console.app upon completion of command')
     mas_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
 
-    mas_misc_group = parser_mas.add_argument_group(title='miscellaneous arguments')
-    mas_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
+    mas_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                 help=f"options for `{bold}mas outdated' command{reset}")
-    mas_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    mas_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                 help=f"options for `{bold}mas upgrade <application>{reset}' command")
 
+    return mas_parser
+
+
+def get_npm_parser():
     #######################################################
     # Npm Update CLI
     #   * options
@@ -200,34 +212,38 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_npm = subparser.add_parser('npm', description='Node.js Module Update Automator',
-                                      usage='macdaily update npm [options] <modules>')
-    parser_npm.add_argument('-V', '--version', action='version', version=__version__)
-    parser_npm.add_argument('-p', '--package', metavar='MOD', action='append', dest='npm_pkgs', nargs='+',
-                            help='name of Node.js modules to update')
-    parser_npm.add_argument('npm_pkgs', action='append', nargs='*', metavar='module',
-                            help='name of Node.js modules to update')
+    npm_parser = argparse.ArgumentParser(prog='macdaily-update-npm',
+                                         description='Node.js Module Update Automator',
+                                         usage='macdaily update npm [options] <modules>')
+    npm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    npm_genl_group = parser_npm.add_argument_group(title='general arguments')
+    npm_spec_group = npm_parser.add_argument_group(title='specification arguments')
+    npm_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='MOD',
+                                help='name of Node.js modules to update')
+
+    npm_genl_group = npm_parser.add_argument_group(title='general arguments')
     npm_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='update all Node.js modules installed through Node.js Package Manager')
     npm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     npm_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
-    npm_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                help='open log in Console.app upon completion of command')
     npm_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
     npm_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
 
-    npm_misc_group = parser_npm.add_argument_group(title='miscellaneous arguments')
-    npm_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
+    npm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                 help=f"options for `{bold}npm outdated --global{reset}' command")
-    npm_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    npm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                 help=f"options for `{bold}npm upgrade --global <module>{reset}' command")
 
+    return npm_parser
+
+
+def get_pip_parser():
     #######################################################
     # Pip Update CLI
     #   * options
@@ -238,15 +254,13 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_pip = subparser.add_parser('pip', description='Python Package Update Automator',
-                                      usage='macdaily update pip [options] <packages>')
-    parser_pip.add_argument('-V', '--version', action='version', version=__version__)
-    parser_pip.add_argument('-p', '--package', metavar='PKG', action='append', dest='pip_pkgs', nargs='+',
-                            help='name of Python packages to update')
-    parser_pip.add_argument('pip_pkgs', action='append', nargs='*', metavar='package',
-                            help='name of Python packages to update')
+    pip_parser = argparse.ArgumentParser(prog='macdaily-update-pip',
+                                         description='Python Package Update Automator',
+                                         usage='macdaily update pip [options] <packages>')
+    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    pip_spec_group = parser_pip.add_argument_group(title='specification arguments')
+    pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
     pip_spec_group.add_argument('-b', '--brew', action='store_true',
                                 help='update packages of Python installed from Homebrew')
     pip_spec_group.add_argument('-c', '--cpython', action='store_true',
@@ -259,27 +273,31 @@ def get_parser():
                                 help='update packages of PyPy implementation')
     pip_spec_group.add_argument('-s', '--system', action='store_true',
                                 help='update packages of Python provided by macOS system')
+    pip_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='PKG',
+                                help='name of Python packages to update')
 
-    pip_genl_group = parser_pip.add_argument_group(title='general arguments')
+    pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='update all Python packages installed through Python Package Index')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     pip_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
-    pip_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                help='open log in Console.app upon completion of command')
     pip_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
     pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
 
-    pip_misc_group = parser_pip.add_argument_group(title='miscellaneous arguments')
-    pip_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
+    pip_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                 help=f"options for `{bold}pip list --outdated{reset}' command")
-    pip_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    pip_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                 help=f"options for `{bold}pip install --upgrade <package>{reset}' command")
 
+    return pip_parser
+
+
+def get_brew_parser():
     #######################################################
     # Brew Update CLI
     #   * options
@@ -290,41 +308,43 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_brew = subparser.add_parser('brew', description='Homebrew Formula Update Automator',
-                                       usage='macdaily update brew [options] <formulae>')
-    parser_brew.add_argument('-V', '--version', action='version', version=__version__)
-    parser_brew.add_argument('-p', '--package', metavar='FORM', action='append', dest='brew_pkgs', nargs='+',
-                             help='name of Homebrew formulae to update')
-    parser_brew.add_argument('brew_pkgs', action='append', nargs='*',
-                             help='name of Homebrew formulae to update')
+    brew_parser = argparse.ArgumentParser(prog='macdaily-update-brew',
+                                          description='Homebrew Formula Update Automator',
+                                          usage='macdaily update brew [options] <formulae>')
+    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    brew_spec_group = parser_brew.add_argument_group(title='specification arguments')
+    brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
     brew_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='always do a slower, full update check even if unnecessary')
     brew_spec_group.add_argument('-m', '--merge', action='store_true',
                                  help=(f"`{bold}git merge{reset}' is used to include updates "
                                        f"(rather than `{bold}git rebase{reset}')"))
+    brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
+                                 help='name of Homebrew formulae to update')
 
-    brew_genl_group = parser_brew.add_argument_group(title='general arguments')
+    brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='update all Homebrew formulae installed through Homebrew')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
     brew_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
-    brew_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                 help='open log in Console.app upon completion of command')
     brew_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
     brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')
 
-    brew_misc_group = parser_brew.add_argument_group(title='miscellaneous arguments')
-    brew_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
+    brew_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                  help=f"options for `{bold}brew outdated{reset}' command")
-    brew_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    brew_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                  help=f"options for `{bold}brew upgrade <formula>{reset}' command")
 
+    return brew_parser
+
+
+def get_cask_parser():
     #######################################################
     # Cask Update CLI
     #   * options
@@ -335,15 +355,13 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_cask = subparser.add_parser('cask', description='Homebrew Cask Update Packages',
-                                       usage='macdaily update cask [options] <casks>')
-    parser_cask.add_argument('-V', '--version', action='version', version=__version__)
-    parser_cask.add_argument('-p', '--package', metavar='CASK', action='append', dest='cask_pkgs', nargs='+',
-                             help='name of Caskroom binaries to update')
-    parser_cask.add_argument('cask_pkgs', action='append', nargs='*',
-                             help='name of Caskroom binaries to update')
+    cask_parser = argparse.ArgumentParser(prog='macdaily-update-cask',
+                                          description='Homebrew Cask Update Packages',
+                                          usage='macdaily update cask [options] <casks>')
+    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    cask_spec_group = parser_cask.add_argument_group(title='specification arguments')
+    cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
     cask_spec_group.add_argument('-f', '--force', action='store_true',
                                  help=(f"use `{bold}--force{reset}' when running "
                                        f"`{bold}brew cask upgrade <cask>{reset}' command"))
@@ -355,27 +373,31 @@ def get_parser():
                                        f"(rather than `{bold}git rebase{reset}')"))
     cask_spec_group.add_argument('-x', '--exhaust', action='store_true',
                                  help='exhaustively check Caskroom for outdated Homebrew Casks')
+    cask_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='CASK',
+                                 help='name of Caskroom binaries to update')
 
-    cask_genl_group = parser_cask.add_argument_group(title='general arguments')
+    cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='update all Caskroom binaries installed through Homebrew')
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
     cask_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
-    cask_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                 help='open log in Console.app upon completion of command')
     cask_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
     cask_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')
 
-    cask_misc_group = parser_cask.add_argument_group(title='miscellaneous arguments')
-    cask_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
+    cask_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                  help=f"options for `{bold}brew cask outdated{reset}' command")
-    cask_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    cask_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                  help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
 
+    return cask_parser
+
+
+def get_system_parser():
     #######################################################
     # System Update CLI
     #   * options
@@ -386,34 +408,82 @@ def get_parser():
     #   * packages
     #######################################################
 
-    parser_system = subparser.add_parser('system', description='System Software Update Automator',
-                                         usage='macdaily update system [options] <software>')
-    parser_system.add_argument('-V', '--version', action='version', version=__version__)
-    parser_system.add_argument('-p', '--package', metavar='SW', action='append', dest='system_pkgs', nargs='+',
-                               help='name of system software to update')
-    parser_system.add_argument('cask_pkgs', action='append', nargs='*',
-                               help='name of system software to update')
+    system_parser = argparse.ArgumentParser(prog='macdaily-update-system',
+                                            description='System Software Update Automator',
+                                            usage='macdaily update system [options] <software>')
+    system_parser.add_argument('-V', '--version', action='version', version=__version__)
+    system_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
-    system_spec_group = parser_system.add_argument_group(title='specification arguments')
+    system_spec_group = system_parser.add_argument_group(title='specification arguments')
     system_spec_group.add_argument('-R', '--restart', action='store_true',
                                    help='automatically restart (or shut down) if required to complete installation')
     system_spec_group.add_argument('-r', '--recommended', action='store_true',
                                    help='only update software that is recommended for your system')
+    system_spec_group.add_argument('-p', '--packages', action='append',  nargs='+', default=list(), metavar='SW',
+                                   help='name of system software to update')
 
-    system_genl_group = parser_system.add_argument_group(title='general arguments')
+    system_genl_group = system_parser.add_argument_group(title='general arguments')
     system_genl_group.add_argument('-a', '--all', action='store_true',
                                    help=f"update all system software installed through `{bold}softwareupdate{reset}'")
     system_genl_group.add_argument('-q', '--quiet', action='store_true',
                                    help='run in quiet mode, with no output information')
-    system_genl_group.add_argument('-l', '--show-log', action='store_true',
-                                   help='open log in Console.app upon completion of command')
     system_genl_group.add_argument('-y', '--yes', action='store_true',
                                    help='yes for all selections')
 
-    system_misc_group = parser_system.add_argument_group(title='miscellaneous arguments')
-    system_misc_group.add_argument('-L', '--logging', action='store', dest='logging_opts', metavar='ARG',
+    system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
+    system_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
                                    help=f"options for `{bold}softwareupdate --list{reset}' command")
-    system_misc_group.add_argument('-U', '--update', action='store', dest='update_opts', metavar='ARG',
+    system_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
                                    help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
 
-    return parser
+    return system_parser
+
+
+def parse_args(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    # main parser process
+    main_parser = get_update_parser()
+    main_args = main_parser.parse_args(argv)
+
+    def _update(d, e):
+        for k, v in e.items():
+            if k in d:
+                if isinstance(v, list):
+                    d[k].extend(v)
+                else:
+                    d[k] = v
+            else:
+                d[k] = v
+        return d
+
+    # recursively parse mode options
+    more_opts = main_args.more_opts
+    while more_opts:
+        # traverse all extra options
+        for index, option in enumerate(more_opts, start=1):
+            # ignore ``--`` (end of option list)
+            if option == '--':
+                continue
+
+            # check if legal mode
+            get_parser = globals().get(f'get_{option}_parser')
+            if get_parser is None:
+                main_parser.error(f'unrecognized arguments: {option}')
+
+            # parse mode arguments
+            parser = get_parser()
+            args = parser.parse_args(more_opts[index:])
+
+            # store/update parsed arguments
+            opt_dict = getattr(main_args, option, dict())
+            opt_dict.pop('more_opts', None)
+            setattr(main_args, option, _update(opt_dict, vars(args)))
+
+            # check for extra options
+            more_opts = args.more_opts
+            break
+
+    delattr(main_args, 'more_opts')
+    return main_args
