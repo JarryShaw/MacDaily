@@ -11,7 +11,7 @@ import traceback
 from macdaily.util.colour import red, reset
 from macdaily.util.const import ROOT
 from macdaily.util.error import PasswordError, UnsupportedOS
-from macdaily.util.helper import make_pipe
+from macdaily.util.misc import make_pipe
 
 try:
     import subprocess32 as subprocess
@@ -27,8 +27,7 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print(
-                f'\nmacdaily: {red}error{reset}: operation interrupted\n', file=sys.stderr)
+            print(f'\nmacdaily: {red}error{reset}: operation interrupted\n', file=sys.stderr)
             raise
     return wrapper
 
@@ -44,8 +43,7 @@ def check(parse):
                 subprocess.check_call(['sudo', '--stdin', '--validate'],
                                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
-            raise PasswordError(
-                1, f"Invalid password for {config['Account']['username']!r}") from None
+            raise PasswordError(1, f"Invalid password for {config['Account']['username']!r}") from None
         return config
     return wrapper
 
@@ -58,11 +56,9 @@ def aftermath(logfile, tmpfile=None, command=None, logmode='null'):
                 return func(*args, **kwargs)
             except subprocess.TimeoutExpired:
                 with open(logfile, 'a') as file:
-                    file.write(
-                        f'\nERR: {traceback.format_exc().splitlines()[-1]}\n')
+                    file.write(f'\nERR: {traceback.format_exc().splitlines()[-1]}\n')
                 if command is not None:
-                    print(
-                        f'\nmacdaily: {red}{command}{reset}: operation timeout\n', file=sys.stderr)
+                    print(f'\nmacdaily: {red}{command}{reset}: operation timeout\n', file=sys.stderr)
                 raise
             except BaseException:
                 path = os.path.join(ROOT, f'lib{command}/aftermath.sh')

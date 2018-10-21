@@ -102,6 +102,10 @@ class Command(metaclass=abc.ABCMeta):
         return set(self._pkgs)
 
     @property
+    def ignored(self):
+        return set(self._ilst)
+
+    @property
     def failed(self):
         return set(self._fail)
 
@@ -151,13 +155,18 @@ class Command(metaclass=abc.ABCMeta):
         return (self._packages or self._all)
 
     def _merge_packages(self, namespace):
+        ilst_pkg = list()
         temp_pkg = list()
         args_pkg = namespace.pop(f'{self.mode}_pkgs', list())
         for pkgs in args_pkg:
             if isinstance(pkgs, str):
-                temp_pkg.extend(filter(None, pkgs.split(',')))
-            else:
-                temp_pkg.extend(pkgs)
+                pkgs = filter(None, pkgs.split(','))
+            for package in pkgs:
+                if package.startswith('!'):
+                    ilst_pkg.append(package[1:])
+                else:
+                    temp_pkg.append(package)
+        self._ignore = set(ilst_pkg)
         self._packages = set(temp_pkg)
 
     @abc.abstractmethod
@@ -173,6 +182,7 @@ class Command(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _run_proc(self):
         self._pkgs = list()
+        self._ilst = list()
         self._fail = list()
         self._lost = list()
         for path in self._exec:
@@ -184,6 +194,7 @@ class Command(metaclass=abc.ABCMeta):
         self._proc_cleanup()
 
     def _check_confirm(self):
+        self.__temp_pkgs -= self._ignore
         job = self.job[1] if len(self.__temp_pkgs) else self.job[0]
         bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
         script(['echo', '-e', f'\nmacdaily-{self.cmd}: {green}{self.mode}{reset}: '

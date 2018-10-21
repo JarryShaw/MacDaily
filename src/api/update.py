@@ -9,10 +9,12 @@ from macdaily.cls.update.mas import MasUpdate
 from macdaily.cls.update.npm import NpmUpdate
 from macdaily.cls.update.pip import PipUpdate
 from macdaily.cls.update.system import SystemUpdate
+from macdaily.cmd.config import parse_config
 
 
 def update(argv):
     args = parse_args(argv)
+    config = parse_config()
 
     filename = None
     timeout = None
@@ -27,14 +29,14 @@ def update(argv):
 
         # update package specifications
         packages = getattr(args, f'{mode}_pkgs')
-        arguments = getattr(args, mode)
-        if not (packages or arguments or args.all):
+        namespace = getattr(args, mode)
+        if not (packages or namespace or args.all):
             continue
-        arguments.packages.extend(packages)
+        namespace['packages'].extend(packages)
 
         # run command
         cmd_cls = globals().get(f'{mode.capitalize()}Update')
-        command = cmd_cls(vars(arguments), filename, timeout, password, disk_dir, brew_renew)
+        command = cmd_cls(namespace, filename, timeout, password, disk_dir, brew_renew)
 
         # record command
         cmd_list.append(command)

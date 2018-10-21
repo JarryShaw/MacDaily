@@ -12,9 +12,12 @@
         "dskdir",
         "dskname",
         "dskpath",
+        "genl",
         "idep",
+        "ilst",
         "ldpath",
         "libprinstall",
+        "linesep",
         "mdargs",
         "mvflag",
         "nocleanup",
@@ -29,7 +32,6 @@
         "stdict",
         "swch",
         "tmpath",
-        "tmpdir",
-        "genl"
+        "tmpdir"
     ]
 }

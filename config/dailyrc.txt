@@ -1,42 +1,44 @@
 [Path]
 # In this section, paths for log files are specified.
 # Please, under any circumstances, make sure they are valid.
-logdir = ~/Library/Logs/MacDaily    ; path where logs will be stored
-tmpdir = /tmp/dailylog              ; path where temporary runtime logs go
-dskdir = /Volumes/Your Disk         ; path where your hard disk lies
-arcdir = ${dskdir}/Developers       ; path where ancient logs archive
+logdir = ~/Library/Logs/MacDaily                            ; path where logs will be stored
+dskdir = /Volumes/Your Disk                                 ; path where your hard disk lies
+arcdir = ${dskdir}/Developers                               ; path where ancient logs archive
 
 [Mode]
 # In this section, flags for modes are configured.
 # If you would like to disable the mode, set it to "false".
-apm      = true     ; Atom packages
-gem      = true     ; Ruby gems
-mas      = true     ; Mac App Store applications
-npm      = true     ; Node.js modules
-pip      = true     ; Python packages
-brew     = true     ; Homebrew Cellars
-cask     = true     ; Caskroom Casks
-dotapp   = true     ; Applications (*.app)
-macapp   = true     ; all applications in /Application folder
-system   = true     ; macOS system packages
-cleanup  = true     ; cleanup caches
-appstore = true     ; Mac App Store applications in /Application folder
+apm      = true                                             ; Atom plug-ins
+app      = true                                             ; macOS Applications
+brew     = true                                             ; Homebrew Formulae
+cask     = true                                             ; Homebrew Casks
+cleanup  = true                                             ; cleanup caches
+gem      = true                                             ; Ruby gems
+mas      = true                                             ; Mac App Store applications
+npm      = true                                             ; Node.js modules
+pip      = true                                             ; Python packages
+system   = true                                             ; macOS software
 
 [Daemon]
 # In this section, scheduled tasks are set up.
 # You may append and/or remove the time intervals.
-update      = true      ; run update on schedule
-uninstall   = false     ; don't run uninstall
-reinstall   = false     ; don't run reinstall
-postinstall = false     ; don't run postinstall
-dependency  = false     ; don't run dependency
-logging     = true      ; run logging on schedule
-schedule    =           ; scheduled timing (in 24 hours)
-    8:00                ; update & logging at 8:00
-    22:30-update        ; update at 22:30
-    23:00-logging       ; logging at 23:00
+archive     = false                                         ; archive logs
+bundle      = false                                         ; bundle packages
+cleanup     = false                                         ; cleanup caches
+config      = false                                         ; config MacDaily
+dependency  = false                                         ; show dependencies
+launch      = false                                         ; launch daemons
+logging     = true                                          ; log installed packages
+postinstall = false                                         ; postinstall packages
+reinstall   = false                                         ; reinstall packages
+uninstall   = false                                         ; uninstall packages
+update      = true                                          ; update packages
+schedule    =                                               ; scheduled timing (in 24 hours)
+    8:00                                                    ; update & logging at 8:00
+    22:30-update                                            ; update at 22:30
+    23:00-logging                                           ; logging at 23:00
 
-[Option]
+[Command]
 # In this section, command options are picked.
 # Do make sure these options are available for commands.
 update  = --all --yes --pre --quiet --show-log --no-cask
@@ -48,8 +50,8 @@ logging = --all --quiet --show-log
 username = ...
 password = ********
 
-[Environment]
-# In this section, environment specifications are set up.
+[Miscellanea]
+# In this section, miscellaneous specifications are assigned.
 # Please, under any circumstances, make sure all fields are valid.
-bash-timeout = 1_000    ; timeout limit for each shell script in seconds
-sudo-timeout = 5m       ; sudo command timeout as specified in /etc/sudoers
+askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks
+timeout = 300                                               ; timeout limit for shell commands in seconds

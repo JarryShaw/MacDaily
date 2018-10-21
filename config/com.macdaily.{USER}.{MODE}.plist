@@ -3,23 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.macdaily.{MODE}.{USER}.plist</string>
+	<string>com.macdaily.{USER}.{MODE}.plist</string>
 	<key>UserName</key>
 	<string>{USER}</string>
 	<key>Program</key>
-	<string>/usr/bin/osascript</string>
+	<string>{PYTHON}</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/bin/osascript</string>
-		<string>-e</string>
-		<string>#!/usr/bin/osascript
-
--- show notification
-display notification "Daily scheduled script `{MODE}` running..." with title "MacDaily"
-
--- run script
-do shell script "/usr/local/opt/python/bin/python3.7 -m macdaily {MODE} {argv}"
-</string>
+		<string>{PYTHON}</string>
+		<string>-m</string>
+		<string>macdaily</string>
+		<string>{MODE}</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>

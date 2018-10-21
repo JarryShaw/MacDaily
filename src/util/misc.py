@@ -2,11 +2,10 @@
 
 import base64
 import contextlib
-import copy
 import os
 import pwd
 
-from macdaily.util.colour import blue, reset, length
+from macdaily.util.colour import blue, length, reset
 
 try:
     import pathlib2 as pathlib
@@ -56,16 +55,16 @@ def make_path(config, mode, logdate):
     pathlib.Path(arcpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tarpath).mkdir(parents=True, exist_ok=True)
     pathlib.Path(tmppath).mkdir(parents=True, exist_ok=True)
-    pathlib.Path(os.path.join(logpath, logdate)).mkdir(
-        parents=True, exist_ok=True)
+    pathlib.Path(os.path.join(logpath, logdate)).mkdir(parents=True, exist_ok=True)
 
     dskpath = pathlib.Path(dskdir)
     if dskpath.exists() and dskpath.is_dir():
         pathlib.Path(arcdir).mkdir(parents=True, exist_ok=True)
 
     with make_pipe(config) as PIPE:
-        subprocess.run(['sudo', '--stdin', 'chown', '-R', config['Account']['username'], tmppath, logdir],
-                       stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.check_call(['sudo', '--stdin', '--prompt=""',
+                               'chown', '-R', config['Account']['username'], tmppath, logdir],
+                              stdin=PIPE.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return tmppath, logpath, arcpath, tarpath
 
 
@@ -73,24 +72,3 @@ def make_pipe(config=None, password=None):
     if password is None:
         password = base64.b85decode(config['Account']['password']).decode()
     return subprocess.Popen(['yes', password], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-
-
-def parse_mode(args, config):
-    temp = copy.deepcopy(args)
-    for mode in config['Mode'].keys():
-        if (not config['Mode'].getboolean(mode, fallback=False)):
-            setattr(temp, f'no_{mode}', True)
-    if isinstance(args.mode, str):
-        temp.mode = [args.mode]
-    if 'all' in args.mode:
-        temp.mode = ['all']
-    return temp
-
-
-def sudo_timeout(password):
-    with make_pipe(password=password) as yes:
-        grep = subprocess.Popen(['sudo', '--stdin', 'grep', 'timestamp_timeout', '/etc/sudoers'],
-                                stdin=yes.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        sed = subprocess.run(['sed', r's/timestamp_timeout=\([-0-9.]*\)*/\1/'],
-                             stdin=grep.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-    return (sed.stdout.strip().decode() or '300')
