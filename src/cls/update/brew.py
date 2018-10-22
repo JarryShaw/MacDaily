@@ -93,7 +93,7 @@ class BrewUpdate(BrewCommand, UpdateCommand):
         for package in self.__temp_pkgs:
             args[-1] = package
             argv = ' '.join(args)
-            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if script(args, self._log.name, timeout=self._timeout):
                 self._fail.append(package)
             else:

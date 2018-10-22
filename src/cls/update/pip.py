@@ -114,8 +114,8 @@ class PipUpdate(PipCommand, UpdateCommand):
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-            if script(f"yes {self._password} | sudo --set-home --stdin --prompt='' {argv}",
+            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+            if script(f"SUDO_ASKPASS={self._askpass} sudo --askpass --set-home --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:
@@ -167,16 +167,16 @@ class PipUpdate(PipCommand, UpdateCommand):
             while _deps_pkgs:
                 for package in _deps_pkgs:
                     real_name = re.split(r'[<>=!]', package, maxsplit=1)[0]
-                    script(['echo', '-e', f'\n+ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
+                    script(['echo', f'\n+ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
 
                     args[3] = 'uninstall'
-                    script(['echo', '-e', f'++ {bold}{" ".join(args)} {real_name}{reset}'], self._log.name)
-                    script(f'yes {self._password} | sudo --set-home --stdin --prompt="" '
+                    script(['echo', f'++ {bold}{" ".join(args)} {real_name}{reset}'], self._log.name)
+                    script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --set-home --stdin --prompt="" '
                            f'{path} -m pip uninstall {real_name} --yes', self._log.name, shell=True)
 
                     args[3] = 'install'
-                    script(['echo', '-e', f'++ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
-                    if not script(f'yes {self._password} | sudo --set-home --stdin --prompt="" '
+                    script(['echo', f'++ {bold}{" ".join(args)} {package}{reset}'], self._log.name)
+                    if not script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --set-home --stdin --prompt="" '
                                   f'{path} -m pip install {package}', self._log.name,
                                   shell=True, timeout=self._timeout):
                         with contextlib.suppress(ValueError):

@@ -113,7 +113,7 @@ class Command(metaclass=abc.ABCMeta):
     def notfound(self):
         return set(self._lost)
 
-    def __init__(self, namespace, filename, timeout, password, disk_dir, brew_renew):
+    def __init__(self, namespace, filename, timeout, askpass, disk_dir, brew_renew):
         """Initialisation.
 
         Args:
@@ -121,26 +121,29 @@ class Command(metaclass=abc.ABCMeta):
         - ``namespace`` -- ``dict``, converted argparse.Namespace
         - ``filename`` -- ``str``, real path of log file
         - ``timeout`` -- ``int``, timeout interval for main process
-        - ``password`` -- ``str``, ``sudo`` password
+        - ``askpass`` -- ``str``, path to ``macdaily-askpass``
         - ``disk_dir`` -- ``str``, real root path of archive directory
         - ``brew_renew`` -- ``float``, Homebrew renew timestamp
 
         """
+        # exit if no executable found
         if self._check_exec():
             return
 
+        # assign members
+        self._file = filename
         self._timeout = timeout
-        self._password = password
+        self._askpass = askpass
         self._disk_dir = disk_dir
         self._brew_renew = brew_renew
-        with open(filename, 'a', 1) as self._log:
-            flag = self._pkg_args(namespace)
-            if flag:
-                self._loc_exec()
-                self._run_proc()
-            else:
-                script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
+
+        # mainloop process
+        if self._pkg_args(namespace):
+            self._loc_exec()
+            self._run_proc()
+        else:
+            script(['echo', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                    f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -151,7 +154,6 @@ class Command(metaclass=abc.ABCMeta):
         """Return if there's packages for main process."""
         self._merge_packages(namespace)
         self._parse_args(namespace)
-
         return (self._packages or self._all)
 
     def _merge_packages(self, namespace):
@@ -197,8 +199,8 @@ class Command(metaclass=abc.ABCMeta):
         self.__temp_pkgs -= self._ignore
         job = self.job[1] if len(self.__temp_pkgs) else self.job[0]
         bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
-        script(['echo', '-e', f'\nmacdaily-{self.cmd}: {green}{self.mode}{reset}: '
-                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}'], self._log.name)
+        script(['echo', f'\nmacdaily-{self.cmd}: {green}{self.mode}{reset}: '
+                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}'], self._file)
         if self._yes or self._quiet:
             return
         while True:
@@ -206,8 +208,8 @@ class Command(metaclass=abc.ABCMeta):
             if re.match(r'[yY]', ans):
                 break
             elif re.match(r'[nN]', ans):
-                script(['echo', '-e', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'{self.desc[0]} {job} postponed due to user cancellation'], self._log.name)
+                script(['echo', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'{self.desc[0]} {job} postponed due to user cancellation'], self._file)
                 self.__temp_pkgs = set()
                 break
             else:

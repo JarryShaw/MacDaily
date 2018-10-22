@@ -78,8 +78,8 @@ class MasUpdate(UpdateCommand):
         argc = ' '.join(args)
         for (code, package) in self.__temp_pkgs:
             argv = f'{argc} {code}'
-            script(['echo', '-e', f'\n+ {bold}{argc} {package} [{code}]{reset}'], self._log.name)
-            if script(f"yes {self._password} | sudo --stdin --prompt='' {argv}",
+            script(['echo', f'\n+ {bold}{argc} {package} [{code}]{reset}'], self._log.name)
+            if script(f"SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt='' {argv}",
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:

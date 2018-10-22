@@ -57,8 +57,8 @@ class GemUpdate(GemCommand, UpdateCommand):
         if self._verbose:
             args.append('--verbose')
         argv = ' '.join(args)
-        script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
-        script(f'yes {self._password} | sudo --stdin --prompt="" {argv}', self._log.name)
+        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}', self._log.name)
 
         args = [path, 'outdated']
         if self._quiet:
@@ -92,10 +92,10 @@ class GemUpdate(GemCommand, UpdateCommand):
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if self._yes:
                 argv = f'yes y | {argv}'
-            if script(f'yes {self._password} | sudo --stdin --prompt="" {SHELL} -c {argv!r}',
+            if script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {SHELL} -c {argv!r}',
                       self._log.name, shell=True, timeout=self._timeout):
                 self._fail.append(package)
             else:

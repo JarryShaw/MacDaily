@@ -5,7 +5,7 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import blush, flash, purple, red, reset, under
+from macdaily.util.colour import flash, purple_bg, red, red_bg, reset, under
 
 
 class ApmCommand(Command):
@@ -26,13 +26,15 @@ class ApmCommand(Command):
         self.__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
         flag = (self.__exec_path == (None, None))
         if flag:
-            print(f'macdaily-update: {blush}{flash}apm{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
             print(f'macdaily-update: {red}apm{reset}: you may download Atom from '
-                  f'{purple}{under}https://atom.io{reset}\n')
+                  f'{purple_bg}{under}https://atom.io{reset}')
         return flag
 
     def _pkg_args(self, namespace):
         flag = super()._pkg_args(namespace)
+
+        # if ``beta`` not set, ``apm`` is the only executable
         if not self._beta and self.__exec_path[0] is None:
             return True
         return flag

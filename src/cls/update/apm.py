@@ -90,7 +90,7 @@ class ApmUpdate(ApmCommand, UpdateCommand):
         argc = ' '.join(args)
         for package in self.__temp_pkgs:
             argv = f'{argc} {package}'
-            script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
             if self._yes:
                 argv = f"yes yes | {argv}"
             if script(argv, self._log.name, shell=True, timeout=self._timeout):

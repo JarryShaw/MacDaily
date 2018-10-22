@@ -18,9 +18,5 @@ class UnsupportedOS(Error, RuntimeError):
     pass
 
 
-class PasswordError(Error, PermissionError):
-    pass
-
-
 class ConfigNotFoundError(Error, FileNotFoundError):
     pass

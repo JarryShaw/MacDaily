@@ -8,8 +8,9 @@ import sys
 import traceback
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import (blush, bold, flash, purple, red, reset,
+from macdaily.util.colour import (bold, flash, purple_bg, red, red_bg, reset,
                                   under, yellow)
+from macdaily.util.misc import write
 from macdaily.util.tool import script
 
 try:
@@ -41,10 +42,11 @@ class BrewCommand(Command):
         self.__exec_path = shutil.which('brew')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'macdaily-update: {blush}{flash}brew{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}brew{reset}: you may find Homebrew on {purple}{under}https://brew.sh{reset}, '
-                  f'or install Homebrew through following command -- `{bold}/usr/bin/ruby -e '
-                  f'"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}`\n')
+            print(f'macdaily-update: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}brew{reset}: you may find Homebrew on '
+                  f'{purple_bg}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
+                  f'`{bold}/usr/bin/ruby -e "$(curl -fsSL '
+                  f"""https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}'""")
         return flag
 
     @abc.abstractmethod
@@ -69,8 +71,8 @@ class BrewCommand(Command):
             args.append('--quiet')
         if self._verbose:
             args.append('--verbose')
-        script(['echo', '-e', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
-        script(args, self._log.name)
+        script(['echo', f'|📝| {bold}{" ".join(args)}{reset}'], self._file)
+        script(args, self._file)
 
     def _proc_cleanup(self):
         if self._no_cleanup:
@@ -82,7 +84,7 @@ class BrewCommand(Command):
         if self._quiet:
             args.append('--quiet')
         argv = ' '.join(args)
-        script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
         flag = os.path.isdir(self._disk_dir)
         for path in self._exec:
@@ -94,21 +96,22 @@ class BrewCommand(Command):
                 if self._quiet:
                     args.append('--quiet')
                 argv = ' '.join(args)
-                script(['echo', '-e', f'++ {bold}{argv}{reset}'], self._log.name)
+                script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
                 args = ['rm', '-rf']
                 if self._verbose:
                     args.append('-v')
                 args.append(logs)
                 argc = ' '.join(args)
-                script(f'yes {self._password} | sudo --stdin --prompt="" {argc}', self._log.name, shell=True)
+                script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argc}',
+                       self._file, shell=True)
 
             if not flag:
                 continue
             try:
                 proc = subprocess.check_output([path, '--cache'], stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
-                self._log.write(traceback.format_exc())
+                write(self._file, traceback.format_exc())
                 continue
 
             cache = proc.decode().strip()
@@ -119,7 +122,7 @@ class BrewCommand(Command):
                 if self._quiet:
                     args.append('--quiet')
                 argv = ' '.join(args)
-                script(['echo', '-e', f'++ {bold}{argv}{reset}'], self._log.name)
+                script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
                 def _move(root, stem):
                     arch = os.path.join(self._disk_dir, stem)
@@ -138,8 +141,8 @@ class BrewCommand(Command):
                 cask_list = [os.path.realpath(name) for name in glob.glob(os.path.join(cache, 'Cask/*'))]
                 file_list = _move(cache, 'Homebrew')
                 if self._verbose:
-                    script(['echo', '-e', '\n'.join(sorted(file_list))], self._log.name)
+                    script(['echo', '\n'.join(sorted(file_list))], self._file)
 
         if not flag:
-            script(['echo', '-e', f'macdaily-update: {yellow}brew{reset}: '
-                    f'archive directory {bold}{self._disk_dir}{reset} not found'], self._log.name)
+            script(['echo', f'macdaily-update: {yellow}brew{reset}: '
+                    f'archive directory {bold}{self._disk_dir}{reset} not found'], self._file)

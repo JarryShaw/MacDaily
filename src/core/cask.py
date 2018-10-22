@@ -72,7 +72,7 @@ class CaskCommand(Command):
             args.append('--quiet')
         if self._verbose:
             args.append('--verbose')
-        script(['echo', '-e', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
+        script(['echo', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
         script(args, self._log.name)
 
     def _proc_cleanup(self):
@@ -80,7 +80,7 @@ class CaskCommand(Command):
             return
 
         if not os.path.isdir(self._disk_dir):
-            return script(['echo', '-e', f'macdaily-update: {yellow}cask{reset}: '
+            return script(['echo', f'macdaily-update: {yellow}cask{reset}: '
                            f'archive directory {bold}{self._disk_dir}{reset} not found'], self._log.name)
 
         args = ['brew', 'cask', 'cleanup']
@@ -89,7 +89,7 @@ class CaskCommand(Command):
         if self._quiet:
             args.append('--quiet')
         argv = ' '.join(args)
-        script(['echo', '-e', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
 
         path_cask = os.path.join(self._disk_dir, 'Homebrew', 'Cask')
         path_down = os.path.join(self._disk_dir, 'Homebrew', 'download')
@@ -112,7 +112,7 @@ class CaskCommand(Command):
                 if self._quiet:
                     args.append('--quiet')
                 argv = ' '.join(args)
-                script(['echo', '-e', f'++ {bold}{argv}{reset}'], self._log.name)
+                script(['echo', f'++ {bold}{argv}{reset}'], self._log.name)
 
                 file_list = list()
                 link_list = glob.glob(os.path.join(cache, 'Cask/*'))
@@ -124,4 +124,4 @@ class CaskCommand(Command):
                     file_list.append(cask)
                     shutil.move(cask, path_down)
                 if self._verbose:
-                    script(['echo', '-e', '\n'.join(sorted(file_list))], self._log.name)
+                    script(['echo', '\n'.join(sorted(file_list))], self._log.name)

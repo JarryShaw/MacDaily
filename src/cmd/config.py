@@ -3,9 +3,11 @@
 import collections
 import configparser
 import contextlib
+import datetime
 import os
 import plistlib
 import re
+import shlex
 import shutil
 import sys
 
@@ -119,7 +121,10 @@ def get_config():
 def dump_config(rcpath):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
-    CONFIG[49] = shutil.which('macdaily-askpass') or launch_askpass()
+
+    askpass = shutil.which('macdaily-askpass') or launch_askpass()
+    CONFIG[49] = f'askpass = {askpass.ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
+
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
     return get_config()
@@ -135,6 +140,44 @@ def load_config(rcpath):
 def parse_config():
     rcpath = os.path.expanduser('~/.dailyrc')
     if os.path.isfile(rcpath):
-        return load_config(rcpath)
+        config = load_config(rcpath)
     else:
-        return dump_config(rcpath)
+        config = dump_config(rcpath)
+    cfg_dict = collections.defaultdict(dict)
+
+    # Path section
+    for name, path in config['Path'].items():
+        cfg_dict['Path'][name] = os.path.realpath(os.path.expanduser(path))
+
+    # Mode section
+    for mode in config['Mode'].keys():
+        cfg_dict['Mode'][mode] = config['Mode'].getboolean(mode, False)
+
+    # Daemon section
+    daemon_list = list()
+    for mode in {'archive', 'bundle', 'cleanup', 'config', 'dependency', 'launch',
+                 'logging', 'postinstall', 'reinstall', 'uninstall', 'update'}:
+        if config['Daemon'].getboolean(mode, False):
+            daemon_list.append(mode)
+
+    daemon_dict = collections.defaultdict(list)
+    for daemon in config['Daemon']['schedule'].strip().splitlines():
+        union = re.split(r'\s*-\s*', daemon)
+        with contextlib.suppress(ValueError):
+            time = datetime.datetime.strptime(union[0], r'%H:%M')
+            if len(union) == 2:
+                daemon_dict[union[1]].append(dict(Hour=time.hour, Minute=time.minute))
+            else:
+                for mode in daemon_list:
+                    daemon_dict[mode].append(dict(Hour=time.hour, Minute=time.minute))
+    cfg_dict['Daemon'].update(daemon_dict)
+
+    # Command section
+    for mode, argv in config['Command'].items():
+        cfg_dict['Command'][mode] = shlex.split(argv)
+
+    # Miscellanea section
+    cfg_dict['Miscellanea']['askpass'] = os.path.realpath(config['Miscellanea']['askpass'])
+    cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout')
+
+    return dict(cfg_dict)
