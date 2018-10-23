@@ -166,7 +166,7 @@ class PipCommand(Command):
         if self._quiet:
             args.append('--quiet')
         argv = ' '.join(args)
-        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
         args = ['rm', '-rf']
         if self._verbose:
@@ -175,6 +175,6 @@ class PipCommand(Command):
         for path in itertools.chain(glob.glob('/var/root/Library/Caches/pip/*/'),
                                     glob.glob(os.path.expanduser('~/Library/Caches/pip/*/'))):
             argv = f'{argc} {path}'
-            script(['echo', f'++ {argv}'], self._log.name)
+            script(['echo', f'|📝| {argv}'], self._file)
             script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}',
-                   self._log.name, shell=True)
+                   self._file, shell=True)

@@ -7,7 +7,7 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import blush, flash, purple, red, reset, under
+from macdaily.util.colour import flash, purple_bg, red, red_bg, reset, under
 
 try:
     import subprocess32 as subprocess
@@ -33,9 +33,9 @@ class GemCommand(Command):
         self.__exec_path = shutil.which('gem')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'update: {blush}{flash}gem{reset}: command not found\n', file=sys.stderr)
-            print(f'update: {red}gem{reset}: you may download RubyGems from '
-                  f'{purple}{under}https://rubygems.org{reset}\n')
+            print(f'macdaily-update: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}gem{reset}: you may download RubyGems from '
+                  f'{purple_bg}{under}https://rubygems.org{reset}')
         return flag
 
     @abc.abstractmethod

@@ -5,7 +5,8 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import blush, bold, flash, purple, red, reset, under
+from macdaily.util.colour import (bold, flash, purple_bg, red, red_bg, reset,
+                                  under)
 from macdaily.util.tool import script
 
 
@@ -27,9 +28,9 @@ class NpmCommand(Command):
         self.__exec_path = shutil.which('npm')
         flag = (self.__exec_path is None)
         if flag:
-            print(f'macdaily-update: {blush}{flash}npm{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
             print(f'macdaily-update: {red}npm{reset}: you may download Node.js from '
-                  f'{purple}{under}https://nodejs.org/{reset}\n')
+                  f'{purple_bg}{under}https://nodejs.org/{reset}')
         return flag
 
     @abc.abstractmethod
@@ -53,7 +54,7 @@ class NpmCommand(Command):
         if self._quiet:
             args.append('--quiet')
         argv = ' '.join(args)
-        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
         def _cleanup(args):
             if self._verbose:
@@ -61,9 +62,9 @@ class NpmCommand(Command):
             if self._quiet:
                 args.append('--quiet')
             argv = ' '.join(args)
-            script(['echo', f'++ {argv}'], self._log.name)
+            script(['echo', f'|📝| {argv}'], self._file)
             script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}',
-                   self._log.name, shell=True)
+                   self._file, shell=True)
 
         for path in self._exec:
             _cleanup([path, 'dedupe', '--global'])

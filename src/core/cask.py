@@ -8,8 +8,9 @@ import sys
 import traceback
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import (blush, bold, flash, purple, red, reset,
+from macdaily.util.colour import (bold, flash, purple_bg, red, red_bg, reset,
                                   under, yellow)
+from macdaily.util.misc import write
 from macdaily.util.tool import script
 
 try:
@@ -41,11 +42,11 @@ class CaskCommand(Command):
         try:
             subprocess.check_call(['brew', 'command', 'cask'])
         except subprocess.CalledProcessError:
-            print(f'update: {blush}{flash}cask{reset}: command not found', file=sys.stderr)
-            print(f'update: {red}cask{reset}: you may find Caskroom on '
-                  f'{purple}{under}https://caskroom.github.io{reset}, '
+            print(f'macdaily-update: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
+            print(f'macdaily-update: {red}cask{reset}: you may find Caskroom on '
+                  f'{purple_bg}{under}https://caskroom.github.io{reset}, '
                   f'or install Caskroom through following command -- '
-                  f"`{bold}brew tap homebrew/cask{reset}'\n")
+                  f"`{bold}brew tap homebrew/cask{reset}'")
             return True
         self.__exec_path = shutil.which('brew')
         return False
@@ -72,8 +73,8 @@ class CaskCommand(Command):
             args.append('--quiet')
         if self._verbose:
             args.append('--verbose')
-        script(['echo', f'\n+ {bold}{" ".join(args)}{reset}'], self._log.name)
-        script(args, self._log.name)
+        script(['echo', f'|📝| {bold}{" ".join(args)}{reset}'], self._file)
+        script(args, self._file)
 
     def _proc_cleanup(self):
         if self._no_cleanup:
@@ -81,7 +82,7 @@ class CaskCommand(Command):
 
         if not os.path.isdir(self._disk_dir):
             return script(['echo', f'macdaily-update: {yellow}cask{reset}: '
-                           f'archive directory {bold}{self._disk_dir}{reset} not found'], self._log.name)
+                           f'archive directory {bold}{self._disk_dir}{reset} not found'], self._file)
 
         args = ['brew', 'cask', 'cleanup']
         if self._verbose:
@@ -89,7 +90,7 @@ class CaskCommand(Command):
         if self._quiet:
             args.append('--quiet')
         argv = ' '.join(args)
-        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
         path_cask = os.path.join(self._disk_dir, 'Homebrew', 'Cask')
         path_down = os.path.join(self._disk_dir, 'Homebrew', 'download')
@@ -101,7 +102,7 @@ class CaskCommand(Command):
             try:
                 proc = subprocess.check_output([path, '--cache'], stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
-                self._log.write(traceback.format_exc())
+                write(self._file, traceback.format_exc())
                 continue
 
             cache = proc.decode().strip()
@@ -112,7 +113,7 @@ class CaskCommand(Command):
                 if self._quiet:
                     args.append('--quiet')
                 argv = ' '.join(args)
-                script(['echo', f'++ {bold}{argv}{reset}'], self._log.name)
+                script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
 
                 file_list = list()
                 link_list = glob.glob(os.path.join(cache, 'Cask/*'))
@@ -124,4 +125,4 @@ class CaskCommand(Command):
                     file_list.append(cask)
                     shutil.move(cask, path_down)
                 if self._verbose:
-                    script(['echo', '\n'.join(sorted(file_list))], self._log.name)
+                    script(['echo', '\n'.join(sorted(file_list))], self._file)
