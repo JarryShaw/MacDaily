@@ -44,12 +44,6 @@ schedule    =                                               ; scheduled timing (
 update  = --all --yes --pre --quiet --show-log --no-cask
 logging = --all --quiet --show-log
 
-[Account]
-# In this section, account information are stored.
-# You must not modify this part under any circumstances.
-username = ...
-password = ********
-
 [Miscellanea]
 # In this section, miscellaneous specifications are assigned.
 # Please, under any circumstances, make sure all fields are valid.

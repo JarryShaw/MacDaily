@@ -2,6 +2,8 @@
 
 import datetime
 import os
+import sys
+import traceback
 import uuid
 
 from macdaily.cli.update import parse_args
@@ -14,13 +16,18 @@ from macdaily.cls.update.npm import NpmUpdate
 from macdaily.cls.update.pip import PipUpdate
 from macdaily.cls.update.system import SystemUpdate
 from macdaily.cmd.config import parse_config
-from macdaily.util.const import __version__, bold, grey, reset, yellow
+from macdaily.util.const import __version__, bold, green, red, reset, yellow
 from macdaily.util.misc import make_context, record, script
 
 try:
     import pathlib2 as pathlib
 except ImportError:
     import pathlib
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 
 def update(argv):
@@ -47,12 +54,10 @@ def update(argv):
     # redirect stdout if in quiet mode
     with open(os.devnull, 'w') as devnull:
         with make_context(devnull, args.quiet):
-            script(['echo', f'{bold}{grey}|🚨|{reset} Running MacDaily '
-                    f'version {__version__}{reset}'], filename)
-
             # record program status
-            with make_context(devnull, (not args.verbose)):
-                record(filename, args, today, config)
+            script(['echo', f'{bold}{green}|🚨|{reset} {bold}Running MacDaily '
+                    f'version {__version__}{reset}'], filename)
+            record(filename, args, today, config, (not args.verbose))
 
             cmd_list = list()
             for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
@@ -78,3 +83,19 @@ def update(argv):
                 # record command
                 cmd_list.append(command)
                 brew_renew = command.time
+
+            for command in cmd_list:
+                pass
+
+            if args.show_log:
+                try:
+                    subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
+                except subprocess.CalledProcessError:
+                    with open(filename, 'a') as file:
+                        file.write(traceback.format_exc())
+                    print(f'macdaily: {red}update{reset}: cannot show log file {filename!r}', file=sys.stderr)
+
+            mode_list = [command.mode for command in cmd_list]
+            modes = ', '.join(mode_list) if mode_list else 'none'
+            script(['echo', f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully '
+                    f'performed update process for {modes} package managers{reset}'], filename)

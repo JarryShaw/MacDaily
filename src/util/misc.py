@@ -10,50 +10,10 @@ import re
 import sys
 
 import ptyng
-from macdaily.util.const import (SHELL, bold, grey_bg, program, purple_bg,
+
+from macdaily.util.const import (SHELL, blue, bold, grey, program, purple,
                                  python, red, reset)
 from macdaily.util.error import UnsupportedOS
-
-
-def make_context(devnull, redirect=False):
-    if redirect:
-        return contextlib.redirect_stdout(devnull)
-    return contextlib.nullcontext()
-
-
-def write(text, file, linesep=False):
-    with open(file, 'a') as context:
-        fp = context.write(text)
-        if linesep:
-            fp = context.write(os.linesep)
-    return fp
-
-
-def writelines(lines, file, linesep=False):
-    with open(file, 'a') as context:
-        for line in lines:
-            fp = context.write(line)
-            if linesep:
-                fp = context.write(os.linesep)
-    return fp
-
-
-def print_text(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{text}{reset}'], file)
-
-
-def print_info(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{purple_bg}||{reset} {bold}{text}{reset}'], file)
-
-
-def print_command(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{grey_bg}||{reset} {bold}{text}{reset}'], file)
 
 
 def beholder(func):
@@ -64,39 +24,65 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            print(
+                f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
             raise
     return wrapper
 
 
-def sudo(args, askpass, sethome=False):
-    if getpass.getuser() == 'root':
-        return args
-    if sethome:
-        return f'SUDO_ASKPASS={askpass} sudo --askpass --set-home {args}'
-    return f'SUDO_ASKPASS={askpass} sudo --askpass {args}'
+def make_context(devnull, redirect=False):
+    if redirect:
+        return contextlib.redirect_stdout(devnull)
+    return contextlib.nullcontext()
 
 
-def record(file, args, today, config):
+def print_info(text, file, redirect=False):
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            script(['echo', f'{bold}{blue}|💁🏻‍♂️|{reset} {bold}{text}{reset}'], file)
+
+
+def print_misc(text, file, redirect=False):
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            script(['echo', f'{bold}{grey}|📝|{reset} {bold}{text}{reset}'], file)
+
+
+def print_scpt(text, file, redirect=False):
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            script(['echo', f'{bold}{purple}|💼|{reset} {bold}{text}{reset}'], file)
+
+
+def print_text(text, file, redirect=False):
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            script(['echo', f'{bold}{text}{reset}'], file)
+
+
+def record(file, args, today, config, redirect):
     # record program arguments
-    script(['echo', f'|ℹ️| {bold}{python} {program}{reset}'], file)
-    writelines([f'TIME: {today!s}', f'FILE: {file}'], file, linesep=True)
+    print_misc(f'{python} {program}', file, redirect)
+    with open(file, 'a') as log:
+        log.writelines([f'TIME: {today!s}\n', f'FILE: {file}\n'])
 
     # record parsed arguments
-    script(['echo', f'|ℹ️| {bold}Parsing command line arguments{reset}'], file)
-    for key, value in vars(args).items():
-        if isinstance(value, dict):
-            for k, v, in value.items():
-                write(f'ARG: {key} -> {k} = {v}', file, linesep=True)
-        else:
-            write(f'ARG: {key} = {value}', file, linesep=True)
+    print_misc(f'Parsing command line arguments', file, redirect)
+    with open(file, 'a') as log:
+        for key, value in vars(args).items():
+            if isinstance(value, dict):
+                for k, v, in value.items():
+                    log.write(f'ARG: {key} -> {k} = {v}\n')
+            else:
+                log.write(f'ARG: {key} = {value}\n')
 
     # record parsed configuration
-    script(['echo', f'|ℹ️| {bold}Parsing configuration file '
-            f'{os.path.expanduser("~/.dailyrc")!r}{reset}'], file)
-    for key, value in config.items():
-        for k, v, in value.items():
-            write(f'CFG: {key} -> {k} = {v}', file, linesep=True)
+    print_misc(f'Parsing configuration file '
+               f'{os.path.expanduser("~/.dailyrc")!r}', file, redirect)
+    with open(file, 'a') as log:
+        for key, value in config.items():
+            for k, v, in value.items():
+                log.write(f'CFG: {key} -> {k} = {v}\n')
 
 
 def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executable=None):
@@ -116,13 +102,38 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
 
     def master_read(fd):
         data = os.read(fd, 1024)
-        text = re.sub(rb'(\x1b\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
-        script.write(text)
+        text = re.sub(rb'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
+        typescript.write(text)
         return data
 
-    write(f'Script started on {date()}\n', file)
-    write(f'command: {" ".join(argv)}\n', file)
-    with open(file, 'ab') as script:
+    with open(file, 'a') as typescript:
+        typescript.write(f'Script started on {date()}\n')
+        typescript.write(f'command: {" ".join(argv)!r}\n')
+    with open(file, 'ab') as typescript:
         returncode = ptyng.spawn(argv, master_read, timeout=timeout)
-    write(f'Script done on  {date()}\n', file)
+    with open(file, 'a') as typescript:
+        typescript.write(f'Script done on  {date()}\n')
     return returncode
+
+
+def sudo(args, askpass, sethome=False):
+    if getpass.getuser() == 'root':
+        return args
+    if sethome:
+        return f'SUDO_ASKPASS={askpass} sudo --askpass --set-home {args}'
+    return f'SUDO_ASKPASS={askpass} sudo --askpass {args}'
+
+
+def write(text, file, linesep=False):
+    with open(file, 'a') as log:
+        fp = log.write(text)
+        if linesep:
+            fp = log.write(os.linesep)
+    return fp
+
+
+def writelines(lines, file, linesep=False):
+    with open(file, 'a') as log:
+        if linesep:
+            return log.writelines(f'{line}{os.linesep}' for line in lines)
+        return log.writelines(lines)
