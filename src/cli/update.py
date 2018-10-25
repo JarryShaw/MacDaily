@@ -426,6 +426,8 @@ def get_system_parser():
                                    help=f"update all system software installed through `{bold}softwareupdate{reset}'")
     system_genl_group.add_argument('-q', '--quiet', action='store_true',
                                    help='run in quiet mode, with no output information')
+    system_genl_group.add_argument('-v', '--verbose', action='store_true',
+                                   help='run in verbose mode, with detailed output information')
     system_genl_group.add_argument('-y', '--yes', action='store_true',
                                    help='yes for all selections')
 

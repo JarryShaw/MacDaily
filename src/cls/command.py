@@ -6,7 +6,7 @@ import re
 import sys
 
 from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import script
+from macdaily.util.misc import print_info, print_text
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -126,6 +126,9 @@ class Command(metaclass=abc.ABCMeta):
         - ``brew_renew`` -- ``float``, Homebrew renew timestamp
 
         """
+        text = f'Running update command for {self.mode}'
+        print_info(text, filename, redirect=namespace.pop('quiet', False))
+
         # exit if no executable found
         if self._check_exec():
             return
@@ -142,8 +145,8 @@ class Command(metaclass=abc.ABCMeta):
             self._loc_exec()
             self._run_proc()
         else:
-            script(['echo', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                    f'no {bold}{self.desc[1]}{reset} to {self.act[0]}'], filename)
+            text = f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
+            print_text(text, filename, redirect=self._verbose)
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -159,7 +162,7 @@ class Command(metaclass=abc.ABCMeta):
     def _merge_packages(self, namespace):
         ilst_pkg = list()
         temp_pkg = list()
-        args_pkg = namespace.pop(f'{self.mode}_pkgs', list())
+        args_pkg = namespace.pop('packages', list())
         for pkgs in args_pkg:
             if isinstance(pkgs, str):
                 pkgs = filter(None, pkgs.split(','))
@@ -175,6 +178,7 @@ class Command(metaclass=abc.ABCMeta):
     def _parse_args(self, namespace):
         self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
+        self._verbose = namespace.pop('verbose', False)
         self._yes = namespace.pop('yes', False)
 
     @abc.abstractmethod
@@ -199,8 +203,9 @@ class Command(metaclass=abc.ABCMeta):
         self.__temp_pkgs -= self._ignore
         job = self.job[1] if len(self.__temp_pkgs) else self.job[0]
         bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
-        script(['echo', f'\nmacdaily-{self.cmd}: {green}{self.mode}{reset}: '
-                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}'], self._file)
+        text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
+                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
+        print_text(text, self._file, redirect=self._quiet)
         if self._yes or self._quiet:
             return
         while True:
@@ -208,12 +213,13 @@ class Command(metaclass=abc.ABCMeta):
             if re.match(r'[yY]', ans):
                 break
             elif re.match(r'[nN]', ans):
-                script(['echo', f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'{self.desc[0]} {job} postponed due to user cancellation'], self._file)
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'{self.desc[0]} {job} postponed due to user cancellation')
+                print_text(text, self._file, redirect=self._quiet)
                 self.__temp_pkgs = set()
                 break
             else:
-                print('Invalid input.')
+                print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):
         for package in self.__lost_pkgs:
@@ -221,8 +227,9 @@ class Command(metaclass=abc.ABCMeta):
             matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), self.__real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
-            print(f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                  f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
+            if not self._quiet:
+                print(f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                      f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
         del self.__lost_pkgs
         del self.__real_pkgs
 

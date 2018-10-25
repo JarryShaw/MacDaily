@@ -2,6 +2,7 @@
 
 import os
 import platform
+import re
 import sys
 
 import setuptools
@@ -15,7 +16,13 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version
-__version__ = '2018.09.28'
+with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const.py'), 'r') as file:
+    for line in file:
+        match = re.match(r"__version__ = '(.*)'", line)
+        if match is None:
+            continue
+        __version__ = match.groups()[0]
+        break
 
 # README
 with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:

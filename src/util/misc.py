@@ -24,10 +24,15 @@ def beholder(func):
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print(
-                f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
             raise
     return wrapper
+
+
+def date():
+    now = datetime.datetime.now()
+    txt = datetime.datetime.strftime(now, '%+')
+    return txt
 
 
 def make_context(devnull, redirect=False):
@@ -36,31 +41,40 @@ def make_context(devnull, redirect=False):
     return contextlib.nullcontext()
 
 
+def make_description(command):
+    def desc(singular):
+        if singular:
+            return command.desc[0]
+        else:
+            return command.desc[1]
+    return desc
+
+
 def print_info(text, file, redirect=False):
     with open(os.devnull, 'w') as devnull:
         with make_context(devnull, redirect):
-            script(['echo', f'{bold}{blue}|💁🏻‍♂️|{reset} {bold}{text}{reset}'], file)
+            script(['echo', f'{bold}{blue}|💼|{reset} {bold}{text}{reset}'], file)
 
 
 def print_misc(text, file, redirect=False):
     with open(os.devnull, 'w') as devnull:
         with make_context(devnull, redirect):
-            script(['echo', f'{bold}{grey}|📝|{reset} {bold}{text}{reset}'], file)
+            script(['echo', f'{bold}{grey}|📌|{reset} {bold}{text}{reset}'], file)
 
 
 def print_scpt(text, file, redirect=False):
     with open(os.devnull, 'w') as devnull:
         with make_context(devnull, redirect):
-            script(['echo', f'{bold}{purple}|💼|{reset} {bold}{text}{reset}'], file)
+            script(['echo', f'{bold}{purple}|📜|{reset} {bold}{text}{reset}'], file)
 
 
 def print_text(text, file, redirect=False):
     with open(os.devnull, 'w') as devnull:
         with make_context(devnull, redirect):
-            script(['echo', f'{bold}{text}{reset}'], file)
+            script(['echo', text], file)
 
 
-def record(file, args, today, config, redirect):
+def record(file, args, today, config, redirect=False):
     # record program arguments
     print_misc(f'{python} {program}', file, redirect)
     with open(file, 'a') as log:
@@ -95,11 +109,6 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
     if executable:
         argv[0] = executable
 
-    def date():
-        now = datetime.datetime.now()
-        txt = datetime.datetime.strftime(now, '%+')
-        return txt
-
     def master_read(fd):
         data = os.read(fd, 1024)
         text = re.sub(rb'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
@@ -112,16 +121,23 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
     with open(file, 'ab') as typescript:
         returncode = ptyng.spawn(argv, master_read, timeout=timeout)
     with open(file, 'a') as typescript:
-        typescript.write(f'Script done on  {date()}\n')
+        typescript.write(f'Script done on {date()}\n')
     return returncode
 
 
-def sudo(args, askpass, sethome=False):
-    if getpass.getuser() == 'root':
-        return args
-    if sethome:
-        return f'SUDO_ASKPASS={askpass} sudo --askpass --set-home {args}'
-    return f'SUDO_ASKPASS={askpass} sudo --askpass {args}'
+def sudo(args, file='typescript', *, askpass=None, sethome=False, redirect=False, timeout=None, executable=None):
+    def make_command():
+        if not isinstance(args, str):
+            args = ' '.join(args)
+        if getpass.getuser() == 'root':
+            return args
+        sudo_askpass = '' if askpass is None else f'SUDO_ASKPASS={askpass!r}'
+        set_home = '--set-home' if sethome else ''
+        return f'{sudo_askpass} sudo --askpass {set_home} {args}'
+
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            return script(make_command(), file, timeout=timeout, shell=True, executable=executable)
 
 
 def write(text, file, linesep=False):
