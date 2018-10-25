@@ -5,7 +5,7 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import flash, purple_bg, red, red_bg, reset, under
+from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
 
 
 class ApmCommand(Command):

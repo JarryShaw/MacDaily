@@ -8,8 +8,8 @@ import os
 import re
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import bold, reset, yellow
-from macdaily.util.tool import script
+from macdaily.util.const import bold, reset, yellow
+from macdaily.util.misc import script
 
 try:
     import subprocess32 as subprocess

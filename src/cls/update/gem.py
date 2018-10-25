@@ -4,9 +4,8 @@ import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.gem import GemCommand
-from macdaily.util.colour import bold, reset
-from macdaily.util.const import SHELL
-from macdaily.util.tool import script
+from macdaily.util.const import SHELL, bold, reset
+from macdaily.util.misc import script
 
 try:
     import subprocess32 as subprocess

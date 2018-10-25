@@ -8,8 +8,8 @@ import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.pip import PipCommand
-from macdaily.util.colour import bold, green, red, reset, yellow
-from macdaily.util.tool import script
+from macdaily.util.const import bold, green, red, reset, yellow
+from macdaily.util.misc import script
 
 try:
     import subprocess32 as subprocess

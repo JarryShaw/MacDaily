@@ -14,9 +14,8 @@ from macdaily.cls.update.npm import NpmUpdate
 from macdaily.cls.update.pip import PipUpdate
 from macdaily.cls.update.system import SystemUpdate
 from macdaily.cmd.config import parse_config
-from macdaily.util.const import __version__
-from macdaily.util.misc import make_context
-from macdaily.util.tool import record, script
+from macdaily.util.const import __version__, bold, grey, reset, yellow
+from macdaily.util.misc import make_context, record, script
 
 try:
     import pathlib2 as pathlib
@@ -46,35 +45,36 @@ def update(argv):
     brew_renew = None
 
     # redirect stdout if in quiet mode
-    devnull = open(os.devnull, 'w')
-    with make_context(devnull, args.quiet):
-        script(['echo', f'|🚨| Running MacDaily version {__version__}'], filename)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, args.quiet):
+            script(['echo', f'{bold}{grey}|🚨|{reset} Running MacDaily '
+                    f'version {__version__}{reset}'], filename)
 
-        # record program status
-        with make_context(devnull, (not args.verbose)):
-            record(filename, args, today, config)
+            # record program status
+            with make_context(devnull, (not args.verbose)):
+                record(filename, args, today, config)
 
-        cmd_list = list()
-        for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
-            # skip disabled commands
-            if not config['Mode'].get(mode, False):
-                continue
-            if getattr(args, f'no_{mode}', False):
-                continue
+            cmd_list = list()
+            for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
+                # skip disabled commands
+                if (not config['Mode'].get(mode, False)) or getattr(args, f'no_{mode}', False):
+                    with make_context(devnull, (not args.verbose)):
+                        script(['echo', f'macdaily-update: {yellow}{mode}{reset}: command disabled'], filename)
+                    continue
 
-            # update package specifications
-            packages = getattr(args, f'{mode}_pkgs', list())
-            namespace = getattr(args, mode, dict())
-            if not (packages or namespace or args.all):
-                continue
-            namespace['packages'].extend(packages)
+                # update package specifications
+                packages = getattr(args, f'{mode}_pkgs', list())
+                namespace = getattr(args, mode, dict())
+                if not (packages or namespace or args.all):
+                    with make_context(devnull, (not args.verbose)):
+                        script(['echo', f'macdaily-update: {yellow}{mode}{reset}: nothing to upgrade'], filename)
+                    continue
+                namespace['packages'].extend(packages)
 
-            # run command
-            cmd_cls = globals()[f'{mode.capitalize()}Update']
-            command = cmd_cls(namespace, filename, timeout, askpass, disk_dir, brew_renew)
+                # run command
+                cmd_cls = globals()[f'{mode.capitalize()}Update']
+                command = cmd_cls(namespace, filename, timeout, askpass, disk_dir, brew_renew)
 
-            # record command
-            cmd_list.append(command)
-            brew_renew = command.time
-
-    devnull.close()
+                # record command
+                cmd_list.append(command)
+                brew_renew = command.time

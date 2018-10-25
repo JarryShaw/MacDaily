@@ -5,8 +5,8 @@ import os
 import re
 import sys
 
-from macdaily.util.colour import bold, green, red, reset, yellow
-from macdaily.util.tool import script
+from macdaily.util.const import bold, green, red, reset, yellow
+from macdaily.util.misc import script
 
 
 class Command(metaclass=abc.ABCMeta):

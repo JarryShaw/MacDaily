@@ -3,8 +3,7 @@
 import argparse
 import sys
 
-from macdaily.util.colour import bold, reset
-from macdaily.util.const import __version__
+from macdaily.util.const import __version__, bold, reset
 
 
 def get_update_parser():

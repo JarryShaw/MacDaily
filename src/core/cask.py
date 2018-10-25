@@ -8,10 +8,9 @@ import sys
 import traceback
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import (bold, flash, purple_bg, red, red_bg, reset,
-                                  under, yellow)
-from macdaily.util.misc import write
-from macdaily.util.tool import script
+from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
+                                 under, yellow)
+from macdaily.util.misc import script, write
 
 try:
     import pathlib2 as pathlib

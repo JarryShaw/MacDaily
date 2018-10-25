@@ -4,7 +4,7 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.colour import bold, flash, red, red_bg, reset
+from macdaily.util.const import bold, flash, red, red_bg, reset
 
 
 class MasCommand(Command):

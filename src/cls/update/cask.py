@@ -7,8 +7,8 @@ import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.cask import CaskCommand
-from macdaily.util.colour import bold, length, reset
-from macdaily.util.tool import script
+from macdaily.util.const import bold, length, reset
+from macdaily.util.misc import script
 
 try:
     import subprocess32 as subprocess
