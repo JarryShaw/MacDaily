@@ -25,7 +25,7 @@ with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const.py'), 'r'
         break
 
 # README
-with open(os.path.join(os.path.dirname(__file__), 'README.md'), 'r') as file:
+with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'r') as file:
     long_desc = file.read()
 
 # set-up script for pip distribution
@@ -39,51 +39,45 @@ setuptools.setup(
     keywords='daily utility script',
     description='Package day-care manager on macOS.',
     long_description=long_desc,
-    long_description_content_type='text/markdown',
+    long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'ptyng'],
     extras_require={
         'pipdeptree': ['pipdeptree'],
         ':python_version == "3.4"': ['pathlib2', 'subprocess32'],
     },
     entry_points={
         'console_scripts': [
-            'macdaily = macdaily.__main__:main',
-            'md-update = macdaily.daily_update:main',
-            'md-uninstall = macdaily.daily_uninstall:main',
-            'md-reinstall = macdaily.daily_reinstall:main',
-            'md-postinstall = macdaily.daily_postinstall:main',
-            'md-logging = macdaily.daily_logging:main',
-            'md-dependency = macdaily.daily_dependency:main',
-            'md-bundle = macdaily.daily_bundle:main',
-            'md-config = macdaily.daily_config:main',
-            'md-archive = macdaily.daily_archive:main',
+            # 'macdaily = macdaily.__main__:main',
+            'md-update = macdaily.api.update:update',
         ]
     },
     packages=[
         'macdaily',
-        'macdaily.libbundle',
-        'macdaily.libupdate',
-        'macdaily.libuninstall',
-        'macdaily.libprinstall',
-        'macdaily.libdependency',
-        'macdaily.liblogging',
+        'macdaily.api',
+        'macdaily.cli',
+        'macdaily.cls',
+        'macdaily.cls.bundle',
+        'macdaily.cls.cleanup',
+        'macdaily.cls.dependency',
+        'macdaily.cls.logging',
+        'macdaily.cls.postinstall',
+        'macdaily.cls.reinstall',
+        'macdaily.cls.uninstall',
+        'macdaily.cls.update',
+        'macdaily.cmd',
+        'macdaily.core',
+        'macdaily.util',
     ],
     package_data={
         '': [
             'LICENSE',
-            'README',
+            'README.rst',
         ],
-        'macdaily': ['*.py', '*.sh'],
-        'macdaily.libbundle': ['*.py', '*.sh'],
-        'macdaily.libupdate': ['*.py', '*.sh'],
-        'macdaily.libuninstall': ['*.py', '*.sh'],
-        'macdaily.libprinstall': ['*.py', '*.sh'],
-        'macdaily.libdependency': ['*.py', '*.sh'],
-        'macdaily.liblogging': ['*.py', '*.sh'],
     },
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        # 'Development Status :: 5 - Production/Stable',
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
         'Environment :: MacOS X',
         'Intended Audience :: Developers',
@@ -99,7 +93,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Programming Language :: Unix Shell',
+        # 'Programming Language :: Unix Shell',
         'Topic :: Utilities',
     ]
 )

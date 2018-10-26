@@ -4,18 +4,32 @@
 set -x
 
 # duplicate distribution files
-cp -r src setup.py release/
+rm -rf release/src \
+       release/macdaily
+cp -r src \
+      LICENSE \
+      setup.py \
+      setup.cfg \
+      .gitignore \
+      README.rst \
+      MANIFEST.in \
+      .gitattributes release/
+rm -f release/**/dev_* \
+      release/**/typescript
 cd release/
+mv src macdaily
 
 # perform f2format
-f2format -n src
+f2format -n macdaily
 if [[ "$?" -ne "0" ]] ; then
     exit 1
 fi
 
 # prepare for PyPI distribution
-mkdir eggs sdist wheels 2> /dev/null
 rm -rf build 2> /dev/null
+mkdir eggs \
+      sdist \
+      wheels 2> /dev/null
 mv -f dist/*.egg eggs/ 2> /dev/null
 mv -f dist/*.whl wheels/ 2> /dev/null
 mv -f dist/*.tar.gz sdist/ 2> /dev/null
@@ -27,8 +41,9 @@ twine upload dist/* -r pypitest --skip-existing
 
 # upload to GitHub
 git pull
-if [[ "$?" -ne "0" ]] ; then
-    exit 1
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
 fi
 git add .
 if [[ -z "$1" ]] ; then
@@ -49,8 +64,9 @@ git push
 # upload develop environment
 cd ..
 git pull
-if [[ "$?" -ne "0" ]] ; then
-    exit 1
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
 fi
 git add .
 if [[ -z "$1" ]] ; then

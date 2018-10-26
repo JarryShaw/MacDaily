@@ -1,7 +1,8 @@
-global-include *.py *.sh
+global-exclude typescript
 global-exclude .DS_Store
-prune deprecated
+global-include *.py
 prune build
 prune dist
-prune docs
-prune src
+prune eggs
+prune sdist
+prune wheels
