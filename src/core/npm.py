@@ -7,7 +7,7 @@ import sys
 from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under)
-from macdaily.util.misc import script
+from macdaily.util.misc import print_info, print_scpt, print_text, run, sudo
 
 
 class NpmCommand(Command):
@@ -29,8 +29,9 @@ class NpmCommand(Command):
         flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}npm{reset}: you may download Node.js from '
-                  f'{purple_bg}{under}https://nodejs.org/{reset}')
+            text = (f'macdaily-update: {red}npm{reset}: you may download Node.js from '
+                    f'{purple_bg}{under}https://nodejs.org/{reset}')
+            print_text(text, self._file, redirect=self._qflag)
         return flag
 
     @abc.abstractmethod
@@ -48,23 +49,24 @@ class NpmCommand(Command):
         if self._no_cleanup:
             return
 
-        args = ['npm', 'cleanup']
-        if self._verbose:
-            args.append('--verbose')
-        if self._quiet:
-            args.append('--quiet')
-        argv = ' '.join(args)
-        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
+        text = 'Pruning caches and archives'
+        print_info(text, self._file, redirect=self._qflag)
 
-        def _cleanup(args):
+        argv = ['npm', 'cleanup']
+        if self._verbose:
+            argv.append('--verbose')
+        if self._quiet:
+            argv.append('--quiet')
+        print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+
+        def _cleanup(argv):
             if self._verbose:
-                args.append('--verbose')
+                argv.append('--verbose')
             if self._quiet:
-                args.append('--quiet')
-            argv = ' '.join(args)
-            script(['echo', f'|📝| {argv}'], self._file)
-            script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}',
-                   self._file, shell=True)
+                argv.append('--quiet')
+            args = ' '.join(argv)
+            print_scpt(args, self._file, redirect=self._qflag)
+            sudo(args, self._file, redirect=self._qflag, askpass=self._askpass)
 
         for path in self._exec:
             _cleanup([path, 'dedupe', '--global'])

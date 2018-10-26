@@ -6,6 +6,7 @@ import sys
 
 from macdaily.cls.command import Command
 from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
+from macdaily.util.misc import print_text
 
 
 class ApmCommand(Command):
@@ -27,8 +28,9 @@ class ApmCommand(Command):
         flag = (self.__exec_path == (None, None))
         if flag:
             print(f'macdaily-update: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}apm{reset}: you may download Atom from '
-                  f'{purple_bg}{under}https://atom.io{reset}')
+            text = (f'macdaily-update: {red}apm{reset}: you may download Atom from '
+                    f'{purple_bg}{under}https://atom.io{reset}')
+            print_text(text, self._file, redirect=self._qflag)
         return flag
 
     def _pkg_args(self, namespace):

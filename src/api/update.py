@@ -36,6 +36,10 @@ def update(argv):
     args = parse_args(argv)
     config = parse_config()
 
+    # context redirection flags
+    quiet = args.quiet
+    verbose = args.quiet or (not args.verbose)
+
     # fetch current time
     today = datetime.datetime.today()
     logdate = datetime.date.strftime(today, r'%y%m%d')
@@ -54,15 +58,15 @@ def update(argv):
 
     # record program status
     text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
-    print_text(text, filename, redirect=args.quiet)
-    record(filename, args, today, config, redirect=(not args.verbose))
+    print_text(text, filename, redirect=quiet)
+    record(filename, args, today, config, redirect=verbose)
 
     cmd_list = list()
     for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
         # skip disabled commands
         if (not config['Mode'].get(mode, False)) or getattr(args, f'no_{mode}', False):
             text = f'macdaily-update: {yellow}{mode}{reset}: command disabled'
-            print_text(text, filename, redirect=(not args.verbose))
+            print_text(text, filename, redirect=verbose)
             continue
 
         # update package specifications
@@ -70,7 +74,7 @@ def update(argv):
         namespace = getattr(args, mode, dict())
         if not (packages or namespace or args.all):
             text = f'macdaily-update: {yellow}{mode}{reset}: nothing to upgrade'
-            print_text(text, filename, redirect=(not args.verbose))
+            print_text(text, filename, redirect=verbose)
             continue
         namespace['packages'].extend(packages)
 
@@ -83,7 +87,8 @@ def update(argv):
         brew_renew = command.time
 
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of update command{reset}'
-    print_text(text, filename, redirect=args.quiet)
+    print_text(text, filename, redirect=quiet)
+
     for command in cmd_list:
         desc = make_description(command)
         pkgs = f'{reset}{bold}, {green}'.join(command.packages)
@@ -104,36 +109,35 @@ def update(argv):
         else:
             verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
             text = f'All {under}{desc(False)}{reset}{bold} upgrade{noun} succeed{verb}'
-        print_misc(text, filename, redirect=(not args.verbose))
+        print_misc(text, filename, redirect=verbose)
 
         if ilst:
             flag = (len(ilst) == 1)
             text = f'Ignored updates of following {under}{desc(flag)}{reset}{bold}: {pink}{ilst}{reset}'
         else:
             text = f'No {under}{desc(False)}{reset}{bold} ignored'
-        print_misc(text, filename, redirect=(not args.verbose))
+        print_misc(text, filename, redirect=verbose)
 
         if miss:
             flag = (len(miss) == 1)
             text = f'Following {under}{desc(flag)}{reset}{bold} not found: {yellow}{miss}{reset}'
         else:
             text = f'Hit all {under}{desc(False)}{reset}{bold} specifications'
-        print_misc(text, filename, redirect=(not args.verbose))
+        print_misc(text, filename, redirect=verbose)
 
     if len(cmd_list) == 0:
         text = f'macdaily: {purple}update{reset}: no packages upgraded'
-        print_text(text, filename, redirect=(not args.verbose))
+        print_text(text, filename, redirect=verbose)
 
     if args.show_log:
         try:
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
-            with open(filename, 'a') as file:
-                file.write(traceback.format_exc())
+            print_text(traceback.format_exc(), filename, redirect=verbose)
             print(f'macdaily: {red}update{reset}: cannot show log file {filename!r}', file=sys.stderr)
 
     mode_lst = [command.mode for command in cmd_list]
     mode_str = ', '.join(mode_lst) if mode_lst else 'null'
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed update process '
             f'for {mode_str} package managers{reset}')
-    print_text(text, filename, redirect=args.quiet)
+    print_text(text, filename, redirect=quiet)

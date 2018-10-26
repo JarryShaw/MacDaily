@@ -5,7 +5,7 @@ import traceback
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.mas import MasCommand
 from macdaily.util.const import bold, reset
-from macdaily.util.misc import script
+from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
 
 try:
     import subprocess32 as subprocess
@@ -24,17 +24,36 @@ class MasUpdate(UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _check_pkgs(self, path):
-        args = [path, 'list']
+        text = f'Listing installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'list']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
         else:
+            context = proc.decode()
+            print_text(context, self._file, redirect=self._vflag)
+
             _list_pkgs = dict()
-            for line in proc.decode().strip().split('\n'):
-                context = line.split()
-                _list_pkgs[context[1:-1]] = context[0]
+            for line in context.strip().split('\n'):
+                content = line.split()
+                _list_pkgs[content[1:-1]] = content[0]
             _real_pkgs = set(_list_pkgs.keys())
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
+
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
         _lost_pkgs = list()
@@ -50,18 +69,25 @@ class MasUpdate(UpdateCommand):
         self.__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
-        args = [path, 'outdated']
-        args.extend(self._logging_opts)
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
 
-        self._log.write(f'+ {" ".join(args)}\n')
+        argv = [path, 'outdated']
+        argv.extend(self._logging_opts)
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
-            self._log.write(context)
+            print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
             for line in context.strip().split('\n'):
@@ -69,20 +95,22 @@ class MasUpdate(UpdateCommand):
                 _temp_pkgs.append((content[0], content[1:-1]))
             self.__temp_pkgs = set(_temp_pkgs)
         finally:
-            self._log.write('\n')
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        args = [path, 'upgrade']
-        args.append(self._update_opts)
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
 
-        argc = ' '.join(args)
+        argv = [path, 'upgrade']
+        argv.append(self._update_opts)
+
+        argc = ' '.join(argv)
         for (code, package) in self.__temp_pkgs:
-            argv = f'{argc} {code}'
-            script(['echo', f'\n+ {bold}{argc} {package} [{code}]{reset}'], self._log.name)
-            if script(f"SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt='' {argv}",
-                      self._log.name, shell=True, timeout=self._timeout):
+            print_scpt(f'{argc} {package} [{code}]', self._file, redirect=self._qflag)
+            if sudo(f'{argc} {code}', self._file, redirect=self._qflag,
+                    askpass=self._askpass, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-            self._log.write('\n')
         del self.__temp_pkgs

@@ -41,12 +41,12 @@ class PipUpdate(PipCommand, UpdateCommand):
         _lost_pkgs = list()
 
         text = 'Checking existence of specified packages'
-        print_info(text, self._file, redirect=(not self._verbose))
+        print_info(text, self._file, redirect=self._vflag)
         for package in self._packages:
             argv = [path, '-m', 'pip', 'show', package]
 
             args = ' '.join(argv)
-            print_scpt(args, self._file, redirect=(not self._verbose))
+            print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
@@ -54,23 +54,24 @@ class PipUpdate(PipCommand, UpdateCommand):
             try:
                 proc = subprocess.check_call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError:
-                print_text(traceback.format_exc(), self._file, redirect=(not self._verbose))
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 _lost_pkgs.append(package)
             else:
-                print_text(proc.stdout, self._file, redirect=(not self._verbose))
+                print_text(proc.stdout, self._file, redirect=self._vflag)
                 _temp_pkgs.append(package)
             finally:
                 with open(self._file, 'a') as file:
                     file.write(f'Script done on {date()}\n')
 
-        text = f'Listing installed {self.desc[1]}'
-        print_info(text, self._file, redirect=(not self._verbose))
         if _lost_pkgs:
+            text = f'Listing installed {self.desc[1]}'
+            print_info(text, self._file, redirect=self._vflag)
+
             self._lost.extend(_lost_pkgs)
             argv = [path, '-m', 'pip', 'list']
 
             args = ' '.join(argv)
-            print_scpt(args, self._file, redirect=(not self._verbose))
+            print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
@@ -78,11 +79,11 @@ class PipUpdate(PipCommand, UpdateCommand):
             try:
                 proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
-                print_text(traceback.format_exc(), self._file, redirect=(not self._verbose))
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 self.__real_pkgs = set()
             else:
                 context = proc.decode()
-                print_text(context, self._file, redirect=(not self._verbose))
+                print_text(context, self._file, redirect=self._vflag)
                 self.__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
             finally:
                 with open(self._file, 'a') as file:
@@ -99,12 +100,13 @@ class PipUpdate(PipCommand, UpdateCommand):
             argv.append('--pre')
         argv.extend(self._logging_opts)
 
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
         temp = copy.copy(argv)
         temp.append('--format=columns')
         args = ' '.join(temp)
-        text = f'Checking outdated {self.desc[1]}'
-        print_info(text, self._file, redirect=(not self._verbose))
-        print_scpt(args, self._file, redirect=(not self._verbose))
+        print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
@@ -113,7 +115,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         try:
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            print_text(traceback.format_exc(), self._file, redirect=(not self._verbose))
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
         else:
             # self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
@@ -131,14 +133,14 @@ class PipUpdate(PipCommand, UpdateCommand):
                             latest.ljust(latest_version_len), type.ljust(latest_filetype_len)]
                     return ' '.join(text)
 
-                print_text(_pprint('Package', 'Version', 'Latest', 'Type'), self._file, redirect=(not self._verbose))
+                print_text(_pprint('Package', 'Version', 'Latest', 'Type'), self._file, redirect=self._vflag)
                 print_text(' '.join(map(lambda length: '-' * length,
                                         [name_len, version_len, latest_version_len, latest_filetype_len])),
-                           self._file, redirect=(not self._verbose))
+                           self._file, redirect=self._vflag)
                 for item in context:
                     print_text(_pprint(item['name'], item['version'],
                                        item['latest_version'], item['latest_filetype']),
-                               self._file, redirect=(not self._verbose))
+                               self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
@@ -154,14 +156,14 @@ class PipUpdate(PipCommand, UpdateCommand):
         argv.extend(self._update_opts)
 
         text = f'Upgrading outdated {self.desc[1]}'
-        print_info(text, self._file, redirect=self._quiet)
+        print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
         for package in self.__temp_pkgs:
             args = f'{argc} {package}'
-            print_scpt(args, self._file, redirect=self._quiet)
-            if sudo(args, self._file, askpass=self._askpass,
-                    timeout=self._timeout, redirect=self._quiet):
+            print_scpt(args, self._file, redirect=self._qflag)
+            if sudo(args, self._file, sethome=True, askpass=self._askpass,
+                    timeout=self._timeout, redirect=self._qflag):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
@@ -171,7 +173,7 @@ class PipUpdate(PipCommand, UpdateCommand):
             argv = [path, '-m', 'pip', 'check']
 
             args = ' '.join(argv)
-            print_scpt(args, self._file, redirect=(not self._verbose))
+            print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
@@ -180,10 +182,10 @@ class PipUpdate(PipCommand, UpdateCommand):
             try:
                 proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
             except subprocess.SubprocessError:
-                print_text(traceback.format_exc(), self._file, redirect=(not self._verbose))
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
                 context = proc.decode()
-                print_text(context, self._file, redirect=(not self._verbose))
+                print_text(context, self._file, redirect=self._vflag)
 
                 for line in filter(None, context.strip().split('\n')):
                     if line == 'No broken requirements found.':
@@ -200,7 +202,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         def _proc_confirm():
             pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
             text = f'macdaily-update: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}'
-            print_text(text, self._file, redirect=self._quiet)
+            print_text(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
             while True:
@@ -213,16 +215,16 @@ class PipUpdate(PipCommand, UpdateCommand):
                     print('Invalid input.', file=sys.stderr)
 
         text = f'Checking broken {self.desc[0]} dependencies'
-        print_info(text, self._file, redirect=self._quiet)
+        print_info(text, self._file, redirect=self._qflag)
 
         _deps_pkgs = _proc_check()
         if not _deps_pkgs:
             text = f'macdaily-update: {green}pip{reset}: no broken dependencies'
-            print_text(text, self._file, redirect=self._quiet)
+            print_text(text, self._file, redirect=self._qflag)
             return
 
         text = f'Fixing broken {self.desc[0]} dependencies'
-        print_info(text, self._file, redirect=self._quiet)
+        print_info(text, self._file, redirect=self._qflag)
 
         if _proc_confirm():
             argv = [path, '-m', 'pip', 'reinstall']
@@ -232,28 +234,28 @@ class PipUpdate(PipCommand, UpdateCommand):
                 argv.append('--verbose')
 
             args = ' '.join(argv)
-            print_scpt(args, self._file, redirect=self._quiet)
+            print_scpt(args, self._file, redirect=self._qflag)
 
             while _deps_pkgs:
                 for package in _deps_pkgs:
                     real_name = re.split(r'[<>=!]', package, maxsplit=1)[0]
-                    print_scpt(f'{args} {package}', self._file, redirect=self._quiet)
+                    print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
 
                     temp = copy.copy(args)
                     temp[3] = 'uninstall'
-                    print_scpt(f'{" ".join(temp)} {real_name}', self._file, redirect=self._quiet)
+                    print_scpt(f'{" ".join(temp)} {real_name}', self._file, redirect=self._qflag)
                     sudo(f'{path} -m pip uninstall {real_name} --yes', self._file, sethome=True,
-                         askpass=self._askpass, redirect=self._quiet, timeout=self._timeout)
+                         askpass=self._askpass, redirect=self._qflag, timeout=self._timeout)
 
                     temp = copy.copy(args)
                     temp[3] = 'install'
-                    print_scpt(f'{" ".join(temp)} {package}', self._file, redirect=self._quiet)
+                    print_scpt(f'{" ".join(temp)} {package}', self._file, redirect=self._qflag)
                     if not sudo(f'{path} -m pip install {package}', self._file, sethome=True,
-                                askpass=self._askpass, redirect=self._quiet, timeout=self._timeout):
+                                askpass=self._askpass, redirect=self._qflag, timeout=self._timeout):
                         with contextlib.suppress(ValueError):
                             self._pkgs.remove(real_name)
                 _deps_pkgs = _proc_check()
             text = f'macdaily-update: {green}pip{reset}: all broken dependencies fixed'
         else:
             text = f'macdaily-update: {red}pip{reset}: all broken dependencies remain'
-        print_text(text, self._file, redirect=self._quiet)
+        print_text(text, self._file, redirect=self._qflag)

@@ -27,12 +27,14 @@
         "prinstall",
         "printw",
         "ptime",
+        "qflag",
         "rcpath",
         "scpt",
         "shtout",
         "stdict",
         "swch",
         "tmpath",
-        "tmpdir"
+        "tmpdir",
+        "vflag"
     ]
 }

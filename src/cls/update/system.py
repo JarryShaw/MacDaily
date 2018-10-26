@@ -31,6 +31,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
 
     def _check_pkgs(self, path):
         self._check_list(path)
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
 
         _rcmd_pkgs = list()
         _norm_pkgs = list()
@@ -50,26 +52,25 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         self.__norm_pkgs = set(_norm_pkgs)
 
     def _check_list(self, path):
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
         argv = [path, '--list']
         argv.extend(self._logging_opts)
-
         args = ' '.join(argv)
-        text = f'Checking outdated {self.desc[1]}'
-        print_info(text, self._file, redirect=(not self._verbose))
-        print_scpt(args, self._file, redirect=(not self._verbose))
+        print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
-
         try:
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            print_text(traceback.format_exc(), self._file, redirect=(not self._verbose))
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__rcmd_pkgs = set()
             self.__norm_pkgs = set()
         else:
             context = proc.decode()
-            print_text(context, self._file, redirect=(not self._verbose))
+            print_text(context, self._file, redirect=self._vflag)
 
             _rcmd_pkgs = list()
             _norm_pkgs = list()
@@ -100,14 +101,14 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         argv.extend(self._update_opts)
 
         text = f'Upgrading outdated {self.desc[1]}'
-        print_info(text, self._file, redirect=self._quiet)
+        print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
         for package in _temp_pkgs:
             args = f'{argc} {package}'
-            print_scpt(args, self._file, redirect=self._quiet)
+            print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, askpass=self._askpass,
-                    timeout=self._timeout, redirect=self._quiet):
+                    timeout=self._timeout, redirect=self._qflag):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

@@ -9,7 +9,7 @@ import re
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, reset, yellow
-from macdaily.util.misc import script
+from macdaily.util.misc import print_info, print_scpt, sudo
 
 try:
     import subprocess32 as subprocess
@@ -160,21 +160,22 @@ class PipCommand(Command):
         if self._no_cleanup:
             return
 
-        args = ['pip', 'cleanup']
-        if self._verbose:
-            args.append('--verbose')
-        if self._quiet:
-            args.append('--quiet')
-        argv = ' '.join(args)
-        script(['echo', f'|📝| {bold}{argv}{reset}'], self._file)
+        text = 'Pruning caches and archives'
+        print_info(text, self._file, redirect=self._qflag)
 
-        args = ['rm', '-rf']
+        argv = ['pip', 'cleanup']
         if self._verbose:
-            args.append('-v')
-        argc = ' '.join(args)
+            argv.append('--verbose')
+        if self._quiet:
+            argv.append('--quiet')
+        print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+
+        argv = ['rm', '-rf']
+        if self._verbose:
+            argv.append('-v')
+        argc = ' '.join(argv)
         for path in itertools.chain(glob.glob('/var/root/Library/Caches/pip/*/'),
                                     glob.glob(os.path.expanduser('~/Library/Caches/pip/*/'))):
-            argv = f'{argc} {path}'
-            script(['echo', f'|📝| {argv}'], self._file)
-            script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}',
-                   self._file, shell=True)
+            args = f'{argc} {path}'
+            print_scpt(args, self._file, redirect=self._qflag)
+            sudo(args, self._file, askpass=self._askpass, redirect=self._qflag)

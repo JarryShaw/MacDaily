@@ -8,7 +8,7 @@ import traceback
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.cask import CaskCommand
 from macdaily.util.const import bold, length, reset
-from macdaily.util.misc import script
+from macdaily.util.misc import date, print_info, print_scpt, print_text, run
 
 try:
     import subprocess32 as subprocess
@@ -34,13 +34,31 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _check_pkgs(self, path):
-        args = [path, 'cask', 'list']
+        text = f'Listing installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'cask', 'list']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
         else:
-            _real_pkgs = set(proc.decode().split())
+            context = proc.decode()
+            _real_pkgs = set(context.split())
+            print_text(context, self._file, redirect=self._vflag)
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
+
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
         _lost_pkgs = list()
@@ -64,117 +82,159 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         if self._exhaust:
             return self._exhaust_check(path)
 
-        args = [path, 'cask', 'outdated']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        if self._greedy:
-            args.append('--greedy')
-        args.extend(self._logging_opts)
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
 
-        self._log.write(f'+ {" ".join(args)}\n')
+        argv = [path, 'cask', 'outdated']
+        if self._quiet:
+            argv.append('--quiet')
+        if self._verbose:
+            argv.append('--verbose')
+        if self._greedy:
+            argv.append('--greedy')
+        argv.extend(self._logging_opts)
+
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
-            self._log.write(context)
+            print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
             for line in context.strip().split('\n'):
                 _temp_pkgs.append(line.split(maxsplit=1)[0])
             self.__temp_pkgs = set(_temp_pkgs)
         finally:
-            self._log.write('\n')
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
 
     def _exhaust_check(self, path):
-        args = ['brew', 'cask', 'outdated', '--exhaust']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        args.extend(self._logging_opts)
-        self._log.write(f'+ {" ".join(args)}\n')
+        text = f'Checking outdated {self.desc[1]} exclusively'
+        print_info(text, self._file, redirect=self._vflag)
 
-        args = [path, 'cask', 'list']
+        argv = ['brew', 'cask', 'outdated', '--exhaust']
+        if self._quiet:
+            argv.append('--quiet')
         if self._verbose:
-            self._log.write(f'++ {" ".join(args)}')
+            argv.append('--verbose')
+        argv.extend(self._logging_opts)
+        print_scpt(' '.join(argv), self._file, redirect=self._vflag)
+
+        text = f'Listing installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'cask', 'list']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _list_pkgs = set()
         else:
             context = proc.decode()
-            if self._verbose:
-                self._log.write(context)
             _list_pkgs = set(context.split())
+            print_text(context, self._file, redirect=self._vflag)
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
 
-        args = [path, '--prefix']
-        if self._verbose:
-            self._log.write(f'++ {" ".join(args)}')
+        text = f'Fetching Homebrew prefix'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, '--prefix']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
+        fail = False
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
-            return
+            fail = True
         else:
             context = proc.decode()
-            if self._verbose:
-                self._log.write(context)
+            print_text(context, self._file, redirect=self._vflag)
             prefix = context.strip()
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
+        if fail:
+            return
+
+        text = f'Checking versions of installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
         for cask in _list_pkgs:
-            args = [path, 'cask', 'info', cask]
-            if self._verbose:
-                self._log.write(f'++ {" ".join(args)}')
+            argv = [path, 'cask', 'info', cask]
+            args = ' '.join(argv)
+            print_scpt(args, self._file, redirect=self._vflag)
+            with open(self._file, 'a') as file:
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
+
             try:
-                proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
-                self._log.write(traceback.format_exc())
-                continue
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
+            else:
+                context = proc.decode()
+                print_text(context, self._file, redirect=self._vflag)
 
-            context = proc.decode()
-            if self._verbose:
-                self._log.write(context)
-            version = context.split(maxsplit=2)[1]
-
-            installed = os.path.join(prefix, 'Caskroom', cask, version)
-            if os.path.isdir(installed):
-                _temp_pkgs.append(cask)
+                version = context.split(maxsplit=2)[1]
+                installed = os.path.join(prefix, 'Caskroom', cask, version)
+                if os.path.isdir(installed):
+                    _temp_pkgs.append(cask)
+            finally:
+                with open(self._file, 'a') as file:
+                    file.write(f'Script done on {date()}\n')
 
         self.__temp_pkgs = set(_temp_pkgs)
-        if self._verbose:
-            self._log.write(f'++ {path} cask outdated list\n')
         max_len = len(max(_temp_pkgs, key=lambda s: len(s)))
-        context = '\n'.join(textwrap.wrap('    '.join(map(lambda s: s.ljust(max_len), self.__temp_pkgs)), length))
-        self._log.write(f'{context}\n')
+        context = os.linesep.join(textwrap.wrap('    '.join(
+            map(lambda s: s.ljust(max_len), self.__temp_pkgs)), length))
+        print_scpt(f'{path} cask outdated list', self._file, redirect=self._vflag)
+        print_text(context, self._file, redirect=self._vflag)
 
     def _proc_update(self, path):
-        args = [path, 'cask', 'upgrade']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        if self._greedy:
-            args.append('--greedy')
-        if self._exhaust:
-            args.append('--exhaust')
-        args.extend(self._update_opts)
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
 
-        args.append('')
+        argv = [path, 'cask', 'upgrade']
+        if self._quiet:
+            argv.append('--quiet')
+        if self._verbose:
+            argv.append('--verbose')
+        if self._greedy:
+            argv.append('--greedy')
+        if self._exhaust:
+            argv.append('--exhaust')
+        argv.extend(self._update_opts)
+
+        argv.append('')
         for package in self.__temp_pkgs:
-            args[-1] = package
-            argv = ' '.join(args)
-            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
-            if script(args, self._log.name, timeout=self._timeout):
+            argv[-1] = package
+            print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+            if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-            self._log.write('\n')
         del self.__temp_pkgs

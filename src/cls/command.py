@@ -126,8 +126,11 @@ class Command(metaclass=abc.ABCMeta):
         - ``brew_renew`` -- ``float``, Homebrew renew timestamp
 
         """
+        self._qflag = namespace.pop('quiet', False)
+        self._vflag = self._qflag or (not namespace.pop('verbose', False))
+
         text = f'Running update command for {self.mode}'
-        print_info(text, filename, redirect=namespace.pop('quiet', False))
+        print_info(text, filename, redirect=self._qflag)
 
         # exit if no executable found
         if self._check_exec():
@@ -146,7 +149,7 @@ class Command(metaclass=abc.ABCMeta):
             self._run_proc()
         else:
             text = f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
-            print_text(text, filename, redirect=self._verbose)
+            print_text(text, filename, redirect=self._vflag)
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -205,7 +208,7 @@ class Command(metaclass=abc.ABCMeta):
         bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
         text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
                 f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
-        print_text(text, self._file, redirect=self._quiet)
+        print_text(text, self._file, redirect=self._qflag)
         if self._yes or self._quiet:
             return
         while True:
@@ -215,7 +218,7 @@ class Command(metaclass=abc.ABCMeta):
             elif re.match(r'[nN]', ans):
                 text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                         f'{self.desc[0]} {job} postponed due to user cancellation')
-                print_text(text, self._file, redirect=self._quiet)
+                print_text(text, self._file, redirect=self._qflag)
                 self.__temp_pkgs = set()
                 break
             else:
@@ -227,9 +230,9 @@ class Command(metaclass=abc.ABCMeta):
             matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), self.__real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
-            if not self._quiet:
-                print(f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                      f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
+            text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                    f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
+            print_text(text, self._file, redirect=self._qflag)
         del self.__lost_pkgs
         del self.__real_pkgs
 

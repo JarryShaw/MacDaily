@@ -99,6 +99,12 @@ def record(file, args, today, config, redirect=False):
                 log.write(f'CFG: {key} -> {k} = {v}\n')
 
 
+def run(argv, file, *, redirect=False, timeout=None, shell=False, executable=None):
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, redirect):
+            return script(argv, file, timeout=timeout, shell=shell, executable=executable)
+
+
 def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executable=None):
     if isinstance(argv, str):
         argv = [argv]
@@ -125,31 +131,13 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
     return returncode
 
 
-def sudo(args, file='typescript', *, askpass=None, sethome=False, redirect=False, timeout=None, executable=None):
+def sudo(argv, file, *, askpass=None, sethome=False, redirect=False, timeout=None, executable=None):
     def make_command():
-        if not isinstance(args, str):
-            args = ' '.join(args)
+        if not isinstance(argv, str):
+            argv = ' '.join(argv)
         if getpass.getuser() == 'root':
-            return args
-        sudo_askpass = '' if askpass is None else f'SUDO_ASKPASS={askpass!r}'
-        set_home = '--set-home' if sethome else ''
-        return f'{sudo_askpass} sudo --askpass {set_home} {args}'
-
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            return script(make_command(), file, timeout=timeout, shell=True, executable=executable)
-
-
-def write(text, file, linesep=False):
-    with open(file, 'a') as log:
-        fp = log.write(text)
-        if linesep:
-            fp = log.write(os.linesep)
-    return fp
-
-
-def writelines(lines, file, linesep=False):
-    with open(file, 'a') as log:
-        if linesep:
-            return log.writelines(f'{line}{os.linesep}' for line in lines)
-        return log.writelines(lines)
+            return argv
+        sudo_askpass = '' if askpass is None else f'SUDO_ASKPASS={askpass!r} '
+        set_home = ' --set-home' if sethome else ''
+        return f'{sudo_askpass}sudo --askpass{set_home} {argv}'
+    return run(make_command(), file, redirect=redirect, timeout=timeout, shell=True, executable=executable)

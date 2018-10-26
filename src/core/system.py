@@ -5,6 +5,7 @@ import sys
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, flash, red, red_bg, reset
+from macdaily.util.misc import print_text
 
 
 class SystemCommand(Command):
@@ -26,9 +27,10 @@ class SystemCommand(Command):
         flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}system{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}system{reset}: '
-                  "you may add `softwareupdate' to PATH through the following command -- "
-                  f"""`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'""")
+            text = (f'macdaily-update: {red}system{reset}: '
+                    "you may add `softwareupdate' to PATH through the following command -- "
+                    f"""`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'""")
+            print_text(text, self._file, redirect=self._qflag)
         return flag
 
     def _loc_exec(self):

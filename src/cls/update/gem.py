@@ -5,7 +5,7 @@ import traceback
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.gem import GemCommand
 from macdaily.util.const import SHELL, bold, reset
-from macdaily.util.misc import script
+from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
 
 try:
     import subprocess32 as subprocess
@@ -28,13 +28,31 @@ class GemUpdate(GemCommand, UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _check_pkgs(self, path):
-        args = [path, 'list', '--no-versions']
+        text = f'Listing installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'list', '--no-versions']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
         else:
-            _real_pkgs = set(proc.decode().split())
+            context = proc.decode()
+            _real_pkgs = set(context.split())
+            print_text(context, self._file, redirect=self._vflag)
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
+
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
         _lost_pkgs = list()
@@ -50,54 +68,68 @@ class GemUpdate(GemCommand, UpdateCommand):
         self.__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
-        args = [path, 'update', '--system']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        argv = ' '.join(args)
-        script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
-        script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {argv}', self._log.name)
+        text = 'Updating RubyGems database'
+        print_info(text, self._file, redirect=self._qflag)
 
-        args = [path, 'outdated']
+        argv = [path, 'update', '--system']
         if self._quiet:
-            args.append('--quiet')
+            argv.append('--quiet')
         if self._verbose:
-            args.append('--verbose')
-        args.extend(self._logging_opts)
-        args.append('--no-versions')
+            argv.append('--verbose')
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        sudo(args, self._file, askpass=self._askpass)
 
-        self._log.write(f'+ {" ".join(args)}\n')
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'outdated']
+        if self._quiet:
+            argv.append('--quiet')
+        if self._verbose:
+            argv.append('--verbose')
+        argv.extend(self._logging_opts)
+        argv.append('--no-versions')
+
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
-            self._log.write(context)
+            print_text(context, self._file, redirect=self._vflag)
             self.__temp_pkgs = set(map(lambda s: s.split()[0], context.strip().split('\n')))
         finally:
-            self._log.write('\n')
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        args = [path, 'update']
+        argv = [path, 'update']
         if self._quiet:
-            args.append('--quiet')
+            argv.append('--quiet')
         if self._verbose:
-            args.append('--verbose')
-        args.extend(self._update_opts)
+            argv.append('--verbose')
+        argv.extend(self._update_opts)
 
-        argc = ' '.join(args)
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
+
+        argc = ' '.join(argv)
         for package in self.__temp_pkgs:
-            argv = f'{argc} {package}'
-            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
+            args = f'{argc} {package}'
+            print_scpt(args, self._file, redirect=self._qflag)
             if self._yes:
-                argv = f'yes y | {argv}'
-            if script(f'SUDO_ASKPASS={self._askpass} sudo --askpass --stdin --prompt="" {SHELL} -c {argv!r}',
-                      self._log.name, shell=True, timeout=self._timeout):
+                args = f'yes y | {args}'
+            if sudo(f'{SHELL} -c {args!r}', self._file, redirect=self._qflag,
+                    askpass=self._askpass, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-            self._log.write('\n')
         del self.__temp_pkgs

@@ -5,6 +5,7 @@ import sys
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, flash, red, red_bg, reset
+from macdaily.util.misc import print_text
 
 
 class MasCommand(Command):
@@ -26,8 +27,9 @@ class MasCommand(Command):
         flag = (self.__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
-            print(f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
-                  f"`{bold}brew install mas{reset}'")
+            text = (f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
+                    f"`{bold}brew install mas{reset}'")
+            print_text(text, self._file, redirect=self._qflag)
         return flag
 
     def _loc_exec(self):

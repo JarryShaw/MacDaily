@@ -6,7 +6,7 @@ import traceback
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.brew import BrewCommand
 from macdaily.util.const import bold, reset
-from macdaily.util.misc import script
+from macdaily.util.misc import date, print_info, print_scpt, print_text, run
 
 try:
     import subprocess32 as subprocess
@@ -30,13 +30,31 @@ class BrewUpdate(BrewCommand, UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _check_pkgs(self, path):
-        args = [path, 'list']
+        text = f'Listing installed {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
+
+        argv = [path, 'list']
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
         else:
-            _real_pkgs = set(proc.decode().split())
+            context = proc.decode()
+            _real_pkgs = set(context.split())
+            print_text(context, self._file, redirect=self._vflag)
+        finally:
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
+
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
         _lost_pkgs = list()
@@ -57,46 +75,56 @@ class BrewUpdate(BrewCommand, UpdateCommand):
             self._proc_renew(path)
             self._brew_renew = time.time()
 
-        args = [path, 'outdated']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        args.extend(self._logging_opts)
+        text = f'Checking outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._vflag)
 
-        self._log.write(f'+ {" ".join(args)}\n')
+        argv = [path, 'outdated']
+        if self._quiet:
+            argv.append('--quiet')
+        if self._verbose:
+            argv.append('--verbose')
+        argv.extend(self._logging_opts)
+
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._vflag)
+        with open(self._file, 'a') as file:
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
+
         try:
-            proc = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            self._log.write(traceback.format_exc())
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self.__temp_pkgs = set()
         else:
             context = proc.decode()
-            self._log.write(context)
+            print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
             for line in context.strip().split('\n'):
                 _temp_pkgs.append(line.split(maxsplit=1)[0])
             self.__temp_pkgs = set(_temp_pkgs)
         finally:
-            self._log.write('\n')
+            with open(self._file, 'a') as file:
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        args = [path, 'upgrade']
-        if self._quiet:
-            args.append('--quiet')
-        if self._verbose:
-            args.append('--verbose')
-        args.extend(self._update_opts)
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
 
-        args.append('')
+        argv = [path, 'upgrade']
+        if self._quiet:
+            argv.append('--quiet')
+        if self._verbose:
+            argv.append('--verbose')
+        argv.extend(self._update_opts)
+
+        argv.append('')
         for package in self.__temp_pkgs:
-            args[-1] = package
-            argv = ' '.join(args)
-            script(['echo', f'\n+ {bold}{argv}{reset}'], self._log.name)
-            if script(args, self._log.name, timeout=self._timeout):
+            argv[-1] = package
+            print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+            if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-            self._log.write('\n')
         del self.__temp_pkgs
