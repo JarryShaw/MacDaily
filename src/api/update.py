@@ -31,7 +31,7 @@ except ImportError:
     import subprocess
 
 
-def update(argv):
+def update(argv=None):
     # parse args & config
     args = parse_args(argv)
     config = parse_config()
@@ -141,3 +141,7 @@ def update(argv):
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed update process '
             f'for {mode_str} package managers{reset}')
     print_text(text, filename, redirect=quiet)
+
+
+if __name__ == '__main__':
+    sys.exit(update())
