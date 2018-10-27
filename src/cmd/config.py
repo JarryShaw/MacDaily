@@ -102,7 +102,7 @@ def launch_askpass():
     )
     plist = os.path.expanduser('~/Library/LaunchAgents/com.macdaily.askpass.plist')
     with open(plist, 'w') as file:
-        plistlib.dump(PLIST, plist, sort_keys=False)
+        plistlib.dump(PLIST, file, sort_keys=False)
 
     with contextlib.suppress(subprocess.SubprocessError):
         subprocess.run(['launchctl', 'load', '-w', plist])
