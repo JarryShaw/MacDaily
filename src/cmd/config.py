@@ -8,10 +8,10 @@ import os
 import plistlib
 import re
 import shlex
-import shutil
 import sys
 
 from macdaily.util.error import ConfigNotFoundError
+from macdaily.util.misc import make_context, print_info, print_misc, print_scpt
 
 try:
     import subprocess32 as subprocess
@@ -72,7 +72,10 @@ CONFIG = ['[Path]',
           'timeout = 300                                               ; timeout limit for shell commands in seconds']
 
 
-def launch_askpass():
+def launch_askpass(quiet=False, verbose=False):
+    text = 'Launching MacDaily SSH-AskPass program'
+    print_info(text, os.devnull, quiet)
+
     ASKPASS = ['#!/usr/bin/env osascript',
                '',
                '-- script based on https://github.com/theseal/ssh-askpass',
@@ -81,10 +84,18 @@ def launch_askpass():
                '    set args to argv as text',
                '    display dialog args with icon caution default button "OK" default answer "" with hidden answer',
                "    return result's text returned",
-               'end run']
+               'end run',
+               '']
     askpass = '/usr/local/bin/macdaily-askpass'
+    text = f'Making executable {askpass!r}'
+    print_misc(text, os.devnull, verbose)
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
+    argv = ['chmod', 'u+x', askpass]
+    print_scpt(' '.join(argv), os.devnull, verbose)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, verbose):
+            subprocess.check_call(argv)
 
     PLIST = collections.OrderedDict(
         Label='com.macdaily.askpass',
@@ -101,12 +112,20 @@ def launch_askpass():
         EnableTransactions=True,
     )
     plist = os.path.expanduser('~/Library/LaunchAgents/com.macdaily.askpass.plist')
-    with open(plist, 'w') as file:
+    text = f'Adding Launch Agent {plist!r}'
+    print_misc(text, os.devnull, verbose)
+    with open(plist, 'wb') as file:
         plistlib.dump(PLIST, file, sort_keys=False)
-
-    with contextlib.suppress(subprocess.SubprocessError):
-        subprocess.run(['launchctl', 'load', '-w', plist])
-        subprocess.run(['ssh-add', '-c'])
+    argv = ['launchctl', 'load', '-w', plist]
+    print_scpt(' '.join(argv), os.devnull, verbose)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, verbose):
+            subprocess.check_call(argv)
+    argv = ['ssh-add', '-c']
+    print_scpt(' '.join(argv), os.devnull, verbose)
+    with open(os.devnull, 'w') as devnull:
+        with make_context(devnull, verbose):
+            subprocess.check_call(argv)
     return askpass
 
 
@@ -118,12 +137,12 @@ def get_config():
     return config
 
 
-def dump_config(rcpath):
+def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    askpass = shutil.which('macdaily-askpass') or launch_askpass()
-    CONFIG[49] = f'askpass = {askpass.ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
+    askpass = launch_askpass(quiet, verbose)
+    CONFIG[49] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
@@ -137,12 +156,12 @@ def load_config(rcpath):
     return config
 
 
-def parse_config():
+def parse_config(quiet=False, verbose=False):
     rcpath = os.path.expanduser('~/.dailyrc')
     if os.path.isfile(rcpath):
         config = load_config(rcpath)
     else:
-        config = dump_config(rcpath)
+        config = dump_config(rcpath, quiet, verbose)
     cfg_dict = collections.defaultdict(dict)
 
     # Path section

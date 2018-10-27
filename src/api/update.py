@@ -32,13 +32,15 @@ except ImportError:
 
 
 def update(argv=None):
-    # parse args & config
+    # parse args
     args = parse_args(argv)
-    config = parse_config()
 
     # context redirection flags
     quiet = args.quiet
-    verbose = args.quiet and (not args.verbose)
+    verbose = args.quiet or (not args.verbose)
+
+    # parse config
+    config = parse_config(quiet, verbose)
 
     # fetch current time
     today = datetime.datetime.today()
