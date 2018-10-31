@@ -6,7 +6,7 @@ import sys
 
 from macdaily.cls.command import Command
 from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
-from macdaily.util.misc import print_text
+from macdaily.util.misc import print_term
 
 
 class ApmCommand(Command):
@@ -24,20 +24,20 @@ class ApmCommand(Command):
         return ('Atom plug-in', 'Atom plug-ins')
 
     def _check_exec(self):
-        self._tmp_exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
-        flag = (self._tmp_exec_path == (None, None))
+        self._var__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
+        flag = (self._var__exec_path == (None, None))
         if flag:
             print(f'macdaily-update: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}apm{reset}: you may download Atom from '
                     f'{purple_bg}{under}https://atom.io{reset}')
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
         return flag
 
     def _pkg_args(self, namespace):
         flag = super()._pkg_args(namespace)
 
         # if ``beta`` not set, ``apm`` is the only executable
-        if not self._beta and self._tmp_exec_path[0] is None:
+        if not self._beta and self._var__exec_path[0] is None:
             return True
         return flag
 
@@ -48,7 +48,7 @@ class ApmCommand(Command):
 
     def _loc_exec(self):
         if self._beta:
-            self._exec = set(filter(None, self._tmp_exec_path))
+            self._exec = set(filter(None, self._var__exec_path))
         else:
-            self._exec = {self._tmp_exec_path[0]}
-        del self._tmp_exec_path
+            self._exec = {self._var__exec_path[0]}
+        del self._var__exec_path

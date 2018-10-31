@@ -63,9 +63,9 @@ class GemUpdate(GemCommand, UpdateCommand):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._tmp_real_pkgs = set(_real_pkgs)
-        self._tmp_lost_pkgs = set(_lost_pkgs)
-        self._tmp_temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)
+        self._var__lost_pkgs = set(_lost_pkgs)
+        self._var__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
         text = 'Updating RubyGems database'
@@ -89,7 +89,6 @@ class GemUpdate(GemCommand, UpdateCommand):
         if self._verbose:
             argv.append('--verbose')
         argv.extend(self._logging_opts)
-        argv.append('--no-versions')
 
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
@@ -101,11 +100,11 @@ class GemUpdate(GemCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._tmp_temp_pkgs = set()
+            self._var__temp_pkgs = set()
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
-            self._tmp_temp_pkgs = set(map(lambda s: s.split()[0], context.strip().split('\n')))
+            self._var__temp_pkgs = set(map(lambda s: s.split()[0], context.strip().split('\n')))
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
@@ -122,7 +121,7 @@ class GemUpdate(GemCommand, UpdateCommand):
         print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
-        for package in self._tmp_temp_pkgs:
+        for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if self._yes:
@@ -132,4 +131,4 @@ class GemUpdate(GemCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self._tmp_temp_pkgs
+        del self._var__temp_pkgs

@@ -11,7 +11,7 @@ import sys
 
 import ptyng
 
-from macdaily.util.const import (SHELL, blue, bold, grey, program, purple,
+from macdaily.util.const import (SHELL, blue, bold, dim, grey, program, purple,
                                  python, red, reset)
 from macdaily.util.error import UnsupportedOS
 
@@ -51,27 +51,53 @@ def make_description(command):
 
 
 def print_info(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{blue}|💼|{reset} {bold}{text}{reset}'], file)
+    flag = text.endswith(os.linesep)
+    if not redirect:
+        end = str() if flag else os.linesep
+        print(f'{bold}{blue}|💼|{reset} {bold}{text}{reset}', end=end)
+    with open(file, 'a') as fd:
+        context = text if flag else f'{text}{os.linesep}'
+        fd.write(f'|💼| {context}')
 
 
 def print_misc(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{grey}|📌|{reset} {bold}{text}{reset}'], file)
+    flag = text.endswith(os.linesep)
+    if not redirect:
+        end = str() if flag else os.linesep
+        print(f'{bold}{grey}|📌|{reset} {bold}{text}{reset}', end=end)
+    with open(file, 'a') as fd:
+        context = text if flag else f'{text}{os.linesep}'
+        fd.write(f'|📌| {context}\n')
 
 
 def print_scpt(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', f'{bold}{purple}|📜|{reset} {bold}{text}{reset}'], file)
+    flag = text.endswith(os.linesep)
+    if not redirect:
+        end = str() if flag else os.linesep
+        print(f'{bold}{purple}|📜|{reset} {bold}{text}{reset}', end=end)
+    with open(file, 'a') as fd:
+        context = text if flag else f'{text}{os.linesep}'
+        fd.write(f'|📜| {context}\n')
+
+
+def print_term(text, file, redirect=False):
+    flag = text.endswith(os.linesep)
+    if not redirect:
+        end = str() if flag else os.linesep
+        print(text, end=end)
+    with open(file, 'a') as fd:
+        context = text if flag else f'{text}{os.linesep}'
+        fd.write(f'{context}\n')
 
 
 def print_text(text, file, redirect=False):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            script(['echo', text], file)
+    flag = text.endswith(os.linesep)
+    if not redirect:
+        end = str() if flag else os.linesep
+        print(f'{dim}{text}{reset}', end=end)
+    with open(file, 'a') as fd:
+        context = text if flag else f'{text}{os.linesep}'
+        fd.write(f'{context}\n')
 
 
 def record(file, args, today, config, redirect=False):
@@ -100,9 +126,12 @@ def record(file, args, today, config, redirect=False):
 
 
 def run(argv, file, *, redirect=False, timeout=None, shell=False, executable=None):
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, redirect):
-            return script(argv, file, timeout=timeout, shell=shell, executable=executable)
+    if redirect:
+        if isinstance(argv, str):
+            argv = f'{argv} >/dev/null'
+        else:
+            argv = f"{' '.join(argv)} >/dev/null"
+    return script(argv, file, timeout=timeout, shell=shell, executable=executable)
 
 
 def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executable=None):
@@ -119,7 +148,7 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
         data = os.read(fd, 1024)
         text = re.sub(rb'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
         typescript.write(text)
-        return data
+        return dim.encode()+data+reset.encode()
 
     with open(file, 'a') as typescript:
         typescript.write(f'Script started on {date()}\n')

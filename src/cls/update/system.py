@@ -38,19 +38,19 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         _norm_pkgs = list()
         _lost_pkgs = list()
         for package in self._packages:
-            if package in self._tmp_rcmd_pkgs:
+            if package in self._var__rcmd_pkgs:
                 _rcmd_pkgs.append(package)
-            elif package in self._tmp_norm_pkgs:
+            elif package in self._var__norm_pkgs:
                 _norm_pkgs.append(package)
             else:
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._tmp_real_pkgs = self._tmp_rcmd_pkgs | self._tmp_norm_pkgs
-        self._tmp_lost_pkgs = set(_lost_pkgs)
-        self._tmp_rcmd_pkgs = set(_rcmd_pkgs)
-        self._tmp_norm_pkgs = set(_norm_pkgs)
-        self._tmp_temp_pkgs = self._tmp_rcmd_pkgs | self._tmp_norm_pkgs
+        self._var__real_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
+        self._var__lost_pkgs = set(_lost_pkgs)
+        self._var__rcmd_pkgs = set(_rcmd_pkgs)
+        self._var__norm_pkgs = set(_norm_pkgs)
+        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
 
     def _check_list(self, path):
         text = f'Checking outdated {self.desc[1]}'
@@ -67,8 +67,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._tmp_rcmd_pkgs = set()
-            self._tmp_norm_pkgs = set()
+            self._var__rcmd_pkgs = set()
+            self._var__norm_pkgs = set()
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -82,21 +82,18 @@ class SystemUpdate(SystemCommand, UpdateCommand):
                 if flag == '-':
                     _norm_pkgs.append(name)
 
-            self._tmp_rcmd_pkgs = set(_rcmd_pkgs)
-            self._tmp_norm_pkgs = set(_norm_pkgs)
+            self._var__rcmd_pkgs = set(_rcmd_pkgs)
+            self._var__norm_pkgs = set(_norm_pkgs)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
-        self._tmp_temp_pkgs = self._tmp_rcmd_pkgs | self._tmp_norm_pkgs
+        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
 
     def _proc_update(self, path):
-        if self._tmp_temp_pkgs:
-            if self._recommend:
-                _temp_pkgs = self._tmp_rcmd_pkgs
-            else:
-                _temp_pkgs = self._tmp_rcmd_pkgs | self._tmp_norm_pkgs
+        if self._recommend:
+            _temp_pkgs = self._var__rcmd_pkgs
         else:
-            _temp_pkgs = set()
+            _temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
 
         argv = [path, '--install', '--no-scan']
         if self._restart:
@@ -117,6 +114,6 @@ class SystemUpdate(SystemCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self._tmp_rcmd_pkgs
-        del self._tmp_norm_pkgs
-        del self._tmp_temp_pkgs
+        del self._var__rcmd_pkgs
+        del self._var__norm_pkgs
+        del self._var__temp_pkgs

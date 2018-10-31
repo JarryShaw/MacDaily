@@ -6,7 +6,7 @@ import shutil
 import sys
 
 # version string
-__version__ = '2018.10.31.dev5'
+__version__ = '2018.10.31.dev6'
 
 # terminal commands
 python = sys.executable         # Python version

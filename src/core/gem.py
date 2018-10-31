@@ -9,7 +9,8 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
-from macdaily.util.misc import date, print_info, print_scpt, print_text
+from macdaily.util.misc import (date, print_info, print_scpt, print_term,
+                                print_text)
 
 try:
     import subprocess32 as subprocess
@@ -32,13 +33,13 @@ class GemCommand(Command):
         return ('Ruby gem', 'Ruby gems')
 
     def _check_exec(self):
-        self._tmp_exec_path = shutil.which('gem')
-        flag = (self._tmp_exec_path is None)
+        self._var__exec_path = shutil.which('gem')
+        flag = (self._var__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}gem{reset}: you may download RubyGems from '
                     f'{purple_bg}{under}https://rubygems.org{reset}')
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
         return flag
 
     @abc.abstractmethod
@@ -49,7 +50,7 @@ class GemCommand(Command):
 
     def _loc_exec(self):
         if not (self._brew and self._system):
-            self._exec = {self._tmp_exec_path}
+            self._exec = {self._var__exec_path}
         else:
             _exec_path = list()
             if self._brew:
@@ -80,4 +81,4 @@ class GemCommand(Command):
             if self._system and os.path.exists('/usr/bin/gem'):
                 _exec_path.append('/usr/bin/gem')
             self._exec = set(_exec_path)
-        del self._tmp_exec_path
+        del self._var__exec_path

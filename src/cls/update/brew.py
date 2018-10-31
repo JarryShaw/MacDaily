@@ -65,9 +65,9 @@ class BrewUpdate(BrewCommand, UpdateCommand):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._tmp_real_pkgs = set(_real_pkgs)
-        self._tmp_lost_pkgs = set(_lost_pkgs)
-        self._tmp_temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)
+        self._var__lost_pkgs = set(_lost_pkgs)
+        self._var__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
         if (self._brew_renew is None or
@@ -95,15 +95,15 @@ class BrewUpdate(BrewCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._tmp_temp_pkgs = set()
+            self._var__temp_pkgs = set()
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
-            for line in context.strip().split('\n'):
+            for line in filter(None, context.strip().split('\n')):
                 _temp_pkgs.append(line.split(maxsplit=1)[0])
-            self._tmp_temp_pkgs = set(_temp_pkgs)
+            self._var__temp_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
@@ -120,11 +120,11 @@ class BrewUpdate(BrewCommand, UpdateCommand):
         argv.extend(self._update_opts)
 
         argv.append('')
-        for package in self._tmp_temp_pkgs:
+        for package in self._var__temp_pkgs:
             argv[-1] = package
             print_scpt(' '.join(argv), self._file, redirect=self._qflag)
             if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self._tmp_temp_pkgs
+        del self._var__temp_pkgs

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import copy
 import os
 import re
 import sys
 
 from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import print_info, print_text
+from macdaily.util.misc import print_info, print_term
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -149,7 +150,10 @@ class Command(metaclass=abc.ABCMeta):
             self._run_proc()
         else:
             text = f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
-            print_text(text, filename, redirect=self._vflag)
+            print_term(text, filename, redirect=self._qflag)
+
+        # remove temp vars
+        [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -160,6 +164,12 @@ class Command(metaclass=abc.ABCMeta):
         """Return if there's packages for main process."""
         self._merge_packages(namespace)
         self._parse_args(namespace)
+
+        self._pkgs = list()
+        self._fail = list()
+        self._lost = list()
+        self._ilst = copy.copy(self._ignore)
+
         return (self._packages or self._all)
 
     def _merge_packages(self, namespace):
@@ -169,12 +179,12 @@ class Command(metaclass=abc.ABCMeta):
         for pkgs in args_pkg:
             if isinstance(pkgs, str):
                 pkgs = filter(None, pkgs.split(','))
-            for package in pkgs:
-                if package.startswith('!'):
-                    ilst_pkg.append(package[1:])
-                else:
-                    temp_pkg.append(package)
-        self._ilst = set(ilst_pkg)
+            for item in map(lambda s: s.split(','), pkgs):
+                for package in item:
+                    if package.startswith('!'):
+                        ilst_pkg.append(package[1:])
+                    else:
+                        temp_pkg.append(package)
         self._ignore = set(ilst_pkg)
         self._packages = set(temp_pkg)
 
@@ -192,51 +202,52 @@ class Command(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _run_proc(self):
         self._pkgs = list()
-        self._ilst = list()
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            self._tmp_lost_pkgs = set()
-            self._tmp_real_pkgs = set()
-            self._tmp_temp_pkgs = set()
-            self._check_confirm()
-            self._did_you_mean()
+            self._var__lost_pkgs = set()
+            self._var__real_pkgs = set()
+            self._var__temp_pkgs = set()
         self._proc_cleanup()
 
     def _check_confirm(self):
-        self._tmp_temp_pkgs -= self._ignore
-        job = self.job[1] if len(self._tmp_temp_pkgs) else self.job[0]
-        bold_pkgs = f'{reset}, {bold}'.join(self._tmp_temp_pkgs)
+        self._var__temp_pkgs -= self._ignore
+        if not self._var__temp_pkgs:
+            text = f'macdaily-{self.cmd}: {green}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
+            print_term(text, self._file, redirect=self._qflag)
+            return True
+
+        job = self.job[1] if len(self._var__temp_pkgs) else self.job[0]
+        bold_pkgs = f'{reset}, {bold}'.join(self._var__temp_pkgs)
         text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
                 f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
-        print_text(text, self._file, redirect=self._qflag)
+        print_term(text, self._file, redirect=self._qflag)
         if self._yes or self._quiet:
-            return
+            return True
         while True:
             ans = input(f'Would you like to {self.act[0]}? (y/N)')
             if re.match(r'[yY]', ans):
-                break
+                return True
             elif re.match(r'[nN]', ans):
                 text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                         f'{self.desc[0]} {job} postponed due to user cancellation')
-                print_text(text, self._file, redirect=self._qflag)
-                self._tmp_temp_pkgs = set()
-                break
+                print_term(text, self._file, redirect=self._vflag)
+                return False
             else:
                 print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):
-        for package in self._tmp_lost_pkgs:
+        for package in self._var__lost_pkgs:
             pattern = rf'.*{package}.*'
             matches = f'{reset}, {bold}'.join(
-                filter(lambda s: re.match(pattern, s, re.IGNORECASE), self._tmp_real_pkgs))
+                filter(lambda s: re.match(pattern, s, re.IGNORECASE), self._var__real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                     f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
-            print_text(text, self._file, redirect=self._qflag)
-        del self._tmp_lost_pkgs
-        del self._tmp_real_pkgs
+            print_term(text, self._file, redirect=self._qflag)
+        del self._var__lost_pkgs
+        del self._var__real_pkgs
 
     def _proc_cleanup(self):
         pass

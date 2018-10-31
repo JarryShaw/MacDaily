@@ -10,8 +10,8 @@ import traceback
 from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under, yellow)
-from macdaily.util.misc import (date, print_info, print_scpt, print_text, run,
-                                sudo)
+from macdaily.util.misc import (date, print_info, print_scpt, print_term,
+                                print_text, run, sudo)
 
 try:
     import pathlib2 as pathlib
@@ -39,15 +39,15 @@ class BrewCommand(Command):
         return ('Homebrew formula', 'Homebrew formulae')
 
     def _check_exec(self):
-        self._tmp_exec_path = shutil.which('brew')
-        flag = (self._tmp_exec_path is None)
+        self._var__exec_path = shutil.which('brew')
+        flag = (self._var__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}brew{reset}: you may find Homebrew on '
                     f'{purple_bg}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
                     f'`{bold}/usr/bin/ruby -e "$(curl -fsSL '
                     f"""https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}'""")
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
         return flag
 
     @abc.abstractmethod
@@ -59,8 +59,8 @@ class BrewCommand(Command):
         self._verbose = namespace.pop('verbose', False)
 
     def _loc_exec(self):
-        self._exec = {self._tmp_exec_path}
-        del self._tmp_exec_path
+        self._exec = {self._var__exec_path}
+        del self._var__exec_path
 
     def _proc_renew(self, path):
         text = 'Updating Homebrew database'
@@ -168,4 +168,4 @@ class BrewCommand(Command):
         if flag:
             text = (f'macdaily-update: {yellow}brew{reset}: '
                     f'archive directory {bold}{self._disk_dir}{reset} not found')
-            print_text(text, self._file, redirect=self._vflag)
+            print_term(text, self._file, redirect=self._vflag)

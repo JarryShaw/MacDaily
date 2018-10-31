@@ -21,8 +21,9 @@ mv src macdaily
 
 # perform f2format
 f2format -n macdaily
-if [[ "$?" -ne "0" ]] ; then
-    exit 1
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
 fi
 
 # prepare for PyPI distribution

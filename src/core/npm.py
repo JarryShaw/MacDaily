@@ -7,7 +7,7 @@ import sys
 from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under)
-from macdaily.util.misc import print_info, print_scpt, print_text, run, sudo
+from macdaily.util.misc import print_info, print_scpt, print_term, run, sudo
 
 
 class NpmCommand(Command):
@@ -25,13 +25,13 @@ class NpmCommand(Command):
         return ('node module', 'node modules')
 
     def _check_exec(self):
-        self._tmp_exec_path = shutil.which('npm')
-        flag = (self._tmp_exec_path is None)
+        self._var__exec_path = shutil.which('npm')
+        flag = (self._var__exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}npm{reset}: you may download Node.js from '
                     f'{purple_bg}{under}https://nodejs.org/{reset}')
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
         return flag
 
     @abc.abstractmethod
@@ -42,8 +42,8 @@ class NpmCommand(Command):
         self._verbose = namespace.pop('verbose', False)
 
     def _loc_exec(self):
-        self._exec = {self._tmp_exec_path}
-        del self._tmp_exec_path
+        self._exec = {self._var__exec_path}
+        del self._var__exec_path
 
     def _proc_cleanup(self):
         if self._no_cleanup:

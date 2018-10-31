@@ -3,6 +3,7 @@
 import abc
 
 from macdaily.cls.command import Command
+from macdaily.util.misc import print_info
 
 
 class UpdateCommand(Command):
@@ -24,8 +25,11 @@ class UpdateCommand(Command):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            self._proc_logging(path)
-            self._proc_update(path)
+            if self._proc_logging(path):
+                self._proc_update(path)
+            else:
+                text = f'No {self.desc[1]} to upgrade for executable {path!r}'
+                print_info(text, self._file, redirect=self._qflag)
         self._proc_cleanup()
 
     def _proc_logging(self, path):
@@ -34,15 +38,15 @@ class UpdateCommand(Command):
             self._did_you_mean()
         else:
             self._check_list(path)
-        self._check_confirm()
+        return self._check_confirm()
 
     @abc.abstractmethod
     def _check_pkgs(self, path):
-        self._tmp_temp_pkgs = self._packages
+        self._var__temp_pkgs = self._packages
 
     @abc.abstractmethod
     def _check_list(self, path):
-        self._tmp_temp_pkgs = set()
+        self._var__temp_pkgs = set()
 
     @abc.abstractmethod
     def _proc_update(self, path):

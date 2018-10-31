@@ -266,7 +266,8 @@ def get_pip_parser():
                                 help='update packages of CPython implementation')
     pip_spec_group.add_argument('-d', '--pre', action='store_true',
                                 help='include pre-release and development versions')
-    pip_spec_group.add_argument('-e', '--python', action='store', metavar='VER', dest='version',
+    pip_spec_group.add_argument('-e', '--python', action='append', nargs='+',
+                                default=list(), metavar='VER', dest='version',
                                 help='indicate packages from which version of Python will update')
     pip_spec_group.add_argument('-r', '--pypy', action='store_true',
                                 help='update packages of PyPy implementation')

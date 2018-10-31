@@ -10,7 +10,8 @@ import traceback
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.pip import PipCommand
 from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
+from macdaily.util.misc import (date, print_info, print_scpt, print_term,
+                                print_text, sudo)
 
 try:
     import subprocess32 as subprocess
@@ -80,19 +81,19 @@ class PipUpdate(PipCommand, UpdateCommand):
                 proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-                self._tmp_real_pkgs = set()
+                self._var__real_pkgs = set()
             else:
                 context = proc.decode()
                 print_text(context, self._file, redirect=self._vflag)
-                self._tmp_real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
+                self._var__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
             finally:
                 with open(self._file, 'a') as file:
                     file.write(f'Script done on {date()}\n')
         else:
-            self._tmp_real_pkgs = set()
+            self._var__real_pkgs = set()
 
-        self._tmp_lost_pkgs = set(_lost_pkgs)
-        self._tmp_temp_pkgs = set(package)
+        self._var__lost_pkgs = set(_lost_pkgs)
+        self._var__temp_pkgs = set(package)
 
     def _check_list(self, path):
         argv = [path, '-m', 'pip', 'list', '--outdated']
@@ -116,12 +117,18 @@ class PipUpdate(PipCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._tmp_temp_pkgs = set()
+            self._var__temp_pkgs = set()
         else:
-            # self._tmp_temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
-            context = json.loads(proc.decode().strip())
-            self._tmp_temp_pkgs = set(map(lambda item: item['name'], context))
+            # self._var__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
+            text = proc.decode()
+            start = text.rfind('[')
+            stop = text.rfind(']') + 1
+            context = json.loads(text[start:stop])
+            self._var__temp_pkgs = set(map(lambda item: item['name'], context))
 
+            prefix = text[:start]
+            if prefix:
+                print_text(prefix, self._file, redirect=self._vflag)
             if context:
                 name_len = max(7, max(map(lambda item: len(item['name']), context), default=7))
                 version_len = max(7, max(map(lambda item: len(item['version']), context), default=7))
@@ -159,7 +166,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
-        for package in self._tmp_temp_pkgs:
+        for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, sethome=True, askpass=self._askpass,
@@ -167,7 +174,7 @@ class PipUpdate(PipCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self._tmp_temp_pkgs
+        del self._var__temp_pkgs
 
         def _proc_check():
             argv = [path, '-m', 'pip', 'check']
@@ -180,11 +187,11 @@ class PipUpdate(PipCommand, UpdateCommand):
 
             _deps_pkgs = list()
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
-                context = proc.decode()
+                context = proc.stdout.decode()
                 print_text(context, self._file, redirect=self._vflag)
 
                 for line in filter(None, context.strip().split('\n')):
@@ -202,7 +209,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         def _proc_confirm():
             pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
             text = f'macdaily-update: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}'
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
             while True:
@@ -220,7 +227,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         _deps_pkgs = _proc_check()
         if not _deps_pkgs:
             text = f'macdaily-update: {green}pip{reset}: no broken dependencies'
-            print_text(text, self._file, redirect=self._qflag)
+            print_term(text, self._file, redirect=self._qflag)
             return
 
         text = f'Fixing broken {self.desc[0]} dependencies'
@@ -258,4 +265,4 @@ class PipUpdate(PipCommand, UpdateCommand):
             text = f'macdaily-update: {green}pip{reset}: all broken dependencies fixed'
         else:
             text = f'macdaily-update: {red}pip{reset}: all broken dependencies remain'
-        print_text(text, self._file, redirect=self._qflag)
+        print_term(text, self._file, redirect=self._qflag)

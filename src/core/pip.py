@@ -41,7 +41,10 @@ class PipCommand(Command):
         temp_ver = list()
         args_ver = namespace.pop('version', list())
         for item in args_ver:
-            temp_ver.extend(filter(match, item.split(',')))
+            if isinstance(item, str):
+                item = filter(match, item.split(','))
+            for version in map(lambda s: s.split(','), item):
+                temp_ver.extend(filter(match, version))
         self._version = set(temp_ver)
 
         return super()._pkg_args(namespace)
