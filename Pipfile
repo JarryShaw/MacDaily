@@ -12,12 +12,10 @@ macdaily = {path = ".", editable = true}
 pylint = "*"
 recommonmark = "*"
 sphinx-autobuild = "*"
-pexpect = "*"
 sphinx = "*"
 pycodestyle = "*"
 "autopep8" = "*"
 "doc8" = "*"
-"pep8" = "*"
 
 [requires]
 python_version = "3.7"
