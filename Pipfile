@@ -8,6 +8,7 @@ pipdeptree = "*"
 ptyng = "*"
 
 [dev-packages]
+macdaily = {path = ".", editable = true}
 pylint = "*"
 recommonmark = "*"
 sphinx-autobuild = "*"

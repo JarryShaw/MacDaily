@@ -39,8 +39,8 @@ class BrewCommand(Command):
         return ('Homebrew formula', 'Homebrew formulae')
 
     def _check_exec(self):
-        self.__exec_path = shutil.which('brew')
-        flag = (self.__exec_path is None)
+        self._tmp_exec_path = shutil.which('brew')
+        flag = (self._tmp_exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}brew{reset}: you may find Homebrew on '
@@ -59,8 +59,8 @@ class BrewCommand(Command):
         self._verbose = namespace.pop('verbose', False)
 
     def _loc_exec(self):
-        self._exec = {self.__exec_path}
-        del self.__exec_path
+        self._exec = {self._tmp_exec_path}
+        del self._tmp_exec_path
 
     def _proc_renew(self, path):
         text = 'Updating Homebrew database'

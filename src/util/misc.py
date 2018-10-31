@@ -132,7 +132,7 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
 
 
 def sudo(argv, file, *, askpass=None, sethome=False, redirect=False, timeout=None, executable=None):
-    def make_command():
+    def make_command(argv, askpass, sethome):
         if not isinstance(argv, str):
             argv = ' '.join(argv)
         if getpass.getuser() == 'root':
@@ -140,4 +140,5 @@ def sudo(argv, file, *, askpass=None, sethome=False, redirect=False, timeout=Non
         sudo_askpass = '' if askpass is None else f'SUDO_ASKPASS={askpass!r} '
         set_home = ' --set-home' if sethome else ''
         return f'{sudo_askpass}sudo --askpass{set_home} {argv}'
-    return run(make_command(), file, redirect=redirect, timeout=timeout, shell=True, executable=executable)
+    return run(make_command(argv, askpass, sethome), file,
+               redirect=redirect, timeout=timeout, shell=True, executable=executable)

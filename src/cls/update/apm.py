@@ -66,9 +66,9 @@ class ApmUpdate(ApmCommand, UpdateCommand):
             else:
                 _lost_pkgs.append(package)
 
-        self.__real_pkgs = set(_real_pkgs)
-        self.__lost_pkgs = set(_lost_pkgs)
-        self.__temp_pkgs = set(_temp_pkgs)
+        self._tmp_real_pkgs = set(_real_pkgs)
+        self._tmp_lost_pkgs = set(_lost_pkgs)
+        self._tmp_temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
         text = f'Checking outdated {self.desc[1]}'
@@ -88,7 +88,7 @@ class ApmUpdate(ApmCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self.__temp_pkgs = set()
+            self._tmp_temp_pkgs = set()
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -96,7 +96,7 @@ class ApmUpdate(ApmCommand, UpdateCommand):
             _temp_pkgs = list()
             for line in filter(lambda s: '->' in s, context.strip().split('\n')):
                 _temp_pkgs.append(re.sub(r'.* \(.*\)* .* -> .*', r'\1', line))
-            self.__temp_pkgs = set(_temp_pkgs)
+            self._tmp_temp_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
@@ -114,7 +114,7 @@ class ApmUpdate(ApmCommand, UpdateCommand):
         argv.append('--no-json')
 
         argc = ' '.join(argv)
-        for package in self.__temp_pkgs:
+        for package in self._tmp_temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if self._yes:
@@ -124,4 +124,4 @@ class ApmUpdate(ApmCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self.__temp_pkgs
+        del self._tmp_temp_pkgs

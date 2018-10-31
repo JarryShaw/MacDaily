@@ -174,6 +174,7 @@ class Command(metaclass=abc.ABCMeta):
                     ilst_pkg.append(package[1:])
                 else:
                     temp_pkg.append(package)
+        self._ilst = set(ilst_pkg)
         self._ignore = set(ilst_pkg)
         self._packages = set(temp_pkg)
 
@@ -195,17 +196,17 @@ class Command(metaclass=abc.ABCMeta):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            self.__lost_pkgs = set()
-            self.__real_pkgs = set()
-            self.__temp_pkgs = set()
+            self._tmp_lost_pkgs = set()
+            self._tmp_real_pkgs = set()
+            self._tmp_temp_pkgs = set()
             self._check_confirm()
             self._did_you_mean()
         self._proc_cleanup()
 
     def _check_confirm(self):
-        self.__temp_pkgs -= self._ignore
-        job = self.job[1] if len(self.__temp_pkgs) else self.job[0]
-        bold_pkgs = f'{reset}, {bold}'.join(self.__temp_pkgs)
+        self._tmp_temp_pkgs -= self._ignore
+        job = self.job[1] if len(self._tmp_temp_pkgs) else self.job[0]
+        bold_pkgs = f'{reset}, {bold}'.join(self._tmp_temp_pkgs)
         text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
                 f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
         print_text(text, self._file, redirect=self._qflag)
@@ -219,22 +220,23 @@ class Command(metaclass=abc.ABCMeta):
                 text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                         f'{self.desc[0]} {job} postponed due to user cancellation')
                 print_text(text, self._file, redirect=self._qflag)
-                self.__temp_pkgs = set()
+                self._tmp_temp_pkgs = set()
                 break
             else:
                 print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):
-        for package in self.__lost_pkgs:
+        for package in self._tmp_lost_pkgs:
             pattern = rf'.*{package}.*'
-            matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), self.__real_pkgs))
+            matches = f'{reset}, {bold}'.join(
+                filter(lambda s: re.match(pattern, s, re.IGNORECASE), self._tmp_real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                     f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
             print_text(text, self._file, redirect=self._qflag)
-        del self.__lost_pkgs
-        del self.__real_pkgs
+        del self._tmp_lost_pkgs
+        del self._tmp_real_pkgs
 
     def _proc_cleanup(self):
         pass

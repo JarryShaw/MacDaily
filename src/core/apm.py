@@ -24,8 +24,8 @@ class ApmCommand(Command):
         return ('Atom plug-in', 'Atom plug-ins')
 
     def _check_exec(self):
-        self.__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
-        flag = (self.__exec_path == (None, None))
+        self._tmp_exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
+        flag = (self._tmp_exec_path == (None, None))
         if flag:
             print(f'macdaily-update: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}apm{reset}: you may download Atom from '
@@ -37,7 +37,7 @@ class ApmCommand(Command):
         flag = super()._pkg_args(namespace)
 
         # if ``beta`` not set, ``apm`` is the only executable
-        if not self._beta and self.__exec_path[0] is None:
+        if not self._beta and self._tmp_exec_path[0] is None:
             return True
         return flag
 
@@ -48,7 +48,7 @@ class ApmCommand(Command):
 
     def _loc_exec(self):
         if self._beta:
-            self._exec = set(filter(None, self.__exec_path))
+            self._exec = set(filter(None, self._tmp_exec_path))
         else:
-            self._exec = {self.__exec_path[0]}
-        del self.__exec_path
+            self._exec = {self._tmp_exec_path[0]}
+        del self._tmp_exec_path

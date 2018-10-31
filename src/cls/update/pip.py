@@ -80,19 +80,19 @@ class PipUpdate(PipCommand, UpdateCommand):
                 proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-                self.__real_pkgs = set()
+                self._tmp_real_pkgs = set()
             else:
                 context = proc.decode()
                 print_text(context, self._file, redirect=self._vflag)
-                self.__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
+                self._tmp_real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
             finally:
                 with open(self._file, 'a') as file:
                     file.write(f'Script done on {date()}\n')
         else:
-            self.__real_pkgs = set()
+            self._tmp_real_pkgs = set()
 
-        self.__lost_pkgs = set(_lost_pkgs)
-        self.__temp_pkgs = set(package)
+        self._tmp_lost_pkgs = set(_lost_pkgs)
+        self._tmp_temp_pkgs = set(package)
 
     def _check_list(self, path):
         argv = [path, '-m', 'pip', 'list', '--outdated']
@@ -116,11 +116,11 @@ class PipUpdate(PipCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self.__temp_pkgs = set()
+            self._tmp_temp_pkgs = set()
         else:
-            # self.__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
+            # self._tmp_temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
             context = json.loads(proc.decode().strip())
-            self.__temp_pkgs = set(map(lambda item: item['name'], context))
+            self._tmp_temp_pkgs = set(map(lambda item: item['name'], context))
 
             if context:
                 name_len = max(7, max(map(lambda item: len(item['name']), context), default=7))
@@ -159,7 +159,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
-        for package in self.__temp_pkgs:
+        for package in self._tmp_temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, sethome=True, askpass=self._askpass,
@@ -167,7 +167,7 @@ class PipUpdate(PipCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self.__temp_pkgs
+        del self._tmp_temp_pkgs
 
         def _proc_check():
             argv = [path, '-m', 'pip', 'check']

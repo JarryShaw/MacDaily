@@ -38,11 +38,11 @@ class UpdateCommand(Command):
 
     @abc.abstractmethod
     def _check_pkgs(self, path):
-        self.__temp_pkgs = self._packages
+        self._tmp_temp_pkgs = self._packages
 
     @abc.abstractmethod
     def _check_list(self, path):
-        self.__temp_pkgs = set()
+        self._tmp_temp_pkgs = set()
 
     @abc.abstractmethod
     def _proc_update(self, path):

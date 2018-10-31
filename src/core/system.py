@@ -23,8 +23,8 @@ class SystemCommand(Command):
         return ('system software', 'system software')
 
     def _check_exec(self):
-        self.__exec_path = shutil.which('softwareupdate')
-        flag = (self.__exec_path is None)
+        self._tmp_exec_path = shutil.which('softwareupdate')
+        flag = (self._tmp_exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}system{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}system{reset}: '
@@ -34,5 +34,5 @@ class SystemCommand(Command):
         return flag
 
     def _loc_exec(self):
-        self._exec = {self.__exec_path}
-        del self.__exec_path
+        self._exec = {self._tmp_exec_path}
+        del self._tmp_exec_path

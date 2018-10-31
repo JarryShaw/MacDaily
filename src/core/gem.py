@@ -32,8 +32,8 @@ class GemCommand(Command):
         return ('Ruby gem', 'Ruby gems')
 
     def _check_exec(self):
-        self.__exec_path = shutil.which('gem')
-        flag = (self.__exec_path is None)
+        self._tmp_exec_path = shutil.which('gem')
+        flag = (self._tmp_exec_path is None)
         if flag:
             print(f'macdaily-update: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}gem{reset}: you may download RubyGems from '
@@ -49,7 +49,7 @@ class GemCommand(Command):
 
     def _loc_exec(self):
         if not (self._brew and self._system):
-            self._exec = {self.__exec_path}
+            self._exec = {self._tmp_exec_path}
         else:
             _exec_path = list()
             if self._brew:
@@ -80,4 +80,4 @@ class GemCommand(Command):
             if self._system and os.path.exists('/usr/bin/gem'):
                 _exec_path.append('/usr/bin/gem')
             self._exec = set(_exec_path)
-        del self.__exec_path
+        del self._tmp_exec_path

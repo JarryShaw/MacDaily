@@ -68,9 +68,9 @@ class NpmUpdate(NpmCommand, UpdateCommand):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self.__real_pkgs = set(_real_pkgs)
-        self.__lost_pkgs = set(_lost_pkgs)
-        self.__temp_pkgs = set(_temp_pkgs)
+        self._tmp_real_pkgs = set(_real_pkgs)
+        self._tmp_lost_pkgs = set(_lost_pkgs)
+        self._tmp_temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
         argv = [path, 'outdated']
@@ -92,7 +92,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self.__temp_pkgs = set()
+            self._tmp_temp_pkgs = set()
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -101,7 +101,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             for line in context.strip().split('\n')[1:]:
                 name, _, want, _ = line.split(maxsplit=3)
                 _temp_pkgs.append(f'{name}@{want}')
-            self.__temp_pkgs = set(_temp_pkgs)
+            self._tmp_temp_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
@@ -119,7 +119,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
         print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
-        for package in self.__temp_pkgs:
+        for package in self._tmp_temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, askpass=self._askpass,
@@ -127,4 +127,4 @@ class NpmUpdate(NpmCommand, UpdateCommand):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
-        del self.__temp_pkgs
+        del self._tmp_temp_pkgs

@@ -49,7 +49,7 @@ class CaskCommand(Command):
                     f"`{bold}brew tap homebrew/cask{reset}'")
             print_text(text, self._file, redirect=self._qflag)
             return True
-        self.__exec_path = shutil.which('brew')
+        self._tmp_exec_path = shutil.which('brew')
         return False
 
     @abc.abstractmethod
@@ -61,8 +61,8 @@ class CaskCommand(Command):
         self._verbose = namespace.pop('verbose', False)
 
     def _loc_exec(self):
-        self._exec = {self.__exec_path}
-        del self.__exec_path
+        self._exec = {self._tmp_exec_path}
+        del self._tmp_exec_path
 
     def _proc_renew(self, path):
         text = 'Updating Homebrew database'
