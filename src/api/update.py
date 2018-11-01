@@ -18,8 +18,8 @@ from macdaily.cls.update.system import SystemUpdate
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
-from macdaily.util.misc import (make_description, print_misc, print_term,
-                                print_text, record)
+from macdaily.util.misc import (beholder, make_description, print_misc,
+                                print_term, print_text, record)
 
 try:
     import pathlib2 as pathlib
@@ -32,6 +32,7 @@ except ImportError:
     import subprocess
 
 
+@beholder
 def update(argv=None):
     # parse args & set context redirection flags
     args = parse_args(argv)

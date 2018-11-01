@@ -124,9 +124,10 @@ class GemUpdate(GemCommand, UpdateCommand):
         for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
-            if self._yes:
-                args = f'yes y | {args}'
-            if sudo(f'{SHELL} -c {args!r}', self._file, redirect=self._qflag,
+            # TODO: revise yes flag
+            # if self._yes:
+            #     args = f'yes y | {args}'
+            if sudo(args, self._file, redirect=self._qflag,
                     askpass=self._askpass, timeout=self._timeout):
                 self._fail.append(package)
             else:

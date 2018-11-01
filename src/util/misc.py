@@ -25,6 +25,7 @@ def beholder(func):
             return func(*args, **kwargs)
         except KeyboardInterrupt:
             print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            sys.tracebacklimit = 0
             raise
     return wrapper
 
@@ -56,7 +57,8 @@ def print_info(text, file, redirect=False):
         end = str() if flag else os.linesep
         print(f'{bold}{blue}|💼|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
-        context = text if flag else f'{text}{os.linesep}'
+        context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
         fd.write(f'|💼| {context}')
 
 
@@ -66,18 +68,22 @@ def print_misc(text, file, redirect=False):
         end = str() if flag else os.linesep
         print(f'{bold}{grey}|📌|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
-        context = text if flag else f'{text}{os.linesep}'
-        fd.write(f'|📌| {context}\n')
+        context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(f'|📌| {context}')
 
 
 def print_scpt(text, file, redirect=False):
+    if not isinstance(text, str):
+        text = ' '.join(text)
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
         print(f'{bold}{purple}|📜|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
-        context = text if flag else f'{text}{os.linesep}'
-        fd.write(f'|📜| {context}\n')
+        context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(f'|📜| {context}')
 
 
 def print_term(text, file, redirect=False):
@@ -86,8 +92,9 @@ def print_term(text, file, redirect=False):
         end = str() if flag else os.linesep
         print(text, end=end)
     with open(file, 'a') as fd:
-        context = text if flag else f'{text}{os.linesep}'
-        fd.write(f'{context}\n')
+        context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(context)
 
 
 def print_text(text, file, redirect=False):
@@ -96,8 +103,9 @@ def print_text(text, file, redirect=False):
         end = str() if flag else os.linesep
         print(f'{dim}{text}{reset}', end=end)
     with open(file, 'a') as fd:
-        context = text if flag else f'{text}{os.linesep}'
-        fd.write(f'{context}\n')
+        context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(context)
 
 
 def record(file, args, today, config, redirect=False):
@@ -131,6 +139,7 @@ def run(argv, file, *, redirect=False, timeout=None, shell=False, executable=Non
             argv = f'{argv} >/dev/null'
         else:
             argv = f"{' '.join(argv)} >/dev/null"
+        return script(argv, file, timeout=timeout, shell=True, executable=executable)
     return script(argv, file, timeout=timeout, shell=shell, executable=executable)
 
 
@@ -148,13 +157,14 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
         data = os.read(fd, 1024)
         text = re.sub(rb'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
         typescript.write(text)
-        return dim.encode()+data+reset.encode()
+        return dim.encode()+data
 
     with open(file, 'a') as typescript:
         typescript.write(f'Script started on {date()}\n')
         typescript.write(f'command: {" ".join(argv)!r}\n')
     with open(file, 'ab') as typescript:
         returncode = ptyng.spawn(argv, master_read, timeout=timeout)
+        sys.stdout.write(reset)
     with open(file, 'a') as typescript:
         typescript.write(f'Script done on {date()}\n')
     return returncode
