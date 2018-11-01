@@ -400,35 +400,32 @@ Troubleshooting
 ---------------
 
 1. Where can I find the log files?
+    It depends. Since the path where logs go can be modified through
+    ``~/.dailyrc``, it may vary as your settings. In default, you may
+    find them under ``~/Library/Logs/Scripts``. And with every command,
+    logs can be found in its corresponding folder. Logs are named after
+    its running time, in the fold with corresponding date as its name.
 
-It depends. Since the path where logs go can be modified through
-``~/.dailyrc``, it may vary as your settings. In default, you may
-find them under ``~/Library/Logs/Scripts``. And with every command,
-logs can be found in its corresponding folder. Logs are named after
-its running time, in the fold with corresponding date as its name.
-
-Note that, normally, you can only find today's logs in the folder,
-since ``macdaily`` automatically archive ancient logs into
-``${logdir}/archive`` folder. And every week, ``${logdir}/archive``
-folder will be tape-archived into ``${logdir}/tarfile``. Then after a
-month, and your hard disk available, they will be moved into
-``/Volumes/Your Disk/Developers/archive.zip``.
+    Note that, normally, you can only find today's logs in the folder,
+    since ``macdaily`` automatically archive ancient logs into
+    ``${logdir}/archive`` folder. And every week, ``${logdir}/archive``
+    folder will be tape-archived into ``${logdir}/tarfile``. Then after a
+    month, and your hard disk available, they will be moved into
+    ``/Volumes/Your Disk/Developers/archive.zip``.
 
 2. What if my hard disk ain't plugged-in when running the scripts?
-
-Then the archiving and removing procedure will **NOT** perform. In
-case there might be some useful resources of yours.
+    Then the archiving and removing procedure will **NOT** perform. In
+    case there might be some useful resources of yours.
 
 3. Which directory should I set in the configuration file?
+    First and foremost, I highly recommend you **NOT** to modify the
+    paths in ``~/.dailyrc`` manually, **EXCEPT** your disk path
+    ``dskdir``.
 
-First and foremost, I highly recommend you **NOT** to modify the
-paths in ``~/.dailyrc`` manually, **EXCEPT** your disk path
-``dskdir``.
-
-But if you insist to do so, then make sure they are **VALID** and
-**available** with permission granted, and most importantly, have
-**NO** blank characters (``' \t\n\r\f\v'``) in the path, except
-``dskdir``.
+    But if you insist to do so, then make sure they are **VALID** and
+    **available** with permission granted, and most importantly, have
+    **NO** blank characters (``' \t\n\r\f\v'``) in the path, except
+    ``dskdir``.
 
 TODO
 ----
