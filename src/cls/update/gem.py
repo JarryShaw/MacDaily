@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
@@ -77,7 +78,7 @@ class GemUpdate(GemCommand, UpdateCommand):
         if self._verbose:
             argv.append('--verbose')
         args = ' '.join(argv)
-        print_scpt(args, self._file, redirect=self._vflag)
+        print_scpt(args, self._file, redirect=self._qflag)
         sudo(args, self._file, askpass=self._askpass)
 
         text = f'Checking outdated {self.desc[1]}'
@@ -106,7 +107,7 @@ class GemUpdate(GemCommand, UpdateCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
-            for item in filter(None, context.strip().split('\n')):
+            for item in filter(lambda s: re.match(r'\w* \(.*\)', s), context.strip().split('\n')):
                 _temp_pkgs.append(item.split()[0])
             self._var__temp_pkgs = set(_temp_pkgs)
             # self._var__temp_pkgs = set(map(lambda s: s.split()[0], filter(None, context.strip().split('\n'))))

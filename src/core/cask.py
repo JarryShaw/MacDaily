@@ -40,7 +40,7 @@ class CaskCommand(Command):
 
     def _check_exec(self):
         try:
-            subprocess.check_call(['brew', 'command', 'cask'])
+            subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print(f'macdaily-update: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)

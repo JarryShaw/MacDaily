@@ -224,7 +224,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         text = f'Checking broken {self.desc[0]} dependencies'
         print_info(text, self._file, redirect=self._qflag)
 
-        _deps_pkgs = _proc_check()
+        _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
             text = f'macdaily-update: {green}pip{reset}: no broken dependencies'
             print_term(text, self._file, redirect=self._qflag)
@@ -263,7 +263,7 @@ class PipUpdate(PipCommand, UpdateCommand):
                         with contextlib.suppress(ValueError):
                             self._pkgs.remove(real_name)
                 _done_pkgs |= _deps_pkgs
-                _deps_pkgs = _proc_check() - _done_pkgs
+                _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
             text = f'macdaily-update: {green}pip{reset}: all broken dependencies fixed'
         else:
             text = f'macdaily-update: {red}pip{reset}: all broken dependencies remain'
