@@ -71,13 +71,17 @@ def update(argv=None):
             print_term(text, filename, redirect=verbose)
             continue
 
-        # update package specifications
+        # skip commands with no package spec
         packages = getattr(args, f'{mode}_pkgs', list())
-        namespace = getattr(args, mode, dict(vars(args), packages=list()))
+        namespace = getattr(args, mode, None)
         if not (packages or namespace or args.all):
             text = f'macdaily-update: {yellow}{mode}{reset}: nothing to upgrade'
             print_term(text, filename, redirect=verbose)
             continue
+
+        # update package specifications
+        if namespace is None:
+            namespace = dict(vars(args), packages=list())
         namespace['packages'].extend(packages)
 
         # check master output flags

@@ -113,14 +113,11 @@ class ApmUpdate(ApmCommand, UpdateCommand):
         argv.append('--no-list')
         argv.append('--no-json')
 
-        argc = ' '.join(argv)
+        argv.append('')
         for package in self._var__temp_pkgs:
-            args = f'{argc} {package}'
-            print_scpt(args, self._file, redirect=self._qflag)
-            if self._yes:
-                args = f"yes yes | {args}"
-            if run(args, self._file, shell=True,
-                   redirect=self._qflag, timeout=self._timeout):
+            argv[-1] = package
+            print_scpt(argv, self._file, redirect=self._qflag)
+            if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
