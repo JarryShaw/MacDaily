@@ -127,8 +127,8 @@ class Command(metaclass=abc.ABCMeta):
         - ``brew_renew`` -- ``float``, Homebrew renew timestamp
 
         """
-        self._qflag = namespace.pop('quiet', False)
-        self._vflag = self._qflag or (not namespace.pop('verbose', False))
+        self._qflag = namespace.get('quiet', False)
+        self._vflag = self._qflag or (not namespace.get('verbose', False))
 
         text = f'Running update command for {self.mode}'
         print_info(text, filename, redirect=self._qflag)

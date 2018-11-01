@@ -177,8 +177,10 @@ class PipCommand(Command):
         if self._verbose:
             argv.append('-v')
         argc = ' '.join(argv)
-        for path in itertools.chain(glob.glob('/var/root/Library/Caches/pip/*/'),
-                                    glob.glob(os.path.expanduser('~/Library/Caches/pip/*/'))):
+        for path in ['/var/root/Library/Caches/pip/http/',
+                     '/var/root/Library/Caches/pip/wheels/',
+                     os.path.expanduser('~/Library/Caches/pip/http/'),
+                     os.path.expanduser('~/Library/Caches/pip/wheels/')]:
             args = f'{argc} {path}'
             print_scpt(args, self._file, redirect=self._qflag)
             sudo(args, self._file, askpass=self._askpass, redirect=self._qflag)

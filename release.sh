@@ -36,7 +36,16 @@ mv -f dist/*.whl wheels/ 2> /dev/null
 mv -f dist/*.tar.gz sdist/ 2> /dev/null
 
 # distribute to PyPI and TestPyPI
-python3 setup.py sdist bdist_wheel
+python3 setup.py sdist
+for python in /usr/bin/python \
+              /usr/local/Cellar/pypy/*/bin/pypy \
+              /usr/local/Cellar/pypy3/*/bin/pypy3 \
+              /usr/local/Cellar/python/*/bin/python3.? \
+              /usr/local/Cellar/python@2/*/bin/python2.? \
+              /Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
+            # /System/Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
+    $python setup.py bdist_wheel
+done
 twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 

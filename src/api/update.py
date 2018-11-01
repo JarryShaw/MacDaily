@@ -85,11 +85,15 @@ def update(argv=None):
             namespace = dict(vars(args), packages=list())
         namespace['packages'].extend(packages)
 
-        # check master output flags
+        # check master controlling flags
+        if args.yes:
+            namespace['yes'] = True
         if args.quiet:
             namespace['quiet'] = True
         if args.verbose:
             namespace['verbose'] = True
+        if args.no_cleanup:
+            namespace['no_cleanup'] = True
 
         # run command
         cmd_cls = globals()[f'{mode.capitalize()}Update']

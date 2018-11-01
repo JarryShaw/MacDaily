@@ -153,11 +153,14 @@ def script(argv=SHELL, file='typescript', *, timeout=None, shell=False, executab
     if executable:
         argv[0] = executable
 
+    dim_bytes = dim.encode()
+    repl = rb'\1' + dim_bytes
+
     def master_read(fd):
         data = os.read(fd, 1024)
         text = re.sub(rb'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', rb'', data, flags=re.IGNORECASE)
         typescript.write(text)
-        return dim.encode()+data
+        return dim_bytes + re.sub(rb'(\033\[[0-9][0-9;]*m)', repl, data, flags=re.IGNORECASE)
 
     with open(file, 'a') as typescript:
         typescript.write(f'Script started on {date()}\n')
