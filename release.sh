@@ -49,19 +49,19 @@ done
 twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 
-# upload to GitHub
-git pull
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
-git add .
-if [[ -z "$1" ]] ; then
-    git commit -a -S
-else
-    git commit -a -S -m "$1"
-fi
-git push
+# # upload to GitHub
+# git pull
+# ret="$?"
+# if [[ $ret -ne "0" ]] ; then
+#     exit $ret
+# fi
+# git add .
+# if [[ -z "$1" ]] ; then
+#     git commit -a -S
+# else
+#     git commit -a -S -m "$1"
+# fi
+# git push
 
 # # archive original files
 # for file in $( ls archive ) ; do
