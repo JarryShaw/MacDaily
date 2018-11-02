@@ -73,6 +73,17 @@ so.
 Do please **NOTE** that, **MacDaily** runs only with support of Python
 from version **3.4** and on. And it shall only work ideally on **macOS**.
 
+Also, for best performance of MacDaily, |expect|_ is expected to be installed
+on your Mac. Recommended installation approach is from
+`Homebrew <https://brew.sh>`__, as shown below.
+
+.. code:: shell
+
+    brew install expect
+
+.. |expect| replace:: ``expect``
+.. _expect: https://core.tcl.tk/expect
+
 Configuration
 -------------
 
