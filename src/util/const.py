@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """utility constants"""
 
+import getpass
 import os
 import shutil
 import sys
+import pwd
 
 # version string
-__version__ = '2018.11.01.dev10'
+__version__ = '2018.11.02.dev11'
 
 # terminal commands
 python = sys.executable         # Python version
@@ -15,6 +17,7 @@ program = ' '.join(sys.argv)    # arguments
 # environment macros
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SHELL = os.getenv('SHELL', shutil.which('sh'))
+USER = pwd.getpwnam(getpass.getuser()).pw_gecos
 
 # terminal length
 length = shutil.get_terminal_size().columns

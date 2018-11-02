@@ -114,7 +114,7 @@ class Command(metaclass=abc.ABCMeta):
     def notfound(self):
         return set(self._lost)
 
-    def __init__(self, namespace, filename, timeout, askpass, disk_dir, brew_renew):
+    def __init__(self, namespace, filename, timeout, askpass, password, disk_dir, brew_renew):
         """Initialisation.
 
         Args:
@@ -123,6 +123,7 @@ class Command(metaclass=abc.ABCMeta):
         - ``filename`` -- ``str``, real path of log file
         - ``timeout`` -- ``int``, timeout interval for main process
         - ``askpass`` -- ``str``, path to ``macdaily-askpass``
+        - ``password`` --  ``str``/``bytes``, sudo password
         - ``disk_dir`` -- ``str``, real root path of archive directory
         - ``brew_renew`` -- ``float``, Homebrew renew timestamp
 
@@ -141,6 +142,7 @@ class Command(metaclass=abc.ABCMeta):
         self._file = filename
         self._timeout = timeout
         self._askpass = askpass
+        self._password = password
         self._disk_dir = disk_dir
         self._brew_renew = brew_renew
 

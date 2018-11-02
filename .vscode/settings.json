@@ -4,6 +4,8 @@
     "cSpell.words": [
         "arcdir",
         "bcsy",
+        "bdim",
+        "bpwd",
         "cfgdct",
         "cfgmode",
         "ctime",
@@ -13,7 +15,9 @@
         "dskdir",
         "dskname",
         "dskpath",
+        "gecos",
         "genl",
+        "getpwnam",
         "idep",
         "ilst",
         "ldpath",
@@ -37,5 +41,9 @@
         "tmpath",
         "tmpdir",
         "vflag"
+    ],
+    "python.linting.pep8Args": [
+        "--max-line-length=120",
+        "--ignore=W605"
     ]
 }

@@ -18,8 +18,9 @@ from macdaily.cls.update.system import SystemUpdate
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
-from macdaily.util.misc import (beholder, make_description, print_misc,
-                                print_term, print_text, record)
+from macdaily.util.misc import (beholder, get_pass, make_description,
+                                print_info, print_misc, print_term, print_text,
+                                record)
 
 try:
     import pathlib2 as pathlib
@@ -64,6 +65,11 @@ def update(argv=None):
     print_text(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
+    # ask for password
+    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
+    print_text(text, filename, redirect=quiet)
+    password = get_pass(askpass)
+
     cmd_list = list()
     for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
         # skip disabled commands
@@ -97,7 +103,7 @@ def update(argv=None):
 
         # run command
         cmd_cls = globals()[f'{mode.capitalize()}Update']
-        command = cmd_cls(namespace, filename, timeout, askpass, disk_dir, brew_renew)
+        command = cmd_cls(namespace, filename, timeout, askpass, password, disk_dir, brew_renew)
 
         # record command
         cmd_list.append(command)

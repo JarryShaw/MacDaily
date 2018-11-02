@@ -25,6 +25,8 @@ class UpdateCommand(Command):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
+            text = f'Using {self.name} executable {path!r}'
+            print_info(text, self._file, redirect=self._qflag)
             if self._proc_logging(path):
                 self._proc_update(path)
             else:
