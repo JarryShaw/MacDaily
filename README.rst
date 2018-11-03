@@ -2,7 +2,7 @@
     OS X Yosemite, OS X El Capitan, macOS Sierra
     macOS High Sierra, macOS Mojave
 :Language: Python (version ≥ 3.4)
-:Environment: Console / Terminal
+:Environment: Console | Terminal
 
 ========
 MacDaily
@@ -47,18 +47,18 @@ version from `PyPI <https://pypi.org>`__.
 
 .. code:: shell
 
-    pip install macdaily
+    $ pip install macdaily
 
 Or if you prefer the real-latest version and fetch from this Git
 repository, then the script below should be used.
 
 .. code:: shell
 
-    git clone https://github.com/JarryShaw/MacDaily.git
-    cd MacDaily
-    pip install -e .
+    $ git clone https://github.com/JarryShaw/MacDaily.git
+    $ cd MacDaily
+    $ pip install -e .
     # and to update at any time
-    git pull
+    $ git pull
 
 And for tree format support in ``dependency`` command, you may need
 ``pipdeptree``, then implicitly you can use the following script to do
@@ -66,9 +66,9 @@ so.
 
 .. code:: shell
 
-    pip install macdaily[pipdeptree]
+    $ pip install macdaily[pipdeptree]
     # or explicitly...
-    pip install macdaily pipdeptree
+    $ pip install macdaily pipdeptree
 
 Do please **NOTE** that, **MacDaily** runs only with support of Python
 from version **3.4** and on. And it shall only work ideally on **macOS**.
@@ -79,7 +79,7 @@ approach is from `Homebrew <https://brew.sh>`__, as shown below.
 
 .. code:: shell
 
-    brew install expect
+    $ brew install expect
 
 .. |expect| replace:: ``expect``
 .. _expect: https://core.tcl.tk/expect
@@ -384,7 +384,7 @@ manual. And here is a brief catalogue for the manuals.
 
   - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/res/uninstall.rst#brew>`__
   - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/res/uninstall.rst#cask>`__
-  - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/uninstall.rst#pip>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/uninstall.rst#pip>`__
 
 - `Update Command <https://github.com/JarryShaw/MacDaily/blob/dev/res/update.rst>`__
 
@@ -394,8 +394,8 @@ manual. And here is a brief catalogue for the manuals.
   - `Ruby Gems <https://github.com/JarryShaw/MacDaily/blob/dev/res/update.rst#gem>`__
   - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/res/update.rst#mas>`__
   - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/res/update.rst#npm>`__
-  - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#pip>`__
-  - `System Software <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#system>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/update.rst#pip>`__
+  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/update.rst#system>`__
 
 - `Developer Manual <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst>`__
 

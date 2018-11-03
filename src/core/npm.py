@@ -30,7 +30,7 @@ class NpmCommand(Command):
         if flag:
             print(f'macdaily-update: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-update: {red}npm{reset}: you may download Node.js from '
-                    f'{purple_bg}{under}https://nodejs.org/{reset}')
+                    f'{purple_bg}{under}https://nodejs.org{reset}')
             print_term(text, self._file, redirect=self._qflag)
         return flag
 
