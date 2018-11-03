@@ -490,7 +490,7 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="system">Python Package Update Automator</a>
+    <a name="system">System Software Update Automator</a>
     </h4>
 
 .. code:: man
