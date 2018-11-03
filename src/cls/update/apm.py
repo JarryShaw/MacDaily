@@ -103,13 +103,13 @@ class ApmUpdate(ApmCommand, UpdateCommand):
 
     def _proc_update(self, path):
         argv = [path, 'upgrade']
+        argv.extend(self._update_opts)
         if self._yes:
             argv.append('--no-confirm')
         if self._verbose:
             argv.append('--verbose')
         if self._quiet:
             argv.append('--quiet')
-        argv.extend(self._update_opts)
         argv.append('--no-list')
         argv.append('--no-json')
 

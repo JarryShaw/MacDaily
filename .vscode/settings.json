@@ -45,5 +45,6 @@
     "python.linting.pep8Args": [
         "--max-line-length=120",
         "--ignore=W605"
-    ]
+    ],
+    "restructuredtext.confPath": "/Users/jarryshaw/Documents/GitHub/MacDailyX/docs/conf.py"
 }

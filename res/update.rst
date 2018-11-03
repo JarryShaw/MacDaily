@@ -1,8 +1,8 @@
-:Command Exectuable:
+:Command Executable:
     ``macdaily update`` | ``md-update``
 :Supported Commands:
     ``apm``, ``brew``, ``cask``, ``gem``,
-    ``mas``, ``npm``,``pip``, ``system``
+    ``mas``, ``npm``, ``pip``, ``system``
 
 ==============================
 macOS Package Update Automator
@@ -28,7 +28,7 @@ macOS Package Update Automator
 About
 -----
 
-MacDaily provides intelligent sollution for package update automation.
+MacDaily provides intelligent solution for package update automation.
 MacDaily ``update`` command will automatically update all outdated packages
 installed through --
 
@@ -44,7 +44,7 @@ installed through --
 Usage
 -----
 
-.. code:: shell
+.. code:: man
 
     usage: macdaily update [options] <mode-selection> ...
 
@@ -108,15 +108,74 @@ and ``--no-cleanup`` are *mandatory* for all commands once set to ``True``.
 That is to say, if you set these flags in global options, they will overwrite
 corresponding flags in command specific options.
 
+.. raw:: html
+
+    <h4>Nota Bene</h4>
+
+For all options that take package names, a mini-language for
+condition specification is provided.
+
++--------------+---------------------+
+|    Format    |    Specification    |
++==============+=====================+
+| ``package``  | upgrade ``package`` |
++--------------+---------------------+
+| ``!package`` | ignore ``package``  |
++--------------+---------------------+
+
+Since exclamation mark (``!``) has special meanings in
+`Shell <https://en.wikipedia.org/wiki/Shell_script>`__ scripts,
+it is highly recommended using ``'!package'`` literal to specify
+ignoring packages.
+
 Commands
 --------
 
-|h-apm|
--------
+.. raw:: html
 
-.. |h-apm| raw:: html
+    <h4>
+    <a name="apm">Atom Plug-In Update Automator</a>
+    </h4>
 
-    <a name="apm">Atom Plug-Ins</a>
+.. code:: man
+
+    usage: macdaily update apm [options] <plug-ins>
+
+    Atom Plug-In Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -b, --beta            update Atom Beta plug-ins
+      -p PI [PI ...], --packages PI [PI ...]
+                            name of Atom plug-ins to update
+
+    general arguments:
+      -a, --all             update all plug-ins installed through Atom Package
+                            Manager
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for `apm upgrade --list` command
+      -U ARG, --update ARG  options for `apm upgrade <plug-in>` command
+
+Note that the Package Manager (``apm``) for
+`Atom Beta <https://atom.io/beta>`__ is normally suffixed with ``-beta``.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+------------------------------------------------------+
+|      Option       |                       Command                        |
++===================+======================================================+
+| ``--logging=ARG`` |  ``apm upgrade ${ARG} --no-color --no-json --list``  |
++-------------------+------------------------------------------------------+
+| ``--update=ARG``  | ``apm upgrade ${ARG} --no-json --no-list <plug-in>`` |
++-------------------+------------------------------------------------------+
 
 TODO
 ----
