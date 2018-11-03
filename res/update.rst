@@ -472,7 +472,7 @@ might give a trivial *did-you-mean* correction.
 
 Possible Python executables and corresponding flags are listed as below.
 
-.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.heic
+.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.png
 
 NB:
     Python provided by macOS system does not have ``pip`` installed.
@@ -540,8 +540,8 @@ For miscellaneous arguments, the runtime commands are as below.
 TODO
 ----
 
-✔️ reconstruct update CLI
-❌ implement further spec for the mini-language
+- ✔️ reconstruct update CLI
+- ❌ implement further spec for the mini-language
 
 .. |apm| replace:: ``apm``
 .. _apm: #apm
