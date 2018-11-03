@@ -108,7 +108,7 @@ class MasUpdate(MasCommand, UpdateCommand):
         argc = ' '.join(argv)
         for (code, package) in self._var__temp_pkgs:
             print_scpt(f'{argc} {package} [{code}]', self._file, redirect=self._qflag)
-            if sudo(f'{argc} {code}', self._file, timeout=self._timeout,
+            if sudo(f'{argc} {code}', self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):
                 self._fail.append(package)
             else:

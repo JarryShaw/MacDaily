@@ -108,12 +108,9 @@ and ``--no-cleanup`` are *mandatory* for all commands once set to ``True``.
 That is to say, if you set these flags in global options, they will overwrite
 corresponding flags in command specific options.
 
-.. raw:: html
-
-    <h4>Nota Bene</h4>
-
-For all options that take package names, a mini-language for
-condition specification is provided.
+NB:
+    For all options that take package names, a mini-language for
+    condition specification is provided.
 
 +--------------+---------------------+
 |    Format    |    Specification    |
@@ -161,13 +158,14 @@ Commands
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for `apm upgrade --list` command
-      -U ARG, --update ARG  options for `apm upgrade <plug-in>` command
+                            options for 'apm upgrade --list' command
+      -U ARG, --update ARG  options for 'apm upgrade <plug-in>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-    **NOTE** -- Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
+NB:
+    Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
     is normally present as ``apm-beta``.
 
 For miscellaneous arguments, the runtime commands are as below.
@@ -199,8 +197,8 @@ For miscellaneous arguments, the runtime commands are as below.
     specification arguments:
       -f, --force           always do a slower, full update check even if
                             unnecessary
-      -m, --merge           `git merge` is used to include updates (rather
-                            than `git rebase`)
+      -m, --merge           'git merge' is used to include updates (rather
+                            than 'git rebase')
       -p FORM [FORM ...], --packages FORM [FORM ...]
                             name of Homebrew formulae to update
 
@@ -214,8 +212,8 @@ For miscellaneous arguments, the runtime commands are as below.
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for `brew outdated` command
-      -U ARG, --update ARG  options for `brew upgrade <formula>` command
+                            options for 'brew outdated' command
+      -U ARG, --update ARG  options for 'brew upgrade <formula>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -247,12 +245,12 @@ For miscellaneous arguments, the runtime commands are as below.
       -V, --version         show program's version number and exit
 
     specification arguments:
-      -f, --force           use `--force' when running `brew cask
+      -f, --force           use '--force' when running 'brew cask
                             upgrade <cask>' command
-      -g, --greedy          use `--greedy' when running `brew cask
+      -g, --greedy          use '--greedy' when running 'brew cask
                             upgrade <cask>' command
-      -m, --merge           `git merge` is used to include updates (rather
-                            than `git rebase`)
+      -m, --merge           'git merge' is used to include updates (rather
+                            than 'git rebase')
       -x, --exhaust         exhaustively check Caskroom for outdated Homebrew
                             Casks
       -p CASK [CASK ...], --packages CASK [CASK ...]
@@ -268,8 +266,8 @@ For miscellaneous arguments, the runtime commands are as below.
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for `brew cask outdated` command
-      -U ARG, --update ARG  options for `brew cask upgrade <cask>` command
+                            options for 'brew cask outdated' command
+      -U ARG, --update ARG  options for 'brew cask upgrade <cask>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -314,14 +312,15 @@ For miscellaneous arguments, the runtime commands are as below.
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for `gem outdated` command
-      -U ARG, --update ARG  options for `gem update <gem>` command
+                            options for 'gem outdated' command
+      -U ARG, --update ARG  options for 'gem update <gem>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-    **NOTE** -- RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
-    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``
+NB:
+    RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
+    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
 
 For miscellaneous arguments, the runtime commands are as below.
 
@@ -333,9 +332,215 @@ For miscellaneous arguments, the runtime commands are as below.
 | ``--update=ARG``  | ``gem update [options] ${ARG} <gem>`` |
 +-------------------+---------------------------------------+
 
+.. raw:: html
+
+    <h4>
+    <a name="mas">macOS Application Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update mas [options] <applications>
+
+    macOS Application Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -p APP [APP ...], --packages APP [APP ...]
+                            name of macOS applications to update
+
+    general arguments:
+      -a, --all             update all macOS applications installed through Mac
+                            App Store
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for 'mas outdated' command
+      -U ARG, --update ARG  options for 'mas upgrade <application>'
+                            command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial *did-you-mean* correction.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+--------------------------------------+
+|      Option       |               Command                |
++===================+======================================+
+| ``--logging=ARG`` | ``mas outdated ${ARG}``              |
++-------------------+--------------------------------------+
+| ``--update=ARG``  | ``mas upgrade ${ARG} <application>`` |
++-------------------+--------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="npm">Node.js Module Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update npm [options] <modules>
+
+    Node.js Module Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -p MOD [MOD ...], --packages MOD [MOD ...]
+                            name of Node.js modules to update
+
+    general arguments:
+      -a, --all             update all Node.js modules installed through Node.js
+                            Package Manager
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for 'npm outdated --global' command
+      -U ARG, --update ARG  options for 'npm upgrade --global <module>'
+                            command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial *did-you-mean* correction.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+-----------------------------------------------------------+
+|      Option       |                           Command                         |
++===================+===========================================================+
+| ``--logging=ARG`` | ``npm outdated ${ARG} --no-parseable --no-json --global`` |
++-------------------+-----------------------------------------------------------+
+| ``--update=ARG``  | ``npm upgrade [options] ${ARG} --global <module>``        |
++-------------------+-----------------------------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="pip">Python Package Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update pip [options] <packages>
+
+    Python Package Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -b, --brew            update packages of Python installed from Homebrew
+      -c, --cpython         update packages of CPython implementation
+      -d, --pre             include pre-release and development versions
+      -e VER [VER ...], --python VER [VER ...]
+                            indicate packages from which version of Python will
+                            update
+      -r, --pypy            update packages of PyPy implementation
+      -s, --system          update packages of Python provided by macOS system
+      -p PKG [PKG ...], --packages PKG [PKG ...]
+                            name of Python packages to update
+
+    general arguments:
+      -a, --all             update all Python packages installed through Python
+                            Package Index
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for 'pip list --outdated' command
+      -U ARG, --update ARG  options for 'pip install --upgrade <package>'
+                            command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial *did-you-mean* correction.
+
+Possible Python executables and corresponding flags are listed as below.
+
+.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.heic
+
+NB:
+    Python provided by macOS system does not have ``pip`` installed.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+------------------------------------------------------+
+|      Option       |                         Command                      |
++===================+======================================================+
+| ``--logging=ARG`` | ``pip list --outdated [options] ${ARG}``             |
++-------------------+------------------------------------------------------+
+| ``--update=ARG``  | ``pip install --upgrade [options] ${ARG} <package>`` |
++-------------------+------------------------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="system">Python Package Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update system [options] <software>
+
+    System Software Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -R, --restart         automatically restart (or shut down) if required to
+                            complete installation
+      -r, --recommended     only update software that is recommended for your
+                            system
+      -p SW [SW ...], --packages SW [SW ...]
+                            name of system software to update
+
+    general arguments:
+      -a, --all             update all system software installed through
+                            'softwareupdate'
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for 'softwareupdate --list' command
+      -U ARG, --update ARG  options for 'softwareupdate --install
+                            <software>' command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial *did-you-mean* correction.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+--------------------------------------------------------------------+
+|      Option       |                              Command                               |
++===================+====================================================================+
+| ``--logging=ARG`` | ``softwareupdate --list ${ARG}``                                   |
++-------------------+--------------------------------------------------------------------+
+| ``--update=ARG``  | ``softwareupdate --install --no-scan [options] ${ARG} <software>`` |
++-------------------+--------------------------------------------------------------------+
+
 TODO
 ----
 
+✔️ reconstruct update CLI
 ❌ implement further spec for the mini-language
 
 .. |apm| replace:: ``apm``
