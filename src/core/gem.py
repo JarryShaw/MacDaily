@@ -78,7 +78,10 @@ class GemCommand(Command):
                 finally:
                     with open(self._file, 'a') as file:
                         file.write(f'Script done on {date()}\n')
-            if self._system and os.path.exists('/usr/bin/gem'):
-                _exec_path.append('/usr/bin/gem')
+            if self._system:
+                if os.path.exists('/usr/bin/gem'):
+                    _exec_path.append('/usr/bin/gem')
+                else:
+                    _exec_path.extend(glob.glob('/System/Library/Frameworks/Ruby.framework/Versions/?.?/usr/bin/gem'))
             self._exec = set(_exec_path)
         del self._var__exec_path

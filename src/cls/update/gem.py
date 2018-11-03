@@ -133,7 +133,7 @@ class GemUpdate(GemCommand, UpdateCommand):
             print_scpt(args, self._file, redirect=self._qflag)
             yes = 'y' if self._yes else None
             if sudo(argv, self._file, self._password, timeout=self._timeout,
-                     redirect=self._qflag, verbose=self._vflag, yes=yes):
+                    redirect=self._qflag, verbose=self._vflag, yes=yes):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

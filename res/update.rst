@@ -165,7 +165,7 @@ Commands
       -U ARG, --update ARG  options for `apm upgrade <plug-in>` command
 
 When using ``--package`` option, if given wrong package name, MacDaily
-might give a trivial 'did-you-mean' correction.
+might give a trivial *did-you-mean* correction.
 
     **NOTE** -- Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
     is normally present as ``apm-beta``.
@@ -218,22 +218,22 @@ For miscellaneous arguments, the runtime commands are as below.
       -U ARG, --update ARG  options for `brew upgrade <formula>` command
 
 When using ``--package`` option, if given wrong package name, MacDaily
-might give a trivial 'did-you-mean' correction.
+might give a trivial *did-you-mean* correction.
 
 For miscellaneous arguments, the runtime commands are as below.
 
 +-------------------+----------------------------------------------+
 |      Option       |                   Command                    |
 +===================+==============================================+
-| ``--logging=ARG`` | ``brew outdated ${ARG} [options]``           |
+| ``--logging=ARG`` | ``brew outdated [options] ${ARG}``           |
 +-------------------+----------------------------------------------+
-| ``--update=ARG``  | ``brew upgrade ${ARG} [options] <formula>``  |
+| ``--update=ARG``  | ``brew upgrade [options] ${ARG} <formula>``  |
 +-------------------+----------------------------------------------+
 
 .. raw:: html
 
     <h4>
-    <a name="brew">Homebrew Cask Update Automator</a>
+    <a name="cask">Homebrew Cask Update Automator</a>
     </h4>
 
 .. code:: man
@@ -272,17 +272,66 @@ For miscellaneous arguments, the runtime commands are as below.
       -U ARG, --update ARG  options for `brew cask upgrade <cask>` command
 
 When using ``--package`` option, if given wrong package name, MacDaily
-might give a trivial 'did-you-mean' correction.
+might give a trivial *did-you-mean* correction.
 
 For miscellaneous arguments, the runtime commands are as below.
 
-+-------------------+---------------------------------------------------+
-|      Option       |                      Command                      |
-+===================+===================================================+
-| ``--logging=ARG`` | ``brew cask outdated ${ARG} [options]``           |
-+-------------------+---------------------------------------------------+
-| ``--update=ARG``  | ``brew cask upgrade ${ARG} [options] <formula>``  |
-+-------------------+---------------------------------------------------+
++-------------------+------------------------------------------------+
+|      Option       |                    Command                     |
++===================+================================================+
+| ``--logging=ARG`` | ``brew cask outdated [options] ${ARG}``        |
++-------------------+------------------------------------------------+
+| ``--update=ARG``  | ``brew cask upgrade [options] ${ARG} <cask>``  |
++-------------------+------------------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="gem">Ruby Gem Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update gem [options] <gems>
+
+    Ruby Gem Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -b, --brew            update gems of Ruby installed from Homebrew
+      -s, --system          update gems of Ruby provided by macOS system
+      -p GEM [GEM ...], --packages GEM [GEM ...]
+                            name of Ruby gems to update
+
+    general arguments:
+      -a, --all             update all gems installed through RubyGems
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for `gem outdated` command
+      -U ARG, --update ARG  options for `gem update <gem>` command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial *did-you-mean* correction.
+
+    **NOTE** -- RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
+    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+---------------------------------------+
+|      Option       |                Command                |
++===================+=======================================+
+| ``--logging=ARG`` | ``gem outdated [options] ${ARG}``     |
++-------------------+---------------------------------------+
+| ``--update=ARG``  | ``gem update [options] ${ARG} <gem>`` |
++-------------------+---------------------------------------+
 
 TODO
 ----
