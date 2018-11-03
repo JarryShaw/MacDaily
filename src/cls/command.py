@@ -57,6 +57,7 @@ class Command(metaclass=abc.ABCMeta):
         0. singular
         1. plural
     - ``packages`` -- ``set<str>``, process succeeded packages
+    - ``ignored`` -- ``set<str>``, ignored packages (specified in options)
     - ``failed`` -- ``set<str>``, process failed packages
     - ``notfound`` -- ``set<str>``, unknown packages (not found in registry)
 

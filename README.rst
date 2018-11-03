@@ -403,9 +403,12 @@ manual. And here is a brief catalogue for the manuals.
   - `Command Classes <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#cmd>`__
   - `Miscellaneous Utilities <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#util>`__
 
-    - `Constant Macros <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#const>`__
+    - `ANSI Sequences <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#color>`__
     - `Print Utilities <https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#print>`__
     - |script|_
+
+.. |script| replace:: UNIX ``script``
+.. _script: https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#script
 
 Troubleshooting
 ---------------
@@ -449,8 +452,6 @@ TODO
 - ✔️ optimise ``KeyboardInterrupt`` handling procedure
 - ✔️ review ``pip`` implementation and version indication
 
-.. |script| replace:: UNIX ``script``
-.. _script: https://github.com/JarryShaw/MacDaily/blob/dev/res/miscellanea.rst#script
 .. |archive| replace:: ``archive``
 .. _archive: https://github.com/JarryShaw/MacDaily/blob/dev/res/archive.rst
 .. |bundle| replace:: ``bundle``
