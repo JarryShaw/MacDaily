@@ -241,13 +241,14 @@ class Command(metaclass=abc.ABCMeta):
     def _did_you_mean(self):
         for package in self._var__lost_pkgs:
             pattern = rf'.*{package}.*'
-            matches = f'{reset}, {bold}'.join(
-                filter(lambda s: re.match(pattern, s, re.IGNORECASE), self._var__real_pkgs))
+            matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),
+                                                     self._var__real_pkgs))
             print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
                   f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
-            text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                    f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
-            print_term(text, self._file, redirect=self._qflag)
+            if matches:
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
+                print_term(text, self._file, redirect=self._qflag)
         del self._var__lost_pkgs
         del self._var__real_pkgs
 

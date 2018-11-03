@@ -164,21 +164,130 @@ Commands
                             options for `apm upgrade --list` command
       -U ARG, --update ARG  options for `apm upgrade <plug-in>` command
 
-Note that the Package Manager (``apm``) for
-`Atom Beta <https://atom.io/beta>`__ is normally suffixed with ``-beta``.
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial 'did-you-mean' correction.
+
+    **NOTE** -- Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
+    is normally present as ``apm-beta``.
 
 For miscellaneous arguments, the runtime commands are as below.
 
-+-------------------+------------------------------------------------------+
-|      Option       |                       Command                        |
-+===================+======================================================+
-| ``--logging=ARG`` |  ``apm upgrade ${ARG} --no-color --no-json --list``  |
-+-------------------+------------------------------------------------------+
-| ``--update=ARG``  | ``apm upgrade ${ARG} --no-json --no-list <plug-in>`` |
-+-------------------+------------------------------------------------------+
++-------------------+----------------------------------------------------------------+
+|      Option       |                            Command                             |
++===================+================================================================+
+| ``--logging=ARG`` | ``apm upgrade ${ARG} --no-color --no-json --list``             |
++-------------------+----------------------------------------------------------------+
+| ``--update=ARG``  | ``apm upgrade ${ARG} [options] --no-json --no-list <plug-in>`` |
++-------------------+----------------------------------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="brew">Homebrew Formula Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update brew [options] <formulae>
+
+    Homebrew Formula Update Automator
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -f, --force           always do a slower, full update check even if
+                            unnecessary
+      -m, --merge           `git merge` is used to include updates (rather
+                            than `git rebase`)
+      -p FORM [FORM ...], --packages FORM [FORM ...]
+                            name of Homebrew formulae to update
+
+    general arguments:
+      -a, --all             update all Homebrew formulae installed through
+                            Homebrew
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for `brew outdated` command
+      -U ARG, --update ARG  options for `brew upgrade <formula>` command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial 'did-you-mean' correction.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+----------------------------------------------+
+|      Option       |                   Command                    |
++===================+==============================================+
+| ``--logging=ARG`` | ``brew outdated ${ARG} [options]``           |
++-------------------+----------------------------------------------+
+| ``--update=ARG``  | ``brew upgrade ${ARG} [options] <formula>``  |
++-------------------+----------------------------------------------+
+
+.. raw:: html
+
+    <h4>
+    <a name="brew">Homebrew Cask Update Automator</a>
+    </h4>
+
+.. code:: man
+
+    usage: macdaily update cask [options] <casks>
+
+    Homebrew Cask Update Packages
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
+
+    specification arguments:
+      -f, --force           use `--force' when running `brew cask
+                            upgrade <cask>' command
+      -g, --greedy          use `--greedy' when running `brew cask
+                            upgrade <cask>' command
+      -m, --merge           `git merge` is used to include updates (rather
+                            than `git rebase`)
+      -x, --exhaust         exhaustively check Caskroom for outdated Homebrew
+                            Casks
+      -p CASK [CASK ...], --packages CASK [CASK ...]
+                            name of Caskroom binaries to update
+
+    general arguments:
+      -a, --all             update all Caskroom binaries installed through
+                            Homebrew
+      -q, --quiet           run in quiet mode, with no output information
+      -v, --verbose         run in verbose mode, with detailed output information
+      -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
+
+    miscellaneous arguments:
+      -L ARG, --logging ARG
+                            options for `brew cask outdated` command
+      -U ARG, --update ARG  options for `brew cask upgrade <cask>` command
+
+When using ``--package`` option, if given wrong package name, MacDaily
+might give a trivial 'did-you-mean' correction.
+
+For miscellaneous arguments, the runtime commands are as below.
+
++-------------------+---------------------------------------------------+
+|      Option       |                      Command                      |
++===================+===================================================+
+| ``--logging=ARG`` | ``brew cask outdated ${ARG} [options]``           |
++-------------------+---------------------------------------------------+
+| ``--update=ARG``  | ``brew cask upgrade ${ARG} [options] <formula>``  |
++-------------------+---------------------------------------------------+
 
 TODO
 ----
+
+❌ implement further spec for the mini-language
 
 .. |apm| replace:: ``apm``
 .. _apm: #apm

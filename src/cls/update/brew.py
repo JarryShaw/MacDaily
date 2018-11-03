@@ -70,8 +70,8 @@ class BrewUpdate(BrewCommand, UpdateCommand):
         self._var__temp_pkgs = set(_temp_pkgs)
 
     def _check_list(self, path):
-        if (self._brew_renew is None or
-                time.time() - self._brew_renew >= 300):
+        if self._brew_renew is None or \
+                time.time() - self._brew_renew >= 300:
             self._proc_renew(path)
             self._brew_renew = time.time()
 

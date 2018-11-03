@@ -31,7 +31,7 @@ About
 
   Package day-care manager on macOS.
 
-**MacDaily** is a mediate collection of console scripts written in **Python**
+**MacDaily** is a mediate collection of console scripts written in Python
 with support of `PTY <https://en.wikipedia.org/wiki/Pseudo_terminal>`__.
 Originally works as an automatic housekeeper for Mac to update all packages
 outdated, **MacDaily** is now fully functioned and end-user oriented. Without
@@ -41,7 +41,7 @@ manage packages out of no pain using **MacDaily**.
 Installation
 ------------
 
-Just as many Python packages, **MacDaily** can be installed through
+Just as many Python packages, MacDaily can be installed through
 ``pip`` using the following command, which will get you the latest
 version from `PyPI <https://pypi.org>`__.
 
@@ -70,7 +70,7 @@ so.
     # or explicitly...
     $ pip install macdaily pipdeptree
 
-Do please **NOTE** that, **MacDaily** runs only with support of Python
+Do please **NOTE** that, MacDaily runs only with support of Python
 from version **3.4** and on. And it shall only work ideally on **macOS**.
 
 Also, for best performance of MacDaily, the notable automation tool
@@ -90,11 +90,11 @@ Configuration
     This part might be kind of garrulous, for some may not know what's
     going on here. 😉
 
-Since robust enough, **MacDaily** now supports configuration upon
+Since robust enough, MacDaily now supports configuration upon
 user's own wish. One may set up log path, hard disk path, archive path
 and many other things, other than the default settings.
 
-    **NOTA BENE** -- **MacDaily** now supports configuration commands,
+    **NOTA BENE** -- MacDaily now supports configuration commands,
     see manual of |config|_ command for more information.
 
 The configuration file should lie under ``~/.dailyrc``, which is hidden
