@@ -169,8 +169,8 @@ class PipUpdate(PipCommand, UpdateCommand):
         for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
-            if sudo(args, self._file, sethome=True, askpass=self._askpass,
-                    timeout=self._timeout, redirect=self._qflag):
+            if sudo(args, self._file, self._password, timeout=self._timeout,
+                    redirect=self._qflag, verbose=self._vflag, sethome=True):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)
@@ -252,14 +252,14 @@ class PipUpdate(PipCommand, UpdateCommand):
                     temp = copy.copy(argv)
                     temp[3] = 'uninstall'
                     print_scpt(f'{" ".join(temp)} {real_name}', self._file, redirect=self._qflag)
-                    sudo(f'{path} -m pip uninstall {real_name} --yes', self._file, sethome=True,
-                         askpass=self._askpass, redirect=self._qflag, timeout=self._timeout)
+                    sudo(f'{path} -m pip uninstall {real_name} --yes', self._file, self._password,
+                         redirect=self._qflag, verbose=self._vflag, sethome=True, timeout=self._timeout)
 
                     temp = copy.copy(argv)
                     temp[3] = 'install'
                     print_scpt(f'{" ".join(temp)} {package}', self._file, redirect=self._qflag)
-                    if not sudo(f'{path} -m pip install {package}', self._file, sethome=True,
-                                askpass=self._askpass, redirect=self._qflag, timeout=self._timeout):
+                    if not sudo(f'{path} -m pip install {package}', self._file, self._password,
+                                redirect=self._qflag, verbose=self._vflag, sethome=True, timeout=self._timeout):
                         with contextlib.suppress(ValueError):
                             self._pkgs.remove(real_name)
                 _done_pkgs |= _deps_pkgs

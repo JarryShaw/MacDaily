@@ -183,4 +183,5 @@ class PipCommand(Command):
                      os.path.expanduser('~/Library/Caches/pip/wheels/')]:
             args = f'{argc} {path}'
             print_scpt(args, self._file, redirect=self._qflag)
-            sudo(args, self._file, askpass=self._askpass, redirect=self._qflag)
+            sudo(argv, self._file, self._password,
+                 redirect=self._qflag, verbose=self._vflag)

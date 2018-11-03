@@ -32,10 +32,12 @@ def beholder(func):
             return func(*args, **kwargs)
         except KeyboardInterrupt:
             print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
+            sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
         except Exception as error:
             print(f'macdaily: {red}error{reset}: {error!s}', file=sys.stderr)
+            sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
     return wrapper
@@ -154,10 +156,10 @@ def record(file, args, today, config, redirect=False):
                 log.write(f'CFG: {key} -> {k} = {v}\n')
 
 
-def run(argv, file, *, redirect=False, password=None,
-        yes=None, prefix=None, timeout=None, executable=SHELL):
+def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
+        prefix=None, timeout=None, executable=SHELL, verbose=False):
     suffix = '> /dev/null' if redirect else None
-    return script(argv, file, password=password, yes=yes, redirect=redirect,
+    return script(argv, file, password=password, yes=yes, redirect=(not verbose), shell=shell,
                   executable=executable, timeout=timeout, prefix=prefix, suffix=suffix)
 
 
@@ -169,12 +171,12 @@ def _merge(argv):
 
 def _script(argv=SHELL, file='typescript', password=None, yes=None,
             shell=False, executable=SHELL, prefix=None, suffix=None, timeout=None):
-    if prefix is not None:
-        argv = f'{prefix} {executable} -c {_merge(argv)}'
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
-    if shell or prefix or suffix:
-        argv = [SHELL, '-c'] + _merge(argv)
+    if prefix is not None:
+        argv = f'{prefix} {_merge(argv)}'
+    if shell:
+        argv = [executable, '-c', _merge(argv)]
 
     if password is not None:
         bpwd = password.encode()
@@ -231,39 +233,43 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None,
 
     def ansi2text(password):
         return (f'{sys.executable} -c "'
-                'import re, sys\n'
-                "data = sys.stdin.readline().strip().replace('^D\x08\x08', '')\n"
-                "text = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
-                f"text = text.replace('Password:', 'Password:\\r\\n'){replace(password)}\n"
-                f"print(text)\n"
+                'import re, sys; '
+                "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
+                "temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE); "
+                f"text = temp.replace('Password:', 'Password:\\r\\n'){replace(password)}; "
+                f"print(text.strip())"
                 '"')
 
     def text2dim(password):
         return (f'{sys.executable} -c "'
-                'import re, sys\n'
-                "data = sys.stdin.readline().strip().replace('^D\x08\x08', '')\n"
-                f"text = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\x01{dim}', data, flags=re.IGNORECASE)\n"
-                f"text = text.replace('Password:', 'Password:\\r\\n'){replace(password)}\n"
-                f"print(text)\n"
+                'import re, sys; '
+                "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
+                f"temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE); "
+                f"text = temp.replace('Password:', 'Password:\\r\\n'){replace(password)}; "
+                f"print(text.strip())"
                 '"')
 
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
-    argv = f'unbuffer -p {_merge(argv)} | tee -a >({ansi2text(password)} >> {file}) | {text2dim(password)}'
+    argv = f'unbuffer -p {_merge(argv)} | tee -a >(col -b | {ansi2text(password)} >> {file}) | {text2dim(password)}'
+    # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >(col -b | {ansi2text(password)} >> {file})'
     if yes is not None:
-        argv = f'"yes {yes}" | {argv}'
+        argv = f'yes {yes} | {argv}'
     if prefix is not None:
-        argv = f'{prefix} {executable} -c {_merge(argv)}'
+        argv = f'{prefix} {_merge(argv)}'
     # argv = f'set -x; {argv}'
 
     try:
-        returncode = subprocess.run(argv, shell=True, executable=SHELL, timeout=timeout)
+        returncode = subprocess.check_call(argv, shell=True, executable=SHELL, timeout=timeout)
     except subprocess.SubprocessError as error:
         text = traceback.format_exc()
         if password is not None:
             text = text.replace(password, '********')
         print_text(text, file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
+    # if password is not None:
+    #     with contextlib.suppress(subprocess.SubprocessError):
+    #         subprocess.run(['chown', getpass.getuser(), file], stdout=subprocess.DEVNULL)
     return returncode
 
 
@@ -287,29 +293,28 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
         returncode = _unbuffer(argv, file, password, yes, redirect, executable, prefix, suffix, timeout)
 
     with open(file, 'a') as typescript:
+        # print('Before:', typescript.tell())
         typescript.write(f'Script done on {date()}\n')
-
+        # print('After:', typescript.tell())
     sys.stdout.write(reset)
     return returncode
 
 
-def sudo(argv, file, password=None, *, askpass=None, sethome=False,
-         redirect=False, yes=None, timeout=None, executable=SHELL):
-    def make_command(argv, askpass, sethome):
+def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
+         redirect=False, verbose=False, timeout=None, executable=SHELL):
+    def make_prefix(argv, askpass, sethome):
         if not isinstance(argv, str):
             argv = ' '.join(argv)
         if getpass.getuser() == 'root':
             return argv
-        sudo_argv = 'sudo'
-        if askpass is None:
-            sudo_argv = f'{sudo_argv} --stdin --prompt="Password:\n"'
-        else:
-            sudo_argv = f'SUDO_ASKPASS={askpass!r} {sudo_argv}'
-            sudo_argv = f'{sudo_argv} --askpass --prompt="🔑 Enter your password for {USER}."'
+        sudo_argv = f'echo {password!r} | sudo --stdin --validate --prompt="Password:\n" &&'
+        if yes is not None:
+            sudo_argv = f'{sudo_argv} yes {yes} |'
+        sudo_argv = f'{sudo_argv} sudo'
         if sethome:
             sudo_argv = f'{sudo_argv} --set-home'
-        if askpass is None and password is not None:
-            sudo_argv = f'echo {password!r} | {sudo_argv}'
+        if askpass is not None:
+            sudo_argv = f'SUDO_ASKPASS={askpass!r} {sudo_argv} --askpass --prompt="🔑 Enter your password for {USER}."'
         return sudo_argv
-    return run(argv, file, password=password, redirect=redirect, yes=yes, timeout=timeout,
-               executable=executable, prefix=make_command(argv, askpass, sethome))
+    return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True,
+               prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose)

@@ -228,12 +228,14 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         if self._exhaust:
             argv.append('--exhaust')
         argv.extend(self._update_opts)
-
         argv.append('')
+
+        askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:
             argv[-1] = package
             print_scpt(' '.join(argv), self._file, redirect=self._qflag)
-            if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
+            if run(argv, self._file, shell=True, timeout=self._timeout,
+                   redirect=self._qflag, verbose=self._vflag, prefix=askpass):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

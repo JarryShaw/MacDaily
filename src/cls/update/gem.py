@@ -79,7 +79,8 @@ class GemUpdate(GemCommand, UpdateCommand):
             argv.append('--verbose')
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
-        sudo(args, self._file, askpass=self._askpass)
+        sudo(argv, self._file, self._password,
+             redirect=self._qflag, verbose=self._vflag)
 
         text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
@@ -130,11 +131,9 @@ class GemUpdate(GemCommand, UpdateCommand):
         for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
-            # TODO: revise yes flag
-            # if self._yes:
-            #     args = f'yes y | {args}'
-            if sudo(args, self._file, redirect=self._qflag,
-                    askpass=self._askpass, timeout=self._timeout):
+            yes = 'y' if self._yes else None
+            if sudo(argv, self._file, self._password, timeout=self._timeout,
+                     redirect=self._qflag, verbose=self._vflag, yes=yes):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

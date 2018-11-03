@@ -110,7 +110,8 @@ class BrewCommand(Command):
                 if self._verbose:
                     argv.append('-v')
                 argv.append(logs)
-                sudo(argv, self._file, askpass=self._askpass, redirect=self._qflag)
+                sudo(argv, self._file, self._password,
+                     redirect=self._qflag, verbose=self._vflag)
 
             # if external disk not attached
             if flag:

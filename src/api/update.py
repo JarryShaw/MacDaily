@@ -62,12 +62,12 @@ def update(argv=None):
 
     # record program status
     text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
-    print_text(text, filename, redirect=quiet)
+    print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     # ask for password
     text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
-    print_text(text, filename, redirect=quiet)
+    print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
     cmd_list = list()
@@ -110,7 +110,7 @@ def update(argv=None):
         brew_renew = command.time
 
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of update command{reset}'
-    print_text(text, filename, redirect=quiet)
+    print_term(text, filename, redirect=quiet)
 
     for command in cmd_list:
         desc = make_description(command)
@@ -167,7 +167,7 @@ def update(argv=None):
     mode_str = ', '.join(mode_lst) if mode_lst else 'no'
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed update process '
             f'for {mode_str} package managers{reset}')
-    print_text(text, filename, redirect=quiet)
+    print_term(text, filename, redirect=quiet)
 
 
 if __name__ == '__main__':

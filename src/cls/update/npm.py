@@ -122,8 +122,8 @@ class NpmUpdate(NpmCommand, UpdateCommand):
         for package in self._var__temp_pkgs:
             args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
-            if sudo(args, self._file, askpass=self._askpass,
-                    timeout=self._timeout, redirect=self._qflag):
+            if sudo(args, self._file, self._password, timeout=self._timeout,
+                    redirect=self._qflag, verbose=self._vflag):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

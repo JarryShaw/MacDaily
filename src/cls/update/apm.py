@@ -117,7 +117,8 @@ class ApmUpdate(ApmCommand, UpdateCommand):
         for package in self._var__temp_pkgs:
             argv[-1] = package
             print_scpt(argv, self._file, redirect=self._qflag)
-            if run(argv, self._file, redirect=self._qflag, timeout=self._timeout):
+            if run(argv, self._file, timeout=self._timeout,
+                   redirect=self._qflag, verbose=self._vflag):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

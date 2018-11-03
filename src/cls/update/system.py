@@ -109,8 +109,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         for package in _temp_pkgs:
             args = f'{argc} {package!r}'
             print_scpt(args, self._file, redirect=self._qflag)
-            if sudo(args, self._file, askpass=self._askpass,
-                    timeout=self._timeout, redirect=self._qflag):
+            if sudo(args, self._file, self._password, timeout=self._timeout,
+                    redirect=self._qflag, verbose=self._vflag):
                 self._fail.append(package)
             else:
                 self._pkgs.append(package)

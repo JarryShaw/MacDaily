@@ -8,7 +8,7 @@ import sys
 import pwd
 
 # version string
-__version__ = '2018.11.02.dev11'
+__version__ = '2018.11.03.dev11'
 
 # terminal commands
 python = sys.executable         # Python version

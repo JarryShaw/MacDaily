@@ -61,7 +61,6 @@ setuptools.setup(
         'macdaily.cls.cleanup',
         'macdaily.cls.dependency',
         'macdaily.cls.logging',
-        'macdaily.cls.postinstall',
         'macdaily.cls.reinstall',
         'macdaily.cls.uninstall',
         'macdaily.cls.update',

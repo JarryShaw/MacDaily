@@ -66,7 +66,8 @@ class NpmCommand(Command):
                 argv.append('--quiet')
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._qflag)
-            sudo(args, self._file, redirect=self._qflag, askpass=self._askpass)
+            sudo(argv, self._file, self._password,
+                 redirect=self._qflag, verbose=self._vflag)
 
         for path in self._exec:
             _cleanup([path, 'dedupe', '--global'])
