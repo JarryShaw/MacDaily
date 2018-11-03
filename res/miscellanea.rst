@@ -6,9 +6,9 @@ Developer Manual
 - `Command Classes <#cmd>`__
 - `Miscellaneous Utilities <#util>`__
 
-    - `ANSI Sequences <#color>`__
-    - `Print Utilities <#print>`__
-    - |script|_
+  - `ANSI Sequences <#color>`__
+  - `Print Utilities <#print>`__
+  - |script|_
 
 - `TODO <#todo>`__
 
@@ -284,7 +284,7 @@ termination on macOS. Thus, |ptyng| is introduced.
 .. |ptyng| replace:: ``ptyng``
 .. _ptyng: https://github.com/JarryShaw/ptyng
 
-Another issue, however, is found when trying to implement a |UNIX yes utility|
+Another issue, however, is found when trying to implement a |UNIX yes utility|_
 by using a user refined ``stdin_read`` function for ``pty.spawn``. When running
 in terminal (``tty``), the pseudo-input function is only called until a
 keyboard event given.
