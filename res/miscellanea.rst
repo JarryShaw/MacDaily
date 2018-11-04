@@ -375,7 +375,7 @@ are listed as below.
 .. raw:: html
 
     <blockquote>
-      Call <code>script</code>function with given arguments.
+      Call <code>script</code> function with given arguments.
     </blockquote>
 
 - ``redirect`` -- if ``True``, set ``suffix`` to ``> /dev/null``
@@ -390,7 +390,7 @@ are listed as below.
 .. raw:: html
 
     <blockquote>
-      Call <code>run</code>function with given arguments.
+      Call <code>run</code> function with given arguments.
     </blockquote>
 
 - ``askpass`` -- executable path of askpass helper program (``SUDO_ASKPASS``)
