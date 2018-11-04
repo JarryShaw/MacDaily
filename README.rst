@@ -123,7 +123,8 @@ Since robust enough, MacDaily now supports configuration upon
 user's own wish. One may set up log path, hard disk path, archive path
 and many other things, other than the default settings.
 
-    **NOTA BENE** -- MacDaily now supports configuration commands,
+NB
+    MacDaily now supports configuration commands,
     see manual of |config|_ command for more information.
 
 The configuration file should lie under ``~/.dailyrc``, which is hidden
@@ -235,7 +236,7 @@ get our hands dirty with some simple commands.
 
 .. code:: shell
 
-    # call from $PATH
+    # call from PATH
     $ macdaily [command ...] [flag ...]
     # or call as Python module
     $ python -m macdaily [command ...] [flag ...]

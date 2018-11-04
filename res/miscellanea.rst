@@ -148,8 +148,6 @@ detailed implementations. These properties are listed below.
       </a>
     </h3>
 
-Under ``macdaily.util``, there are three subsidiaries --
-
 +-------------------------+------------------------------+
 |        Submodule        |          Description         |
 +=========================+==============================+
