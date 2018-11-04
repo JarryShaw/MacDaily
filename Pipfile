@@ -17,6 +17,7 @@ pycodestyle = "*"
 "autopep8" = "*"
 "doc8" = "*"
 check-manifest = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.7"

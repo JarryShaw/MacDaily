@@ -8,11 +8,15 @@ import sys
 import pwd
 
 # version string
-__version__ = '2018.11.04.dev13'
+__version__ = '2018.11.04.dev14'
 
 # terminal commands
 python = sys.executable         # Python version
 program = ' '.join(sys.argv)    # arguments
+
+# script utilities
+SCRIPT = shutil.which('script')
+UNBUFFER = shutil.which('unbuffer')
 
 # environment macros
 ROOT = os.path.dirname(os.path.abspath(__file__))

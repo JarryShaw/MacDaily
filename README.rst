@@ -60,19 +60,6 @@ repository, then the script below should be used.
     # and to update at any time
     $ git pull
 
-And for tree format support in ``dependency`` command, you may need
-``pipdeptree``, then implicitly you can use the following script to do
-so.
-
-.. code:: shell
-
-    $ pip install macdaily[pipdeptree]
-    # or explicitly...
-    $ pip install macdaily pipdeptree
-
-Do please **NOTE** that, MacDaily runs only with support of Python
-from version **3.4** and on. And it shall only work ideally on **macOS**.
-
 Also, for best performance of MacDaily, the notable automation tool
 |expect|_ is expected to be installed on your Mac. Recommended installation
 approach is from `Homebrew <https://brew.sh>`__, as shown below.
@@ -83,6 +70,47 @@ approach is from `Homebrew <https://brew.sh>`__, as shown below.
 
 .. |expect| replace:: ``expect``
 .. _expect: https://core.tcl.tk/expect
+
+Or if you prefer not to install ``unbuffer``, MacDaily will use
+|UNIX script utility|_ instead. Make sure that ``/usr/bin/script``
+exists and ``/usr/bin`` is in your ``PATH`` environment variable.
+
+.. |UNIX script utility| replace:: UNIX ``script`` utility
+.. _UNIX script utility: https://en.wikipedia.org/wiki/Script_(Unix)
+
+For the worst case, MacDaily adopts |ptyng|_ as an alternative. It is
+a revised version of |Python pty module|_, intended to support
+pseudo-terminal (PTY) on macOS with no further issue. To install ``ptyng``,
+you may use the script below.
+
+.. |ptyng| replace:: ``ptyng``
+.. _ptyng: https://github.com/JarryShaw/ptyng
+.. |Python pty module| replace:: Python ``pty`` module
+.. _Python pty module: https://docs.python.org/3/library/pty.html
+
+.. code:: shell
+
+    $ pip install macdaily[ptyng]
+    # or explicitly...
+    $ pip install macdaily ptyng
+
+And for **tree** format support in ``dependency`` command, you may need
+|pipdeptree|_, then implicitly you can use the following script to do
+so. However, if you would like to use ``pipdeptree`` for all installed
+Python distributions, it is highly recommended to install ``pipdeptree``
+with each executables.
+
+.. |pipdeptree| replace:: ``pipdeptree``
+.. _pipdeptree: https://github.com/naiquevin/pipdeptree
+
+.. code:: shell
+
+    $ pip install macdaily[pipdeptree]
+    # or explicitly...
+    $ pip install macdaily pipdeptree
+
+Do please **NOTE** that, MacDaily runs only with support of Python
+from version **3.4** or newer. And it shall only work ideally on **macOS**.
 
 Configuration
 -------------

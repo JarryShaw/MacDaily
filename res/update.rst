@@ -108,7 +108,7 @@ and ``--no-cleanup`` are *mandatory* for all commands once set to ``True``.
 That is to say, if you set these flags in global options, they will overwrite
 corresponding flags in command specific options.
 
-NB:
+NB
     For all options that take package names, a mini-language for
     condition specification is provided.
 
@@ -131,7 +131,9 @@ Commands
 .. raw:: html
 
     <h4>
-    <a name="apm">Atom Plug-In Update Automator</a>
+      <a name="apm">
+        Atom Plug-In Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -164,7 +166,7 @@ Commands
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-NB:
+NB
     Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
     is normally present as ``apm-beta``.
 
@@ -181,7 +183,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="brew">Homebrew Formula Update Automator</a>
+      <a name="brew">
+        Homebrew Formula Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -231,7 +235,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="cask">Homebrew Cask Update Automator</a>
+      <a name="cask">
+        Homebrew Cask Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -285,7 +291,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="gem">Ruby Gem Update Automator</a>
+      <a name="gem">
+        Ruby Gem Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -318,7 +326,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-NB:
+NB
     RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
     or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
 
@@ -335,7 +343,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="mas">macOS Application Update Automator</a>
+      <a name="mas">
+        macOS Application Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -381,7 +391,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="npm">Node.js Module Update Automator</a>
+      <a name="npm">
+        Node.js Module Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -428,7 +440,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="pip">Python Package Update Automator</a>
+      <a name="pip">
+        Python Package Update Automator
+      </a>
     </h4>
 
 .. code:: man
@@ -474,7 +488,7 @@ Possible Python executables and corresponding flags are listed as below.
 
 .. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.png
 
-NB:
+NB
     Python provided by macOS system does not have ``pip`` installed.
 
 For miscellaneous arguments, the runtime commands are as below.
@@ -490,7 +504,9 @@ For miscellaneous arguments, the runtime commands are as below.
 .. raw:: html
 
     <h4>
-    <a name="system">System Software Update Automator</a>
+      <a name="system">
+        System Software Update Automator
+      </a>
     </h4>
 
 .. code:: man

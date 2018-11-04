@@ -11,10 +11,9 @@ import shutil
 import sys
 import traceback
 
-import ptyng
-
-from macdaily.util.const import (SHELL, USER, blue, bold, dim, grey, program,
-                                 purple, python, red, reset)
+from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
+                                 dim, grey, program, purple, python, red,
+                                 reset, under, yellow)
 from macdaily.util.error import UnsupportedOS
 
 try:
@@ -163,14 +162,50 @@ def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
                   executable=executable, timeout=timeout, prefix=prefix, suffix=suffix)
 
 
+def _ansi2text(password):
+    return (f'{sys.executable} -c "'
+            'import re, sys; '
+            "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
+            "temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE); "
+            f"text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}; "
+            f"print(text.strip())"
+            '"')
+
+
 def _merge(argv):
     if isinstance(argv, str):
         return argv
     return ' '.join(argv)
 
 
-def _script(argv=SHELL, file='typescript', password=None, yes=None,
-            shell=False, executable=SHELL, prefix=None, suffix=None, timeout=None):
+def _replace(password):
+    if password is None:
+        return ''
+    return (f".replace({password!r}, '********')")
+
+
+def _text2dim(password):
+    return (f'{sys.executable} -c "'
+            'import re, sys; '
+            "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
+            f"temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE); "
+            f"text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}; "
+            f"print(text.strip())"
+            '"')
+
+
+def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
+           executable=SHELL, prefix=None, suffix=None, timeout=None, shell=False):
+    try:
+        import ptyng
+    except ImportError:
+        print_term(f"macdaily: {yellow}misc{reset}: `{bold}unbuffer{reset}' and `{bold}script{reset}'"
+                   f'not found in your {under}PATH{reset}, {bold}PTYng{reset} not installed',
+                   os.devnull, redirect=redirect)
+        print(f'macdaily: {red}misc{reset}: broken dependency', file=sys.stderr)
+        sys.tracebacklimit = 0
+        raise
+
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
     if prefix is not None:
@@ -224,43 +259,48 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None,
     return returncode
 
 
-def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None,
-              redirect=False, executable=SHELL, prefix=None, suffix=None, timeout=None):
-    def replace(password):
-        if password is None:
-            return ''
-        return (f".replace({password!r}, '********')")
-
-    def ansi2text(password):
-        return (f'{sys.executable} -c "'
-                'import re, sys; '
-                "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
-                "temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE); "
-                f"text = temp.replace('Password:', 'Password:\\r\\n'){replace(password)}; "
-                f"print(text.strip())"
-                '"')
-
-    def text2dim(password):
-        return (f'{sys.executable} -c "'
-                'import re, sys; '
-                "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
-                f"temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE); "
-                f"text = temp.replace('Password:', 'Password:\\r\\n'){replace(password)}; "
-                f"print(text.strip())"
-                '"')
-
+def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
+              executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
-    argv = f'unbuffer -p {_merge(argv)} | tee -a >(col -b | {ansi2text(password)} >> {file}) | {text2dim(password)}'
-    # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >(col -b | {ansi2text(password)} >> {file})'
+    argv = f'unbuffer -p {_merge(argv)} | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
+    # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >({ansi2text(password)} | col -b >> {file})'
     if yes is not None:
         argv = f'yes {yes} | {argv}'
     if prefix is not None:
-        argv = f'{prefix} {_merge(argv)}'
+        argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
     try:
         returncode = subprocess.check_call(argv, shell=True, executable=SHELL, timeout=timeout)
+    except subprocess.SubprocessError as error:
+        text = traceback.format_exc()
+        if password is not None:
+            text = text.replace(password, '********')
+        print_text(text, file, redirect=redirect)
+        returncode = getattr(error, 'returncode', 1)
+    # if password is not None:
+    #     with contextlib.suppress(subprocess.SubprocessError):
+    #         subprocess.run(['chown', getpass.getuser(), file], stdout=subprocess.DEVNULL)
+    return returncode
+
+
+def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
+              executable=SHELL, prefix=None, suffix=None, timeout=None):
+    if suffix is not None:
+        argv = f'{_merge(argv)} {suffix}'
+    argc = f'script -q /dev/null {SHELL} -c "'
+    if yes is not None:
+        argc = f'{argc} yes {yes} |'
+    argv = f'{argc} {_merge(argv)}" | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
+    if prefix is not None:
+        argv = f'{prefix} {argv}'
+    # argv = f'set -x; {argv}'
+
+    print(argv)
+    try:
+        returncode = subprocess.check_call(
+            argv, shell=True, executable=SHELL, timeout=timeout)
     except subprocess.SubprocessError as error:
         text = traceback.format_exc()
         if password is not None:
@@ -287,10 +327,12 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
         typescript.write(f'Script started on {date()}\n')
         typescript.write(f'command: {args!r}\n')
 
-    if shutil.which('unbuffer') is None:
-        returncode = _script(argv, file, password, yes, shell, executable, prefix, suffix, timeout)
-    else:
+    if UNBUFFER is not None:
         returncode = _unbuffer(argv, file, password, yes, redirect, executable, prefix, suffix, timeout)
+    elif SCRIPT is not None:
+        returncode = _script(argv, file, password, yes, redirect, executable, prefix, suffix, timeout)
+    else:
+        returncode = _spawn(argv, file, password, yes, redirect, executable, prefix, suffix, timeout, shell)
 
     with open(file, 'a') as typescript:
         # print('Before:', typescript.tell())
@@ -306,15 +348,22 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
         if not isinstance(argv, str):
             argv = ' '.join(argv)
         if getpass.getuser() == 'root':
-            return argv
-        sudo_argv = f'echo {password!r} | sudo --stdin --validate --prompt="Password:\n" &&'
+            return None
+        nonlocal yes
+
+        sudo_argv = f"echo {password!r} | sudo --stdin --validate --prompt='Password:\n' &&"
         if yes is not None:
-            sudo_argv = f'{sudo_argv} yes {yes} |'
+            if UNBUFFER is not None or SCRIPT is None:
+                sudo_argv = f'{sudo_argv} yes {yes} |'
+                yes = None
+        if askpass is not None:
+            sudo_argv = f'{sudo_argv} SUDO_ASKPASS={askpass!r} '
+
         sudo_argv = f'{sudo_argv} sudo'
         if sethome:
             sudo_argv = f'{sudo_argv} --set-home'
         if askpass is not None:
-            sudo_argv = f'SUDO_ASKPASS={askpass!r} {sudo_argv} --askpass --prompt="🔑 Enter your password for {USER}."'
+            sudo_argv = f"{sudo_argv} --askpass --prompt='🔑 Enter your password for {USER}.'"
         return sudo_argv
-    return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True,
+    return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
                prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose)

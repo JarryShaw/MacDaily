@@ -41,8 +41,9 @@ setuptools.setup(
     long_description=long_desc,
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
-    install_requires=['setuptools', 'ptyng'],
+    install_requires=['setuptools'],
     extras_require={
+        'ptyng': ['ptyng'],
         'pipdeptree': ['pipdeptree'],
         ':python_version == "3.4"': ['pathlib2', 'subprocess32'],
     },

@@ -20,7 +20,9 @@ Developer Manual
 .. raw:: html
 
     <h3>
-    <a name="repo">Project Structure</a>
+      <a name="repo">
+        Project Structure
+      </a>
     </h3>
 
 +-----------+---------------------------------------------------------+
@@ -39,7 +41,7 @@ Developer Manual
 | ``util``  | miscellaneous utilities                                 |
 +-----------+---------------------------------------------------------+
 
-NB:
+NB
     Commands are considered as *verbal* and *specific*. Say
     ``UpdateCommand`` is a *verbal command*, ``PipCommand``
     is a *specific command*, and ``PipUpdate`` is a
@@ -48,7 +50,9 @@ NB:
 .. raw:: html
 
     <h3>
-    <a name="cmd">Command Classes</a>
+      <a name="cmd">
+        Command Classes
+      </a>
     </h3>
 
 With support of |abc|_, MacDaily implemented an *abstract basic command*,
@@ -139,7 +143,9 @@ detailed implementations. These properties are listed below.
 .. raw:: html
 
     <h3>
-    <a name="util">Miscellaneous Utilities</a>
+      <a name="util">
+        Miscellaneous Utilities
+      </a>
     </h3>
 
 Under ``macdaily.util``, there are three subsidiaries --
@@ -174,7 +180,9 @@ functions are defined. Further information please refer to
 .. raw:: html
 
     <h4>
-    <a name="color">ANSI Sequences</a>
+      <a name="color">
+        ANSI Sequences
+      </a>
     </h4>
 
 +-------------------+-----------------+--------------------------+
@@ -246,8 +254,14 @@ functions are defined. Further information please refer to
 .. raw:: html
 
     <h4>
-    <a name="print">Print Utilities</a>
+      <a name="print">
+        Print Utilities
+      </a>
     </h4>
+
+MacDaily defines several ``print`` functions to better make prompts
+using `emoji <https://en.wikipedia.org/wiki/Emoji>`__ and
+`ANSI escape code <https://en.wikipedia.org/wiki/ANSI_escape_code>`__.
 
 .. code:: python
 
@@ -259,19 +273,24 @@ functions are defined. Further information please refer to
 
 - ``text`` -- ``str``, text to print
 - ``file`` -- ``str``, log file name
-- ``redirect`` -- ``bool``, redirect flag, if print to ``stdout``
+- ``redirect`` -- ``bool``, redirect flag, if ``True`` redirect ``stdout`` to ``/dev/null``
 
 .. raw:: html
 
     <h4>
-    <a name="script">UNIX <code>script</code></a>
+      <a name="script">
+        "UNIX "
+        <code>
+          script
+        </code>
+      </a>
     </h4>
 
 As |UNIX script utility|_ suggests, it is to
-*make typescript of terminal session*. The ``script``
-utility makes a typescript of everything printed on your
-terminal. It is, as suggests in |Python pty module|,
-implemented with support of pseudo-terminal (PTY).
+*make typescript of terminal session*. The MacDaily ``script``
+utility makes a typescript of everything printed on your terminal. It is,
+as suggests in |Python pty module|, implemented with support of
+pseudo-terminal (PTY).
 
 .. |UNIX script utility| replace:: UNIX ``script`` utility
 .. _UNIX script utility: https://en.wikipedia.org/wiki/Script_(Unix)
@@ -279,7 +298,10 @@ implemented with support of pseudo-terminal (PTY).
 .. _Python pty module: https://docs.python.org/3/library/pty.html#example
 
 Since ``pty`` module in Python standard library has minor bugs with process
-termination on macOS. Thus, |ptyng| is introduced.
+termination on macOS. Thus, |ptyng|_ is introduced. ``ptyng`` module revised
+``pty.spawn`` function, automatically terminate child process once it is
+a zombie ('dead' in other words) and return from function call as
+normal/trivial scenerios expected.
 
 .. |ptyng| replace:: ``ptyng``
 .. _ptyng: https://github.com/JarryShaw/ptyng
@@ -293,8 +315,116 @@ keyboard event given.
 .. _UNIX yes utility: https://en.wikipedia.org/wiki/Yes_(Unix)
 
 Considering such issue, an automation tool |expect|_ is then introduced. Within
-``expect``, an alternative ``unbuffer`` is provided. With support of
-``unbuffer``, the issue above is truly resolved.
+``expect``, ``unbuffer``, an alternative of UNIX ``script`` utility, is provided.
+With support of ``unbuffer``, the issue above is truly resolved.
+
+And for better readability, MacDaily will strip all
+`ANSI escape code <https://en.wikipedia.org/wiki/ANSI_escape_code>`__ and use
+``col -b`` to trim backspaces from the output when writing into typescripts.
+Also, to distinguish MacDaily program information and other output, MacDaily
+will add ``'\033[2m'`` (faint, decreased intensity) to such output.
+
+.. code:: python
+
+    script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=None,
+           redirect=False, timeout=None, shell=False, executable=SHELL, suffix=None)
+
+- ``argv`` -- string, or a sequence of program arguments
+- ``file`` -- saves all dialogue in file
+- ``shell`` -- if ``True``, the command will be executed through the shell
+- ``executable`` -- a replacement program to execute
+- ``timeout`` -- an integral timeout interval
+- ``redirect`` -- if ``True``, the command will redirect ``stdout`` to ``/dev/null``
+- ``password`` -- string to be consealed in dialogue
+- ``yes`` -- string to be used as ``yes expletive`` in UNIX ``yes`` utility
+- ``prefix`` -- string as the prefix of program arguments
+- ``suffix`` -- string as the suffix of program arguments
+
+NB
+    There are three different core functions for the ``script`` function. Please
+    always make sure that one of these functions are available for MacDaily.
+
++--------------+-------------------------------+
+|     Core     |          Description          |
++==============+===============================+
+| ``unbuffer`` | bundled from ``expect``       |
++--------------+-------------------------------+
+|  ``script``  | provided by macOS             |
++--------------+-------------------------------+
+|  ``ptyng``   | revised Python ``pty`` module |
++--------------+-------------------------------+
+
+When |expect|_ installed and ``unbuffer`` found in ``PATH``, MacDaily will use
+``unbuffer`` as core function. Otherwise if UNIX ``script`` utility found in
+``PATH``, it will be used. For the worst case, a ``ptyng`` based ``script``
+utility function will be used. Corresponding commands of each core function
+are listed as below.
+
++--------------+-----------------------------------------------------------------------------------+
+|     Core     |                                      Command                                      |
++==============+===================================================================================+
+| ``unbuffer`` | ``[prefix] [yes expletive |] unbuffer -p ${argv} [suffix]``                       |
++--------------+-----------------------------------------------------------------------------------+
+|  ``script``  | ``[prefix] script -q /dev/null ${SHELL} -c "[yes expletive |] ${argv} [suffix]"`` |
++--------------+-----------------------------------------------------------------------------------+
+|  ``ptyng``   | ``ptyng.spawn(argv, master_read, stdin_read, timeout=timeout)``                   |
++--------------+-----------------------------------------------------------------------------------+
+
+.. code:: python
+
+    run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
+        prefix=None, timeout=None, executable=SHELL, verbose=False)
+
+.. raw:: html
+
+    <blockquote>
+      "Call "
+        <code>
+          script
+        </code>
+      " function with given arguments."
+    </blockquote>
+
+- ``redirect`` -- if ``True``, set ``suffix`` to ``> /dev/null``
+- ``verbose`` -- if ``True``, output traceback stacks (if any) to ``stdout``
+- all other arguments are the same as for ``script`` function
+
+.. code:: python
+
+    sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
+         redirect=False, verbose=False, timeout=None, executable=SHELL)
+
+.. raw:: html
+
+    <blockquote>
+      "Call "
+        <code>
+          run
+        </code>
+      " function with given arguments."
+    </blockquote>
+
+- ``askpass`` -- executable path of askpass helper program (``SUDO_ASKPASS``)
+- ``sethome`` -- if ``True``, call ``sudo`` with ``--set-home`` option
+- all other arguments are the same as described in ``run`` function
+
+NB
+    When using ``sudo`` function, ``shell`` argument if set to ``True``.
+
+If running as ``root`` (System Administrator), ``prefix`` will be unset.
+And when using ``unbuffer`` or ``ptyng`` as core function, ``yes`` argument
+will be unset. Corrresponding ``prefix`` argument of each core function
+are listed as below.
+
++--------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|     Core     |                                                                                        ``prefix``                                                                                        |
++==============+==========================================================================================================================================================================================+
+| ``unbuffer`` | ``[yes expletive |] echo 'password' | sudo --stdin --validate --prompt='Password\n' && [SUDO_ASKPASS='askpass'] sudo [--set-home] [--askpass --prompt='Enter your password for USER.']`` |
++--------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|  ``script``  | ``echo 'password' | sudo --stdin --validate --prompt='Password\n' && [SUDO_ASKPASS='askpass'] sudo [--set-home] [--askpass --prompt='Enter your password for USER.']``                   |
++--------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|  ``ptyng``   | ``echo 'password' | sudo --stdin --validate --prompt='Password\n' && [SUDO_ASKPASS='askpass'] sudo [--set-home] [--askpass --prompt='Enter your password for USER.']``                   |
++--------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. |expect| replace:: ``expect``
 .. _expect: https://core.tcl.tk/expect
@@ -303,4 +433,4 @@ TODO
 ----
 
 - ✔️ implementation
-- ❌ documentation
+- ✔️ documentation
