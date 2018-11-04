@@ -279,10 +279,7 @@ using `emoji <https://en.wikipedia.org/wiki/Emoji>`__ and
 
     <h4>
       <a name="script">
-        "UNIX "
-        <code>
-          script
-        </code>
+        UNIX <code>script</code>
       </a>
     </h4>
 
@@ -378,11 +375,7 @@ are listed as below.
 .. raw:: html
 
     <blockquote>
-      "Call "
-        <code>
-          script
-        </code>
-      " function with given arguments."
+      Call <code>script</code>function with given arguments.
     </blockquote>
 
 - ``redirect`` -- if ``True``, set ``suffix`` to ``> /dev/null``
@@ -397,11 +390,7 @@ are listed as below.
 .. raw:: html
 
     <blockquote>
-      "Call "
-        <code>
-          run
-        </code>
-      " function with given arguments."
+      Call <code>run</code>function with given arguments.
     </blockquote>
 
 - ``askpass`` -- executable path of askpass helper program (``SUDO_ASKPASS``)
