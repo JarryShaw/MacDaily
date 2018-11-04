@@ -41,6 +41,10 @@ manage packages out of no pain using **MacDaily**.
 Installation
 ------------
 
+NB
+    MacDaily runs only with support of Python from version **3.4**
+    or higher. And it shall only work ideally on **macOS**.
+
 Just as many Python packages, MacDaily can be installed through
 ``pip`` using the following command, which will get you the latest
 version from `PyPI <https://pypi.org>`__.
@@ -98,7 +102,7 @@ And for **tree** format support in ``dependency`` command, you may need
 |pipdeptree|_, then implicitly you can use the following script to do
 so. However, if you would like to use ``pipdeptree`` for all installed
 Python distributions, it is highly recommended to install ``pipdeptree``
-with each executables.
+with each executable.
 
 .. |pipdeptree| replace:: ``pipdeptree``
 .. _pipdeptree: https://github.com/naiquevin/pipdeptree
@@ -108,9 +112,6 @@ with each executables.
     $ pip install macdaily[pipdeptree]
     # or explicitly...
     $ pip install macdaily pipdeptree
-
-Do please **NOTE** that, MacDaily runs only with support of Python
-from version **3.4** or newer. And it shall only work ideally on **macOS**.
 
 Configuration
 -------------

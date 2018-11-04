@@ -25,21 +25,21 @@ Developer Manual
       </a>
     </h3>
 
-+-----------+---------------------------------------------------------+
-| Submodule |                       Description                       |
-+===========+=========================================================+
-| ``api``   | core API for each verbal command                        |
-+-----------+---------------------------------------------------------+
-| ``cli``   | core CLI for each verbal command                        |
-+-----------+---------------------------------------------------------+
-| ``cls``   | detailed implementation of each specific verbal command |
-+-----------+---------------------------------------------------------+
-| ``cmd``   | base implementation of each verbal command              |
-+-----------+---------------------------------------------------------+
-| ``core``  | base implementation of each specific command            |
-+-----------+---------------------------------------------------------+
-| ``util``  | miscellaneous utilities                                 |
-+-----------+---------------------------------------------------------+
++-----------+-------------------------------------------------------------+
+| Submodule |                         Description                         |
++===========+=============================================================+
+| ``api``   | core API for each *verbal command*                          |
++-----------+-------------------------------------------------------------+
+| ``cli``   | core CLI for each *verbal command*                          |
++-----------+-------------------------------------------------------------+
+| ``cls``   | detailed implementation of each **specific verbal command** |
++-----------+-------------------------------------------------------------+
+| ``cmd``   | base implementation of each *verbal command*                |
++-----------+-------------------------------------------------------------+
+| ``core``  | base implementation of each *specific command*              |
++-----------+-------------------------------------------------------------+
+| ``util``  | miscellaneous utilities                                     |
++-----------+-------------------------------------------------------------+
 
 NB
     Commands are considered as *verbal* and *specific*. Say
@@ -59,7 +59,7 @@ With support of |abc|_, MacDaily implemented an *abstract basic command*,
 which indicates default work flow and several reusable functions. Work
 flow of MacDaily commands is as below.
 
-.. |abc| replace:: ``abc`` module
+.. |abc| replace:: Python ``abc`` module
 .. _abc: https://docs.python.org/3/library/abc.html
 
 1. check executable
@@ -160,9 +160,9 @@ Under ``macdaily.util``, there are three subsidiaries --
 | ``macdaily.util.misc``  | utility functions            |
 +-------------------------+------------------------------+
 
-Version string, terminal commands, environment macros and
+Version string, terminal commands, environment macros,
 `ANSI <https://en.wikipedia.org/wiki/ANSI_escape_code>`__
-strings can be found in ``macdaily.util.const``. Further
+strings and etc. can be found in ``macdaily.util.const``. Further
 information please refer to `ANSI Sequences <#color>`__
 section.
 
@@ -273,7 +273,7 @@ using `emoji <https://en.wikipedia.org/wiki/Emoji>`__ and
 
 - ``text`` -- ``str``, text to print
 - ``file`` -- ``str``, log file name
-- ``redirect`` -- ``bool``, redirect flag, if ``True`` redirect ``stdout`` to ``/dev/null``
+- ``redirect`` -- ``bool``, redirect flag; if ``True``, redirect ``stdout`` to ``/dev/null``
 
 .. raw:: html
 
@@ -283,11 +283,11 @@ using `emoji <https://en.wikipedia.org/wiki/Emoji>`__ and
       </a>
     </h4>
 
-As |UNIX script utility|_ suggests, it is to
+As |UNIX script utility|_ designed, it is to
 *make typescript of terminal session*. The MacDaily ``script``
-utility makes a typescript of everything printed on your terminal. It is,
-as suggests in |Python pty module|, implemented with support of
-pseudo-terminal (PTY).
+function makes a typescript of everything printed on your terminal.
+It is, as suggests in |Python pty module|_, implemented with support
+of pseudo-terminal (PTY).
 
 .. |UNIX script utility| replace:: UNIX ``script`` utility
 .. _UNIX script utility: https://en.wikipedia.org/wiki/Script_(Unix)
@@ -305,26 +305,32 @@ normal/trivial scenerios expected.
 
 Another issue, however, is found when trying to implement a |UNIX yes utility|_
 by using a user refined ``stdin_read`` function for ``pty.spawn``. When running
-in terminal (``tty``), the pseudo-input function is only called until a
-keyboard event given.
+in terminal (TTY), the pseudo-input function is only called until a keyboard
+event occurred.
 
 .. |UNIX yes utility| replace:: UNIX ``yes`` utility
 .. _UNIX yes utility: https://en.wikipedia.org/wiki/Yes_(Unix)
 
-Considering such issue, an automation tool |expect|_ is then introduced. Within
+Considering such issue, the automation tool |expect|_ is then introduced. Within
 ``expect``, ``unbuffer``, an alternative of UNIX ``script`` utility, is provided.
 With support of ``unbuffer``, the issue above is truly resolved.
 
 And for better readability, MacDaily will strip all
 `ANSI escape code <https://en.wikipedia.org/wiki/ANSI_escape_code>`__ and use
-``col -b`` to trim backspaces from the output when writing into typescripts.
+``col -b`` to trim backspaces from the output when writing into *typescript*.
 Also, to distinguish MacDaily program information and other output, MacDaily
-will add ``'\033[2m'`` (faint, decreased intensity) to such output.
+will add ANSI sequence ``'\033[2m'`` (faint, decreased intensity) to the latter.
 
 .. code:: python
 
     script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=None,
            redirect=False, timeout=None, shell=False, executable=SHELL, suffix=None)
+
+.. raw:: html
+
+    <blockquote>
+      Utility function works as UNIX <code>script</code> utility.
+    </blockquote>
 
 - ``argv`` -- string, or a sequence of program arguments
 - ``file`` -- saves all dialogue in file
@@ -341,21 +347,10 @@ NB
     There are three different core functions for the ``script`` function. Please
     always make sure that one of these functions are available for MacDaily.
 
-+--------------+-------------------------------+
-|     Core     |          Description          |
-+==============+===============================+
-| ``unbuffer`` | bundled from ``expect``       |
-+--------------+-------------------------------+
-|  ``script``  | provided by macOS             |
-+--------------+-------------------------------+
-|  ``ptyng``   | revised Python ``pty`` module |
-+--------------+-------------------------------+
-
 When |expect|_ installed and ``unbuffer`` found in ``PATH``, MacDaily will use
 ``unbuffer`` as core function. Otherwise if UNIX ``script`` utility found in
-``PATH``, it will be used. For the worst case, a ``ptyng`` based ``script``
-utility function will be used. Corresponding commands of each core function
-are listed as below.
+``PATH``, it will be used. For the worst case, a ``ptyng`` based function
+will be used. Corresponding commands of each core function are listed as below.
 
 +--------------+-----------------------------------------------------------------------------------+
 |     Core     |                                      Command                                      |
@@ -379,7 +374,7 @@ are listed as below.
     </blockquote>
 
 - ``redirect`` -- if ``True``, set ``suffix`` to ``> /dev/null``
-- ``verbose`` -- if ``True``, output traceback stacks (if any) to ``stdout``
+- ``verbose`` -- if ``True``, output error traceback (if any) to ``stdout``
 - all other arguments are the same as for ``script`` function
 
 .. code:: python
@@ -398,7 +393,7 @@ are listed as below.
 - all other arguments are the same as described in ``run`` function
 
 NB
-    When using ``sudo`` function, ``shell`` argument if set to ``True``.
+    When using ``sudo`` function, ``shell`` argument will always set to ``True``.
 
 If running as ``root`` (System Administrator), ``prefix`` will be unset.
 And when using ``unbuffer`` or ``ptyng`` as core function, ``yes`` argument

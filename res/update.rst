@@ -108,9 +108,8 @@ and ``--no-cleanup`` are *mandatory* for all commands once set to ``True``.
 That is to say, if you set these flags in global options, they will overwrite
 corresponding flags in command specific options.
 
-NB
-    For all options that take package names, a mini-language for
-    condition specification is provided.
+For all options that take package names, a mini-language for condition
+specification is provided.
 
 +--------------+---------------------+
 |    Format    |    Specification    |
@@ -120,10 +119,11 @@ NB
 | ``!package`` | ignore ``package``  |
 +--------------+---------------------+
 
-Since exclamation mark (``!``) has special meanings in
-`Shell <https://en.wikipedia.org/wiki/Shell_script>`__ scripts,
-it is highly recommended using ``'!package'`` literal to specify
-ignoring packages.
+NB
+    Since exclamation mark (``!``) has special meanings in
+    `Shell <https://en.wikipedia.org/wiki/Shell_script>`__ scripts,
+    it is highly recommended using ``'!package'`` literal to specify
+    ignoring packages.
 
 Commands
 --------
@@ -166,11 +166,7 @@ Commands
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-NB
-    Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
-    is normally present as ``apm-beta``.
-
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+----------------------------------------------------------------+
 |      Option       |                            Command                             |
@@ -179,6 +175,10 @@ For miscellaneous arguments, the runtime commands are as below.
 +-------------------+----------------------------------------------------------------+
 | ``--update=ARG``  | ``apm upgrade ${ARG} [options] --no-json --no-list <plug-in>`` |
 +-------------------+----------------------------------------------------------------+
+
+NB
+    Package Manager (``apm``) of `Atom Beta <https://atom.io/beta>`__
+    is normally present as ``apm-beta``.
 
 .. raw:: html
 
@@ -222,7 +222,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+----------------------------------------------+
 |      Option       |                   Command                    |
@@ -278,7 +278,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+------------------------------------------------+
 |      Option       |                    Command                     |
@@ -326,11 +326,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-NB
-    RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
-    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
-
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+---------------------------------------+
 |      Option       |                Command                |
@@ -339,6 +335,10 @@ For miscellaneous arguments, the runtime commands are as below.
 +-------------------+---------------------------------------+
 | ``--update=ARG``  | ``gem update [options] ${ARG} <gem>`` |
 +-------------------+---------------------------------------+
+
+NB
+    RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
+    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
 
 .. raw:: html
 
@@ -378,7 +378,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+--------------------------------------+
 |      Option       |               Command                |
@@ -427,7 +427,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+-----------------------------------------------------------+
 |      Option       |                           Command                         |
@@ -484,14 +484,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-Possible Python executables and corresponding flags are listed as below.
-
-.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.png
-
-NB
-    Python provided by macOS system does not have ``pip`` installed.
-
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+------------------------------------------------------+
 |      Option       |                         Command                      |
@@ -500,6 +493,16 @@ For miscellaneous arguments, the runtime commands are as below.
 +-------------------+------------------------------------------------------+
 | ``--update=ARG``  | ``pip install --upgrade [options] ${ARG} <package>`` |
 +-------------------+------------------------------------------------------+
+
+Possible Python executables and corresponding flags are listed as below.
+
+.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/res/img/Python.png
+
+NB
+    Python provided by macOS system (normally located at ``/usr/bin/python`` or
+    ``/System/Library/Frameworks/Python.framework/Versions/Current/bin/python``)
+    does not have ``pip`` installed. And it is
+    `not recommended <https://docs.python.org/3/using/mac.html>`__ to do so.
 
 .. raw:: html
 
@@ -543,7 +546,7 @@ For miscellaneous arguments, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
-For miscellaneous arguments, the runtime commands are as below.
+For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+--------------------------------------------------------------------+
 |      Option       |                              Command                               |
