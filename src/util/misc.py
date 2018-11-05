@@ -49,7 +49,7 @@ def date():
 
 
 def get_pass(askpass):
-    if sys.stdout.isatty():
+    if sys.stdin.isatty():
         return getpass.getpass(prompt='Password:')
     try:
         password = subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'])

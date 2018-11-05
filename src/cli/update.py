@@ -26,7 +26,7 @@ def get_update_parser():
 
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-a', '--all', action='store_true',
-                            help=('update all packages installed through Atom, RubyGem, Node.js, '
+                            help=('update all packages installed through Atom, RubyGems, Node.js, '
                                   'Homebrew, Caskroom, Mac App Store, and etc'))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
@@ -110,9 +110,9 @@ def get_apm_parser():
                                 help='yes for all selections')
 
     apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
-    apm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    apm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                 help=f"options for `{bold}apm upgrade --list{reset}' command")
-    apm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    apm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                 help=f"options for `{bold}apm upgrade <plug-in>{reset}' command")
 
     return apm_parser
@@ -154,9 +154,9 @@ def get_gem_parser():
                                 help='yes for all selections')
 
     gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
-    gem_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    gem_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                 help=f"options for `{bold}gem outdated{reset}' command")
-    gem_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    gem_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                 help=f"options for `{bold}gem update <gem>{reset}' command")
 
     return gem_parser
@@ -193,9 +193,9 @@ def get_mas_parser():
                                 help='yes for all selections')
 
     mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
-    mas_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    mas_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                 help=f"options for `{bold}mas outdated' command{reset}")
-    mas_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    mas_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                 help=f"options for `{bold}mas upgrade <application>{reset}' command")
 
     return mas_parser
@@ -234,9 +234,9 @@ def get_npm_parser():
                                 help='do not run cleanup process')
 
     npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
-    npm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    npm_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                 help=f"options for `{bold}npm outdated --global{reset}' command")
-    npm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    npm_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                 help=f"options for `{bold}npm upgrade --global <module>{reset}' command")
 
     return npm_parser
@@ -289,9 +289,9 @@ def get_pip_parser():
                                 help='do not run cleanup process')
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
-    pip_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    pip_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                 help=f"options for `{bold}pip list --outdated{reset}' command")
-    pip_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    pip_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                 help=f"options for `{bold}pip install --upgrade <package>{reset}' command")
 
     return pip_parser
@@ -336,9 +336,9 @@ def get_brew_parser():
                                  help='do not run cleanup process')
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
-    brew_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    brew_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                  help=f"options for `{bold}brew outdated{reset}' command")
-    brew_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    brew_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                  help=f"options for `{bold}brew upgrade <formula>{reset}' command")
 
     return brew_parser
@@ -356,7 +356,7 @@ def get_cask_parser():
     #######################################################
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-update-cask',
-                                          description='Homebrew Cask Update Packages',
+                                          description='Homebrew Cask Update Automator',
                                           usage='macdaily update cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
@@ -389,9 +389,9 @@ def get_cask_parser():
                                  help='do not run cleanup process')
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
-    cask_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    cask_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                  help=f"options for `{bold}brew cask outdated{reset}' command")
-    cask_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    cask_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                  help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
 
     return cask_parser
@@ -433,9 +433,9 @@ def get_system_parser():
                                    help='yes for all selections')
 
     system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
-    system_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG', dest='logging_opts',
+    system_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
                                    help=f"options for `{bold}softwareupdate --list{reset}' command")
-    system_misc_group.add_argument('-U', '--update', action='store', metavar='ARG', dest='update_opts',
+    system_misc_group.add_argument('-U', '--update', action='store', metavar='ARG',
                                    help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
 
     return system_parser

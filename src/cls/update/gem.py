@@ -28,46 +28,6 @@ class GemUpdate(GemCommand, UpdateCommand):
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
 
-    def _check_pkgs(self, path):
-        text = f'Listing installed {self.desc[1]}'
-        print_info(text, self._file, redirect=self._vflag)
-
-        argv = [path, 'list', '--no-versions']
-        args = ' '.join(argv)
-        print_scpt(args, self._file, redirect=self._vflag)
-        with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
-
-        try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
-        except subprocess.CalledProcessError:
-            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            _real_pkgs = set()
-        else:
-            context = proc.decode()
-            _real_pkgs = set(context.split())
-            print_text(context, self._file, redirect=self._vflag)
-        finally:
-            with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
-
-        text = 'Checking existence of specified packages'
-        print_info(text, self._file, redirect=self._vflag)
-
-        _temp_pkgs = list()
-        _lost_pkgs = list()
-        for package in self._packages:
-            if package in _real_pkgs:
-                _temp_pkgs.append(package)
-            else:
-                _lost_pkgs.append(package)
-        self._lost.extend(_lost_pkgs)
-
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
-
     def _check_list(self, path):
         text = 'Updating RubyGems database'
         print_info(text, self._file, redirect=self._qflag)

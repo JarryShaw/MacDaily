@@ -29,29 +29,6 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         self._logging_opts = namespace.pop('logging', str()).split()
         self._update_opts = namespace.pop('update', str()).split()
 
-    def _check_pkgs(self, path):
-        self._check_list(path)
-        text = 'Checking existence of specified packages'
-        print_info(text, self._file, redirect=self._vflag)
-
-        _rcmd_pkgs = list()
-        _norm_pkgs = list()
-        _lost_pkgs = list()
-        for package in self._packages:
-            if package in self._var__rcmd_pkgs:
-                _rcmd_pkgs.append(package)
-            elif package in self._var__norm_pkgs:
-                _norm_pkgs.append(package)
-            else:
-                _lost_pkgs.append(package)
-        self._lost.extend(_lost_pkgs)
-
-        self._var__real_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__rcmd_pkgs = set(_rcmd_pkgs)
-        self._var__norm_pkgs = set(_norm_pkgs)
-        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
-
     def _check_list(self, path):
         text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)

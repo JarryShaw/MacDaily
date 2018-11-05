@@ -55,7 +55,7 @@ Usage
       -V, --version         show program's version number and exit
 
     general arguments:
-      -a, --all             update all packages installed through Atom, RubyGem,
+      -a, --all             update all packages installed through Atom, RubyGems,
                             Node.js, Homebrew, Caskroom, Mac App Store, and etc
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
@@ -244,7 +244,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     usage: macdaily update cask [options] <casks>
 
-    Homebrew Cask Update Packages
+    Homebrew Cask Update Automator
 
     optional arguments:
       -h, --help            show this help message and exit

@@ -2,6 +2,8 @@
     "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/python",
     "cSpell.language": "en-GB",
     "cSpell.words": [
+        "Uninstaller",
+        "Uninstalling",
         "arcdir",
         "bcsy",
         "bdim",
@@ -40,6 +42,7 @@
         "swch",
         "tmpath",
         "tmpdir",
+        "uninstalled",
         "vflag"
     ],
     "python.linting.pep8Args": [

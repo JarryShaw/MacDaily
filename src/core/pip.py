@@ -6,10 +6,11 @@ import glob
 import itertools
 import os
 import re
+import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, reset, yellow
-from macdaily.util.misc import print_info, print_scpt, sudo
+from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
 
 try:
     import subprocess32 as subprocess
@@ -158,6 +159,64 @@ class PipCommand(Command):
             if self._system and self._pypy:
                 _extend_version(EXEC_PATH['combination'][(False, False)])
         self._exec = set(temp_exec)
+
+    def _check_pkgs(self, path):
+        _temp_pkgs = list()
+        _lost_pkgs = list()
+
+        text = 'Checking existence of specified packages'
+        print_info(text, self._file, redirect=self._vflag)
+        for package in self._packages:
+            argv = [path, '-m', 'pip', 'show', package]
+
+            args = ' '.join(argv)
+            print_scpt(args, self._file, redirect=self._vflag)
+            with open(self._file, 'a') as file:
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
+
+            try:
+                proc = subprocess.check_call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError:
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
+                _lost_pkgs.append(package)
+            else:
+                print_text(proc.stdout, self._file, redirect=self._vflag)
+                _temp_pkgs.append(package)
+            finally:
+                with open(self._file, 'a') as file:
+                    file.write(f'Script done on {date()}\n')
+
+        if _lost_pkgs:
+            text = f'Listing installed {self.desc[1]}'
+            print_info(text, self._file, redirect=self._vflag)
+
+            self._lost.extend(_lost_pkgs)
+            argv = [path, '-m', 'pip', 'list']
+
+            args = ' '.join(argv)
+            print_scpt(args, self._file, redirect=self._vflag)
+            with open(self._file, 'a') as file:
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
+
+            try:
+                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            except subprocess.CalledProcessError:
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
+                self._var__real_pkgs = set()
+            else:
+                context = proc.decode()
+                print_text(context, self._file, redirect=self._vflag)
+                self._var__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
+            finally:
+                with open(self._file, 'a') as file:
+                    file.write(f'Script done on {date()}\n')
+        else:
+            self._var__real_pkgs = set()
+
+        self._var__lost_pkgs = set(_lost_pkgs)
+        self._var__temp_pkgs = set(package)
 
     def _proc_cleanup(self):
         if self._no_cleanup:
