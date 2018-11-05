@@ -48,8 +48,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         try:
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
         except subprocess.SubprocessError:
-            print_text(traceback.format_exc(),
-                       self._file, redirect=self._vflag)
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
         else:
             context = proc.decode()
@@ -64,9 +63,9 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         print_info(text, self._file, redirect=self._qflag)
 
         def _proc_dependency(package):
-            _temp_pkgs = [package]
+            _deps_pkgs = [package]
             if self._ignore_deps:
-                return _temp_pkgs
+                return _deps_pkgs
 
             text = f'Searching dependencies of {self.desc[0]} {under}{package}{reset}'
             print_info(text, self._file, redirect=self._vflag)
@@ -82,9 +81,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                 argv.append('--skip-recommended')
             if self._include_requirements:
                 argv.append('--include-requirements')
-            argv.append('')
+            argv.append(package)
 
-            argv[-1] = package
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
@@ -97,12 +95,12 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
                 context = proc.decode()
-                _temp_pkgs.extend(reversed(context.strip().split()))
+                _deps_pkgs.extend(reversed(context.strip().split()))
                 print_text(context, self._file, redirect=self._vflag)
             finally:
                 with open(self._file, 'a') as file:
                     file.write(f'Script done on {date()}\n')
-            return _temp_pkgs
+            return _deps_pkgs
 
         argv = [path, 'uninstall', '--ignore-dependencies']
         if self._force:
@@ -116,6 +114,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         argv.append('')
         for item in self._var__temp_pkgs:
             for package in _proc_dependency(item):
+                if package in self._ignore:
+                    continue
                 argv[-1] = package
                 print_scpt(' '.join(argv), self._file, redirect=self._qflag)
                 if run(argv, self._file, timeout=self._timeout,

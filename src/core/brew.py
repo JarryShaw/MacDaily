@@ -155,7 +155,9 @@ class BrewCommand(Command):
             if self._yes or self._quiet:
                 return True
             while True:
-                ans = get_input(self._confirm, 'Would you like to reinstall? (y/N)')
+                ans = get_input(self._confirm, 'Would you like to reinstall?',
+                                prefix=f'Found broken dependencies: {", ".join(_deps_pkgs)}.\n\n',
+                                suffix=f' ({green}y{reset}/{red}N{reset}) ')
                 if re.match(r'[yY]', ans):
                     return True
                 elif re.match(r'[nN]', ans):

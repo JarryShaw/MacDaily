@@ -7,6 +7,6 @@ on run argv
     if args starts with "--help" or args starts with "-h" then
         return "macdaily-askpass [-h|--help] [prompt]"
     end if
-    display dialog args with icon file ("{icns}") default button "OK" default answer "" with hidden answer
+    display dialog args with icon caution default button "OK" default answer "" with hidden answer
     return result's text returned
 end run

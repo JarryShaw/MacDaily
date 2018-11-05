@@ -48,11 +48,11 @@ def date():
     return txt
 
 
-def get_input(confirm, prompt='Input: '):
+def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
     if sys.stdin.isatty():
-        return input(prompt)
+        return input(f'{prompt}{suffix}')
     try:
-        subprocess.check_call([shutil.which('osascript'), confirm, prompt],
+        subprocess.check_call([shutil.which('osascript'), confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         return 'N'

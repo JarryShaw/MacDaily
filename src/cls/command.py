@@ -232,13 +232,15 @@ class Command(metaclass=abc.ABCMeta):
         if self._yes or self._quiet:
             return True
         while True:
-            ans = get_input(self._confirm, f'Would you like to {self.act[0]}? (y/N)')
+            ans = get_input(self._confirm, f'Would you like to {self.act[0]}?',
+                            prefix=f'{self.desc[0]} {job} available for {", ".join(self._var__temp_pkgs)}.\n\n',
+                            suffix=f' ({green}y{reset}/{red}N{reset}) ')
             if re.match(r'[yY]', ans):
                 return True
             elif re.match(r'[nN]', ans):
                 text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                         f'{self.desc[0]} {job} postponed due to user cancellation')
-                print_term(text, self._file, redirect=self._vflag)
+                print_term(text, self._file, redirect=self._qflag)
                 return False
             else:
                 print('Invalid input.', file=sys.stderr)

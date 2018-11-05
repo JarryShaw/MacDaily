@@ -74,6 +74,8 @@ setuptools.setup(
             'LICENSE',
             'README.rst',
         ],
+        'macdaily.img': ['*.icns'],
+        'macdaily.res': ['*.applescript'],
     },
     classifiers=[
         # 'Development Status :: 5 - Production/Stable',

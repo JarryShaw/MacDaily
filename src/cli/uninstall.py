@@ -111,9 +111,9 @@ def get_pip_parser():
                                 help='yes for all selections')
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
-    pip_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
+    pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip freeze{reset}' command")
-    pip_misc_group.add_argument('-U', '--uninstall', action='store', metavar='ARG',
+    pip_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip uninstall <package>{reset}' command")
 
     return pip_parser
@@ -165,9 +165,9 @@ def get_brew_parser():
                                  help='yes for all selections')
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
-    brew_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
+    brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew list{reset}' command")
-    brew_misc_group.add_argument('-U', '--uninstall', action='store', metavar='ARG',
+    brew_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew uninstall <formula>{reset}' command")
 
     return brew_parser
@@ -207,9 +207,9 @@ def get_cask_parser():
                                  help='yes for all selections')
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
-    cask_misc_group.add_argument('-L', '--logging', action='store', metavar='ARG',
+    cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask outdated{reset}' command")
-    cask_misc_group.add_argument('-U', '--uninstall', action='store', metavar='ARG',
+    cask_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
 
     return cask_parser

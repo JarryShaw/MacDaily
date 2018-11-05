@@ -5,6 +5,6 @@ on run argv
     if args starts with "--help" or args starts with "-h" then
         return "macdaily-confirm [-h|--help] [prompt]"
     end if
-    display dialog args with icon file ("{icns}") default button "Cancel"
+    display dialog args with icon note default button "Cancel"
     return result's button returned
 end run
