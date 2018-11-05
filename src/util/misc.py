@@ -169,7 +169,7 @@ def record(file, args, today, config, redirect=False):
 def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
         prefix=None, timeout=None, executable=SHELL, verbose=False):
     suffix = '> /dev/null' if redirect else None
-    return script(argv, file, password=password, yes=yes, redirect=(not verbose), shell=shell,
+    return script(argv, file, password=password, yes=yes, redirect=verbose, shell=shell,
                   executable=executable, timeout=timeout, prefix=prefix, suffix=suffix)
 
 
