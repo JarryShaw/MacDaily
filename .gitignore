@@ -2,6 +2,7 @@
 dev_*
 *.pages
 archive/
+release/
 typescript
 deprecated/
 __archive__/
