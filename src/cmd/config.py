@@ -10,8 +10,10 @@ import re
 import shlex
 import sys
 
+from macdaily.util.const import ROOT, bold, red, reset
 from macdaily.util.error import ConfigNotFoundError
-from macdaily.util.misc import make_context, print_info, print_misc, print_scpt
+from macdaily.util.misc import (make_context, print_info, print_misc,
+                                print_scpt, print_term)
 
 try:
     import subprocess32 as subprocess
@@ -68,7 +70,8 @@ CONFIG = ['[Path]',
           '[Miscellanea]',
           '# In this section, miscellaneous specifications are assigned.',
           '# Please, under any circumstances, make sure all fields are valid.',
-          'askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks',
+          'askpass = /usr/local/bin/macdaily-askpass                   ; SUDO_ASKPASS utility for Homebrew Casks',
+          'confirm = /usr/local/bin/macdaily-confirm                   ; confirm utility for MacDaily',
           'timeout = 300                                               ; timeout limit for shell commands in seconds']
 
 
@@ -76,6 +79,7 @@ def launch_askpass(quiet=False, verbose=False):
     text = 'Launching MacDaily SSH-AskPass program'
     print_info(text, os.devnull, quiet)
 
+    path = f'Macintosh HD{ROOT.replace(os.path.sep, ":")}:img:askpass.icns'
     ASKPASS = ['#!/usr/bin/env osascript',
                '',
                '-- script based on https://github.com/theseal/ssh-askpass',
@@ -83,11 +87,9 @@ def launch_askpass(quiet=False, verbose=False):
                'on run argv',
                '    set args to argv as text',
                '    if args starts with "--help" or args starts with "-h" then',
-               '        return "macdaily-askpass [-p PASS] [prompt]"',
-               '    else if args starts with "--password" or args starts with "-p" then',
-               '        return text item 2 of argv',
+               '        return "macdaily-askpass [-h|--help] [prompt]"',
                '    end if',
-               '    display dialog args with icon caution default button "OK" default answer "" with hidden answer',
+               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',
                "    return result's text returned",
                'end run']
     askpass = '/usr/local/bin/macdaily-askpass'
@@ -95,11 +97,10 @@ def launch_askpass(quiet=False, verbose=False):
     print_misc(text, os.devnull, verbose)
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
+
     argv = ['chmod', 'u+x', askpass]
     print_scpt(' '.join(argv), os.devnull, verbose)
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, verbose):
-            subprocess.check_call(argv)
+    subprocess.check_call(argv, stdout=subprocess.DEVNULL)
 
     PLIST = collections.OrderedDict(
         Label='com.macdaily.askpass',
@@ -120,17 +121,58 @@ def launch_askpass(quiet=False, verbose=False):
     print_misc(text, os.devnull, verbose)
     with open(plist, 'wb') as file:
         plistlib.dump(PLIST, file, sort_keys=False)
+
     argv = ['launchctl', 'load', '-w', plist]
-    print_scpt(' '.join(argv), os.devnull, verbose)
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, verbose):
-            subprocess.check_call(argv)
+    args = ' '.join(argv)
+    print_scpt(args, os.devnull, verbose)
+    try:
+        subprocess.check_call(argv, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        text = f"macdaily: {red}config{reset}: command `{bold}{args!r}{reset} failed"
+        print_term(text, os.devnull, quiet)
+        raise
+
     argv = ['ssh-add', '-c']
-    print_scpt(' '.join(argv), os.devnull, verbose)
-    with open(os.devnull, 'w') as devnull:
-        with make_context(devnull, verbose):
-            subprocess.check_call(argv)
-    return askpass
+    args = ' '.join(argv)
+    print_scpt(args, os.devnull, verbose)
+    try:
+        subprocess.check_call(argv, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        text = f"macdaily: {red}config{reset}: command `{bold}{args!r}{reset} failed"
+        print_term(text, os.devnull, quiet)
+        raise
+
+
+def launch_confirm(quiet=False, verbose=False):
+    text = 'Launching MacDaily Confirmation program'
+    print_info(text, os.devnull, quiet)
+
+    path = f'Macintosh HD{ROOT.replace(os.path.sep, ":")}:img:confirm.icns'
+    ASKPASS = ['#!/usr/bin/env osascript',
+               '',
+               'on run argv',
+               '    set args to argv as text',
+               '    if args starts with "--help" or args starts with "-h" then',
+               '        return "macdaily-confirm [-h|--help] [prompt]"',
+               '    end if',
+               f'    display dialog args with icon file ("{path}") default button "Cancel"',
+               "    return result's button returned",
+               'end run']
+    confirm = '/usr/local/bin/macdaily-confirm'
+    text = f'Making executable {confirm!r}'
+    print_misc(text, os.devnull, verbose)
+    with open(confirm, 'w') as file:
+        file.write(os.linesep.join(ASKPASS))
+
+    argv = ['chmod', 'u+x', confirm]
+    args = ' '.join(argv)
+    print_scpt(args, os.devnull, verbose)
+    try:
+        subprocess.check_call(argv, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        text = f"macdaily: {red}config{reset}: command `{bold}{args!r}{reset} failed"
+        print_term(text, os.devnull, quiet)
+        raise
 
 
 def get_config():
@@ -145,8 +187,8 @@ def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    askpass = launch_askpass(quiet, verbose)
-    CONFIG[49] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
+    launch_askpass(quiet, verbose)
+    launch_confirm(quiet, verbose)
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))

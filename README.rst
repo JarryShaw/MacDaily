@@ -184,6 +184,7 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     # In this section, miscellaneous specifications are assigned.
     # Please, under any circumstances, make sure all fields are valid.
     askpass = /usr/local/bin/macdaily-askpass                   ; SUDO_ASKPASS utility for Homebrew Casks
+    confirm = /usr/local/bin/macdaily-confirm                   ; confirm utility for MacDaily
     timeout = 300                                               ; timeout limit for shell commands in seconds
 
 Above is the default content of ``.dailyrc``, following the grammar of

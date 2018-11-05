@@ -4,7 +4,7 @@ import traceback
 
 from macdaily.cmd.uninstall import UninstallCommand
 from macdaily.core.brew import BrewCommand
-from macdaily.util.const import bold, reset, under
+from macdaily.util.const import reset, under
 from macdaily.util.misc import date, print_info, print_scpt, print_text, run
 
 try:

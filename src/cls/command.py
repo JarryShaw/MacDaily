@@ -7,7 +7,7 @@ import re
 import sys
 
 from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import print_info, print_term
+from macdaily.util.misc import get_input, print_info, print_term
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -115,7 +115,8 @@ class Command(metaclass=abc.ABCMeta):
     def notfound(self):
         return set(self._lost)
 
-    def __init__(self, namespace, filename, timeout, askpass, password, disk_dir, brew_renew):
+    def __init__(self, namespace, filename, timeout, confirm,
+                 askpass, password, disk_dir, brew_renew):
         """Initialisation.
 
         Args:
@@ -123,6 +124,7 @@ class Command(metaclass=abc.ABCMeta):
         - ``namespace`` -- ``dict``, converted argparse.Namespace
         - ``filename`` -- ``str``, real path of log file
         - ``timeout`` -- ``int``, timeout interval for main process
+        - ``confirm`` -- ``str``, path to ``macdaily-confirm``
         - ``askpass`` -- ``str``, path to ``macdaily-askpass``
         - ``password`` --  ``str``/``bytes``, sudo password
         - ``disk_dir`` -- ``str``, real root path of archive directory
@@ -142,6 +144,7 @@ class Command(metaclass=abc.ABCMeta):
         # assign members
         self._file = filename
         self._timeout = timeout
+        self._confirm = confirm
         self._askpass = askpass
         self._password = password
         self._disk_dir = disk_dir
@@ -211,6 +214,7 @@ class Command(metaclass=abc.ABCMeta):
             self._var__lost_pkgs = set()
             self._var__real_pkgs = set()
             self._var__temp_pkgs = set()
+            self._proc_fixmissing(path)
         self._proc_cleanup()
 
     def _check_confirm(self):
@@ -228,7 +232,7 @@ class Command(metaclass=abc.ABCMeta):
         if self._yes or self._quiet:
             return True
         while True:
-            ans = input(f'Would you like to {self.act[0]}? (y/N)')
+            ans = get_input(self._confirm, f'Would you like to {self.act[0]}? (y/N)')
             if re.match(r'[yY]', ans):
                 return True
             elif re.match(r'[nN]', ans):
@@ -252,6 +256,9 @@ class Command(metaclass=abc.ABCMeta):
                 print_term(text, self._file, redirect=self._qflag)
         del self._var__lost_pkgs
         del self._var__real_pkgs
+
+    def _proc_fixmissing(self, path):
+        pass
 
     def _proc_cleanup(self):
         pass

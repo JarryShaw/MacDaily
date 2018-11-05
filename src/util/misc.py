@@ -34,8 +34,8 @@ def beholder(func):
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
-        except Exception as error:
-            print(f'macdaily: {red}error{reset}: {error!s}', file=sys.stderr)
+        except BaseException:
+            print(f'macdaily: {red}error{reset}: operation failed', file=sys.stderr)
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
@@ -46,6 +46,17 @@ def date():
     now = datetime.datetime.now()
     txt = datetime.datetime.strftime(now, '%+')
     return txt
+
+
+def get_input(confirm, prompt='Input: '):
+    if sys.stdin.isatty():
+        return input(prompt)
+    try:
+        subprocess.check_call([shutil.which('osascript'), confirm, prompt],
+                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return 'N'
+    return 'Y'
 
 
 def get_pass(askpass):

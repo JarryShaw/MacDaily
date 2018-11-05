@@ -7,6 +7,11 @@ import shutil
 import sys
 import pwd
 
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
+
 # version string
 __version__ = '2018.11.04.dev15'
 
@@ -19,7 +24,7 @@ SCRIPT = shutil.which('script')
 UNBUFFER = shutil.which('unbuffer')
 
 # environment macros
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = pathlib.Path(__file__).resolve().parents[1]
 SHELL = os.getenv('SHELL', shutil.which('sh'))
 USER = pwd.getpwnam(getpass.getuser()).pw_gecos
 

@@ -17,7 +17,7 @@ class UninstallCommand(Command):
         return ('uninstall', 'uninstalled', 'removed')
 
     @property
-    def jon(self):
+    def job(self):
         return ('uninstallation', 'uninstallation')
 
     def _run_proc(self):
@@ -32,6 +32,7 @@ class UninstallCommand(Command):
             else:
                 text = f'No {self.desc[1]} to uninstall for executable {path!r}'
                 print_info(text, self._file, redirect=self._qflag)
+            self._proc_fixmissing(path)
 
     def _proc_logging(self, path):
         if self._packages:

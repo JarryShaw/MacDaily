@@ -56,6 +56,7 @@ def update(argv=None):
     # prepare command paras
     filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
     timeout = config['Miscellanea']['timeout']
+    confirm = config['Miscellanea']['confirm']
     askpass = config['Miscellanea']['askpass']
     disk_dir = config['Path']['arcdir']
     brew_renew = None
@@ -103,7 +104,8 @@ def update(argv=None):
 
         # run command
         cmd_cls = globals()[f'{mode.capitalize()}Update']
-        command = cmd_cls(namespace, filename, timeout, askpass, password, disk_dir, brew_renew)
+        command = cmd_cls(namespace, filename, timeout, confirm,
+                          askpass, password, disk_dir, brew_renew)
 
         # record command
         cmd_list.append(command)

@@ -4,15 +4,16 @@ import abc
 import contextlib
 import glob
 import os
+import re
 import shutil
 import sys
 import traceback
 
 from macdaily.cls.command import Command
-from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
-                                 under, yellow)
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text, run, sudo)
+from macdaily.util.const import (bold, flash, green, purple_bg, red, red_bg,
+                                 reset, under, yellow)
+from macdaily.util.misc import (date, get_input, print_info, print_scpt,
+                                print_term, print_text, run, sudo)
 
 try:
     import pathlib2 as pathlib
@@ -118,6 +119,83 @@ class BrewCommand(Command):
             argv.append('--verbose')
         print_scpt(' '.join(argv), self._file, redirect=self._qflag)
         run(argv, self._file, redirect=self._qflag)
+
+    def _proc_fixmissing(self, path):
+        text = f'Checking broken {self.desc[0]} dependencies'
+        print_info(text, self._file, redirect=self._qflag)
+
+        def _proc_check():
+            argv = [path, 'missing', f'--hide={",".join(self._ignore)!r}']
+            args = ' '.join(argv)
+            print_scpt(args, self._file, redirect=self._vflag)
+            with open(self._file, 'a') as file:
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
+
+            _deps_pkgs = list()
+            try:
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            except subprocess.SubprocessError:
+                print_text(traceback.format_exc(), self._file, redirect=self._vflag)
+            else:
+                context = proc.stdout.decode()
+                print_text(context, self._file, redirect=self._vflag)
+
+                for line in filter(None, context.strip().split('\n')):
+                    _deps_pkgs.extend(line.split()[1:])
+            finally:
+                with open(self._file, 'a') as file:
+                    file.write(f'Script done on {date()}\n')
+            return set(_deps_pkgs)
+
+        def _proc_confirm():
+            pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
+            text = f'macdaily-update: {yellow}brew{reset}: found broken dependencies: {bold}{pkgs}{reset}'
+            print_term(text, self._file, redirect=self._qflag)
+            if self._yes or self._quiet:
+                return True
+            while True:
+                ans = get_input(self._confirm, 'Would you like to reinstall? (y/N)')
+                if re.match(r'[yY]', ans):
+                    return True
+                elif re.match(r'[nN]', ans):
+                    return False
+                else:
+                    print('Invalid input.', file=sys.stderr)
+
+        _deps_pkgs = _proc_check() - self._ignore
+        if not _deps_pkgs:
+            text = f'macdaily-update: {green}brew{reset}: no broken dependencies'
+            print_term(text, self._file, redirect=self._qflag)
+            return
+
+        text = f'Fixing broken {self.desc[0]} dependencies'
+        print_info(text, self._file, redirect=self._qflag)
+
+        if _proc_confirm():
+            argv = [path, 'reinstall']
+            if self._quiet:
+                argv.append('--quiet')
+            if self._verbose:
+                argv.append('--verbose')
+            argv.append('')
+
+            _done_pkgs = set()
+            while _deps_pkgs:
+                for package in _deps_pkgs:
+                    argv[-1] = package
+                    print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+                    if not run(argv, self._file, redirect=self._qflag,
+                           timeout=self._timeout, verbose=self._vflag):
+                        with contextlib.suppress(ValueError):
+                            self._pkgs.remove(package)
+                _done_pkgs |= _deps_pkgs
+                _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
+
+            text = f'macdaily-update: {green}brew{reset}: all broken dependencies fixed'
+        else:
+            text = f'macdaily-update: {red}brew{reset}: all broken dependencies remain'
+        print_term(text, self._file, redirect=self._qflag)
 
     def _proc_cleanup(self):
         if self._no_cleanup:
