@@ -34,7 +34,7 @@ def beholder(func):
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
-        except BaseException:
+        except Exception:
             print(f'macdaily: {red}error{reset}: operation failed', file=sys.stderr)
             sys.stdout.write(reset)
             sys.tracebacklimit = 0

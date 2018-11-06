@@ -20,7 +20,7 @@ def get_uninstall_parser():
     parser = argparse.ArgumentParser(prog='macdaily-uninstall',
                                      description='Automate macOS Package Uninstaller',
                                      usage='macdaily uninstall [options] <mode-selection> ...',
-                                     epilog='aliases: up, upgrade')
+                                     epilog='aliases: un, unlink, remove, rm, r')
     parser.add_argument('-V', '--version',
                         action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
@@ -194,7 +194,7 @@ def get_cask_parser():
     #######################################################
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-uninstall-cask',
-                                          description='HAutomate Homebrew Cask Uninstaller',
+                                          description='Automate Homebrew Cask Uninstaller',
                                           usage='macdaily uninstall cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
@@ -220,9 +220,9 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask outdated{reset}' command")
+                                 help=f"options for `{bold}brew cask list{reset}' command")
     cask_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
+                                 help=f"options for `{bold}brew cask uninstall <cask>{reset}' command")
 
     return cask_parser
 

@@ -41,8 +41,8 @@ for python in /usr/bin/python \
               /usr/local/Cellar/pypy/*/bin/pypy \
               /usr/local/Cellar/pypy3/*/bin/pypy3 \
               /usr/local/Cellar/python/*/bin/python3.? \
-              /usr/local/Cellar/python@2/*/bin/python2.? \
-              /Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
+              /usr/local/Cellar/python@2/*/bin/python2.? ; do
+            #  /Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
             # /System/Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
     $python setup.py bdist_wheel
 done
