@@ -93,8 +93,10 @@ def uninstall(argv=None):
             namespace['quiet'] = True
         if args.verbose:
             namespace['verbose'] = True
-        if args.no_cleanup:
-            namespace['no_cleanup'] = True
+        if args.dry_run:
+            namespace['dry_run'] = True
+        if args.ignore_dependencies:
+            namespace['ignore_dependencies'] = True
 
         # run command
         cmd_cls = globals()[f'{mode.capitalize()}Uninstall']

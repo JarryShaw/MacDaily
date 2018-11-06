@@ -28,6 +28,9 @@ def get_uninstall_parser():
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-a', '--all', action='store_true',
                             help='uninstall all packages installed through Homebrew, Caskroom, and etc')
+    genl_group.add_argument('-n', '--dry-run', action='store_true',
+                            help=('list all packages which would be removed, '
+                                  'but will not actually delete any packages'))
     genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
                             help='run in non-recursive mode, i.e. ignore dependencies packages')
     genl_group.add_argument('-q', '--quiet', action='store_true',
@@ -101,6 +104,9 @@ def get_pip_parser():
     pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='uninstall all Python packages installed through Python Package Index')
+    pip_genl_group.add_argument('-n', '--dry-run', action='store_true',
+                                help=('list all Python packages which would be removed, '
+                                      'but will not actually delete any Python packages'))
     pip_genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
                                  help='run in non-recursive mode, i.e. ignore dependencies packages')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
@@ -155,6 +161,9 @@ def get_brew_parser():
     brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='uninstall all Homebrew formulae installed through Homebrew')
+    brew_genl_group.add_argument('-n', '--dry-run', action='store_true',
+                                 help=('list all Homebrew formulae which would be removed, '
+                                       'but will not actually delete any Homebrew formulae'))
     brew_genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
                                  help='run in non-recursive mode, i.e. ignore dependencies packages')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
@@ -199,6 +208,9 @@ def get_cask_parser():
     cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='uninstall all Caskroom binaries installed through Homebrew')
+    cask_genl_group.add_argument('-n', '--dry-run', action='store_true',
+                                 help=('list all Caskroom binaries which would be removed, '
+                                       'but will not actually delete any Caskroom binaries'))
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
     cask_genl_group.add_argument('-v', '--verbose', action='store_true',

@@ -33,8 +33,8 @@ class MasCommand(Command):
         self._var__exec_path = shutil.which('mas')
         flag = (self._var__exec_path is None)
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}mas{reset}: you may download MAS through following command -- '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}mas{reset}: you may download MAS through following command -- '
                     f"`{bold}brew install mas{reset}'")
             print_term(text, self._file, redirect=self._qflag)
         return flag

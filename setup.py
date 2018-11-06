@@ -51,6 +51,7 @@ setuptools.setup(
         'console_scripts': [
             # 'macdaily = macdaily.__main__:main',
             'md-update = macdaily.api.update:update',
+            'md-uninstall = macdaily.api.uninstall:uninstall',
         ]
     },
     packages=[

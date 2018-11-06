@@ -256,7 +256,7 @@ class PipCommand(Command):
 
         def _proc_confirm():
             pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
-            text = f'macdaily-update: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}'
+            text = f'macdaily-{self.cmd}: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}'
             print_term(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
@@ -273,7 +273,7 @@ class PipCommand(Command):
 
         _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
-            text = f'macdaily-update: {green}pip{reset}: no broken dependencies'
+            text = f'macdaily-{self.cmd}: {green}pip{reset}: no broken dependencies'
             print_term(text, self._file, redirect=self._qflag)
             return
 
@@ -309,9 +309,9 @@ class PipCommand(Command):
                             self._pkgs.remove(real_name)
                 _done_pkgs |= _deps_pkgs
                 _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
-            text = f'macdaily-update: {green}pip{reset}: all broken dependencies fixed'
+            text = f'macdaily-{self.cmd}: {green}pip{reset}: all broken dependencies fixed'
         else:
-            text = f'macdaily-update: {red}pip{reset}: all broken dependencies remain'
+            text = f'macdaily-{self.cmd}: {red}pip{reset}: all broken dependencies remain'
         print_term(text, self._file, redirect=self._qflag)
 
     def _proc_cleanup(self):

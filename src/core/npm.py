@@ -36,8 +36,8 @@ class NpmCommand(Command):
         self._var__exec_path = shutil.which('npm')
         flag = (self._var__exec_path is None)
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}npm{reset}: you may download Node.js from '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}npm{reset}: you may download Node.js from '
                     f'{purple_bg}{under}https://nodejs.org{reset}')
             print_term(text, self._file, redirect=self._qflag)
         return flag

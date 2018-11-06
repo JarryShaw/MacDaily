@@ -16,6 +16,7 @@ except ImportError:
 class BrewUninstall(BrewCommand, UninstallCommand):
 
     def _parse_args(self, namespace):
+        self._dry_run = namespace.pop('dry_run', False)
         self._force = namespace.pop('force', False)
         self._ignore_deps = namespace.pop('ignore_dependencies', False)
         self._include_build = namespace.pop('include_build', False)
@@ -109,15 +110,25 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             argv.append('--quiet')
         if self._verbose:
             argv.append('--verbose')
+        if self._dry_run:
+            argv.append('--dry-run')
         argv.extend(self._uninstall_opts)
 
         argv.append('')
+        _done_pkgs = list()
         for item in self._var__temp_pkgs:
+            if item in _done_pkgs:
+                continue
             for package in _proc_dependency(item):
                 if package in self._ignore:
                     continue
+                if package in _done_pkgs:
+                    continue
+                _done_pkgs.append(package)
                 argv[-1] = package
                 print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+                if self._dry_run:
+                    continue
                 if run(argv, self._file, timeout=self._timeout,
                        redirect=self._qflag, verbose=self._vflag):
                     self._fail.append(package)

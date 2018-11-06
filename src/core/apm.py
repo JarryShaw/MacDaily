@@ -34,8 +34,8 @@ class ApmCommand(Command):
         self._var__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
         flag = (self._var__exec_path == (None, None))
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}apm{reset}: you may download Atom from '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}apm{reset}: you may download Atom from '
                     f'{purple_bg}{under}https://atom.io{reset}')
             print_term(text, self._file, redirect=self._qflag)
         return flag

@@ -44,8 +44,8 @@ class BrewCommand(Command):
         self._var__exec_path = shutil.which('brew')
         flag = (self._var__exec_path is None)
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}brew{reset}: you may find Homebrew on '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}brew{reset}: you may find Homebrew on '
                     f'{purple_bg}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
                     f'`{bold}/usr/bin/ruby -e "$(curl -fsSL '
                     f"""https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}'""")
@@ -150,7 +150,7 @@ class BrewCommand(Command):
 
         def _proc_confirm():
             pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
-            text = f'macdaily-update: {yellow}brew{reset}: found broken dependencies: {bold}{pkgs}{reset}'
+            text = f'macdaily-{self.cmd}: {yellow}brew{reset}: found broken dependencies: {bold}{pkgs}{reset}'
             print_term(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
@@ -167,7 +167,7 @@ class BrewCommand(Command):
 
         _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
-            text = f'macdaily-update: {green}brew{reset}: no broken dependencies'
+            text = f'macdaily-{self.cmd}: {green}brew{reset}: no broken dependencies'
             print_term(text, self._file, redirect=self._qflag)
             return
 
@@ -194,9 +194,9 @@ class BrewCommand(Command):
                 _done_pkgs |= _deps_pkgs
                 _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
 
-            text = f'macdaily-update: {green}brew{reset}: all broken dependencies fixed'
+            text = f'macdaily-{self.cmd}: {green}brew{reset}: all broken dependencies fixed'
         else:
-            text = f'macdaily-update: {red}brew{reset}: all broken dependencies remain'
+            text = f'macdaily-{self.cmd}: {red}brew{reset}: all broken dependencies remain'
         print_term(text, self._file, redirect=self._qflag)
 
     def _proc_cleanup(self):
@@ -294,6 +294,6 @@ class BrewCommand(Command):
                 print_text(os.linesep.join(sorted(file_list)), self._file, redirect=self._vflag)
 
         if flag:
-            text = (f'macdaily-update: {yellow}brew{reset}: '
+            text = (f'macdaily-{self.cmd}: {yellow}brew{reset}: '
                     f'archive directory {bold}{self._disk_dir}{reset} not found')
             print_term(text, self._file, redirect=self._vflag)

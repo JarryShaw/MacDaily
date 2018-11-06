@@ -274,7 +274,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
               executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
-    argv = f'unbuffer -p {_merge(argv)} | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
+    argv = f'unbuffer -p {_merge(argv)} | {_text2dim(password)} | tee -a >({_ansi2text(password)} | col -b >> {file})'
     # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >({ansi2text(password)} | col -b >> {file})'
     if yes is not None:
         argv = f'yes {yes} | {argv}'
@@ -303,7 +303,7 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
     argc = f'script -q /dev/null {SHELL} -c "'
     if yes is not None:
         argc = f'{argc} yes {yes} |'
-    argv = f'{argc} {_merge(argv)}" | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
+    argv = f'{argc} {_merge(argv)}" | {_text2dim(password)} | tee -a >({_ansi2text(password)} | col -b >> {file})'
     if prefix is not None:
         argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'

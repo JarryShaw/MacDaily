@@ -43,8 +43,8 @@ class CaskCommand(Command):
             subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            print(f'macdaily-update: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}cask{reset}: you may find Caskroom on '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}cask{reset}: you may find Caskroom on '
                     f'{purple_bg}{under}https://caskroom.github.io{reset}, '
                     f'or install Caskroom through following command -- '
                     f"`{bold}brew tap homebrew/cask{reset}'")
@@ -129,7 +129,7 @@ class CaskCommand(Command):
         print_info(text, self._file, redirect=self._qflag)
 
         if not os.path.isdir(self._disk_dir):
-            text = (f'macdaily-update: {yellow}cask{reset}: '
+            text = (f'macdaily-{self.cmd}: {yellow}cask{reset}: '
                     f'archive directory {bold}{self._disk_dir}{reset} not found')
             return print_term(text, self._file, redirect=self._vflag)
 

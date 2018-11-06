@@ -27,8 +27,8 @@ class SystemCommand(Command):
         self._var__exec_path = shutil.which('softwareupdate')
         flag = (self._var__exec_path is None)
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}system{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}system{reset}: '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}system{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}system{reset}: '
                     "you may add `softwareupdate' to PATH through the following command -- "
                     f"""`{bold}echo 'export PATH="/usr/sbin:$PATH"' >> ~/.bash_profile{reset}'""")
             print_term(text, self._file, redirect=self._qflag)

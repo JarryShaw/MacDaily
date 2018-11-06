@@ -18,6 +18,7 @@ class PipUninstall(PipCommand, UninstallCommand):
     def _parse_args(self, namespace):
         self._brew = namespace.pop('brew', False)
         self._cpython = namespace.pop('cpython', False)
+        self._dry_run = namespace.pop('dry_run', False)
         self._ignore_deps = namespace.pop('ignore_dependencies', False)
         self._pre = namespace.pop('pre', False)
         self._pypy = namespace.pop('pypy', False)
@@ -32,7 +33,7 @@ class PipUninstall(PipCommand, UninstallCommand):
         self._uninstall_opts = namespace.pop('uninstall', str()).split()
 
     def _check_list(self, path):
-        argv = [path, 'freeze']
+        argv = [path, '-m', 'pip', 'freeze']
         argv.extend(self._logging_opts)
 
         text = f'Checking outdated {self.desc[1]}'
@@ -59,8 +60,8 @@ class PipUninstall(PipCommand, UninstallCommand):
         text = f'Uninstalling specified {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
-        def _proc_dependency(package):
-            _deps_pkgs = [package]
+        def _proc_dependency(package, _know_pkgs):
+            _deps_pkgs = {package}
             if self._ignore_deps:
                 return _deps_pkgs
 
@@ -84,7 +85,7 @@ class PipUninstall(PipCommand, UninstallCommand):
                 print_text(context, self._file, redirect=self._vflag)
 
                 for line in filter(lambda s: s.startswith('Requires: '), context.strip().split('\n')):
-                    _temp_pkgs = set(map(lambda s: s.rstrip(','), line.split()[1:]))
+                    _temp_pkgs = set(map(lambda s: s.rstrip(','), line.split()[1:])) - _know_pkgs
                     _deps_pkgs |= _temp_pkgs
                     break
             finally:
@@ -92,9 +93,9 @@ class PipUninstall(PipCommand, UninstallCommand):
                     file.write(f'Script done on {date()}\n')
 
             for package in _temp_pkgs:
-                if package in ('pip', 'wheel', 'setuptools'):
-                    continue
-                _deps_pkgs |= _proc_dependency(package)
+                _temp_pkgs = _proc_dependency(package, _know_pkgs)
+                _deps_pkgs |= _temp_pkgs
+                _know_pkgs |= _temp_pkgs
             return _deps_pkgs
 
         argv = [path, '-m', 'pip', 'uninstall']
@@ -104,20 +105,25 @@ class PipUninstall(PipCommand, UninstallCommand):
             argv.append('--quiet')
         if self._verbose:
             argv.append('--verbose')
+        if self._dry_run:
+            argv.append('--dry-run')
         argv.extend(self._uninstall_opts)
 
         argv.append('')
+        _done_pkgs = set()
+        _know_pkgs = self._ignore | {'pip', 'wheel', 'setuptools'}
         for item in self._var__temp_pkgs:
-            for package in _proc_dependency(item):
-                if package in self._ignore:
-                    continue
-                if package in ('pip', 'wheel', 'setuptools'):
-                    continue
+            _deps_pkgs = _proc_dependency(item, _know_pkgs)
+            _know_pkgs |= _deps_pkgs
+            for package in (_deps_pkgs - _done_pkgs):
                 argv[-1] = package
                 print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+                if self._dry_run:
+                    continue
                 if sudo(argv, self._file, self._password, sethome=True,
                         timeout=self._timeout, redirect=self._qflag, verbose=self._vflag):
                     self._fail.append(package)
                 else:
                     self._pkgs.append(package)
+            _done_pkgs |= _deps_pkgs
         del self._var__temp_pkgs

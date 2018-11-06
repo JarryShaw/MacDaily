@@ -36,8 +36,8 @@ class GemCommand(Command):
         self._var__exec_path = shutil.which('gem')
         flag = (self._var__exec_path is None)
         if flag:
-            print(f'macdaily-update: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-update: {red}gem{reset}: you may download RubyGems from '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}gem{reset}: you may download RubyGems from '
                     f'{purple_bg}{under}https://rubygems.org{reset}')
             print_term(text, self._file, redirect=self._qflag)
         return flag
