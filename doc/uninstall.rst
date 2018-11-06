@@ -276,6 +276,11 @@ For *miscellaneous arguments*, the runtime commands are as below.
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
+NB
+    For stability of Python, MacDaily ``uninstall`` command will **NOT**
+    remove any of the following packages: ``pip``, ``setuptools``,
+    ``wheel`` and distribute.
+
 For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+----------------------------------------------+

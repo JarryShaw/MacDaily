@@ -175,11 +175,12 @@ def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
 
 def _ansi2text(password):
     return (f'{sys.executable} -c "'
-            'import re, sys; '
-            "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
-            "temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE); "
-            f"text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}; "
-            f"print(text.strip())"
+            'import re, sys\n'
+            'for line in sys.stdin:\n'
+            "    data = line.strip().replace('^D\x08\x08', '')\n"
+            "    temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
+            f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
+            "    print(text, end='\\r\\n')\n"
             '"')
 
 
@@ -197,11 +198,12 @@ def _replace(password):
 
 def _text2dim(password):
     return (f'{sys.executable} -c "'
-            'import re, sys; '
-            "data = sys.stdin.read().strip().replace('^D\x08\x08', ''); "
-            f"temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE); "
-            f"text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}; "
-            f"print(text.strip())"
+            'import re, sys\n'
+            'for line in sys.stdin:\n'
+            "    data = line.strip().replace('^D\x08\x08', '')\n"
+            f"    temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE)\n"
+            f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
+            "    print(text, end='\\r\\n')\n"
             '"')
 
 
@@ -288,7 +290,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
         text = traceback.format_exc()
         if password is not None:
             text = text.replace(password, '********')
-        print_text(text, file, redirect=redirect)
+        print_text(repr(text), file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
     #     with contextlib.suppress(subprocess.SubprocessError):
@@ -313,10 +315,10 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
         returncode = subprocess.check_call(
             argv, shell=True, executable=SHELL, timeout=timeout)
     except subprocess.SubprocessError as error:
-        text = traceback.format_exc()
+        text = traceback.format_exc().replace('\n', '\\n')
         if password is not None:
             text = text.replace(password, '********')
-        print_text(text, file, redirect=redirect)
+        print_text(repr(text), file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
     #     with contextlib.suppress(subprocess.SubprocessError):
