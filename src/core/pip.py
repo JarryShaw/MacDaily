@@ -331,12 +331,12 @@ class PipCommand(Command):
         argv = ['rm', '-rf']
         if self._verbose:
             argv.append('-v')
-        argc = ' '.join(argv)
+        argv.append('')
         for path in ['/var/root/Library/Caches/pip/http/',
                      '/var/root/Library/Caches/pip/wheels/',
                      os.path.expanduser('~/Library/Caches/pip/http/'),
                      os.path.expanduser('~/Library/Caches/pip/wheels/')]:
-            args = f'{argc} {path}'
-            print_scpt(args, self._file, redirect=self._qflag)
+            argv[-1] = path
+            print_scpt(' '.join(argv), self._file, redirect=self._qflag)
             sudo(argv, self._file, self._password,
                  redirect=self._qflag, verbose=self._vflag)
