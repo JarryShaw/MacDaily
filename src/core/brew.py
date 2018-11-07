@@ -133,7 +133,7 @@ class BrewCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             _deps_pkgs = list()
-            try:
+            try:  # brew missing exits with a non-zero status if any formulae are missing dependencies
                 proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)

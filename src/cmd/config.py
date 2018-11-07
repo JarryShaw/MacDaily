@@ -13,11 +13,6 @@ from macdaily.cmd.launch import launch_askpass, launch_confirm, run_script
 from macdaily.util.const import ROOT
 from macdaily.util.error import ConfigNotFoundError
 
-try:
-    import subprocess32 as subprocess
-except ImportError:
-    import subprocess
-
 
 CONFIG = ['[Path]',
           '# In this section, paths for log files are specified.',

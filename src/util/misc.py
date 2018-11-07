@@ -62,11 +62,8 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
 def get_pass(askpass):
     if sys.stdin.isatty():
         return getpass.getpass(prompt='Password:')
-    try:
-        password = subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'])
-    except subprocess.CalledProcessError:
-        raise
-    return password.strip().decode()
+    return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
 
 
 def make_context(devnull, redirect=False):
@@ -82,6 +79,12 @@ def make_description(command):
         else:
             return command.desc[1]
     return desc
+
+
+def make_stderr(redirect):
+    if redirect:
+        return subprocess.DEVNULL
+    return None
 
 
 def print_info(text, file, redirect=False):
@@ -276,7 +279,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
               executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
-    argv = f'unbuffer -p {_merge(argv)} | {_text2dim(password)} | tee -a >({_ansi2text(password)} | col -b >> {file})'
+    argv = f'unbuffer -p {_merge(argv)} | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >({ansi2text(password)} | col -b >> {file})'
     if yes is not None:
         argv = f'yes {yes} | {argv}'
@@ -285,7 +288,8 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
     # argv = f'set -x; {argv}'
 
     try:
-        returncode = subprocess.check_call(argv, shell=True, executable=SHELL, timeout=timeout)
+        returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
+                                           timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
         text = traceback.format_exc()
         if password is not None:
@@ -305,15 +309,14 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
     argc = f'script -q /dev/null {SHELL} -c "'
     if yes is not None:
         argc = f'{argc} yes {yes} |'
-    argv = f'{argc} {_merge(argv)}" | {_text2dim(password)} | tee -a >({_ansi2text(password)} | col -b >> {file})'
+    argv = f'{argc} {_merge(argv)}" | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     if prefix is not None:
         argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
-    print(argv)
     try:
-        returncode = subprocess.check_call(
-            argv, shell=True, executable=SHELL, timeout=timeout)
+        returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
+                                           timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
         text = traceback.format_exc().replace('\n', '\\n')
         if password is not None:

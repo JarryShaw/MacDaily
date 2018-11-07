@@ -5,7 +5,8 @@ import os
 import plistlib
 
 from macdaily.util.const import ROOT, bold, red, reset
-from macdaily.util.misc import print_info, print_misc, print_scpt, print_term
+from macdaily.util.misc import (make_stderr, print_info, print_misc,
+                                print_scpt, print_term)
 
 try:
     import subprocess32 as subprocess
@@ -16,11 +17,10 @@ except ImportError:
 def run_script(argv, quiet, verbose):
     args = ' '.join(argv)
     print_scpt(args, os.devnull, verbose)
-    stderr = subprocess.DEVNULL if quiet else None
     try:
-        subprocess.check_call(argv, stdout=subprocess.DEVNULL, stderr=stderr)
+        subprocess.check_call(argv, stdout=subprocess.DEVNULL, stderr=make_stderr(quiet))
     except subprocess.CalledProcessError:
-        text = f"macdaily: {red}config{reset}: command `{bold}{args!r}{reset} failed"
+        text = f"macdaily: {red}launch{reset}: command `{bold}{args!r}{reset} failed"
         print_term(text, os.devnull, quiet)
         raise
 
