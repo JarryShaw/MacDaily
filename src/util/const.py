@@ -13,7 +13,7 @@ except ImportError:
     import pathlib
 
 # version string
-__version__ = '2018.11.08.dev22'
+__version__ = '2018.11.08.dev23'
 
 # terminal commands
 python = sys.executable         # Python version

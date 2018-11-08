@@ -482,6 +482,7 @@ TODO
 - ❌ considering support more versions of Python
 - ✔️ optimise ``KeyboardInterrupt`` handling procedure
 - ✔️ review ``pip`` implementation and version indication
+- ❌ add ``--user`` for ``pip`` commands
 
 .. |archive| replace:: ``archive``
 .. _archive: https://github.com/JarryShaw/MacDaily/blob/dev/doc/archive.rst

@@ -179,12 +179,12 @@ class PipCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             try:
-                proc = subprocess.check_call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                proc = subprocess.check_output(argv, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 _lost_pkgs.append(package)
             else:
-                print_text(proc.stdout, self._file, redirect=self._vflag)
+                print_text(proc.decode(), self._file, redirect=self._vflag)
                 _temp_pkgs.append(package)
             finally:
                 with open(self._file, 'a') as file:
@@ -219,7 +219,7 @@ class PipCommand(Command):
             self._var__real_pkgs = set()
 
         self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(package)
+        self._var__temp_pkgs = set(_temp_pkgs)
 
     def _proc_fixmissing(self, path):
         text = f'Checking broken {self.desc[0]} dependencies'

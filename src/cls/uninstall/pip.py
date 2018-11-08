@@ -98,9 +98,7 @@ class PipUninstall(PipCommand, UninstallCommand):
                 _know_pkgs |= _temp_pkgs
             return _deps_pkgs
 
-        argv = [path, '-m', 'pip', 'uninstall']
-        if self._yes:
-            argv.append('--yes')
+        argv = [path, '-m', 'pip', 'uninstall', '--yes']
         if self._quiet:
             argv.append('--quiet')
         if self._verbose:
