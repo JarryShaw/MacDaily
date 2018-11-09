@@ -49,5 +49,12 @@
         "--max-line-length=120",
         "--ignore=W605"
     ],
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "restructuredtext.builtDocumentationPath": "${workspaceRoot}/sphinx/build/html",
+    "restructuredtext.updateOnTextChanged": "true",
+    "restructuredtext.updateDelay": 300,
+    "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/sphinx-build",
+    "restructuredtext.confPath": "/Users/jarryshaw/Documents/GitHub/MacDailyX/sphinx/source",
+    "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/doc8",
+    "restructuredtext.rst2htmlCommand": "/usr/local/bin/rst2html.py",
 }
