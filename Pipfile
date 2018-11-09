@@ -9,15 +9,15 @@ ptyng = "*"
 
 [dev-packages]
 macdaily = {path = ".", editable = true}
-pylint = "*"
-recommonmark = "*"
-sphinx-autobuild = "*"
-sphinx = "*"
-pycodestyle = "*"
-"autopep8" = "*"
 "doc8" = "*"
-check-manifest = "*"
+sphinx = "*"
+sphinx-autobuild = "*"
 ipython = "*"
+rope = "*"
+"autopep8" = "*"
+pylint = "*"
+pycodestyle = "*"
+isort = {extras = ["pipfile", "requirements"], version = "*"}
 
 [requires]
 python_version = "3.7"
