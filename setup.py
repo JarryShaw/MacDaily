@@ -5,7 +5,10 @@ import platform
 import re
 import sys
 
-import setuptools
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 # check platform
 if platform.system() != 'Darwin':
@@ -29,7 +32,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'r') as file:
     long_desc = file.read()
 
 # set-up script for pip distribution
-setuptools.setup(
+setup(
     name='macdaily',
     version=__version__,
     author='Jarry Shaw',
@@ -41,11 +44,10 @@ setuptools.setup(
     long_description=long_desc,
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
-    install_requires=['setuptools'],
     extras_require={
         'ptyng': ['ptyng'],
         'pipdeptree': ['pipdeptree'],
-        ':python_version == "3.4"': ['pathlib2', 'subprocess32'],
+        ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
     },
     entry_points={
         'console_scripts': [
