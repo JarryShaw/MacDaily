@@ -185,12 +185,12 @@ class CaskCommand(Command):
                     file_list.append(link)
                     try:
                         shutil.move(link, path_cask)
-                    except FileExistsError:
+                    except (shutil.Error, FileExistsError):
                         os.remove(link)
                 for cask in filter(lambda p: os.path.splitext(p)[1] != '.incomplete', cask_list):
                     try:
                         shutil.move(cask, path_down)
-                    except FileExistsError:
+                    except (shutil.Error, FileExistsError):
                         os.remove(cask)
                     file_list.append(cask)
                 print_text(os.linesep.join(sorted(file_list)), self._file, redirect=self._vflag)

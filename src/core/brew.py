@@ -282,9 +282,9 @@ class BrewCommand(Command):
                         elif os.path.splitext(name)[1] != '.incomplete' and path not in cask_list:
                             try:
                                 shutil.move(path, os.path.join(arch, name))
-                            except FileExistsError:
+                            except (shutil.Error, FileExistsError):
                                 os.remove(path)
-                            # with contextlib.suppress(FileExistsError):
+                            # with contextlib.suppress(shutil.Error, FileExistsError):
                             #     shutil.move(path, os.path.join(arch, name))
                             file_list.append(path)
                     return file_list
