@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import traceback
 
 from macdaily.cmd.uninstall import UninstallCommand
@@ -103,7 +104,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                     file.write(f'Script done on {date()}\n')
             return _deps_pkgs
 
-        argv = [path, 'uninstall', '--ignore-dependencies']
+        argv = [path, 'uninstall']
         if self._force:
             argv.append('--force')
         if self._quiet:
@@ -113,6 +114,12 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         if self._dry_run:
             argv.append('--dry-run')
         argv.extend(self._uninstall_opts)
+
+        temp = copy.copy(argv)
+        if self._ignore_deps:
+            temp.append('--ignore-dependencies')
+        args = ' '.join(temp)
+        argv.append('--ignore-dependencies')
 
         argv.append('')
         _done_pkgs = list()
@@ -126,7 +133,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                     continue
                 _done_pkgs.append(package)
                 argv[-1] = package
-                print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+                print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
                 if self._dry_run:
                     continue
                 if run(argv, self._file, timeout=self._timeout,

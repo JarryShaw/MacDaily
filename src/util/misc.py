@@ -305,7 +305,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
 
 
 def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
-              executable=SHELL, prefix=None, suffix=None, timeout=None):
+            executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
     argc = f'script -q /dev/null {SHELL} -c "'

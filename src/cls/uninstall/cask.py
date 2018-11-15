@@ -27,11 +27,11 @@ class CaskUninstall(CaskCommand, UninstallCommand):
         self._uninstall_opts = namespace.pop('uninstall', str()).split()
 
     def _check_pkgs(self, path):
-        super()._check_pkgs(path)
-
         if self._force:
-            self._var__temp_pkgs |= self._var__lost_pkgs
+            self._var__temp_pkgs = self._packages
             self._var__lost_pkgs = set()
+        else:
+            super()._check_pkgs(path)
 
     def _check_list(self, path):
         text = f'Checking installed {self.desc[1]}'

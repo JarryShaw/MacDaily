@@ -27,6 +27,7 @@ try:
 except ImportError:
     import subprocess
 
+
 @beholder
 def uninstall(argv=None):
     # parse args & set context redirection flags

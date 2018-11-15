@@ -44,6 +44,7 @@ setup(
     long_description=long_desc,
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
+    include_package_data=True,
     extras_require={
         'ptyng': ['ptyng'],
         'pipdeptree': ['pipdeptree'],
@@ -54,6 +55,7 @@ setup(
             # 'macdaily = macdaily.__main__:main',
             'md-update = macdaily.api.update:update',
             'md-uninstall = macdaily.api.uninstall:uninstall',
+            'md-reinstall = macdaily.api.reinstall:reinstall',
         ]
     },
     packages=[
@@ -64,6 +66,7 @@ setup(
         'macdaily.cls.bundle',
         'macdaily.cls.cleanup',
         'macdaily.cls.dependency',
+        'macdaily.cls.install',
         'macdaily.cls.logging',
         'macdaily.cls.reinstall',
         'macdaily.cls.uninstall',

@@ -23,6 +23,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         self._pre = namespace.pop('pre', False)
         self._pypy = namespace.pop('pypy', False)
         self._system = namespace.pop('system', False)
+        self._user = namespace.pop('user', False)
 
         self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
@@ -93,6 +94,8 @@ class PipUpdate(PipCommand, UpdateCommand):
         argv = [path, '-m', 'pip', 'install', '--upgrade']
         if self._pre:
             argv.append('--pre')
+        if self._user:
+            argv.append('--user')
         if self._quiet:
             argv.append('--quiet')
         if self._verbose:

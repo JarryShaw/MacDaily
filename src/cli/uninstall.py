@@ -108,7 +108,7 @@ def get_pip_parser():
                                 help=('list all Python packages which would be removed, '
                                       'but will not actually delete any Python packages'))
     pip_genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
-                                 help='run in non-recursive mode, i.e. ignore dependencies packages')
+                                help='run in non-recursive mode, i.e. ignore dependencies packages')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
     pip_genl_group.add_argument('-v', '--verbose', action='store_true',

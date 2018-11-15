@@ -456,6 +456,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -V, --version         show program's version number and exit
 
     specification arguments:
+      -u, --user            install to the Python user install directory for your
+                            platform
       -b, --brew            update packages of Python installed from Homebrew
       -c, --cpython         update packages of CPython implementation
       -d, --pre             include pre-release and development versions

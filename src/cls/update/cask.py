@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import os
 import textwrap
 import time
@@ -34,8 +35,7 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         self._update_opts = namespace.pop('update', str()).split()
 
     def _check_list(self, path):
-        if (self._brew_renew is None or
-                time.time() - self._brew_renew >= 300):
+        if (self._brew_renew is None or time.time() - self._brew_renew >= 300):
             self._proc_renew(path)
             self._brew_renew = time.time()
 
@@ -185,15 +185,18 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             argv.append('--verbose')
         if self._greedy:
             argv.append('--greedy')
-        if self._exhaust:
-            argv.append('--exhaust')
         argv.extend(self._update_opts)
         argv.append('')
+
+        temp = copy.copy(argv)
+        if self._exhaust:
+            temp.append('--exhaust')
+        args = ' '.join(temp)
 
         askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:
             argv[-1] = package
-            print_scpt(' '.join(argv), self._file, redirect=self._qflag)
+            print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
             if run(argv, self._file, shell=True, timeout=self._timeout,
                    redirect=self._qflag, verbose=self._vflag, prefix=askpass):
                 self._fail.append(package)

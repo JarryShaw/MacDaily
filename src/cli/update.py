@@ -260,6 +260,8 @@ def get_pip_parser():
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
+    pip_spec_group.add_argument('-u', '--user', action='store_true',
+                                help='install to the Python user install directory for your platform')
     pip_spec_group.add_argument('-b', '--brew', action='store_true',
                                 help='update packages of Python installed from Homebrew')
     pip_spec_group.add_argument('-c', '--cpython', action='store_true',
@@ -419,7 +421,7 @@ def get_system_parser():
                                    help='automatically restart (or shut down) if required to complete installation')
     system_spec_group.add_argument('-r', '--recommended', action='store_true',
                                    help='only update software that is recommended for your system')
-    system_spec_group.add_argument('-p', '--packages', action='append',  nargs='+', default=list(), metavar='SW',
+    system_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='SW',
                                    help='name of system software to update')
 
     system_genl_group = system_parser.add_argument_group(title='general arguments')
