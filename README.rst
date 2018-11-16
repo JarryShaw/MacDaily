@@ -163,6 +163,7 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     cleanup     = false                                         ; cleanup caches
     config      = false                                         ; config MacDaily
     dependency  = false                                         ; show dependencies
+    install     = false                                         ; install packages
     launch      = false                                         ; launch daemons
     logging     = true                                          ; log installed packages
     postinstall = false                                         ; postinstall packages
@@ -183,8 +184,8 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     [Miscellanea]
     # In this section, miscellaneous specifications are assigned.
     # Please, under any circumstances, make sure all fields are valid.
-    askpass = /usr/local/bin/macdaily-askpass                   ; SUDO_ASKPASS utility for Homebrew Casks
-    confirm = /usr/local/bin/macdaily-confirm                   ; confirm utility for MacDaily
+    askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks
+    confirm = ...                                               ; confirm utility for MacDaily
     timeout = 300                                               ; timeout limit for shell commands in seconds
 
 Above is the default content of ``.dailyrc``, following the grammar of
@@ -336,6 +337,8 @@ valid.
 +----------------+-----------------------------------------------+
 | |launch|_      | ``init``                                      |
 +----------------+-----------------------------------------------+
+| |install|_     | ``i``                                         |
++----------------+-----------------------------------------------+
 | |update|_      | ``up``, ``upgrade``                           |
 +----------------+-----------------------------------------------+
 | |uninstall|_   | ``un``, ``unlink``, ``remove``, ``rm``, ``r`` |
@@ -392,6 +395,17 @@ manual. And here is a brief catalogue for the manuals.
 
   - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#brew>`__
   - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#pip>`__
+
+- `Install Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst>`__
+
+  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#apm>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#cask>`__
+  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#gem>`__
+  - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#mas>`__
+  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#npm>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
+  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#system>`__
 
 - `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
 - `Logging Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst>`__
@@ -494,6 +508,8 @@ TODO
 .. _config: https://github.com/JarryShaw/MacDaily/blob/dev/doc/config.rst
 .. |dependency| replace:: ``dependency``
 .. _dependency: https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst
+.. |install| replace:: ``install``
+.. _install: https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst
 .. |launch| replace:: ``launch``
 .. _launch: https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst
 .. |logging| replace:: ``logging``

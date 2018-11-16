@@ -21,8 +21,7 @@ def get_reinstall_parser():
                                      description='Automate macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
                                      epilog='aliases: re')
-    parser.add_argument('-V', '--version',
-                        action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -78,18 +77,10 @@ def get_brew_parser():
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
-    brew_spec_group.add_argument('-f', '--force', action='store_true',
-                                 help='delete all installed versions')
-    brew_spec_group.add_argument('-b', '--include-build', action='store_true',
-                                 help=f'include the {bold}:build{reset} type dependencies')
-    brew_spec_group.add_argument('-o', '--include-optional', action='store_true',
-                                 help=f'include {bold}:optional{reset} dependencies')
-    brew_spec_group.add_argument('-t', '--include-test', action='store_true',
-                                 help=f'include (non-recursive) {bold}:test{reset} dependencies')
-    brew_spec_group.add_argument('-s', '--skip-recommended', action='store_true',
-                                 help=f'skip {bold}:recommended{reset} type dependencies')
-    brew_spec_group.add_argument('-r', '--include-requirements', action='store_true',
-                                 help='include requirements in addition to dependencies')
+    brew_spec_group.add_argument('-s', '--startswith', action='store', default=str(), metavar='PREFIX',
+                                 help='reinstall procedure starts from such formula, sort in initial alphabets')
+    brew_spec_group.add_argument('-e', '--endswith', action='store', default=str(), metavar='SUFFIX',
+                                 help='reinstall procedure ends after such formula, sort in initial alphabets')
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
                                  help='name of Homebrew formulae to reinstall')
 
@@ -132,8 +123,14 @@ def get_cask_parser():
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
+    cask_spec_group.add_argument('-s', '--startswith', action='store', default=str(), metavar='PREFIX',
+                                 help='reinstall procedure starts from such binary, sort in initial alphabets')
+    cask_spec_group.add_argument('-e', '--endswith', action='store', default=str(), metavar='SUFFIX',
+                                 help='reinstall procedure ends after such binary, sort in initial alphabets')
     cask_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='reinstall even if the Cask does not appear to be present')
+    cask_spec_group.add_argument('-t', '--no_quarantine', action='store_true',
+                                 help='prevent Gatekeeper from enforcing its security restrictions on the Cask')
     cask_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='CASK',
                                  help='name of Caskroom binaries to reinstall')
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import getpass
 import os
 import plistlib
+import pwd
 
 from macdaily.util.const import ROOT, bold, red, reset
 from macdaily.util.misc import (make_stderr, print_info, print_misc,
@@ -39,16 +41,25 @@ def launch_askpass(quiet=False, verbose=False):
                '    if args starts with "--help" or args starts with "-h" then',
                '        return "macdaily-askpass [-h|--help] [prompt]"',
                '    end if',
-               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',
+               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',  # noqa
                "    return result's text returned",
                'end run',
                '']
     askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
     text = f'Making executable {askpass!r}'
     print_misc(text, os.devnull, verbose)
+
+    user = getpass.getuser()
+    owner = pwd.getpwuid(os.stat(askpass).st_uid).pw_name
+    if user != owner:
+        os.environ['SUDO_ASKPASS'] = askpass
+        run_script(['sudo', '--askpass', 'chown', user, askpass], quiet, verbose)
+
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
     run_script(['chmod', 'u+x', askpass], quiet, verbose)
+    if user != owner:
+        run_script(['chown', owner, askpass], quiet, verbose)
 
     PLIST = collections.OrderedDict(
         Label='com.macdaily.askpass',
@@ -96,8 +107,17 @@ def launch_confirm(quiet=False, verbose=False):
     confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
     text = f'Making executable {confirm!r}'
     print_misc(text, os.devnull, verbose)
+
+    user = getpass.getuser()
+    owner = pwd.getpwuid(os.stat(confirm).st_uid).pw_name
+    if user != owner:
+        os.environ['SUDO_ASKPASS'] = os.path.join(ROOT, 'res', 'askpass.applescript')
+        run_script(['sudo', '--askpass', 'chown', user, confirm], quiet, verbose)
+
     with open(confirm, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
     run_script(['chmod', 'u+x', confirm], quiet, verbose)
+    if user != owner:
+        run_script(['chown', owner, confirm], quiet, verbose)
 
     return confirm

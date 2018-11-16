@@ -23,7 +23,7 @@ About
 -----
 
 MacDaily provides intelligent solution for automate package reinstaller.
-MacDaily ``reinstall`` command will recursively remove all specified
+MacDaily ``reinstall`` command will recursively reinstall all specified
 packages installed through --
 
 - |brew|_ -- `Homebrew <https://brew.sh>`__
@@ -44,7 +44,7 @@ Usage
 
     general arguments:
     -a, --all             reinstall all packages installed through Homebrew,
-                            Caskroom, and etc
+                          Caskroom, and etc
     -q, --quiet           run in quiet mode, with no output information
     -v, --verbose         run in verbose mode, with detailed output information
     -l, --show-log        open log in Console.app upon completion of command
@@ -55,9 +55,9 @@ Usage
     options used to specify packages of each mode
 
     --brew FORM [FORM ...]
-                            name of Homebrew formulae to reinstall
+                          name of Homebrew formulae to reinstall
     --cask CASK [CASK ...]
-                            name of Caskroom binaries to reinstall
+                          name of Caskroom binaries to reinstall
 
     control arguments:
     options used to disable reinstall of certain mode
@@ -123,21 +123,18 @@ Commands
     -V, --version         show program's version number and exit
 
     specification arguments:
-    -f, --force           delete all installed versions
-    -b, --include-build   include the :build type dependencies
-    -o, --include-optional
-                            include :optional dependencies
-    -t, --include-test    include (non-recursive) :test dependencies
-    -s, --skip-recommended
-                            skip :recommended type dependencies
-    -r, --include-requirements
-                            include requirements in addition to dependencies
+    -s PREFIX, --startswith PREFIX
+                          reinstall procedure starts from such formula, sort in
+                          initial alphabets
+    -e SUFFIX, --endswith SUFFIX
+                          reinstall procedure ends after such formula, sort in
+                          initial alphabets
     -p FORM [FORM ...], --packages FORM [FORM ...]
-                            name of Homebrew formulae to reinstall
+                          name of Homebrew formulae to reinstall
 
     general arguments:
     -a, --all             reinstall all Homebrew formulae installed through
-                            Homebrew
+                          Homebrew
     -q, --quiet           run in quiet mode, with no output information
     -v, --verbose         run in verbose mode, with detailed output information
     -y, --yes             yes for all selections
@@ -145,9 +142,9 @@ Commands
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for 'brew list' command
+                          options for 'brew list' command
       -U ARG, --reinstall ARG
-                            options for 'brew reinstall <formula>' command
+                          options for 'brew reinstall <formula>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -181,14 +178,22 @@ For *miscellaneous arguments*, the runtime commands are as below.
     -V, --version         show program's version number and exit
 
     specification arguments:
+    -s PREFIX, --startswith PREFIX
+                          reinstall procedure starts from such binary, sort in
+                          initial alphabets
+    -e SUFFIX, --endswith SUFFIX
+                          reinstall procedure ends after such binary, sort in
+                          initial alphabets
     -f, --force           reinstall even if the Cask does not appear to be
-                            present
+                          present
+    -t, --no_quarantine   prevent Gatekeeper from enforcing its security
+                          restrictions on the Cask
     -p CASK [CASK ...], --packages CASK [CASK ...]
-                            name of Caskroom binaries to reinstall
+                          name of Caskroom binaries to reinstall
 
     general arguments:
     -a, --all             reinstall all Caskroom binaries installed through
-                            Homebrew
+                          Homebrew
     -q, --quiet           run in quiet mode, with no output information
     -v, --verbose         run in verbose mode, with detailed output information
     -y, --yes             yes for all selections
@@ -196,9 +201,9 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     miscellaneous arguments:
       -L ARG, --logging ARG
-                            options for 'brew cask list' command
+                          options for 'brew cask list' command
       -U ARG, --reinstall ARG
-                            options for 'brew cask reinstall <cask>' command
+                          options for 'brew cask reinstall <cask>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.

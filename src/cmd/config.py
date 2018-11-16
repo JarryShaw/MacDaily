@@ -43,6 +43,7 @@ CONFIG = ['[Path]',
           'cleanup     = false                                         ; cleanup caches',
           'config      = false                                         ; config MacDaily',
           'dependency  = false                                         ; show dependencies',
+          'install     = false                                         ; install packages',
           'launch      = false                                         ; launch daemons',
           'logging     = true                                          ; log installed packages',
           'postinstall = false                                         ; postinstall packages',
@@ -81,8 +82,8 @@ def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    CONFIG[49] = f'askpass = {launch_askpass(quiet, verbose).ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
-    CONFIG[50] = f'confirm = {launch_confirm(quiet, verbose).ljust(49)} ; confirm utility for MacDaily'
+    CONFIG[50] = f'askpass = {launch_askpass(quiet, verbose).ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
+    CONFIG[51] = f'confirm = {launch_confirm(quiet, verbose).ljust(49)} ; confirm utility for MacDaily'
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
@@ -148,6 +149,6 @@ def parse_config(quiet=False, verbose=False):
 
     cfg_dict['Miscellanea']['askpass'] = askpass
     cfg_dict['Miscellanea']['confirm'] = confirm
-    cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout', 300)
+    cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout', None)
 
     return dict(cfg_dict)

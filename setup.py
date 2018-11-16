@@ -18,7 +18,7 @@ if platform.system() != 'Darwin':
             super().__init__(message, *args, **kwargs)
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
-# version
+# version string
 with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const.py'), 'r') as file:
     for line in file:
         match = re.match(r"__version__ = '(.*)'", line)
@@ -56,6 +56,7 @@ setup(
             'md-update = macdaily.api.update:update',
             'md-uninstall = macdaily.api.uninstall:uninstall',
             'md-reinstall = macdaily.api.reinstall:reinstall',
+            'md-postinstall = macdaily.api.postinstall:postinstall',
         ]
     },
     packages=[

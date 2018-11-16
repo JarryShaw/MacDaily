@@ -16,7 +16,6 @@ except ImportError:
 class BrewReinstall(BrewCommand, ReinstallCommand):
 
     def _parse_args(self, namespace):
-        self._dry_run = namespace.pop('dry_run', False)
         self._endswith = namespace.pop('endswith', chr(0x10ffff))
         self._no_cleanup = namespace.pop('no_cleanup', False)
         self._startswith = namespace.pop('startswith', chr(0))
@@ -60,7 +59,7 @@ class BrewReinstall(BrewCommand, ReinstallCommand):
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')
 
-    def _proc_update(self, path):
+    def _proc_reinstall(self, path):
         text = f'Reinstalling specified {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 

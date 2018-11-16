@@ -17,7 +17,7 @@ class CaskReinstall(CaskCommand, ReinstallCommand):
     def _parse_args(self, namespace):
         self._force = namespace.pop('force', False)
         self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._no_quarantine = namespace.pop('no-quarantine', False)
+        self._no_quarantine = namespace.pop('no_quarantine', False)
 
         self._all = namespace.pop('all', False)
         self._quiet = namespace.pop('quiet', False)
