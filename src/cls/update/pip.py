@@ -2,11 +2,13 @@
 
 import copy
 import json
+import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.pip import PipCommand
-from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text, sudo)
 
 try:
     import subprocess32 as subprocess
@@ -17,21 +19,21 @@ except ImportError:
 class PipUpdate(PipCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._brew = namespace.pop('brew', False)
-        self._cpython = namespace.pop('cpython', False)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._pre = namespace.pop('pre', False)
-        self._pypy = namespace.pop('pypy', False)
-        self._system = namespace.pop('system', False)
-        self._user = namespace.pop('user', False)
+        self._brew = namespace.get('brew', False)
+        self._cpython = namespace.get('cpython', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._pre = namespace.get('pre', False)
+        self._pypy = namespace.get('pypy', False)
+        self._system = namespace.get('system', False)
+        self._user = namespace.get('user', False)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._update_opts = namespace.pop('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
         argv = [path, '-m', 'pip', 'list', '--outdated']
@@ -51,8 +53,9 @@ class PipUpdate(PipCommand, UpdateCommand):
             file.write(f'command: {args!r}\n')
 
         argv.append('--format=json')
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()

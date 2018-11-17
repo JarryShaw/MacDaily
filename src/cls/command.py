@@ -137,10 +137,6 @@ class Command(metaclass=abc.ABCMeta):
         text = f'Running {self.cmd} command for {self.mode}'
         print_info(text, filename, redirect=self._qflag)
 
-        # exit if no executable found
-        if self._check_exec():
-            return
-
         # assign members
         self._file = filename
         self._timeout = timeout
@@ -150,20 +146,23 @@ class Command(metaclass=abc.ABCMeta):
         self._disk_dir = disk_dir
         self._brew_renew = brew_renew
 
-        # mainloop process
-        if self._pkg_args(namespace):
-            self._loc_exec()
-            self._run_proc()
-        else:
-            text = f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
-            print_term(text, filename, redirect=self._qflag)
+        # exit if no executable found
+        if self._check_exec():
+            # mainloop process
+            if self._pkg_args(namespace):
+                self._loc_exec()
+                self._run_proc()
+            else:
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'no {bold}{self.desc[1]}{reset} to {self.act[0]}')
+                print_term(text, filename, redirect=self._qflag)
 
         # remove temp vars
         [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]
 
     @abc.abstractmethod
     def _check_exec(self):
-        """Return if no executable found."""
+        """Return if executable found."""
         return True
 
     def _pkg_args(self, namespace):
@@ -181,7 +180,7 @@ class Command(metaclass=abc.ABCMeta):
     def _merge_packages(self, namespace):
         ilst_pkg = list()
         temp_pkg = list()
-        args_pkg = namespace.pop('packages', list())
+        args_pkg = namespace.get('packages', list())
         for pkgs in args_pkg:
             if isinstance(pkgs, str):
                 pkgs = filter(None, pkgs.split(','))
@@ -196,10 +195,10 @@ class Command(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def _parse_args(self, namespace):
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
     @abc.abstractmethod
     def _loc_exec(self):

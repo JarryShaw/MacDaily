@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """utility constants"""
 
+import functools
 import getpass
 import os
+import pwd
 import shutil
 import sys
-import pwd
 
 try:
     import pathlib2 as pathlib
@@ -13,11 +14,13 @@ except ImportError:
     import pathlib
 
 # version string
-__version__ = '2018.11.16.dev27'
+__version__ = '2018.11.17.dev28'
 
-# terminal commands
-python = sys.executable         # Python version
-program = ' '.join(sys.argv)    # arguments
+
+###########################################################
+# Miscellaneous Constants
+###########################################################
+
 
 # script utilities
 SCRIPT = shutil.which('script')
@@ -27,6 +30,44 @@ UNBUFFER = shutil.which('unbuffer')
 ROOT = str(pathlib.Path(__file__).resolve().parents[1])
 SHELL = os.getenv('SHELL', shutil.which('sh'))
 USER = pwd.getpwnam(getpass.getuser()).pw_gecos
+
+
+###########################################################
+# Magic Strings
+###########################################################
+
+
+@functools.total_ordering
+class minstr:
+
+    def __lt__(self, value):
+        if isinstance(value, str):
+            return True
+        return NotImplemented
+
+
+@functools.total_ordering
+class maxstr:
+
+    def __gt__(self, value):
+        if isinstance(value, str):
+            return True
+        return NotImplemented
+
+
+# string boundaries
+MIN = minstr()
+MAX = maxstr()
+
+
+###########################################################
+# Terminal Display
+###########################################################
+
+
+# terminal commands
+python = sys.executable         # Python version
+program = ' '.join(sys.argv)    # arguments
 
 # terminal length
 length = shutil.get_terminal_size().columns

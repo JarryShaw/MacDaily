@@ -25,8 +25,8 @@ class SystemCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = shutil.which('softwareupdate')
-        flag = (self._var__exec_path is None)
-        if flag:
+        flag = (self._var__exec_path is not None)
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}system{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}system{reset}: '
                     "you may add `softwareupdate' to PATH through the following command -- "

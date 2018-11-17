@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import sys
 import traceback
 
 from macdaily.cmd.uninstall import UninstallCommand
 from macdaily.core.brew import BrewCommand
 from macdaily.util.const import reset, under
-from macdaily.util.misc import date, print_info, print_scpt, print_text, run
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text, run)
 
 try:
     import subprocess32 as subprocess
@@ -17,22 +19,22 @@ except ImportError:
 class BrewUninstall(BrewCommand, UninstallCommand):
 
     def _parse_args(self, namespace):
-        self._dry_run = namespace.pop('dry_run', False)
-        self._force = namespace.pop('force', False)
-        self._ignore_deps = namespace.pop('ignore_dependencies', False)
-        self._include_build = namespace.pop('include_build', False)
-        self._include_optional = namespace.pop('include_optional', False)
-        self._include_requirements = namespace.pop('include_requirements', False)
-        self._include_test = namespace.pop('include_test', False)
-        self._skip_recommended = namespace.pop('skip_recommended', False)
+        self._dry_run = namespace.get('dry_run', False)
+        self._force = namespace.get('force', False)
+        self._ignore_deps = namespace.get('ignore_dependencies', False)
+        self._include_build = namespace.get('include_build', False)
+        self._include_optional = namespace.get('include_optional', False)
+        self._include_requirements = namespace.get('include_requirements', False)
+        self._include_test = namespace.get('include_test', False)
+        self._skip_recommended = namespace.get('skip_recommended', False)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._uninstall_opts = namespace.pop('uninstall', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._uninstall_opts = namespace.get('uninstall', str()).split()
 
     def _check_list(self, path):
         text = f'Checking installed {self.desc[1]}'
@@ -47,8 +49,9 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -91,8 +94,9 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
 
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=stderr)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

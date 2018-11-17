@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import re
+import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.apm import ApmCommand
-from macdaily.util.const import bold, reset
-from macdaily.util.misc import date, print_info, print_scpt, print_text, run
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text, run)
 
 try:
     import subprocess32 as subprocess
@@ -17,15 +18,15 @@ except ImportError:
 class ApmUpdate(ApmCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._beta = namespace.pop('beta', False)
+        self._beta = namespace.get('beta', False)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._update_opts = namespace.pop('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
         text = f'Checking outdated {self.desc[1]}'
@@ -41,8 +42,10 @@ class ApmUpdate(ApmCommand, UpdateCommand):
         with open(self._file, 'a') as file:
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
+
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()

@@ -66,7 +66,7 @@ def get_pass(askpass):
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
 
 
-def make_context(devnull, redirect=False):
+def make_context(redirect=False, devnull=open(os.devnull, 'w')):
     if redirect:
         return contextlib.redirect_stdout(devnull)
     return contextlib.nullcontext()
@@ -81,9 +81,9 @@ def make_description(command):
     return desc
 
 
-def make_stderr(redirect):
+def make_stderr(redirect=False, devnull=subprocess.DEVNULL):
     if redirect:
-        return subprocess.DEVNULL
+        return devnull
     return None
 
 
@@ -221,14 +221,13 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
                    f'not found in your {under}PATH{reset}, {bold}PTYng{reset} not installed',
                    os.devnull, redirect=redirect)
         print(f'macdaily: {red}misc{reset}: broken dependency', file=sys.stderr)
-        sys.tracebacklimit = 0
         raise
 
     if suffix is not None:
         argv = f'{_merge(argv)} {suffix}'
     if prefix is not None:
         argv = f'{prefix} {_merge(argv)}'
-    if shell:
+    if shell or isinstance(argv, str):
         argv = [executable, '-c', _merge(argv)]
 
     if password is not None:

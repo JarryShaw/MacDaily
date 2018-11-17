@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import platform
-import sys
 
-
-class UnsupportedOS(RuntimeError):
-    def __init__(self, message, *args, **kwargs):
-        sys.tracebacklimit = 0
-        super().__init__(message, *args, **kwargs)
-
+from macdaily.util.error import UnsupportedOS
 
 # check platform
 if platform.system() != 'Darwin':

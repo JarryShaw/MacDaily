@@ -3,7 +3,7 @@
 import traceback
 
 from macdaily.core.brew import BrewCommand
-from macdaily.util.const import reset, under
+from macdaily.util.const import MAX, MIN, reset, under
 from macdaily.util.misc import date, print_info, print_scpt, print_text, run
 
 try:
@@ -27,17 +27,17 @@ class PostinstallCommand(BrewCommand):
         return ('postinstallation', 'postinstallation')
 
     def _parse_args(self, namespace):
-        self._endswith = namespace.pop('endswith', chr(0x10ffff))
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._startswith = namespace.pop('startswith', chr(0))
+        self._endswith = namespace.get('endswith', MAX)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._startswith = namespace.get('startswith', MIN)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._postinstall_opts = namespace.pop('postinstall', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._postinstall_opts = namespace.get('postinstall', str()).split()
 
     def _run_proc(self):
         self._pkgs = list()

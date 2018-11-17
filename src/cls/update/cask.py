@@ -2,14 +2,16 @@
 
 import copy
 import os
+import sys
 import textwrap
 import time
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.cask import CaskCommand
-from macdaily.util.const import bold, length, reset
-from macdaily.util.misc import date, print_info, print_scpt, print_text, run
+from macdaily.util.const import length
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text, run)
 
 try:
     import subprocess32 as subprocess
@@ -20,19 +22,19 @@ except ImportError:
 class CaskUpdate(CaskCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._exhaust = namespace.pop('exhaust', False)
-        self._force = namespace.pop('force', False)
-        self._greedy = namespace.pop('greedy', False)
-        self._merge = namespace.pop('merge', False)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
+        self._exhaust = namespace.get('exhaust', False)
+        self._force = namespace.get('force', False)
+        self._greedy = namespace.get('greedy', False)
+        self._merge = namespace.get('merge', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._update_opts = namespace.pop('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
         if (self._brew_renew is None or time.time() - self._brew_renew >= 300):
@@ -60,8 +62,9 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -99,8 +102,9 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _list_pkgs = set()
@@ -123,8 +127,9 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'command: {args!r}\n')
 
         fail = False
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -151,8 +156,9 @@ class CaskUpdate(CaskCommand, UpdateCommand):
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
 
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=stderr)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

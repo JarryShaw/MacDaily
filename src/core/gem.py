@@ -9,8 +9,8 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text)
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_term, print_text)
 
 try:
     import subprocess32 as subprocess
@@ -34,8 +34,8 @@ class GemCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = shutil.which('gem')
-        flag = (self._var__exec_path is None)
-        if flag:
+        flag = (self._var__exec_path is not None)
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}gem{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}gem{reset}: you may download RubyGems from '
                     f'{purple_bg}{under}https://rubygems.org{reset}')
@@ -45,8 +45,8 @@ class GemCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._brew = namespace.pop('brew', False)
-        self._system = namespace.pop('system', False)
+        self._brew = namespace.get('brew', False)
+        self._system = namespace.get('system', False)
 
     def _loc_exec(self):
         if not (self._brew and self._system):
@@ -64,8 +64,9 @@ class GemCommand(Command):
                     file.write(f'Script started on {date()}\n')
                     file.write(f'command: {args!r}\n')
 
+                stderr = make_stderr(self._vflag, sys.stderr)
                 try:
-                    proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                    proc = subprocess.check_output(argv, stderr=stderr)
                 except subprocess.CalledProcessError:
                     print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 else:
@@ -84,7 +85,7 @@ class GemCommand(Command):
                 if os.path.exists('/usr/bin/gem'):
                     _exec_path.append('/usr/bin/gem')
                 else:
-                    _exec_path.extend(glob.glob('/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem'))
+                    _exec_path.extend(glob.glob('/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem'))  # noqa
             self._exec = set(_exec_path)
         del self._var__exec_path
 
@@ -99,8 +100,9 @@ class GemCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()

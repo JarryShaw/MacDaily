@@ -12,8 +12,8 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import (date, get_input, print_info, print_scpt,
-                                print_term, print_text, sudo)
+from macdaily.util.misc import (date, get_input, make_stderr, print_info,
+                                print_scpt, print_term, print_text, sudo)
 
 try:
     import subprocess32 as subprocess
@@ -36,14 +36,14 @@ class PipCommand(Command):
         return ('Python package', 'Python packages')
 
     def _check_exec(self):
-        return False
+        return True
 
     def _pkg_args(self, namespace):
         def match(version):
             return re.fullmatch(r'\d(\.\d)?', version)
 
         temp_ver = list()
-        args_ver = namespace.pop('version', list())
+        args_ver = namespace.get('version', list())
         for item in args_ver:
             if isinstance(item, str):
                 item = filter(match, item.split(','))
@@ -56,12 +56,12 @@ class PipCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._brew = namespace.pop('brew', False)
-        self._cpython = namespace.pop('cpython', False)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._pypy = namespace.pop('pypy', False)
-        self._system = namespace.pop('system', False)
-        self._verbose = namespace.pop('verbose', False)
+        self._brew = namespace.get('brew', False)
+        self._cpython = namespace.get('cpython', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._pypy = namespace.get('pypy', False)
+        self._system = namespace.get('system', False)
+        self._verbose = namespace.get('verbose', False)
 
     def _loc_exec(self):
         EXEC_PATH = dict(
@@ -108,8 +108,9 @@ class PipCommand(Command):
             _append_path(EXEC_PATH['source']['brew'])
             _append_path(EXEC_PATH['version'])
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(['brew', '--prefix'], stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(['brew', '--prefix'], stderr=stderr)
         except subprocess.CalledProcessError:
             prefix = '/usr/local'
         else:
@@ -203,8 +204,9 @@ class PipCommand(Command):
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
 
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=stderr)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 self._var__real_pkgs = set()
@@ -234,8 +236,9 @@ class PipCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             _deps_pkgs = list()
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:  # pip check exits with a non-zero status if any packages are missing dependencies
-                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=stderr)
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

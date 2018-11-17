@@ -10,7 +10,7 @@ from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under)
 from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text, run, sudo)
+                                print_text, run, sudo, make_stderr)
 
 try:
     import subprocess32 as subprocess
@@ -34,8 +34,8 @@ class NpmCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = shutil.which('npm')
-        flag = (self._var__exec_path is None)
-        if flag:
+        flag = (self._var__exec_path is not None)
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}npm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}npm{reset}: you may download Node.js from '
                     f'{purple_bg}{under}https://nodejs.org{reset}')
@@ -45,9 +45,9 @@ class NpmCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -64,8 +64,9 @@ class NpmCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()

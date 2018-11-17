@@ -2,12 +2,13 @@
 
 import os
 import re
+import sys
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
 from macdaily.core.system import SystemCommand
-from macdaily.util.const import bold, reset
-from macdaily.util.misc import date, print_info, print_scpt, print_text, sudo
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text, sudo)
 
 try:
     import subprocess32 as subprocess
@@ -18,16 +19,16 @@ except ImportError:
 class SystemUpdate(SystemCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._recommend = namespace.pop('recommended', False)
-        self._restart = namespace.pop('restart', False)
+        self._recommend = namespace.get('recommended', False)
+        self._restart = namespace.get('restart', False)
 
-        self._all = namespace.pop('all', False)
-        self._quiet = namespace.pop('quiet', False)
-        self._verbose = namespace.pop('verbose', False)
-        self._yes = namespace.pop('yes', False)
+        self._all = namespace.get('all', False)
+        self._quiet = namespace.get('quiet', False)
+        self._verbose = namespace.get('verbose', False)
+        self._yes = namespace.get('yes', False)
 
-        self._logging_opts = namespace.pop('logging', str()).split()
-        self._update_opts = namespace.pop('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()
+        self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
         text = f'Checking outdated {self.desc[1]}'
@@ -40,8 +41,10 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         with open(self._file, 'a') as file:
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
+
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__rcmd_pkgs = set()

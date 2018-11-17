@@ -7,8 +7,8 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import flash, purple_bg, red, red_bg, reset, under
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text)
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_term, print_text)
 
 try:
     import subprocess32 as subprocess
@@ -32,8 +32,8 @@ class ApmCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
-        flag = (self._var__exec_path == (None, None))
-        if flag:
+        flag = not (self._var__exec_path == (None, None))
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}apm{reset}: you may download Atom from '
                     f'{purple_bg}{under}https://atom.io{reset}')
@@ -43,15 +43,15 @@ class ApmCommand(Command):
     def _pkg_args(self, namespace):
         flag = super()._pkg_args(namespace)
 
-        # if ``beta`` not set, ``apm`` is the only executable
+        # if ``beta`` not set, ``apm-beta`` is the only executable
         if not self._beta and self._var__exec_path[0] is None:
-            return True
+            return False
         return flag
 
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._beta = namespace.pop('beta', False)
+        self._beta = namespace.get('beta', False)
 
     def _loc_exec(self):
         if self._beta:
@@ -71,8 +71,9 @@ class ApmCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()

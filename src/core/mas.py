@@ -6,8 +6,8 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.const import bold, flash, red, red_bg, reset
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text)
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_term, print_text)
 
 try:
     import subprocess32 as subprocess
@@ -31,8 +31,8 @@ class MasCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = shutil.which('mas')
-        flag = (self._var__exec_path is None)
-        if flag:
+        flag = (self._var__exec_path is not None)
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}mas{reset}: you may download MAS through following command -- '
                     f"`{bold}brew install mas{reset}'")
@@ -54,8 +54,9 @@ class MasCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()

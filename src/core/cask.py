@@ -10,8 +10,8 @@ import traceback
 from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under, yellow)
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text, run)
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_term, print_text, run)
 
 try:
     import pathlib2 as pathlib
@@ -39,8 +39,9 @@ class CaskCommand(Command):
         return ('Caskroom binary', 'Caskroom binaries')
 
     def _check_exec(self):
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL)
+            subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print(f'macdaily-{self.cmd}: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
@@ -49,17 +50,17 @@ class CaskCommand(Command):
                     f'or install Caskroom through following command -- '
                     f"`{bold}brew tap homebrew/cask{reset}'")
             print_term(text, self._file, redirect=self._qflag)
-            return True
+            return False
         self._var__exec_path = shutil.which('brew')
-        return False
+        return True
 
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._force = namespace.pop('force', False)
-        self._merge = namespace.pop('merge', False)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._verbose = namespace.pop('verbose', False)
+        self._force = namespace.get('force', False)
+        self._merge = namespace.get('merge', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._verbose = namespace.get('verbose', False)
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -76,8 +77,9 @@ class CaskCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
@@ -155,8 +157,9 @@ class CaskCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             fail = False
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=stderr)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 fail = True

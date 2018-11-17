@@ -12,8 +12,8 @@ import traceback
 from macdaily.cls.command import Command
 from macdaily.util.const import (bold, flash, green, purple_bg, red, red_bg,
                                  reset, under, yellow)
-from macdaily.util.misc import (date, get_input, print_info, print_scpt,
-                                print_term, print_text, run, sudo)
+from macdaily.util.misc import (date, get_input, make_stderr, print_info,
+                                print_scpt, print_term, print_text, run, sudo)
 
 try:
     import pathlib2 as pathlib
@@ -42,8 +42,8 @@ class BrewCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = shutil.which('brew')
-        flag = (self._var__exec_path is None)
-        if flag:
+        flag = (self._var__exec_path is not None)
+        if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}brew{reset}: you may find Homebrew on '
                     f'{purple_bg}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
@@ -55,10 +55,10 @@ class BrewCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._force = namespace.pop('force', False)
-        self._merge = namespace.pop('merge', False)
-        self._no_cleanup = namespace.pop('no_cleanup', False)
-        self._verbose = namespace.pop('verbose', False)
+        self._force = namespace.get('force', False)
+        self._merge = namespace.get('merge', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._verbose = namespace.get('verbose', False)
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -75,8 +75,9 @@ class BrewCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
+        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+            proc = subprocess.check_output(argv, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
@@ -133,8 +134,9 @@ class BrewCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             _deps_pkgs = list()
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:  # brew missing exits with a non-zero status if any formulae are missing dependencies
-                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=stderr)
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
@@ -188,7 +190,7 @@ class BrewCommand(Command):
                     argv[-1] = package
                     print_scpt(' '.join(argv), self._file, redirect=self._qflag)
                     if not run(argv, self._file, redirect=self._qflag,
-                           timeout=self._timeout, verbose=self._vflag):
+                               timeout=self._timeout, verbose=self._vflag):
                         with contextlib.suppress(ValueError):
                             self._pkgs.remove(package)
                 _done_pkgs |= _deps_pkgs
@@ -245,8 +247,9 @@ class BrewCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             fail = False
+            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
+                proc = subprocess.check_output(argv, stderr=stderr)
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 fail = True
