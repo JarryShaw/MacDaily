@@ -17,7 +17,7 @@ def get_reinstall_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily-reinstall',
+    parser = argparse.ArgumentParser(prog='macdaily reinstall',
                                      description='Automate macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
                                      epilog='aliases: re')
@@ -70,7 +70,7 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily-reinstall-brew',
+    brew_parser = argparse.ArgumentParser(prog='macdaily reinstall brew',
                                           description='Automate Homebrew Formula Reinstaller',
                                           usage='macdaily reinstall brew [options] <formulae>')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -99,7 +99,7 @@ def get_brew_parser():
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew list{}' command".format(bold, reset))
-    brew_misc_group.add_argument('-U', '--reinstall', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-U', '- reinstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew reinstall <formula>{}' command".format(bold, reset))
 
     return brew_parser
@@ -116,7 +116,7 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily-reinstall-cask',
+    cask_parser = argparse.ArgumentParser(prog='macdaily reinstall cask',
                                           description='Automate Homebrew Cask Reinstaller',
                                           usage='macdaily reinstall cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -149,7 +149,7 @@ def get_cask_parser():
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask list{}' command".format(bold, reset))
-    cask_misc_group.add_argument('-U', '--reinstall', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-U', '- reinstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask reinstall <cask>{}' command".format(bold, reset))
 
     return cask_parser

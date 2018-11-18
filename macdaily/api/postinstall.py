@@ -64,51 +64,62 @@ def postinstall(argv=None):
     print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
+    # check if disabled
+    enabled = (not config['Mode'].get('brew', False))
+
     # run command
-    command = PostinstallCommand(make_namespace(args), filename, timeout,
-                                 confirm, askpass, password, disk_dir, brew_renew)
+    if enabled:
+        command = PostinstallCommand(make_namespace(args), filename, timeout,
+                                     confirm, askpass, password, disk_dir, brew_renew)
+    else:
+        text = 'macdaily-postinstall: {}brew{}: command disabled'.format(yellow, reset)
+        print_term(text, filename, redirect=verbose)
 
     text = '{}{}|📖|{} {}MacDaily report of postinstall command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
-    desc = make_description(command)
-    pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
-    miss = '{}{}, {}'.format(reset, bold, yellow).join(command.notfound)
-    ilst = '{}{}, {}'.format(reset, bold, pink).join(command.ignored)
-    fail = '{}{}, {}'.format(reset, bold, red).join(command.failed)
+    if enabled:
+        desc = make_description(command)
+        pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
+        miss = '{}{}, {}'.format(reset, bold, yellow).join(command.notfound)
+        ilst = '{}{}, {}'.format(reset, bold, pink).join(command.ignored)
+        fail = '{}{}, {}'.format(reset, bold, red).join(command.failed)
 
-    if pkgs:
-        flag = (len(pkgs) == 1)
-        text = 'Postinstalled following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, green, pkgs, reset)
-        print_misc(text, filename, redirect=quiet)
-    else:
-        text = 'No {}{}{}{} postinstalled'.format(under, desc(False), reset, bold)
-        print_misc(text, filename, redirect=quiet)
+        if pkgs:
+            flag = (len(pkgs) == 1)
+            text = 'Postinstalled following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, green, pkgs, reset)
+            print_misc(text, filename, redirect=quiet)
+        else:
+            text = 'No {}{}{}{} postinstalled'.format(under, desc(False), reset, bold)
+            print_misc(text, filename, redirect=quiet)
 
-    if fail:
-        flag = (len(fail) == 1)
-        text = 'Postinstallation of following {}{}{}{} failed: {}{}{}'.format(under, desc(flag), reset, bold, red, fail, reset)
-        print_misc(text, filename, redirect=quiet)
-    else:
-        verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
-        text = 'All {}{}{}{} postinstallation{} succeed{}'.format(under, desc(False), reset, bold, noun, verb)
-        print_misc(text, filename, redirect=verbose)
+        if fail:
+            flag = (len(fail) == 1)
+            text = 'Postinstallation of following {}{}{}{} failed: {}{}{}'.format(under, desc(flag), reset, bold, red, fail, reset)
+            print_misc(text, filename, redirect=quiet)
+        else:
+            verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
+            text = 'All {}{}{}{} postinstallation{} succeed{}'.format(under, desc(False), reset, bold, noun, verb)
+            print_misc(text, filename, redirect=verbose)
 
-    if ilst:
-        flag = (len(ilst) == 1)
-        text = 'Ignored postinstallation of following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, pink, ilst, reset)
-        print_misc(text, filename, redirect=quiet)
-    else:
-        text = 'No {}{}{}{} ignored'.format(under, desc(False), reset, bold)
-        print_misc(text, filename, redirect=verbose)
+        if ilst:
+            flag = (len(ilst) == 1)
+            text = 'Ignored postinstallation of following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, pink, ilst, reset)
+            print_misc(text, filename, redirect=quiet)
+        else:
+            text = 'No {}{}{}{} ignored'.format(under, desc(False), reset, bold)
+            print_misc(text, filename, redirect=verbose)
 
-    if miss:
-        flag = (len(miss) == 1)
-        text = 'Following {}{}{}{} not found: {}{}{}'.format(under, desc(flag), reset, bold, yellow, miss, reset)
-        print_misc(text, filename, redirect=quiet)
+        if miss:
+            flag = (len(miss) == 1)
+            text = 'Following {}{}{}{} not found: {}{}{}'.format(under, desc(flag), reset, bold, yellow, miss, reset)
+            print_misc(text, filename, redirect=quiet)
+        else:
+            text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
+            print_misc(text, filename, redirect=verbose)
     else:
-        text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
-        print_misc(text, filename, redirect=verbose)
+        text = 'macdaily: {}postinstall{}: no Homebrew formulae postinstalled'.format(purple, reset)
+        print_term(text, filename, redirect=quiet)
 
     if args.show_log:
         try:

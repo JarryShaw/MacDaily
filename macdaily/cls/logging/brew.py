@@ -3,14 +3,15 @@
 import os
 import shutil
 import sys
+import tempfile
 import traceback
 
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.brew import BrewCommand
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under)
-from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
-                                print_term, print_text)
+from macdaily.util.misc import (make_stderr, print_info, print_scpt,
+                                print_term, print_text, script)
 
 try:
     import subprocess32 as subprocess
@@ -34,8 +35,8 @@ class BrewLogging(BrewCommand, LoggingCommand):
             subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            print('macdaily-{}: {}{}bundle{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
-            text = ('macdaily-{}: {}bundle{}: you may find Bundler on '
+            print('macdaily-{}: {}{}brew{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
+            text = ('macdaily-{}: {}brew{}: you may find Bundler on '
                     '{}{}https://github.com/Homebrew/homebrew-bundle{}, '
                     'or install Bundler through following command -- '
                     "`{}brew tap homebrew/bundle{}'".format(self.cmd, red, reset, purple_bg, under, reset, bold, reset))
@@ -45,8 +46,6 @@ class BrewLogging(BrewCommand, LoggingCommand):
         return True
 
     def _parse_args(self, namespace):
-        self._describe = namespace.get('describe', False)
-
         self._quiet = namespace.get('quiet', False)
         self._verbose = namespace.get('verbose', False)
 
@@ -54,26 +53,18 @@ class BrewLogging(BrewCommand, LoggingCommand):
         text = 'Listing installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
-        logfile = os.path.join(self._logroot, '{}-{}.{}'.format(self.log, path, self.ext))
-        argv = [path, 'bundle', 'dump', '--force', '--file=-'.format()]
-        if self._describe:
-            argv.append('--describe')
+        suffix = path.replace('/', ':')
+        with tempfile.NamedTemporaryFile() as _temp_file:
+            logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+            argv = [path, 'bundle', 'dump', '--force', '--file={}'.format(_temp_file.name)]
 
-        args = ' '.join(argv)
-        print_scpt(args, self._file, redirect=self._qflag)
-        with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            print_scpt(argv, self._file, redirect=self._qflag)
+            script(argv, self._file, shell=True,
+                   timeout=self._timeout, redirect=self._vflag)
 
-        stderr = make_stderr(self._vflag, sys.stderr)
-        try:
-            proc = subprocess.check_output(argv, stderr=stderr)
-        except subprocess.SubprocessError:
-            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-        else:
-            context = proc.decode()
-            with open(logfile, 'w') as file:
-                file.writelines(filter(lambda s: s.startswith('brew'), context.strip().splitlines()))
-        finally:
-            with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+            with open(_temp_file.name, 'r') as file:
+                context = file.read()
+            print_text(context, os.devnull, redirect=self._vflag)
+
+        with open(logfile, 'w') as file:
+            file.writelines(filter(lambda s: s.startswith('brew'), context.strip().splitlines(True)))

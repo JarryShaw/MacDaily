@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import traceback
 
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.pip import PipCommand
-from macdaily.util.misc import print_info, print_scpt, script
+from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
+                                print_text)
+
+try:
+    import subprocess32 as subprocess
+except ImportError:
+    import subprocess
 
 
 class PipLogging(PipCommand, LoggingCommand):
@@ -15,7 +23,7 @@ class PipLogging(PipCommand, LoggingCommand):
 
     @property
     def ext(self):
-        return 'txt'
+        return '.txt'
 
     def _parse_args(self, namespace):
         self._brew = namespace.get('brew', False)
@@ -31,11 +39,31 @@ class PipLogging(PipCommand, LoggingCommand):
         text = 'Listing installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
-        argv = [path, 'freeze']
+        suffix = path.replace('/', ':')
+        logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+
+        argv = [path, '-m', 'pip', 'freeze']
         if self._exclude_editable:
             argv.append('--exclude-editable')
-        logfile = os.path.join(self._logroot, '{}-{}.{}'.format(self.log, path, self.ext))
 
-        print_scpt(argv, self._file, redirect=self._qflag)
-        script(argv, self._file, suffix='> {}'.format(logfile),
-               shell=True, timeout=self._timeout, redirect=self._vflag)
+        args = ' '.join(argv)
+        print_scpt(args, self._file, redirect=self._qflag)
+        with open(self._file, 'a') as file:
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
+
+        stderr = make_stderr(self._vflag, sys.stderr)
+        try:
+            proc = subprocess.check_output(argv, stderr=stderr)
+        except subprocess.CalledProcessError:
+            print_text(traceback.format_exc(), self._file, redirect=self._vflag)
+            _real_pkgs = dict()
+        else:
+            context = proc.decode()
+            print_text(context, self._file, redirect=self._vflag)
+
+            with open(logfile, 'w') as file:
+                file.writelines(filter(None, context.strip().splitlines(True)))
+        finally:
+            with open(self._file, 'a') as file:
+                file.write('Script done on {}\n'.format(date()))

@@ -1,5 +1,6 @@
 global-exclude typescript
 global-exclude .DS_Store
+global-exclude dev_*
 global-include *.py
 prune build
 prune dist

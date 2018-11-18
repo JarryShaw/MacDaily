@@ -57,6 +57,7 @@ setup(
             'md-uninstall = macdaily.api.uninstall:uninstall',
             'md-reinstall = macdaily.api.reinstall:reinstall',
             'md-postinstall = macdaily.api.postinstall:postinstall',
+            'md-logging = macdaily.api.logging:logging',
         ]
     },
     packages=[

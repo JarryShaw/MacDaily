@@ -17,7 +17,7 @@ def get_uninstall_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily-uninstall',
+    parser = argparse.ArgumentParser(prog='macdaily uninstall',
                                      description='Automate macOS Package Uninstaller',
                                      usage='macdaily uninstall [options] <mode-selection> ...',
                                      epilog='aliases: un, unlink, remove, rm, r')
@@ -78,7 +78,7 @@ def get_pip_parser():
     #   * packages
     #######################################################
 
-    pip_parser = argparse.ArgumentParser(prog='macdaily-uninstall-pip',
+    pip_parser = argparse.ArgumentParser(prog='macdaily uninstall pip',
                                          description='Automate Python Package Uninstaller',
                                          usage='macdaily uninstall pip [options] <packages>')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -119,7 +119,7 @@ def get_pip_parser():
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}pip freeze{}' command".format(bold, reset))
-    pip_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
+    pip_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
                                 help="options for `{}pip uninstall <package>{}' command".format(bold, reset))
 
     return pip_parser
@@ -136,7 +136,7 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily-uninstall-brew',
+    brew_parser = argparse.ArgumentParser(prog='macdaily uninstall brew',
                                           description='Automate Homebrew Formula Uninstaller',
                                           usage='macdaily uninstall brew [options] <formulae>')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -176,7 +176,7 @@ def get_brew_parser():
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew list{}' command".format(bold, reset))
-    brew_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew uninstall <formula>{}' command".format(bold, reset))
 
     return brew_parser
@@ -193,7 +193,7 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily-uninstall-cask',
+    cask_parser = argparse.ArgumentParser(prog='macdaily uninstall cask',
                                           description='Automate Homebrew Cask Uninstaller',
                                           usage='macdaily uninstall cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -221,7 +221,7 @@ def get_cask_parser():
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask list{}' command".format(bold, reset))
-    cask_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask uninstall <cask>{}' command".format(bold, reset))
 
     return cask_parser
