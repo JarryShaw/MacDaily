@@ -19,8 +19,8 @@ from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
 from macdaily.util.misc import (beholder, get_pass, make_description,
-                                print_info, print_misc, print_term, print_text,
-                                record)
+                                make_namespace, print_info, print_misc,
+                                print_term, print_text, record)
 
 try:
     import pathlib2 as pathlib
@@ -104,8 +104,8 @@ def update(argv=None):
 
         # run command
         cmd_cls = globals()[f'{mode.capitalize()}Update']
-        command = cmd_cls(namespace, filename, timeout, confirm,
-                          askpass, password, disk_dir, brew_renew)
+        command = cmd_cls(make_namespace(namespace), filename, timeout,
+                          confirm, askpass, password, disk_dir, brew_renew)
 
         # record command
         cmd_list.append(command)

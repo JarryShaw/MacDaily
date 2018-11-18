@@ -81,6 +81,16 @@ def make_description(command):
     return desc
 
 
+def make_namespace(args):
+    namespace = dict()
+    temp = vars(args)
+    for key, value in temp.items():
+        if value is None:
+            continue
+        namespace[key] = value
+    return namespace
+
+
 def make_stderr(redirect=False, devnull=subprocess.DEVNULL):
     if redirect:
         return devnull

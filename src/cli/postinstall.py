@@ -24,9 +24,9 @@ def get_postinstall_parser():
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')
-    spec_group.add_argument('-s', '--startswith', action='store', default=str(), metavar='PREFIX',
+    spec_group.add_argument('-s', '--startswith', action='store', metavar='PREFIX',
                             help='postinstall procedure starts from such formula, sort in initial alphabets')
-    spec_group.add_argument('-e', '--endswith', action='store', default=str(), metavar='SUFFIX',
+    spec_group.add_argument('-e', '--endswith', action='store', metavar='SUFFIX',
                             help='postinstall procedure ends after such formula, sort in initial alphabets')
     spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
                             help='name of Homebrew formulae to postinstall')
@@ -38,6 +38,8 @@ def get_postinstall_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-l', '--show-log', action='store_true',
+                            help='open log in Console.app upon completion of command')
     genl_group.add_argument('-y', '--yes', action='store_true',
                             help='yes for all selections')
     genl_group.add_argument('-n', '--no-cleanup', action='store_true',
