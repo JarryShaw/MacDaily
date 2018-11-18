@@ -75,7 +75,7 @@ class NpmCommand(Command):
             print_text(context, self._file, redirect=self._vflag)
 
             _list_pkgs = list()
-            for line in context.strip().split('\n'):
+            for line in context.strip().splitlines():
                 _, name = os.path.split(line)
                 _list_pkgs.append(name)
             _real_pkgs = set(_list_pkgs)

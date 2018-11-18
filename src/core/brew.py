@@ -143,7 +143,7 @@ class BrewCommand(Command):
                 context = proc.stdout.decode()
                 print_text(context, self._file, redirect=self._vflag)
 
-                for line in filter(None, context.strip().split('\n')):
+                for line in filter(None, context.strip().splitlines()):
                     _deps_pkgs.extend(line.split()[1:])
             finally:
                 with open(self._file, 'a') as file:

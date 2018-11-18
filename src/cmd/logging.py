@@ -14,6 +14,16 @@ except ImportError:
 class LoggingCommand(Command):
 
     @property
+    @abc.abstractmethod
+    def log(self):
+        return NotImplemented
+
+    @property
+    @abc.abstractmethod
+    def ext(self):
+        return NotImplemented
+
+    @property
     def cmd(self):
         return 'logging'
 
@@ -53,7 +63,7 @@ class LoggingCommand(Command):
             # assign members
             self._file = filename
             self._timeout = timeout
-            self._logfile = str(pathlib.Path(filename).resolve().parents[1] / f'{self.mode}.txt')
+            self._logroot = str(pathlib.Path(filename).resolve().parents[1])
 
             # mainloop process
             self._parse_args(namespace)

@@ -54,7 +54,7 @@ class ApmUpdate(ApmCommand, UpdateCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
-            for line in filter(lambda s: '->' in s, context.strip().split('\n')):
+            for line in filter(lambda s: '->' in s, context.strip().splitlines()):
                 _temp_pkgs.append(re.sub(r'.* (.*) .* -> .*', r'\1', line))
             self._var__temp_pkgs = set(_temp_pkgs)
         finally:

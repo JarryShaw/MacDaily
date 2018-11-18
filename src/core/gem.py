@@ -108,8 +108,14 @@ class GemCommand(Command):
             _real_pkgs = set()
         else:
             context = proc.decode()
-            _real_pkgs = set(context.split())
             print_text(context, self._file, redirect=self._vflag)
+
+            _temp_pkgs = list()
+            for package in filter(None, context.strip().splitlines()):
+                if package.startswith('***'):
+                    continue
+                _temp_pkgs.append(package)
+            _real_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')

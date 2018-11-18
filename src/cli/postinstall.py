@@ -8,7 +8,7 @@ from macdaily.util.const import __version__, bold, reset
 
 def get_postinstall_parser():
     #######################################################
-    # Reinstall CLI
+    # Postinstall CLI
     #   * options
     #       - optional arguments
     #       - specification arguments
@@ -19,7 +19,7 @@ def get_postinstall_parser():
 
     parser = argparse.ArgumentParser(prog='macdaily-postinstall',
                                      description='Homebrew Cask Postinstall Automator',
-                                     usage='macdaily postinstall [options] <mode-selection> ...',
+                                     usage='macdaily postinstall <general-options> <spec-options> <misc-options> ...',
                                      epilog='aliases: post, ps')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 

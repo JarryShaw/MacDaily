@@ -23,7 +23,7 @@ Usage
 
 .. code:: man
 
-    usage: macdaily postinstall [options] <mode-selection> ...
+    usage: macdaily postinstall <general-options> <spec-options> <misc-options> ...
 
     Homebrew Cask Postinstall Automator
 

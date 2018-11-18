@@ -12,6 +12,14 @@ from macdaily.util.misc import print_info, print_scpt, sudo
 class AppLogging(LoggingCommand):
 
     @property
+    def log(self):
+        return 'macOS'
+
+    @property
+    def ext(self):
+        return 'log'
+
+    @property
     def mode(self):
         return 'app'
 
@@ -37,9 +45,10 @@ class AppLogging(LoggingCommand):
         text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
+        logfile = os.path.join(self._logroot, f'{self.log}-{path}.{self.ext}')
         find = os.path.join(ROOT, 'res', 'find.py')
         argv = [path, find, '/']
 
         print_scpt(argv, self._file, redirect=self._qflag)
-        sudo(argv, self._file, self._password, suffix=f'> {self._logfile}',
+        sudo(argv, self._file, self._password, suffix=f'> {logfile}',
              askpass=self._askpass, verbose=self._vflag, timeout=self._timeout)

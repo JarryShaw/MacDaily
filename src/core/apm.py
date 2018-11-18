@@ -82,7 +82,7 @@ class ApmCommand(Command):
             print_text(context, self._file, redirect=self._vflag)
 
             _list_pkgs = list()
-            for line in filter(None, context.strip().split('\n')):
+            for line in filter(None, context.strip().splitlines()):
                 _list_pkgs.append(line.split('@')[0])
             _real_pkgs = set(_list_pkgs)
         finally:

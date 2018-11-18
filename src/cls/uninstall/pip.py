@@ -52,7 +52,7 @@ class PipUninstall(PipCommand, UninstallCommand):
             print_text(context, self._file, redirect=self._qflag)
 
             _temp_pkgs = list()
-            for line in filter(None, context.strip().split('\n')):
+            for line in filter(None, context.strip().splitlines()):
                 _temp_pkgs.append(line.split('==')[0])
             self._var__temp_pkgs = set(_temp_pkgs)
         finally:
@@ -88,7 +88,7 @@ class PipUninstall(PipCommand, UninstallCommand):
                 context = proc.decode()
                 print_text(context, self._file, redirect=self._vflag)
 
-                for line in filter(lambda s: s.startswith('Requires: '), context.strip().split('\n')):
+                for line in filter(lambda s: s.startswith('Requires: '), context.strip().splitlines()):
                     _temp_pkgs = set(map(lambda s: s.rstrip(','), line.split()[1:])) - _know_pkgs
                     _deps_pkgs |= _temp_pkgs
                     break
