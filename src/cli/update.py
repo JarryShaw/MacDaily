@@ -17,7 +17,7 @@ def get_update_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily-update',
+    parser = argparse.ArgumentParser(prog='macdaily update',
                                      description='macOS Package Update Automator',
                                      usage='macdaily update [options] <mode-selection> ...',
                                      epilog='aliases: up, upgrade')
@@ -87,7 +87,7 @@ def get_apm_parser():
     #   * packages
     #######################################################
 
-    apm_parser = argparse.ArgumentParser(prog='macdaily-update-apm',
+    apm_parser = argparse.ArgumentParser(prog='macdaily update apm',
                                          description='Atom Plug-In Update Automator',
                                          usage='macdaily update apm [options] <plug-ins>')
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -112,7 +112,7 @@ def get_apm_parser():
     apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
     apm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}apm upgrade --list{reset}' command")
-    apm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    apm_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}apm upgrade <plug-in>{reset}' command")
 
     return apm_parser
@@ -129,7 +129,7 @@ def get_gem_parser():
     #   * packages
     #######################################################
 
-    gem_parser = argparse.ArgumentParser(prog='macdaily-update-gem',
+    gem_parser = argparse.ArgumentParser(prog='macdaily update gem',
                                          description='Ruby Gem Update Automator',
                                          usage='macdaily update gem [options] <gems>')
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -156,7 +156,7 @@ def get_gem_parser():
     gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
     gem_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}gem outdated{reset}' command")
-    gem_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    gem_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}gem update <gem>{reset}' command")
 
     return gem_parser
@@ -172,7 +172,7 @@ def get_mas_parser():
     #   * packages
     #######################################################
 
-    mas_parser = argparse.ArgumentParser(prog='macdaily-update-mas',
+    mas_parser = argparse.ArgumentParser(prog='macdaily update mas',
                                          description='macOS Application Update Automator',
                                          usage='macdaily update mas [options] <applications>')
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -195,7 +195,7 @@ def get_mas_parser():
     mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
     mas_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}mas outdated' command{reset}")
-    mas_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    mas_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}mas upgrade <application>{reset}' command")
 
     return mas_parser
@@ -211,7 +211,7 @@ def get_npm_parser():
     #   * packages
     #######################################################
 
-    npm_parser = argparse.ArgumentParser(prog='macdaily-update-npm',
+    npm_parser = argparse.ArgumentParser(prog='macdaily update npm',
                                          description='Node.js Module Update Automator',
                                          usage='macdaily update npm [options] <modules>')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -236,7 +236,7 @@ def get_npm_parser():
     npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
     npm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}npm outdated --global{reset}' command")
-    npm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    npm_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}npm upgrade --global <module>{reset}' command")
 
     return npm_parser
@@ -253,7 +253,7 @@ def get_pip_parser():
     #   * packages
     #######################################################
 
-    pip_parser = argparse.ArgumentParser(prog='macdaily-update-pip',
+    pip_parser = argparse.ArgumentParser(prog='macdaily update pip',
                                          description='Python Package Update Automator',
                                          usage='macdaily update pip [options] <packages>')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -293,7 +293,7 @@ def get_pip_parser():
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip list --outdated{reset}' command")
-    pip_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    pip_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip install --upgrade <package>{reset}' command")
 
     return pip_parser
@@ -310,7 +310,7 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily-update-brew',
+    brew_parser = argparse.ArgumentParser(prog='macdaily update brew',
                                           description='Homebrew Formula Update Automator',
                                           usage='macdaily update brew [options] <formulae>')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -340,7 +340,7 @@ def get_brew_parser():
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew outdated{reset}' command")
-    brew_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew upgrade <formula>{reset}' command")
 
     return brew_parser
@@ -357,7 +357,7 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily-update-cask',
+    cask_parser = argparse.ArgumentParser(prog='macdaily update cask',
                                           description='Homebrew Cask Update Automator',
                                           usage='macdaily update cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -393,7 +393,7 @@ def get_cask_parser():
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask outdated{reset}' command")
-    cask_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
 
     return cask_parser
@@ -410,7 +410,7 @@ def get_system_parser():
     #   * packages
     #######################################################
 
-    system_parser = argparse.ArgumentParser(prog='macdaily-update-system',
+    system_parser = argparse.ArgumentParser(prog='macdaily update system',
                                             description='System Software Update Automator',
                                             usage='macdaily update system [options] <software>')
     system_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -437,7 +437,7 @@ def get_system_parser():
     system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
     system_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                    help=f"options for `{bold}softwareupdate --list{reset}' command")
-    system_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
+    system_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
                                    help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
 
     return system_parser

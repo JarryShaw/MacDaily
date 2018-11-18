@@ -27,11 +27,11 @@
         },
         "ptyng": {
             "hashes": [
-                "sha256:310de177721b6152b4d699d2d5c90242ecf1fdbc8475ac9caa110e50753794ff",
-                "sha256:f6a7b18aa0fa48f057c6a19d8193c5e390eabc64561d3faa5b93b05ea17c879c"
+                "sha256:5cc162c37c53d8a0143c05f4af29929899243e3e4ccb8ea8555799cd991277f9",
+                "sha256:ac04de6a58eed7a3192931279165596266bc4a3e90308241a2284ea44fc07456"
             ],
             "index": "pypi",
-            "version": "==0.2.0"
+            "version": "==0.2.0.post3"
         }
     },
     "develop": {
@@ -66,10 +66,10 @@
         },
         "autopep8": {
             "hashes": [
-                "sha256:1b8d42ebba751a91090d3adb5c06840b1151d71ed43e1c7a9ed6911bfe8ebe6c"
+                "sha256:33d2b5325b7e1afb4240814fe982eea3a92ebea712869bfd08b3c0393404248c"
             ],
             "index": "pypi",
-            "version": "==1.4.2"
+            "version": "==1.4.3"
         },
         "babel": {
             "hashes": [
@@ -381,16 +381,16 @@
         },
         "requests": {
             "hashes": [
-                "sha256:99dcfdaaeb17caf6e526f32b6a7b780461512ab3f1d992187801694cba42770c",
-                "sha256:a84b8c9ab6239b578f22d1c21d51b696dcfe004032bb80ea832398d6909d7279"
+                "sha256:65b3a120e4329e33c9889db89c80976c5272f56ea92d3e74da8a463992e3ff54",
+                "sha256:ea881206e59f41dbd0bd445437d792e43906703fff75ca8ff43ccdb11f33f263"
             ],
-            "version": "==2.20.0"
+            "version": "==2.20.1"
         },
         "restructuredtext-lint": {
             "hashes": [
-                "sha256:c48ca9a84c312b262809f041fe47dcfaedc9ee4879b3e1f9532f745c182b4037"
+                "sha256:8712f9066d2c748002ec24f6f7ddca13e0c37654ae4f1ba0dcf0e78ba453c387"
             ],
-            "version": "==1.1.3"
+            "version": "==1.2.1"
         },
         "rope": {
             "hashes": [
@@ -415,11 +415,11 @@
         },
         "sphinx": {
             "hashes": [
-                "sha256:652eb8c566f18823a022bb4b6dbc868d366df332a11a0226b5bc3a798a479f17",
-                "sha256:d222626d8356de702431e813a05c68a35967e3d66c6cd1c2c89539bb179a7464"
+                "sha256:120732cbddb1b2364471c3d9f8bfd4b0c5b550862f99a65736c77f970b142aea",
+                "sha256:b348790776490894e0424101af9c8413f2a86831524bd55c5f379d3e3e12ca64"
             ],
             "index": "pypi",
-            "version": "==1.8.1"
+            "version": "==1.8.2"
         },
         "sphinx-autobuild": {
             "hashes": [

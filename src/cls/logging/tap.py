@@ -7,7 +7,6 @@ import tempfile
 import traceback
 
 from macdaily.cmd.logging import LoggingCommand
-from macdaily.core.mas import MasCommand
 from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
                                  under)
 from macdaily.util.misc import (make_stderr, print_info, print_scpt,
@@ -19,7 +18,7 @@ except ImportError:
     import subprocess
 
 
-class MasLogging(MasCommand, LoggingCommand):
+class TapLogging(LoggingCommand):
 
     @property
     def log(self):
@@ -29,14 +28,26 @@ class MasLogging(MasCommand, LoggingCommand):
     def ext(self):
         return ''
 
+    @property
+    def mode(self):
+        return 'tap'
+
+    @property
+    def name(self):
+        return 'Homebrew Taps'
+
+    @property
+    def desc(self):
+        return ('third-party repository', 'third-party repositories')
+
     def _check_exec(self):
         stderr = make_stderr(self._vflag, sys.stderr)
         try:
             subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=stderr)
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            print(f'macdaily-{self.cmd}: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-{self.cmd}: {red}mas{reset}: you may find Bundler on '
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}tap{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}tap{reset}: you may find Bundler on '
                     f'{purple_bg}{under}https://github.com/Homebrew/homebrew-bundle{reset}, '
                     f'or install Bundler through following command -- '
                     f"`{bold}brew tap homebrew/bundle{reset}'")
@@ -48,6 +59,10 @@ class MasLogging(MasCommand, LoggingCommand):
     def _parse_args(self, namespace):
         self._quiet = namespace.get('quiet', False)
         self._verbose = namespace.get('verbose', False)
+
+    def _loc_exec(self):
+        self._exec = {self._var__exec_path}
+        del self._var__exec_path
 
     def _proc_logging(self, path):
         text = f'Listing installed {self.desc[1]}'
@@ -67,4 +82,4 @@ class MasLogging(MasCommand, LoggingCommand):
             print_text(context, os.devnull, redirect=self._vflag)
 
         with open(logfile, 'w') as file:
-            file.writelines(filter(lambda s: s.startswith('mas'), context.strip().splitlines(True)))
+            file.writelines(filter(lambda s: s.startswith('tap'), context.strip().splitlines(True)))

@@ -10,6 +10,7 @@ import re
 import shutil
 import sys
 import traceback
+import tty
 
 from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
                                  dim, grey, program, purple, python, red,
@@ -82,9 +83,10 @@ def make_description(command):
 
 
 def make_namespace(args):
+    if not isinstance(args, dict):
+        args = vars(args)
     namespace = dict()
-    temp = vars(args)
-    for key, value in temp.items():
+    for key, value in args.items():
         if value is None:
             continue
         namespace[key] = value
@@ -302,10 +304,19 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
         argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
+    mode = None
+    with contextlib.suppress(tty.error):
+        mode = tty.tcgetattr(0)
+
     try:
         returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
                                            timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
+        if mode is not None:
+            with contextlib.suppress(tty.error):
+                if tty.tcgetattr(0) != mode:
+                    tty.tcsetattr(0, tty.TCSAFLUSH, mode)
+
         text = traceback.format_exc()
         if password is not None:
             text = text.replace(password, '********')
@@ -329,10 +340,19 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
         argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
+    mode = None
+    with contextlib.suppress(tty.error):
+        mode = tty.tcgetattr(0)
+
     try:
         returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
                                            timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
+        if mode is not None:
+            with contextlib.suppress(tty.error):
+                if tty.tcgetattr(0) != mode:
+                    tty.tcsetattr(0, tty.TCSAFLUSH, mode)
+
         text = traceback.format_exc().replace('\n', '\\n')
         if password is not None:
             text = text.replace(password, '********')
@@ -397,4 +417,4 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
             sudo_argv = f"{sudo_argv} --askpass --prompt='🔑 Enter your password for {USER}.'"
         return sudo_argv
     return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
-               prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=None)
+               prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=suffix)

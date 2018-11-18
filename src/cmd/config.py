@@ -24,16 +24,17 @@ CONFIG = ['[Path]',
           '[Mode]',
           '# In this section, flags for modes are configured.',
           '# If you would like to disable the mode, set it to "false".',
-          'apm      = true                                             ; Atom plug-ins',
-          'app      = true                                             ; macOS Applications',
-          'brew     = true                                             ; Homebrew Formulae',
-          'cask     = true                                             ; Homebrew Casks',
-          'cleanup  = true                                             ; cleanup caches',
-          'gem      = true                                             ; Ruby gems',
-          'mas      = true                                             ; Mac App Store applications',
-          'npm      = true                                             ; Node.js modules',
-          'pip      = true                                             ; Python packages',
-          'system   = true                                             ; macOS software',
+          'apm     = true                                              ; Atom plug-ins',
+          'app     = true                                              ; macOS Applications',
+          'brew    = true                                              ; Homebrew Formulae',
+          'cask    = true                                              ; Homebrew Casks',
+          'cleanup = true                                              ; cleanup caches',
+          'gem     = true                                              ; Ruby gems',
+          'mas     = true                                              ; Mac App Store applications',
+          'npm     = true                                              ; Node.js modules',
+          'pip     = true                                              ; Python packages',
+          'system  = true                                              ; macOS software',
+          'tap     = true                                              ; Homebrew Taps',
           '',
           '[Daemon]',
           '# In this section, scheduled tasks are set up.',
@@ -82,8 +83,8 @@ def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    CONFIG[50] = f'askpass = {launch_askpass(quiet, verbose).ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
-    CONFIG[51] = f'confirm = {launch_confirm(quiet, verbose).ljust(49)} ; confirm utility for MacDaily'
+    CONFIG[51] = f'askpass = {launch_askpass(quiet, verbose).ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
+    CONFIG[52] = f'confirm = {launch_confirm(quiet, verbose).ljust(49)} ; confirm utility for MacDaily'
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))

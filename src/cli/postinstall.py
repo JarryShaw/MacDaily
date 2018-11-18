@@ -17,7 +17,7 @@ def get_postinstall_parser():
     #   * packages
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily-postinstall',
+    parser = argparse.ArgumentParser(prog='macdaily postinstall',
                                      description='Homebrew Cask Postinstall Automator',
                                      usage='macdaily postinstall <general-options> <spec-options> <misc-options> ...',
                                      epilog='aliases: post, ps')
@@ -48,7 +48,7 @@ def get_postinstall_parser():
     misc_group = parser.add_argument_group(title='miscellaneous arguments')
     misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                             help=f"options for `{bold}brew list{reset}' command")
-    misc_group.add_argument('-U', '--postinstall', action='store', default=str(), metavar='ARG',
+    misc_group.add_argument('-U', '- postinstall', action='store', default=str(), metavar='ARG',
                             help=f"options for `{bold}brew postinstall <formula>{reset}' command")
 
     return parser

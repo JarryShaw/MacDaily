@@ -1,5 +1,7 @@
 :Command Executable:
     ``macdaily postinstall`` | ``md-postinstall``
+:Supported Commands:
+    ``brew`` (obsolete)
 
 ===================================
 Homebrew Cask Postinstall Automator

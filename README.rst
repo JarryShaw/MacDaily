@@ -144,16 +144,17 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     [Mode]
     # In this section, flags for modes are configured.
     # If you would like to disable the mode, set it to "false".
-    apm      = true                                             ; Atom plug-ins
-    app      = true                                             ; macOS Applications
-    brew     = true                                             ; Homebrew Formulae
-    cask     = true                                             ; Homebrew Casks
-    cleanup  = true                                             ; cleanup caches
-    gem      = true                                             ; Ruby gems
-    mas      = true                                             ; Mac App Store applications
-    npm      = true                                             ; Node.js modules
-    pip      = true                                             ; Python packages
-    system   = true                                             ; macOS software
+    apm     = true                                              ; Atom plug-ins
+    app     = true                                              ; macOS Applications
+    brew    = true                                              ; Homebrew Formulae
+    cask    = true                                              ; Homebrew Casks
+    cleanup = true                                              ; cleanup caches
+    gem     = true                                              ; Ruby gems
+    mas     = true                                              ; Mac App Store applications
+    npm     = true                                              ; Node.js modules
+    pip     = true                                              ; Python packages
+    system  = true                                              ; macOS software
+    tap     = true                                              ; Homebrew Taps
 
     [Daemon]
     # In this section, scheduled tasks are set up.
@@ -405,7 +406,6 @@ manual. And here is a brief catalogue for the manuals.
   - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#mas>`__
   - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#npm>`__
   - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
-  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#system>`__
 
 - `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
 - `Logging Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst>`__
@@ -418,6 +418,7 @@ manual. And here is a brief catalogue for the manuals.
   - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#mas>`__
   - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#npm>`__
   - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#pip>`__
+  - `Third-party Repositories <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#tap>`__
 
 - `Postinstall Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/postinstall.rst>`__
 - `Reinstall Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/reinstall.rst>`__

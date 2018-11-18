@@ -9,7 +9,7 @@ import traceback
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.gem import GemCommand
 from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
-                                print_text, script)
+                                print_text)
 
 try:
     import subprocess32 as subprocess
@@ -25,7 +25,7 @@ class GemLogging(GemCommand, LoggingCommand):
 
     @property
     def ext(self):
-        return 'rb'
+        return '.rb'
 
     def _parse_args(self, namespace):
         self._brew = namespace.get('brew', False)
@@ -70,7 +70,7 @@ class GemLogging(GemCommand, LoggingCommand):
             for version in versions:
                 argv[-1] = f'{package}-{version}'
                 args = ' '.join(argv)
-                print_scpt(args, self._file, redirect=self._qflag)
+                print_scpt(args, self._file, redirect=self._vflag)
                 with open(self._file, 'a') as file:
                     file.write(f'Script started on {date()}\n')
                     file.write(f'command: {args!r}\n')
@@ -88,7 +88,8 @@ class GemLogging(GemCommand, LoggingCommand):
                     with open(self._file, 'a') as file:
                         file.write(f'Script done on {date()}\n')
 
-        logfile = os.path.join(self._logroot, f'{self.log}-{path}.{self.ext}')
+        suffix = path.replace('/', ':')
+        logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
         with open(logfile, 'w') as file:
             file.write(f"require 'rubygems'{os.linesep}")
             file.writelines(sorted(set(_temp_pkgs)))

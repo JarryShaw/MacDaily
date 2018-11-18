@@ -116,7 +116,7 @@ class Command(metaclass=abc.ABCMeta):
         return set(self._lost)
 
     def __init__(self, namespace, filename, timeout, confirm,
-                 askpass, password, disk_dir, brew_renew):
+                 askpass, password, disk_dir, brew_renew=None):
         """Initialisation.
 
         Args:
