@@ -25,6 +25,22 @@ class LoggingCommand(Command):
     def jon(self):
         return ('logging', 'logging')
 
+    @property
+    def packages(self):
+        return NotImplemented
+
+    @property
+    def ignored(self):
+        return NotImplemented
+
+    @property
+    def failed(self):
+        return NotImplemented
+
+    @property
+    def notfound(self):
+        return NotImplemented
+
     def __init__(self, namespace, filename, timeout, *args, **kwargs):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))

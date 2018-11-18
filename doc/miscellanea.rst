@@ -363,7 +363,7 @@ will be used. Corresponding commands of each core function are listed as below.
 .. code:: python
 
     run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
-        prefix=None, timeout=None, executable=SHELL, verbose=False)
+        prefix=None, suffix=None, timeout=None, executable=SHELL, verbose=False)
 
 .. raw:: html
 
@@ -371,14 +371,14 @@ will be used. Corresponding commands of each core function are listed as below.
       Call <code>script</code> function with given arguments.
     </blockquote>
 
-- ``redirect`` -- if ``True``, set ``suffix`` to ``> /dev/null``
+- ``redirect`` -- if ``True``, append ``> /dev/null`` to ``suffix``
 - ``verbose`` -- if ``True``, output error traceback (if any) to ``stdout``
 - all other arguments are the same as for ``script`` function
 
 .. code:: python
 
     sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
-         redirect=False, verbose=False, timeout=None, executable=SHELL)
+         redirect=False, verbose=False, timeout=None, executable=SHELL, suffix=None)
 
 .. raw:: html
 

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import traceback
-
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.apm import ApmCommand
 from macdaily.util.misc import print_info, print_scpt, script

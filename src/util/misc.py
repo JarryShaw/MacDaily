@@ -170,8 +170,12 @@ def record(file, args, today, config, redirect=False):
 
 
 def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
-        prefix=None, timeout=None, executable=SHELL, verbose=False):
-    suffix = '> /dev/null' if redirect else None
+        prefix=None, suffix=None, timeout=None, executable=SHELL, verbose=False):
+    if redirect:
+        if suffix is None:
+            suffix = '> /dev/null'
+        else:
+            suffix += ' > /dev/null'
     return script(argv, file, password=password, yes=yes, redirect=verbose, shell=shell,
                   executable=executable, timeout=timeout, prefix=prefix, suffix=suffix)
 
@@ -360,7 +364,7 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
 
 
 def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
-         redirect=False, verbose=False, timeout=None, executable=SHELL):
+         redirect=False, verbose=False, timeout=None, executable=SHELL, suffix=None):
     def make_prefix(argv, askpass, sethome):
         if not isinstance(argv, str):
             argv = ' '.join(argv)
@@ -383,4 +387,4 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
             sudo_argv = f"{sudo_argv} --askpass --prompt='🔑 Enter your password for {USER}.'"
         return sudo_argv
     return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
-               prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose)
+               prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=None)
