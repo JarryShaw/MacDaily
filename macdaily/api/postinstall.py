@@ -12,8 +12,8 @@ from macdaily.cmd.postinstall import PostinstallCommand
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
 from macdaily.util.misc import (beholder, get_pass, make_description,
-                                print_info, print_misc, print_term, print_text,
-                                record)
+                                make_namespace, print_info, print_misc,
+                                print_term, print_text, record)
 
 try:
     import pathlib2 as pathlib
@@ -65,13 +65,13 @@ def postinstall(argv=None):
     password = get_pass(askpass)
 
     # run command
-    command = PostinstallCommand(vars(args), filename, timeout, confirm,
-                                 askpass, password, disk_dir, brew_renew)
+    command = PostinstallCommand(make_namespace(args), filename, timeout,
+                                 confirm, askpass, password, disk_dir, brew_renew)
 
     text = '{}{}|📖|{} {}MacDaily report of postinstall command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
-    desc = make_description(PostinstallCommand)
+    desc = make_description(command)
     pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
     miss = '{}{}, {}'.format(reset, bold, yellow).join(command.notfound)
     ilst = '{}{}, {}'.format(reset, bold, pink).join(command.ignored)

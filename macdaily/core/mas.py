@@ -65,7 +65,7 @@ class MasCommand(Command):
             print_text(context, self._file, redirect=self._vflag)
 
             _list_pkgs = dict()
-            for line in context.strip().split('\n'):
+            for line in context.strip().splitlines():
                 content = line.split()
                 _list_pkgs[content[1:-1]] = content[0]
             _real_pkgs = set(_list_pkgs.keys())

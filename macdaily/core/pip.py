@@ -213,7 +213,7 @@ class PipCommand(Command):
             else:
                 context = proc.decode()
                 print_text(context, self._file, redirect=self._vflag)
-                self._var__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], context.split()))
+                self._var__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], filter(None, context.splitlines())))
             finally:
                 with open(self._file, 'a') as file:
                     file.write('Script done on {}\n'.format(date()))
@@ -245,7 +245,7 @@ class PipCommand(Command):
                 context = proc.stdout.decode()
                 print_text(context, self._file, redirect=self._vflag)
 
-                for line in filter(None, context.strip().split('\n')):
+                for line in filter(None, context.strip().splitlines()):
                     if line == 'No broken requirements found.':
                         return set()
                     if 'which is not installed' in line:

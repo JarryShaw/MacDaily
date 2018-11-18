@@ -14,6 +14,16 @@ except ImportError:
 class LoggingCommand(Command):
 
     @property
+    @abc.abstractmethod
+    def log(self):
+        return NotImplemented
+
+    @property
+    @abc.abstractmethod
+    def ext(self):
+        return NotImplemented
+
+    @property
     def cmd(self):
         return 'logging'
 
@@ -24,6 +34,22 @@ class LoggingCommand(Command):
     @property
     def jon(self):
         return ('logging', 'logging')
+
+    @property
+    def packages(self):
+        return NotImplemented
+
+    @property
+    def ignored(self):
+        return NotImplemented
+
+    @property
+    def failed(self):
+        return NotImplemented
+
+    @property
+    def notfound(self):
+        return NotImplemented
 
     def __init__(self, namespace, filename, timeout, *args, **kwargs):
         self._qflag = namespace.get('quiet', False)
@@ -37,7 +63,7 @@ class LoggingCommand(Command):
             # assign members
             self._file = filename
             self._timeout = timeout
-            self._logfile = str(pathlib.Path(filename).resolve().parents[1] / '{}.txt'.format(self.mode))
+            self._logroot = str(pathlib.Path(filename).resolve().parents[1])
 
             # mainloop process
             self._parse_args(namespace)

@@ -47,7 +47,7 @@ class MasUpdate(MasCommand, UpdateCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
-            for line in filter(None, context.strip().split('\n')):
+            for line in filter(None, context.strip().splitlines()):
                 content = line.split()
                 _temp_pkgs.append((content[0], content[1:-1]))
             self._var__temp_pkgs = set(_temp_pkgs)

@@ -63,7 +63,7 @@ class BrewUpdate(BrewCommand, UpdateCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
-            for line in filter(None, context.strip().split('\n')):
+            for line in filter(None, context.strip().splitlines()):
                 _temp_pkgs.append(line.split(maxsplit=1)[0])
             self._var__temp_pkgs = set(_temp_pkgs)
         finally:

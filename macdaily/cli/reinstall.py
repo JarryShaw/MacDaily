@@ -77,9 +77,9 @@ def get_brew_parser():
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
-    brew_spec_group.add_argument('-s', '--startswith', action='store', default=str(), metavar='PREFIX',
+    brew_spec_group.add_argument('-s', '--startswith', action='store', metavar='PREFIX',
                                  help='reinstall procedure starts from such formula, sort in initial alphabets')
-    brew_spec_group.add_argument('-e', '--endswith', action='store', default=str(), metavar='SUFFIX',
+    brew_spec_group.add_argument('-e', '--endswith', action='store', metavar='SUFFIX',
                                  help='reinstall procedure ends after such formula, sort in initial alphabets')
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
                                  help='name of Homebrew formulae to reinstall')
@@ -123,9 +123,9 @@ def get_cask_parser():
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
-    cask_spec_group.add_argument('-s', '--startswith', action='store', default=str(), metavar='PREFIX',
+    cask_spec_group.add_argument('-s', '--startswith', action='store', metavar='PREFIX',
                                  help='reinstall procedure starts from such binary, sort in initial alphabets')
-    cask_spec_group.add_argument('-e', '--endswith', action='store', default=str(), metavar='SUFFIX',
+    cask_spec_group.add_argument('-e', '--endswith', action='store', metavar='SUFFIX',
                                  help='reinstall procedure ends after such binary, sort in initial alphabets')
     cask_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='reinstall even if the Cask does not appear to be present')
