@@ -30,9 +30,8 @@ class CaskLogging(CaskCommand, LoggingCommand):
         return ''
 
     def _check_exec(self):
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=stderr)
+            subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print('macdaily-{}: {}{}cask{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)

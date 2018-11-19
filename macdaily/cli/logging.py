@@ -17,7 +17,7 @@ def get_logging_parser():
     #   * packages
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily logging',
+    parser = argparse.ArgumentParser(prog='macdaily-logging',
                                      description='macOS Package Logging Automator',
                                      usage='macdaily logging [options] <mode-selection> ...',
                                      epilog='aliases: log')
@@ -65,8 +65,9 @@ def get_apm_parser():
     #   * packages
     #######################################################
 
-    apm_parser = argparse.ArgumentParser(prog='macdaily logging apm',
-                                         description='Atom Plug-In Logging Automator')
+    apm_parser = argparse.ArgumentParser(prog='macdaily-logging-apm',
+                                         description='Atom Plug-In Logging Automator',
+                                         usage='macdaily logging apm [-h] [-V] [-b] [-q] [-v] [-l]')
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -96,8 +97,9 @@ def get_app_parser():
     #   * packages
     #######################################################
 
-    app_parser = argparse.ArgumentParser(prog='macdaily logging app',
-                                         description='Mac Application Logging Automator')
+    app_parser = argparse.ArgumentParser(prog='macdaily-logging-app',
+                                         description='Mac Application Logging Automator',
+                                         usage='macdaily logging app [-h] [-V] [-q] [-v] [-l]')
     app_parser.add_argument('-V', '--version', action='version', version=__version__)
     app_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -123,8 +125,9 @@ def get_gem_parser():
     #   * packages
     #######################################################
 
-    gem_parser = argparse.ArgumentParser(prog='macdaily logging gem',
-                                         description='Ruby Gem Logging Automator')
+    gem_parser = argparse.ArgumentParser(prog='macdaily-logging-gem',
+                                         description='Ruby Gem Logging Automator',
+                                         usage='macdaily logging gem [-h] [-V] [-b] [-s] [-q] [-v] [-l]')
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -155,8 +158,9 @@ def get_mas_parser():
     #   * packages
     #######################################################
 
-    mas_parser = argparse.ArgumentParser(prog='macdaily logging mas',
-                                         description='macOS Application Logging Automator')
+    mas_parser = argparse.ArgumentParser(prog='macdaily-logging-mas',
+                                         description='macOS Application Logging Automator',
+                                         usage='macdaily logging mas [-h] [-V] [-q] [-v] [-l]')
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -181,8 +185,9 @@ def get_npm_parser():
     #   * packages
     #######################################################
 
-    npm_parser = argparse.ArgumentParser(prog='macdaily logging npm',
-                                         description='Node.js Module Logging Automator')
+    npm_parser = argparse.ArgumentParser(prog='macdaily-logging-npm',
+                                         description='Node.js Module Logging Automator',
+                                         usage='macdaily logging npm [-h] [-V] [-i] [-q] [-v] [-l]')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -212,8 +217,10 @@ def get_pip_parser():
     #   * packages
     #######################################################
 
-    pip_parser = argparse.ArgumentParser(prog='macdaily logging pip',
-                                         description='Python Package Logging Automator')
+    pip_parser = argparse.ArgumentParser(prog='macdaily-logging-pip',
+                                         description='Python Package Logging Automator',
+                                         usage=('macdaily logging pip [-h] [-V] [-n] [-b] [-c] [-e VER [VER ...]] [-r] '
+                                                '[-s] [-q] [-v] [-l]'))
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -254,8 +261,9 @@ def get_tap_parser():
     #   * packages
     #######################################################
 
-    tap_parser = argparse.ArgumentParser(prog='macdaily logging tap',
-                                         description='Homebrew Tap Logging Automator')
+    tap_parser = argparse.ArgumentParser(prog='macdaily-logging-tap',
+                                         description='Homebrew Tap Logging Automator',
+                                         usage='macdaily logging tap [-h] [-V] [-q] [-v] [-l]')
     tap_parser.add_argument('-V', '--version', action='version', version=__version__)
     tap_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -281,8 +289,9 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily logging brew',
-                                          description='Homebrew Formula Logging Automator')
+    brew_parser = argparse.ArgumentParser(prog='macdaily-logging-brew',
+                                          description='Homebrew Formula Logging Automator',
+                                          usage='macdaily logging brew [-h] [-V] [-q] [-v] [-l]')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -308,8 +317,9 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily logging cask',
-                                          description='Homebrew Cask Logging Automator')
+    cask_parser = argparse.ArgumentParser(prog='macdaily-logging-cask',
+                                          description='Homebrew Cask Logging Automator',
+                                          usage='macdaily logging cask [-h] [-V] [-q] [-v] [-l]')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 

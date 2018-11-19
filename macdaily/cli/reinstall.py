@@ -17,7 +17,7 @@ def get_reinstall_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily reinstall',
+    parser = argparse.ArgumentParser(prog='macdaily-reinstall',
                                      description='Automate macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
                                      epilog='aliases: re')
@@ -70,7 +70,7 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily reinstall brew',
+    brew_parser = argparse.ArgumentParser(prog='macdaily-reinstall-brew',
                                           description='Automate Homebrew Formula Reinstaller',
                                           usage='macdaily reinstall brew [options] <formulae>')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -116,7 +116,7 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily reinstall cask',
+    cask_parser = argparse.ArgumentParser(prog='macdaily-reinstall-cask',
                                           description='Automate Homebrew Cask Reinstaller',
                                           usage='macdaily reinstall cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)

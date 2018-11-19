@@ -17,7 +17,7 @@ def get_update_parser():
     #   * specifications
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily update',
+    parser = argparse.ArgumentParser(prog='macdaily-update',
                                      description='macOS Package Update Automator',
                                      usage='macdaily update [options] <mode-selection> ...',
                                      epilog='aliases: up, upgrade')
@@ -87,7 +87,7 @@ def get_apm_parser():
     #   * packages
     #######################################################
 
-    apm_parser = argparse.ArgumentParser(prog='macdaily update apm',
+    apm_parser = argparse.ArgumentParser(prog='macdaily-update-apm',
                                          description='Atom Plug-In Update Automator',
                                          usage='macdaily update apm [options] <plug-ins>')
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -129,7 +129,7 @@ def get_gem_parser():
     #   * packages
     #######################################################
 
-    gem_parser = argparse.ArgumentParser(prog='macdaily update gem',
+    gem_parser = argparse.ArgumentParser(prog='macdaily-update-gem',
                                          description='Ruby Gem Update Automator',
                                          usage='macdaily update gem [options] <gems>')
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -172,7 +172,7 @@ def get_mas_parser():
     #   * packages
     #######################################################
 
-    mas_parser = argparse.ArgumentParser(prog='macdaily update mas',
+    mas_parser = argparse.ArgumentParser(prog='macdaily-update-mas',
                                          description='macOS Application Update Automator',
                                          usage='macdaily update mas [options] <applications>')
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -211,7 +211,7 @@ def get_npm_parser():
     #   * packages
     #######################################################
 
-    npm_parser = argparse.ArgumentParser(prog='macdaily update npm',
+    npm_parser = argparse.ArgumentParser(prog='macdaily-update-npm',
                                          description='Node.js Module Update Automator',
                                          usage='macdaily update npm [options] <modules>')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -253,7 +253,7 @@ def get_pip_parser():
     #   * packages
     #######################################################
 
-    pip_parser = argparse.ArgumentParser(prog='macdaily update pip',
+    pip_parser = argparse.ArgumentParser(prog='macdaily-update-pip',
                                          description='Python Package Update Automator',
                                          usage='macdaily update pip [options] <packages>')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -310,7 +310,7 @@ def get_brew_parser():
     #   * packages
     #######################################################
 
-    brew_parser = argparse.ArgumentParser(prog='macdaily update brew',
+    brew_parser = argparse.ArgumentParser(prog='macdaily-update-brew',
                                           description='Homebrew Formula Update Automator',
                                           usage='macdaily update brew [options] <formulae>')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -357,7 +357,7 @@ def get_cask_parser():
     #   * packages
     #######################################################
 
-    cask_parser = argparse.ArgumentParser(prog='macdaily update cask',
+    cask_parser = argparse.ArgumentParser(prog='macdaily-update-cask',
                                           description='Homebrew Cask Update Automator',
                                           usage='macdaily update cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -410,7 +410,7 @@ def get_system_parser():
     #   * packages
     #######################################################
 
-    system_parser = argparse.ArgumentParser(prog='macdaily update system',
+    system_parser = argparse.ArgumentParser(prog='macdaily-update-system',
                                             description='System Software Update Automator',
                                             usage='macdaily update system [options] <software>')
     system_parser.add_argument('-V', '--version', action='version', version=__version__)

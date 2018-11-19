@@ -49,9 +49,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             file.write('Script started on {}\n'.format(date()))
             file.write('command: {!r}\n'.format(args))
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -94,9 +93,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                 file.write('Script started on {}\n'.format(date()))
                 file.write('command: {!r}\n'.format(args))
 
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

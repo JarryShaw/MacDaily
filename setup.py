@@ -58,6 +58,7 @@ setup(
             'md-reinstall = macdaily.api.reinstall:reinstall',
             'md-postinstall = macdaily.api.postinstall:postinstall',
             'md-logging = macdaily.api.logging:logging',
+            'md-launch = macdaily.api.launch:launch',
         ]
     },
     packages=[
@@ -83,7 +84,7 @@ setup(
             'README.rst',
         ],
         'macdaily.img': ['*.icns'],
-        'macdaily.res': ['*.applescript'],
+        'macdaily.res': ['*.py', '*.applescript'],
     },
     classifiers=[
         # 'Development Status :: 5 - Production/Stable',

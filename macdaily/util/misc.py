@@ -156,7 +156,7 @@ def print_text(text, file, redirect=False):
         fd.write(context)
 
 
-def record(file, args, today, config, redirect=False):
+def record(file, args, today, config=None, redirect=False):
     # record program arguments
     print_misc('{} {}'.format(python, program), file, redirect)
     with open(file, 'a') as log:
@@ -173,12 +173,13 @@ def record(file, args, today, config, redirect=False):
                 log.write('ARG: {} = {}\n'.format(key, value))
 
     # record parsed configuration
-    print_misc('Parsing configuration file '
-               '{!r}'.format(os.path.expanduser("~/.dailyrc")), file, redirect)
-    with open(file, 'a') as log:
-        for key, value in config.items():
-            for k, v, in value.items():
-                log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
+    if config is not None:
+        print_misc('Parsing configuration file '
+                   '{!r}'.format(os.path.expanduser("~/.dailyrc")), file, redirect)
+        with open(file, 'a') as log:
+            for key, value in config.items():
+                for k, v, in value.items():
+                    log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
 
 
 def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,

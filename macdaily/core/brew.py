@@ -75,9 +75,8 @@ class BrewCommand(Command):
             file.write('Script started on {}\n'.format(date()))
             file.write('command: {!r}\n'.format(args))
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
@@ -134,9 +133,8 @@ class BrewCommand(Command):
                 file.write('command: {!r}\n'.format(args))
 
             _deps_pkgs = list()
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:  # brew missing exits with a non-zero status if any formulae are missing dependencies
-                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=stderr)
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=make_stderr(self._vflag))
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
@@ -247,9 +245,8 @@ class BrewCommand(Command):
                 file.write('command: {!r}\n'.format(args))
 
             fail = False
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 fail = True
