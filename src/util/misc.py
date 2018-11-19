@@ -211,7 +211,7 @@ def _ansi2text(password):
     return (f'{sys.executable} -c "'
             'import re, sys\n'
             'for line in sys.stdin:\n'
-            "    data = line.strip().replace('^D\x08\x08', '')\n"
+            "    data = line.rstrip().replace('^D\x08\x08', '')\n"
             "    temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
             f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
             '    if text:\n'
@@ -235,7 +235,7 @@ def _text2dim(password):
     return (f'{sys.executable} -c "'
             'import re, sys\n'
             'for line in sys.stdin:\n'
-            "    data = line.strip().replace('^D\x08\x08', '')\n"
+            "    data = line.rstrip().replace('^D\x08\x08', '')\n"
             f"    temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE)\n"
             f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
             '    if text:\n'

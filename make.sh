@@ -58,7 +58,7 @@ fi
 python3 setup.py sdist bdist_wheel
 cp "${name}-py3-none-any.whl" "${name}-py35-none-${platform}.whl"
 cp "${name}-py3-none-any.whl" "${name}-py34-none-${platform}.whl"
-rm dist/*.tar.gz "${name}-py3-none-any.whl"
+rm "${name}-py3-none-any.whl"
 twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 
