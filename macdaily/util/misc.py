@@ -335,7 +335,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
         text = traceback.format_exc()
         if password is not None:
             text = text.replace(password, '********')
-        print_text(repr(text), file, redirect=redirect)
+        print_text(text, file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
     #     with contextlib.suppress(subprocess.SubprocessError):
@@ -371,7 +371,7 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
         text = traceback.format_exc().replace('\n', '\\n')
         if password is not None:
             text = text.replace(password, '********')
-        print_text(repr(text), file, redirect=redirect)
+        print_text(text, file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
     #     with contextlib.suppress(subprocess.SubprocessError):
