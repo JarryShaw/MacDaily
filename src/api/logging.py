@@ -135,7 +135,7 @@ def logging(argv=None):
             print_term(text, file, redirect=True)
 
     mode_lst = [command.mode for command in cmd_list]
-    mode_str = ', '.join(mode_lst) if mode_lst else 'no'
+    mode_str = ', '.join(mode_lst) if mode_lst else 'none'
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed logging process '
             f'for {mode_str} package managers{reset}')
     print_term(text, os.devnull, redirect=quiet)

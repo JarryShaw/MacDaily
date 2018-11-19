@@ -23,4 +23,5 @@ def find(root):
 
 
 if __name__ == '__main__':
+    sys.tracebacklimit = 0
     sys.exit(find(sys.argv[1]))

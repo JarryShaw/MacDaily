@@ -25,13 +25,13 @@ def get_launch_parser():
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('program', nargs='*', metavar='PROG',
-                            help=(f"helper program to launch, choose from "
-                                  f"`{bold}askpass{reset}' and `{bold}confirm{reset}'"))
+                            help=(f"helper program to launch, choose from `{bold}askpass{reset}', "
+                                  f"`{bold}confirm{reset}' and `{bold}daemons{reset}'"))
 
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-a', '--all', action='store_true',
-                            help=(f"launch all help programs, i.e. `{bold}askpass{reset}' "
-                                  f"and `{bold}confirm{reset}'"))
+                            help=(f"launch all help programs, i.e. `{bold}askpass{reset}', "
+                                  f"`{bold}confirm{reset}' and `{bold}daemons{reset}'"))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',

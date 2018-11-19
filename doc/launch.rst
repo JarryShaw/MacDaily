@@ -13,6 +13,7 @@ MacDaily Dependency Launch Helper
 
   - `Askpass Helper Program <#askpass>`__
   - `Confirm Helper Program <#confirm>`__
+  - `Daemons Helper Program <#daemons>`__
 
 - `TODO <#todo>`__
 
@@ -22,8 +23,8 @@ About
 -----
 
 MacDaily depends on several homemade helper programs, i.e. |askpass|_ and
-|confirm|_. MacDaily ``launch`` command will help initialise and launch these
-helper programs.
+|confirm|_ and |daemons|_. MacDaily ``launch`` command will help initialise and
+launch these helper programs.
 
 Usage
 -----
@@ -39,12 +40,12 @@ Usage
       -V, --version  show program's version number and exit
 
     specification arguments:
-      PROG           helper program to launch, choose from  'askpass' and
-                     'confirm'
+      PROG           helper program to launch, choose from 'askpass',
+                     'confirm' and 'daemons'
 
     general arguments:
-      -a, --all      launch all help programs, i.e.  'askpass' and
-                     'confirm'
+      -a, --all      launch all help programs, i.e.  'askpass', 'confirm'
+                     and 'daemons'
       -q, --quiet    run in quiet mode, with no output information
       -v, --verbose  run in verbose mode, with detailed output information
 
@@ -90,6 +91,19 @@ confirmation when ``stdin`` is not available.
 
 .. image:: https://github.com/JarryShaw/MacDaily/blob/dev/doc/img/confirm.png
 
+.. raw:: html
+
+    <h4>
+      <a name="daemons">
+        Daemons Helper Program
+      </a>
+    </h4>
+
+MacDaily ``daemons`` helper program named as
+``macdaily/res/daemon-${mode}.applescript`` by default. It is used by Launch
+Agents (c.f. ``launchd(8)`` and ``launchd.plist(5)``) registered by MacDaily to
+perform actual daemon process.
+
 TODO
 ----
 
@@ -100,3 +114,5 @@ TODO
 .. _askpass: #askpass
 .. |confirm| replace:: ``confirm``
 .. _confirm: #confirm
+.. |daemons| replace:: ``daemons``
+.. _daemons: #daemons

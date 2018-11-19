@@ -7,8 +7,8 @@ import traceback
 
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.util.const import ROOT
-from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
-                                print_text)
+from macdaily.util.misc import (date, make_pipe, make_stderr, print_info,
+                                print_scpt, print_text)
 
 try:
     import subprocess32 as subprocess
@@ -56,7 +56,7 @@ class AppLogging(LoggingCommand):
         logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
 
         find = os.path.join(ROOT, 'res', 'find.py')
-        argv = ['sudo', '--stdin', path, find, '/']
+        argv = ['sudo', '--stdin', "--prompt=''", path, find, '/']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
         with open(self._file, 'a') as file:
@@ -64,8 +64,7 @@ class AppLogging(LoggingCommand):
             file.write(f'command: {args!r}\n')
 
         try:
-            with subprocess.Popen(['yes', self._password],
-                                  stdout=subprocess.PIPE, stderr=make_stderr(self._vflag)) as pipe:
+            with make_pipe(self._password, self._vflag) as pipe:
                 proc = subprocess.check_output(argv, stdin=pipe.stdout, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)

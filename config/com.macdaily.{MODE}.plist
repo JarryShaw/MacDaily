@@ -10,21 +10,19 @@
 	<array>
 		<string>/usr/bin/osascript</string>
 		<string>-e</string>
-		<string>{CMD}</string>
+		<string>{PATH}</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>RootDirectory</key>
-	<string>{RootDirectory}</string>
+	<string>~/</string>
 	<key>EnvironmentVariables</key>
-	<dict>
-	</dict>
+	<dict/>
 	<key>StartCalendarInterval</key>
-	<array>
-	</array>
+	<array/>
 	<key>StandardOutPath</key>
-	<string>{StandardOutPath}</string>
+	<string>~/Library/Logs/MacDaily/{MODE}/stdout.log</string>
 	<key>StandardErrorPath</key>
-	<string>{StandardErrorPath}</string>
+	<string>~/Library/Logs/MacDaily/{MODE}/stderr.log</string>
 </dict>
 </plist>

@@ -93,6 +93,12 @@ def make_namespace(args):
     return namespace
 
 
+def make_pipe(password, redirect=False, devnull=subprocess.DEVNULL):
+    return subprocess.Popen(['yes', password],
+                            stdout=subprocess.PIPE,
+                            stderr=make_stderr(redirect, devnull))
+
+
 def make_stderr(redirect=False, devnull=subprocess.DEVNULL):
     if redirect:
         return devnull
