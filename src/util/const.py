@@ -14,7 +14,7 @@ except ImportError:
     import pathlib
 
 # version string
-__version__ = '2018.11.19.dev33'
+__version__ = '2018.11.19.dev34'
 
 
 ###########################################################
