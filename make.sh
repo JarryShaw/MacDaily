@@ -20,13 +20,6 @@ rm -f release/**/dev_* \
 cd release/
 mv src macdaily
 
-# perform f2format
-f2format -n macdaily
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
-
 # prepare for PyPI distribution
 rm -rf build 2> /dev/null
 mkdir eggs \
@@ -35,6 +28,22 @@ mkdir eggs \
 mv -f dist/*.egg eggs/ 2> /dev/null
 mv -f dist/*.whl wheels/ 2> /dev/null
 mv -f dist/*.tar.gz sdist/ 2> /dev/null
+
+# distribute to PyPI and TestPyPI
+python3 setup.py sdist bdist_wheel
+platform=$( python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))" )
+file=$( ls dist/*.tar.gz )
+name=${file%*.tar.gz*}
+cp "${name}-py3-none-any.whl" "${name}-py37-none-${platform}.whl"
+cp "${name}-py3-none-any.whl" "${name}-py36-none-${platform}.whl"
+rm dist/*.tar.gz "${name}-py3-none-any.whl"
+
+# perform f2format
+f2format -n macdaily
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
 
 # distribute to PyPI and TestPyPI
 # for python in /usr/local/Cellar/pypy/*/bin/pypy \
@@ -47,9 +56,7 @@ mv -f dist/*.tar.gz sdist/ 2> /dev/null
 #     $python setup.py bdist_wheel
 # done
 python3 setup.py sdist bdist_wheel
-file=$( ls dist/*.tar.gz )
-name=${file%*.tar.gz*}
-mv dist/*.whl "${name}-py3-none-macosx_10_14_x86_64.whl"
+mv "${name}-py3-none-any.whl" "${name}-py3-none-${platform}.whl"
 twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 
