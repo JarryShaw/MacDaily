@@ -26,6 +26,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         self._include_optional = namespace.get('include_optional', False)
         self._include_requirements = namespace.get('include_requirements', False)
         self._include_test = namespace.get('include_test', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
         self._skip_recommended = namespace.get('skip_recommended', False)
 
         self._all = namespace.get('all', False)

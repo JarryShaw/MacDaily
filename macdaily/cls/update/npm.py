@@ -62,6 +62,9 @@ class NpmUpdate(NpmCommand, UpdateCommand):
                 file.write('Script done on {}\n'.format(date()))
 
     def _proc_update(self, path):
+        text = 'Upgrading outdated {}'.format(self.desc[1])
+        print_info(text, self._file, redirect=self._qflag)
+
         argv = [path, 'install']
         if self._quiet:
             argv.append('--quiet')
@@ -69,9 +72,6 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             argv.append('--verbose')
         argv.extend(self._update_opts)
         argv.append('--global')
-
-        text = 'Upgrading outdated {}'.format(self.desc[1])
-        print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:

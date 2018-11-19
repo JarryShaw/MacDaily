@@ -70,8 +70,12 @@ def launch_askpass(password=None, quiet=False, verbose=False, *args, **kwargs):
         if user != owner:
             run_script(['chown', user, askpass], quiet, verbose, sudo=True, password=password)
     else:
-        run_script(['touch', askpass], quiet, verbose, sudo=True, password=password)
-        run_script(['chown', user, askpass], quiet, verbose, sudo=True, password=password)
+        try:
+            pathlib.Path(askpass).touch()
+        except PermissionError:
+            owner = 'root'
+            run_script(['touch', askpass], quiet, verbose, sudo=True, password=password)
+            run_script(['chown', user, askpass], quiet, verbose, sudo=True, password=password)
 
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
@@ -132,8 +136,12 @@ def launch_confirm(password=None, quiet=False, verbose=False, *args, **kwargs):
         if user != owner:
             run_script(['chown', user, confirm], quiet, verbose, sudo=True, password=password)
     else:
-        run_script(['touch', confirm], quiet, verbose, sudo=True, password=password)
-        run_script(['chown', user, confirm], quiet, verbose, sudo=True, password=password)
+        try:
+            pathlib.Path(confirm).touch()
+        except PermissionError:
+            owner = 'root'
+            run_script(['touch', confirm], quiet, verbose, sudo=True, password=password)
+            run_script(['chown', user, confirm], quiet, verbose, sudo=True, password=password)
 
     with open(confirm, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
@@ -187,8 +195,12 @@ def launch_daemons(config, password, quiet=False, verbose=False):
             if user != owner:
                 run_script(['chown', user, path], quiet, verbose, sudo=True, password=password)
         else:
-            run_script(['touch', path], quiet, verbose, sudo=True, password=password)
-            run_script(['chown', user, path], quiet, verbose, sudo=True, password=password)
+            try:
+                pathlib.Path(path).touch()
+            except PermissionError:
+                owner = 'root'
+                run_script(['touch', path], quiet, verbose, sudo=True, password=password)
+                run_script(['chown', user, path], quiet, verbose, sudo=True, password=password)
 
         with open(path, 'w') as file:
             file.write(make_daemon(mode, argv))

@@ -99,7 +99,7 @@ def get_brew_parser():
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew list{}' command".format(bold, reset))
-    brew_misc_group.add_argument('-U', '- reinstall', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew reinstall <formula>{}' command".format(bold, reset))
 
     return brew_parser
@@ -149,7 +149,7 @@ def get_cask_parser():
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask list{}' command".format(bold, reset))
-    cask_misc_group.add_argument('-U', '- reinstall', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask reinstall <cask>{}' command".format(bold, reset))
 
     return cask_parser

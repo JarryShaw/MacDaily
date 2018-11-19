@@ -59,6 +59,7 @@ setup(
             'md-postinstall = macdaily.api.postinstall:postinstall',
             'md-logging = macdaily.api.logging:logging',
             'md-launch = macdaily.api.launch:launch',
+            'md-install = macdaily.api.install:install',
         ]
     },
     packages=[

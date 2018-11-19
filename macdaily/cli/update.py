@@ -112,7 +112,7 @@ def get_apm_parser():
     apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
     apm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}apm upgrade --list{}' command".format(bold, reset))
-    apm_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    apm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                 help="options for `{}apm upgrade <plug-in>{}' command".format(bold, reset))
 
     return apm_parser
@@ -156,7 +156,7 @@ def get_gem_parser():
     gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
     gem_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}gem outdated{}' command".format(bold, reset))
-    gem_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    gem_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                 help="options for `{}gem update <gem>{}' command".format(bold, reset))
 
     return gem_parser
@@ -195,7 +195,7 @@ def get_mas_parser():
     mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
     mas_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}mas outdated' command{}".format(bold, reset))
-    mas_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    mas_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                 help="options for `{}mas upgrade <application>{}' command".format(bold, reset))
 
     return mas_parser
@@ -236,7 +236,7 @@ def get_npm_parser():
     npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
     npm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}npm outdated --global{}' command".format(bold, reset))
-    npm_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    npm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                 help="options for `{}npm upgrade --global <module>{}' command".format(bold, reset))
 
     return npm_parser
@@ -293,7 +293,7 @@ def get_pip_parser():
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help="options for `{}pip list --outdated{}' command".format(bold, reset))
-    pip_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    pip_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                 help="options for `{}pip install --upgrade <package>{}' command".format(bold, reset))
 
     return pip_parser
@@ -340,7 +340,7 @@ def get_brew_parser():
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew outdated{}' command".format(bold, reset))
-    brew_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew upgrade <formula>{}' command".format(bold, reset))
 
     return brew_parser
@@ -393,7 +393,7 @@ def get_cask_parser():
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask outdated{}' command".format(bold, reset))
-    cask_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                  help="options for `{}brew cask upgrade <cask>{}' command".format(bold, reset))
 
     return cask_parser
@@ -437,7 +437,7 @@ def get_system_parser():
     system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
     system_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                    help="options for `{}softwareupdate --list{}' command".format(bold, reset))
-    system_misc_group.add_argument('-U', '- update', action='store', default=str(), metavar='ARG',
+    system_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
                                    help="options for `{}softwareupdate --install <software>{}' command".format(bold, reset))
 
     return system_parser

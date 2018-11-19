@@ -22,6 +22,7 @@ class PipUninstall(PipCommand, UninstallCommand):
         self._cpython = namespace.get('cpython', False)
         self._dry_run = namespace.get('dry_run', False)
         self._ignore_deps = namespace.get('ignore_dependencies', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
         self._pre = namespace.get('pre', False)
         self._pypy = namespace.get('pypy', False)
         self._system = namespace.get('system', False)

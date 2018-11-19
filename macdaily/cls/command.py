@@ -175,7 +175,7 @@ class Command(metaclass=abc.ABCMeta):
         self._lost = list()
         self._ilst = copy.copy(self._ignore)
 
-        return (self._packages or self._all)
+        return bool(self._packages or self._all)
 
     def _merge_packages(self, namespace):
         ilst_pkg = list()

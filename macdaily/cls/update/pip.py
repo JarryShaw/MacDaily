@@ -93,6 +93,9 @@ class PipUpdate(PipCommand, UpdateCommand):
                 file.write('Script done on {}\n'.format(date()))
 
     def _proc_update(self, path):
+        text = 'Upgrading outdated {}'.format(self.desc[1])
+        print_info(text, self._file, redirect=self._qflag)
+
         argv = [path, '-m', 'pip', 'install', '--upgrade']
         if self._pre:
             argv.append('--pre')
@@ -103,9 +106,6 @@ class PipUpdate(PipCommand, UpdateCommand):
         if self._verbose:
             argv.append('--verbose')
         argv.extend(self._update_opts)
-
-        text = 'Upgrading outdated {}'.format(self.desc[1])
-        print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
