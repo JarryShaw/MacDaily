@@ -41,9 +41,9 @@ class TapLogging(LoggingCommand):
         return ('third-party repository', 'third-party repositories')
 
     def _check_exec(self):
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=stderr)
+            subprocess.check_call(['brew', 'command', 'bundle'],
+                                  stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print(f'macdaily-{self.cmd}: {red_bg}{flash}tap{reset}: command not found', file=sys.stderr)

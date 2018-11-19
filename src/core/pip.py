@@ -108,9 +108,8 @@ class PipCommand(Command):
             _append_path(EXEC_PATH['source']['brew'])
             _append_path(EXEC_PATH['version'])
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(['brew', '--prefix'], stderr=stderr)
+            proc = subprocess.check_output(['brew', '--prefix'], stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             prefix = '/usr/local'
         else:
@@ -204,9 +203,8 @@ class PipCommand(Command):
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
 
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 self._var__real_pkgs = set()
@@ -236,9 +234,8 @@ class PipCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             _deps_pkgs = list()
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:  # pip check exits with a non-zero status if any packages are missing dependencies
-                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=stderr)
+                proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=make_stderr(self._vflag))
             except subprocess.SubprocessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

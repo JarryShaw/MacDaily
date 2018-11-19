@@ -17,7 +17,7 @@ def get_postinstall_parser():
     #   * packages
     #######################################################
 
-    parser = argparse.ArgumentParser(prog='macdaily postinstall',
+    parser = argparse.ArgumentParser(prog='macdaily-postinstall',
                                      description='Homebrew Cask Postinstall Automator',
                                      usage='macdaily postinstall <general-options> <spec-options> <misc-options> ...',
                                      epilog='aliases: post, ps')

@@ -62,9 +62,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -102,9 +101,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _list_pkgs = set()
@@ -127,9 +125,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             file.write(f'command: {args!r}\n')
 
         fail = False
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -156,9 +153,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
                 file.write(f'Script started on {date()}\n')
                 file.write(f'command: {args!r}\n')
 
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:

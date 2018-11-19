@@ -39,9 +39,9 @@ class CaskCommand(Command):
         return ('Caskroom binary', 'Caskroom binaries')
 
     def _check_exec(self):
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            subprocess.check_call(['brew', 'command', 'cask'], stdout=subprocess.DEVNULL, stderr=stderr)
+            subprocess.check_call(['brew', 'command', 'cask'],
+                                  stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print(f'macdaily-{self.cmd}: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
@@ -77,9 +77,8 @@ class CaskCommand(Command):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = set()
@@ -157,9 +156,8 @@ class CaskCommand(Command):
                 file.write(f'command: {args!r}\n')
 
             fail = False
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                 fail = True

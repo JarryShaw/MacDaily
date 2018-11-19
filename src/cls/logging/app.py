@@ -63,11 +63,10 @@ class AppLogging(LoggingCommand):
             file.write(f'Script started on {date()}\n')
             file.write(f'command: {args!r}\n')
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
             with subprocess.Popen(['yes', self._password],
-                                  stdout=subprocess.PIPE, stderr=stderr) as pipe:
-                proc = subprocess.check_output(argv, stdin=pipe.stdout, stderr=stderr)
+                                  stdout=subprocess.PIPE, stderr=make_stderr(self._vflag)) as pipe:
+                proc = subprocess.check_output(argv, stdin=pipe.stdout, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             _real_pkgs = dict()

@@ -39,7 +39,7 @@ installed through --
 - |mas|_ -- `Mac App Store CLI <https://github.com/mas-cli/mas#mas-cli>`__
 - |npm|_ -- `Node.js Package Manager <https://nodejs.org>`__
 - |pip|_ -- `Pip Installs Packages <https://pypy.org>`__
-- |system|_ -- macOS Software Update
+- |system|_ -- macOS Software Update (c.f. ``softwareupdate(8)``)
 
 Usage
 -----

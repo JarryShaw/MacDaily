@@ -41,9 +41,8 @@ class PipUninstall(PipCommand, UninstallCommand):
         text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
-        stderr = make_stderr(self._vflag, sys.stderr)
         try:
-            proc = subprocess.check_output(argv, stderr=stderr)
+            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
@@ -79,9 +78,8 @@ class PipUninstall(PipCommand, UninstallCommand):
                 file.write(f'command: {args!r}\n')
 
             _temp_pkgs = set()
-            stderr = make_stderr(self._vflag, sys.stderr)
             try:
-                proc = subprocess.check_output(argv, stderr=stderr)
+                proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             else:
