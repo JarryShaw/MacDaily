@@ -408,6 +408,10 @@ manual. And here is a brief catalogue for the manuals.
   - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
 
 - `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
+
+  - `Askpass Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#askpass>`__
+  - `Confirm Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#confirm>`__
+
 - `Logging Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst>`__
 
   - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#apm>`__
