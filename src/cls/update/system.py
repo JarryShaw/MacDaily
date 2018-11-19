@@ -69,6 +69,9 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
 
     def _proc_update(self, path):
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
+
         if self._recommend:
             _temp_pkgs = self._var__rcmd_pkgs
         else:
@@ -80,9 +83,6 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         if self._quiet:
             argv.append('--quiet')
         argv.extend(self._update_opts)
-
-        text = f'Upgrading outdated {self.desc[1]}'
-        print_info(text, self._file, redirect=self._qflag)
 
         argc = ' '.join(argv)
         for package in _temp_pkgs:

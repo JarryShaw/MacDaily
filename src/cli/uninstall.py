@@ -28,7 +28,7 @@ def get_uninstall_parser():
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-a', '--all', action='store_true',
                             help='uninstall all packages installed through Homebrew, Caskroom, and etc')
-    genl_group.add_argument('-n', '--dry-run', action='store_true',
+    genl_group.add_argument('-k', '--dry-run', action='store_true',
                             help=('list all packages which would be removed, '
                                   'but will not actually delete any packages'))
     genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
@@ -41,6 +41,8 @@ def get_uninstall_parser():
                             help='open log in Console.app upon completion of command')
     genl_group.add_argument('-y', '--yes', action='store_true',
                             help='yes for all selections')
+    genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                            help='do not run cleanup process')
 
     pkgs_group = parser.add_argument_group(title='package arguments',
                                            description='options used to specify packages of each mode')
@@ -104,7 +106,7 @@ def get_pip_parser():
     pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-a', '--all', action='store_true',
                                 help='uninstall all Python packages installed through Python Package Index')
-    pip_genl_group.add_argument('-n', '--dry-run', action='store_true',
+    pip_genl_group.add_argument('-k', '--dry-run', action='store_true',
                                 help=('list all Python packages which would be removed, '
                                       'but will not actually delete any Python packages'))
     pip_genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
@@ -115,11 +117,13 @@ def get_pip_parser():
                                 help='run in verbose mode, with detailed output information')
     pip_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
+    pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip freeze{reset}' command")
-    pip_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
+    pip_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                 help=f"options for `{bold}pip uninstall <package>{reset}' command")
 
     return pip_parser
@@ -161,7 +165,7 @@ def get_brew_parser():
     brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='uninstall all Homebrew formulae installed through Homebrew')
-    brew_genl_group.add_argument('-n', '--dry-run', action='store_true',
+    brew_genl_group.add_argument('-k', '--dry-run', action='store_true',
                                  help=('list all Homebrew formulae which would be removed, '
                                        'but will not actually delete any Homebrew formulae'))
     brew_genl_group.add_argument('-i', '--ignore-dependencies', action='store_true',
@@ -172,11 +176,13 @@ def get_brew_parser():
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
+    brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew list{reset}' command")
-    brew_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
+    brew_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew uninstall <formula>{reset}' command")
 
     return brew_parser
@@ -208,7 +214,7 @@ def get_cask_parser():
     cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-a', '--all', action='store_true',
                                  help='uninstall all Caskroom binaries installed through Homebrew')
-    cask_genl_group.add_argument('-n', '--dry-run', action='store_true',
+    cask_genl_group.add_argument('-k', '--dry-run', action='store_true',
                                  help=('list all Caskroom binaries which would be removed, '
                                        'but will not actually delete any Caskroom binaries'))
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
@@ -217,11 +223,13 @@ def get_cask_parser():
                                  help='run in verbose mode, with detailed output information')
     cask_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
+    cask_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask list{reset}' command")
-    cask_misc_group.add_argument('-U', '- uninstall', action='store', default=str(), metavar='ARG',
+    cask_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
                                  help=f"options for `{bold}brew cask uninstall <cask>{reset}' command")
 
     return cask_parser

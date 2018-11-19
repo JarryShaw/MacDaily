@@ -96,6 +96,8 @@ def uninstall(argv=None):
             namespace['verbose'] = True
         if args.dry_run:
             namespace['dry_run'] = True
+        if args.no_cleanup:
+            namespace['no_cleanup'] = True
         if args.ignore_dependencies:
             namespace['ignore_dependencies'] = True
 

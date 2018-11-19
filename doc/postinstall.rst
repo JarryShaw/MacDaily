@@ -54,7 +54,7 @@ Usage
     miscellaneous arguments:
       -L ARG, --logging ARG
                             options for 'brew list' command
-      -U ARG, --postinstall ARG
+      -P ARG, --postinstall ARG
                             options for 'brew postinstall <formula>'
                             command
 
@@ -63,13 +63,13 @@ Usage
 For ``--packages`` option that take package names, a
 mini-language for condition specification is provided.
 
-+--------------+---------------------+
-|    Format    |    Specification    |
-+==============+=====================+
-| ``package``  | upgrade ``package`` |
-+--------------+---------------------+
-| ``!package`` | ignore ``package``  |
-+--------------+---------------------+
++--------------+-------------------------+
+|    Format    |      Specification      |
++==============+=========================+
+| ``package``  | postinstall ``package`` |
++--------------+-------------------------+
+| ``!package`` | ignore ``package``      |
++--------------+-------------------------+
 
 NB
     Since exclamation mark (``!``) has special meanings in

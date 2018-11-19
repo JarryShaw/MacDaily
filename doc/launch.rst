@@ -22,7 +22,7 @@ MacDaily Dependency Launch Helper
 About
 -----
 
-MacDaily depends on several homemade helper programs, i.e. |askpass|_ and
+MacDaily depends on several homemade helper programs, i.e. |askpass|_,
 |confirm|_ and |daemons|_. MacDaily ``launch`` command will help initialise and
 launch these helper programs.
 

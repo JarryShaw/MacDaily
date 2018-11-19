@@ -406,6 +406,7 @@ manual. And here is a brief catalogue for the manuals.
   - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#mas>`__
   - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#npm>`__
   - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
+  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#system>`__
 
 - `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
 

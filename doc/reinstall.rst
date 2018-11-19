@@ -87,13 +87,13 @@ corresponding flags in command specific options.
 For all options that take package names, a mini-language for condition
 specification is provided.
 
-+--------------+---------------------+
-|    Format    |    Specification    |
-+==============+=====================+
-| ``package``  | upgrade ``package`` |
-+--------------+---------------------+
-| ``!package`` | ignore ``package``  |
-+--------------+---------------------+
++--------------+-----------------------+
+|    Format    |     Specification     |
++==============+=======================+
+| ``package``  | reinstall ``package`` |
++--------------+-----------------------+
+| ``!package`` | ignore ``package``    |
++--------------+-----------------------+
 
 NB
     Since exclamation mark (``!``) has special meanings in
@@ -143,7 +143,7 @@ Commands
     miscellaneous arguments:
       -L ARG, --logging ARG
                           options for 'brew list' command
-      -U ARG, --reinstall ARG
+      -R ARG, --reinstall ARG
                           options for 'brew reinstall <formula>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily
@@ -202,7 +202,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
     miscellaneous arguments:
       -L ARG, --logging ARG
                           options for 'brew cask list' command
-      -U ARG, --reinstall ARG
+      -R ARG, --reinstall ARG
                           options for 'brew cask reinstall <cask>' command
 
 When using ``--package`` option, if given wrong package name, MacDaily

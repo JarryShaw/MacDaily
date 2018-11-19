@@ -46,7 +46,7 @@ Usage
     general arguments:
       -a, --all             uninstall all packages installed through Homebrew,
                             Caskroom, and etc
-      -n, --dry-run         list all packages which would be removed, but will not
+      -k, --dry-run         list all packages which would be removed, but will not
                             actually delete any packages
       -i, --ignore-dependencies
                             run in non-recursive mode, i.e. ignore dependencies
@@ -55,6 +55,7 @@ Usage
       -v, --verbose         run in verbose mode, with detailed output information
       -l, --show-log        open log in Console.app upon completion of command
       -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
 
     package arguments:
       options used to specify packages of each mode
@@ -94,13 +95,13 @@ overwrite corresponding flags in command specific options.
 For all options that take package names, a mini-language for condition
 specification is provided.
 
-+--------------+---------------------+
-|    Format    |    Specification    |
-+==============+=====================+
-| ``package``  | upgrade ``package`` |
-+--------------+---------------------+
-| ``!package`` | ignore ``package``  |
-+--------------+---------------------+
++--------------+-----------------------+
+|    Format    |     Specification     |
++==============+=======================+
+| ``package``  | uninstall ``package`` |
++--------------+-----------------------+
+| ``!package`` | ignore ``package``    |
++--------------+-----------------------+
 
 NB
     Since exclamation mark (``!``) has special meanings in
@@ -145,7 +146,7 @@ Commands
     general arguments:
       -a, --all             uninstall all Homebrew formulae installed through
                             Homebrew
-      -n, --dry-run         list all Homebrew formulae which would be removed, but
+      -k, --dry-run         list all Homebrew formulae which would be removed, but
                             will not actually delete any Homebrew formulae
       -i, --ignore-dependencies
                             run in non-recursive mode, i.e. ignore dependencies
@@ -153,6 +154,7 @@ Commands
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
       -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
 
     miscellaneous arguments:
       -L ARG, --logging ARG
@@ -200,11 +202,12 @@ For *miscellaneous arguments*, the runtime commands are as below.
     general arguments:
       -a, --all             uninstall all Caskroom binaries installed through
                             Homebrew
-      -n, --dry-run         list all Caskroom binaries which would be removed, but
+      -k, --dry-run         list all Caskroom binaries which would be removed, but
                             will not actually delete any Caskroom binaries
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
       -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
 
     miscellaneous arguments:
       -L ARG, --logging ARG
@@ -258,7 +261,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
     general arguments:
       -a, --all             uninstall all Python packages installed through Python
                             Package Index
-      -n, --dry-run         list all Python packages which would be removed, but
+      -k, --dry-run         list all Python packages which would be removed, but
                             will not actually delete any Python packages
       -i, --ignore-dependencies
                             run in non-recursive mode, i.e. ignore dependencies
@@ -266,6 +269,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
       -y, --yes             yes for all selections
+      -n, --no-cleanup      do not run cleanup process
 
     miscellaneous arguments:
       -L ARG, --logging ARG

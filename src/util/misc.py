@@ -51,7 +51,11 @@ def date():
 
 def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
     if sys.stdin.isatty():
-        return input(f'{prompt}{suffix}')
+        try:
+            return input(f'{prompt}{suffix}')
+        except KeyboardInterrupt:
+            print(reset)
+            raise
     try:
         subprocess.check_call([shutil.which('osascript'), confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -62,7 +66,11 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
 
 def get_pass(askpass):
     if sys.stdin.isatty():
-        return getpass.getpass(prompt='Password:')
+        try:
+            return getpass.getpass(prompt='Password:')
+        except KeyboardInterrupt:
+            print(reset)
+            raise
     return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
 

@@ -61,6 +61,9 @@ class ApmUpdate(ApmCommand, UpdateCommand):
                 file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
+        text = f'Upgrading outdated {self.desc[1]}'
+        print_info(text, self._file, redirect=self._qflag)
+
         argv = [path, 'upgrade']
         argv.extend(self._update_opts)
         if self._yes:

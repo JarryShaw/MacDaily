@@ -19,6 +19,7 @@ class CaskUninstall(CaskCommand, UninstallCommand):
     def _parse_args(self, namespace):
         self._dry_run = namespace.get('dry_run', False)
         self._force = namespace.get('force', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)
 
         self._all = namespace.get('all', False)
         self._quiet = namespace.get('quiet', False)

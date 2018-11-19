@@ -51,7 +51,8 @@ class PostinstallCommand(BrewCommand):
             else:
                 text = f'No {self.desc[1]} to postinstall for executable {path!r}'
                 print_info(text, self._file, redirect=self._qflag)
-            self._proc_cleanup()
+            self._proc_fixmissing(path)
+        self._proc_cleanup()
 
     def _proc_logging(self, path):
         if self._packages:
