@@ -179,7 +179,7 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     [Command]
     # In this section, command options are picked.
     # Do make sure these options are available for commands.
-    update  = --all --yes --pre --quiet --show-log --no-cask
+    update  = --all --quiet --show-log
     logging = --all --quiet --show-log
 
     [Miscellanea]
@@ -408,6 +408,11 @@ manual. And here is a brief catalogue for the manuals.
   - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
 
 - `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
+
+  - `Askpass Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#askpass>`__
+  - `Confirm Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#confirm>`__
+  - `Daemons Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#daemons>`__
+
 - `Logging Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst>`__
 
   - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#apm>`__

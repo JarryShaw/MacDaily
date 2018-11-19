@@ -59,7 +59,7 @@ CONFIG = ['[Path]',
           '[Command]',
           '# In this section, command options are picked.',
           '# Do make sure these options are available for commands.',
-          'update  = --all --yes --pre --quiet --show-log --no-cask',
+          'update  = --all --quiet --show-log',
           'logging = --all --quiet --show-log',
           '',
           '[Miscellanea]',
@@ -83,8 +83,11 @@ def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
 
-    CONFIG[51] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(launch_askpass(quiet, verbose).ljust(49))
-    CONFIG[52] = 'confirm = {} ; confirm utility for MacDaily'.format(launch_confirm(quiet, verbose).ljust(49))
+    askpass = launch_askpass(quiet=quiet, verbose=verbose)
+    confirm = launch_confirm(quiet=quiet, verbose=verbose)
+
+    CONFIG[51] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
+    CONFIG[52] = 'confirm = {} ; confirm utility for MacDaily'.format(confirm.ljust(49))
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
@@ -141,12 +144,12 @@ def parse_config(quiet=False, verbose=False):
     askpass = os.path.realpath(config['Miscellanea']['askpass'])
     if not os.access(askpass, os.X_OK):
         askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
-        run_script(['chmod', 'u+x', askpass], quiet, verbose)
+        run_script(['sudo', 'chmod', 'u+x', askpass], quiet, verbose)
 
     confirm = os.path.realpath(config['Miscellanea']['confirm'])
     if not os.access(confirm, os.X_OK):
         confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
-        run_script(['chmod', 'u+x', confirm], quiet, verbose)
+        run_script(['sudo', 'chmod', 'u+x', confirm], quiet, verbose)
 
     cfg_dict['Miscellanea']['askpass'] = askpass
     cfg_dict['Miscellanea']['confirm'] = confirm

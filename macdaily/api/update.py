@@ -166,7 +166,7 @@ def update(argv=None):
             print('macdaily: {}update{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
 
     mode_lst = [command.mode for command in cmd_list]
-    mode_str = ', '.join(mode_lst) if mode_lst else 'no'
+    mode_str = ', '.join(mode_lst) if mode_lst else 'none'
     text = ('{}{}|🍺|{} {}MacDaily successfully performed update process '
             'for {} package managers{}'.format(bold, green, reset, bold, mode_str, reset))
     print_term(text, filename, redirect=quiet)

@@ -75,7 +75,7 @@ class GemLogging(GemCommand, LoggingCommand):
                     file.write('command: {!r}\n'.format(args))
 
                 try:
-                    proc = subprocess.check_output(argv, stderr=stderr)
+                    proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
                 except subprocess.CalledProcessError:
                     print_text(traceback.format_exc(), self._file, redirect=self._vflag)
                     _real_pkgs = dict()
