@@ -5,6 +5,7 @@ archive/
 typescript
 deprecated/
 __archive__/
+daemon-*.applescript
 
 # Created by https://www.gitignore.io/api/python,macos,visualstudiocode
 

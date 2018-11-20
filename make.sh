@@ -17,7 +17,9 @@ cp -r src \
       .gitattributes release/
 rm -f release/**/dev_* \
       release/**/.DS_Store \
-      release/**/typescript
+      release/**/typescript \
+      release/**/__pycache__ \
+      release/src/res/daemon-*.applescript
 cd release/
 mv src macdaily
 
