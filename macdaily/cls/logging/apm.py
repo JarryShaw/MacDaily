@@ -39,8 +39,6 @@ class ApmLogging(ApmCommand, LoggingCommand):
         logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
 
         argv = [path, 'list', '--installed', '--bare']
-        print_scpt(argv, self._file, redirect=self._qflag)
-
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
         with open(self._file, 'a') as file:

@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os
+import io
 import platform
 import re
 import sys
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+import pkg_resources
+import setuptools
 
 # check platform
 if platform.system() != 'Darwin':
@@ -19,20 +17,16 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version string
-with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const.py'), 'r') as file:
-    for line in file:
-        match = re.match(r"__version__ = '(.*)'", line)
-        if match is None:
-            continue
-        __version__ = match.groups()[0]
-        break
-
-# README
-with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'r') as file:
-    long_desc = file.read()
+context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
+for line in context.splitlines():
+    match = re.match(rb"__version__ = '(.*)'", line)
+    if match is None:
+        continue
+    __version__ = match.groups()[0].decode()
+    break
 
 # set-up script for pip distribution
-setup(
+setuptools.setup(
     name='macdaily',
     version=__version__,
     author='Jarry Shaw',
@@ -41,13 +35,14 @@ setup(
     license='GNU General Public License v3 (GPLv3)',
     keywords='daily utility script',
     description='Package day-care manager on macOS.',
-    long_description=long_desc,
+    long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
     include_package_data=True,
+    zip_safe=True,
     extras_require={
-        'ptyng': ['ptyng'],
-        'pipdeptree': ['pipdeptree'],
+        'ptyng': ['ptyng>=0.2.0.post4'],
+        'tree': ['pipdeptree', 'dictdumper>=0.6.3'],
         ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
     },
     entry_points={
@@ -60,25 +55,27 @@ setup(
             'md-logging = macdaily.api.logging:logging',
             'md-launch = macdaily.api.launch:launch',
             'md-install = macdaily.api.install:install',
+            # 'md-dependency = macdaily.api.dependency:dependency [tree]',
         ]
     },
-    packages=[
-        'macdaily',
-        'macdaily.api',
-        'macdaily.cli',
-        'macdaily.cls',
-        'macdaily.cls.bundle',
-        'macdaily.cls.cleanup',
-        'macdaily.cls.dependency',
-        'macdaily.cls.install',
-        'macdaily.cls.logging',
-        'macdaily.cls.reinstall',
-        'macdaily.cls.uninstall',
-        'macdaily.cls.update',
-        'macdaily.cmd',
-        'macdaily.core',
-        'macdaily.util',
-    ],
+    packages=setuptools.find_namespace_packages(include='macdaily.*'),
+    # packages=[
+    #     'macdaily',
+    #     'macdaily.api',
+    #     'macdaily.cli',
+    #     'macdaily.cls',
+    #     'macdaily.cls.bundle',
+    #     'macdaily.cls.cleanup',
+    #     'macdaily.cls.dependency',
+    #     'macdaily.cls.install',
+    #     'macdaily.cls.logging',
+    #     'macdaily.cls.reinstall',
+    #     'macdaily.cls.uninstall',
+    #     'macdaily.cls.update',
+    #     'macdaily.cmd',
+    #     'macdaily.core',
+    #     'macdaily.util',
+    # ],
     package_data={
         '': [
             'LICENSE',
