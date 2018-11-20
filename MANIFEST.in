@@ -3,5 +3,6 @@ global-exclude .DS_Store
 global-include *.applescript
 global-include *.py
 
+include macdaily/img/*.icns
 include README.rst
 include LICENSE
