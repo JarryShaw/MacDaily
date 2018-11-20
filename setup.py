@@ -57,7 +57,9 @@ setuptools.setup(
             # 'md-dependency = macdaily.api.dependency:dependency [tree]',
         ]
     },
-    packages=setuptools.find_namespace_packages(include=['macdaily.*']),
+    packages=setuptools.find_namespace_packages(
+        include=['macdaily', 'macdaily.*'],
+    ),
     # packages=[
     #     'macdaily',
     #     'macdaily.api',
