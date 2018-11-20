@@ -31,7 +31,8 @@ class BrewLogging(BrewCommand, LoggingCommand):
 
     def _check_exec(self):
         try:
-            subprocess.check_call(['brew', 'command', 'bundle'], stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
+            subprocess.check_call(['brew', 'command', 'bundle'],
+                                  stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             print(f'macdaily-{self.cmd}: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)

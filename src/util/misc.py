@@ -71,7 +71,7 @@ def get_pass(askpass):
         except KeyboardInterrupt:
             print(reset)
             raise
-    return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],
+    return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
 
 

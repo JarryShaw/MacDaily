@@ -1,10 +1,7 @@
-global-exclude typescript
 global-exclude .DS_Store
-global-exclude dev_*
+
 global-include *.applescript
 global-include *.py
-prune build
-prune dist
-prune eggs
-prune sdist
-prune wheels
+
+include README.rst
+include LICENSE

@@ -9,6 +9,11 @@ ptyng = "*"
 
 [dev-packages]
 macdaily = {path = ".", editable = true}
+ptyng = ">=0.2.0.post4"
+pipdeptree = "*"
+dictdumper = ">=0.6.3"
+pathlib2 = ">=2.3.2"
+subprocess32 = ">=3.5.3"
 "doc8" = "*"
 sphinx = "*"
 sphinx-autobuild = "*"
