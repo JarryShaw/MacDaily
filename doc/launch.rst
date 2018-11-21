@@ -107,7 +107,7 @@ perform actual daemon process.
 TODO
 ----
 
-- ✔️ reconstruct logging CLI
+- ✔️ reconstruct launch CLI
 - ❌ considering implement more helper programs
 
 .. |askpass| replace:: ``askpass``

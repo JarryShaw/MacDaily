@@ -79,9 +79,9 @@ Usage
 
     aliases: un, unlink, remove, rm, r
 
-MacDaily ``uninstall`` supports using with multiple commands. Say, you would like
-to uninstall Python packages and Homebrew formulae, each with different flags and
-options, then simply use the following command.
+MacDaily ``uninstall`` supports using with multiple commands. Say, you would
+like to uninstall Python packages and Homebrew formulae, each with different
+flags and options, then simply use the following command.
 
 .. code:: shell
 
@@ -308,7 +308,7 @@ NB
 TODO
 ----
 
-- ✔️ reconstruct update CLI
+- ✔️ reconstruct uninstall CLI
 - ❌ implement further spec for the mini-language
 
 .. |brew| replace:: ``brew``

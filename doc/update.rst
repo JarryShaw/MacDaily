@@ -338,7 +338,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 NB
     RubyGems provided by macOS system is normally located at ``/usr/bin/gem``
-    or ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
+    or
+    ``/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem``.
 
 .. raw:: html
 

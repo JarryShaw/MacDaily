@@ -71,9 +71,9 @@ Usage
 
     aliases: re
 
-MacDaily ``reinstall`` supports using with multiple commands. Say, you would like
-to reinstall Homebrew formulae and Casks, each with different flags and options,
-then simply use the following command.
+MacDaily ``reinstall`` supports using with multiple commands. Say, you would
+like to reinstall Homebrew formulae and Casks, each with different flags and
+options, then simply use the following command.
 
 .. code:: shell
 
@@ -221,7 +221,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 TODO
 ----
 
-- ✔️ reconstruct update CLI
+- ✔️ reconstruct reinstall CLI
 - ❌ implement further spec for the mini-language
 
 .. |brew| replace:: ``brew``

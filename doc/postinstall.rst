@@ -93,7 +93,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 TODO
 ----
 
-- ✔️ reconstruct update CLI
+- ✔️ reconstruct postinstall CLI
 - ❌ implement further spec for the mini-language
 
 .. |brew| replace:: ``brew``

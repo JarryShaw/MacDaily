@@ -82,7 +82,8 @@ flow of MacDaily commands is as below.
       1. command-specified logging process (*optional*)
 
          1. fetch packages for main process
-         2. if found package specifications, provide trivial did-you-mean function
+         2. if found package specifications, provide trivial did-you-mean
+            function
          3. else continue
 
       2. ask for comfirmation on main process
@@ -271,7 +272,8 @@ using `emoji <https://en.wikipedia.org/wiki/Emoji>`__ and
 
 - ``text`` -- ``str``, text to print
 - ``file`` -- ``str``, log file name
-- ``redirect`` -- ``bool``, redirect flag; if ``True``, redirect ``stdout`` to ``/dev/null``
+- ``redirect`` -- ``bool``, redirect flag; if ``True``, redirect ``stdout`` to
+  ``/dev/null``
 
 .. raw:: html
 
@@ -309,15 +311,16 @@ event occurred.
 .. |UNIX yes utility| replace:: UNIX ``yes`` utility
 .. _UNIX yes utility: https://en.wikipedia.org/wiki/Yes_(Unix)
 
-Considering such issue, the automation tool |expect|_ is then introduced. Within
-``expect``, ``unbuffer``, an alternative of UNIX ``script`` utility, is provided.
-With support of ``unbuffer``, the issue above is truly resolved.
+Considering such issue, the automation tool |expect|_ is then introduced.
+Within ``expect``, ``unbuffer``, an alternative of UNIX ``script`` utility, is
+provided. With support of ``unbuffer``, the issue above is truly resolved.
 
 And for better readability, MacDaily will strip all
 `ANSI escape code <https://en.wikipedia.org/wiki/ANSI_escape_code>`__ and use
 ``col -b`` to trim backspaces from the output when writing into *typescript*.
 Also, to distinguish MacDaily program information and other output, MacDaily
-will add ANSI sequence ``'\033[2m'`` (faint, decreased intensity) to the latter.
+will add ANSI sequence ``'\033[2m'`` (faint, decreased intensity) to the
+latter.
 
 .. code:: python
 
@@ -335,15 +338,17 @@ will add ANSI sequence ``'\033[2m'`` (faint, decreased intensity) to the latter.
 - ``shell`` -- if ``True``, the command will be executed through the shell
 - ``executable`` -- a replacement program to execute
 - ``timeout`` -- an integral timeout interval
-- ``redirect`` -- if ``True``, the command will redirect ``stdout`` to ``/dev/null``
+- ``redirect`` -- if ``True``, the command will redirect ``stdout`` to
+  ``/dev/null``
 - ``password`` -- string to be consealed in dialogue
 - ``yes`` -- string to be used as ``yes expletive`` in UNIX ``yes`` utility
 - ``prefix`` -- string as the prefix of program arguments
 - ``suffix`` -- string as the suffix of program arguments
 
 NB
-    There are three different core functions for the ``script`` function. Please
-    always make sure that one of these functions are available for MacDaily.
+    There are three different core functions for the ``script`` function.
+    Please always make sure that one of these functions are available for
+    MacDaily.
 
 When |expect|_ installed and ``unbuffer`` found in ``PATH``, MacDaily will use
 ``unbuffer`` as core function. Otherwise if UNIX ``script`` utility found in
@@ -391,7 +396,8 @@ will be used. Corresponding commands of each core function are listed as below.
 - all other arguments are the same as described in ``run`` function
 
 NB
-    When using ``sudo`` function, ``shell`` argument will always set to ``True``.
+    When using ``sudo`` function, ``shell`` argument will always set to
+    ``True``.
 
 If running as ``root`` (System Administrator), ``prefix`` will be unset.
 And when using ``unbuffer`` or ``ptyng`` as core function, ``yes`` argument
