@@ -57,7 +57,7 @@ class PipDependency(PipCommand, DependencyCommand):
         else:
             # self._var__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
             text = proc.decode()
-            start = text.find('[')
+            start = text.rfind('[')
             stop = text.rfind(']') + 1
             context = json.loads(text[start:stop])
             self._var__temp_pkgs = set(map(lambda item: item['name'], context))
