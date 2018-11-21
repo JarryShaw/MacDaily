@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1f7adb1f82156956e7a7243c84c3f7660e5567f0542dc04e979b9f197a3f5358"
+            "sha256": "d4745ce75464ecc58e16db95b8b84556462d69bf17dd032e992ab70d8514a5ca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -108,12 +108,11 @@
         },
         "dictdumper": {
             "hashes": [
-                "sha256:2d629925f573390e7733fab097d34d8f034a40e35e00e42f3874680c3b46f719",
-                "sha256:b99d14d65edb9be091f89164521ee2148a712e5e99e3bd2526a8aa8695fbd663",
-                "sha256:d79f0621154e1b1626046819eb4ebf1615999d4c9d484ccabd0ea6b2c495ff71"
+                "sha256:6a214fe34eedfd2c181d257ce44986e13e372a72d532c57d7274707571c75ae0",
+                "sha256:acf532525a36efbccfac6d01937c7846f95617744f69899e7f6eadbf6a8815bb"
             ],
             "index": "pypi",
-            "version": "==0.6.3"
+            "version": "==0.6.5.post1"
         },
         "doc8": {
             "hashes": [
@@ -223,10 +222,10 @@
         },
         "livereload": {
             "hashes": [
-                "sha256:583179dc8d49b040a9da79bd33de59e160d2a8802b939e304eb359a4419f6498",
-                "sha256:dd4469a8f5a6833576e9f5433f1439c306de15dbbfeceabd32479b1123380fa5"
+                "sha256:29cadfabcedd12eed792e0131991235b9d4764d4474bed75cf525f57109ec0a2",
+                "sha256:e632a6cd1d349155c1d7f13a65be873b38f43ef02961804a1bba8d817fa649a7"
             ],
-            "version": "==2.5.2"
+            "version": "==2.6.0"
         },
         "macdaily": {
             "editable": true,
@@ -285,14 +284,6 @@
                 "sha256:895c63e93b94ac1e1690f5fdd40b65f07c8171e3e53cbd7793b5b96c0e0a7f24"
             ],
             "version": "==0.3.1"
-        },
-        "pathlib2": {
-            "hashes": [
-                "sha256:8eb170f8d0d61825e09a95b38be068299ddeda82f35e96c3301a8a5e7604cb83",
-                "sha256:d1aa2a11ba7b8f7b21ab852b1fb5afb277e1bb99d5dfc663380b5015c0d80c5a"
-            ],
-            "index": "pypi",
-            "version": "==2.3.2"
         },
         "pathtools": {
             "hashes": [
@@ -476,14 +467,6 @@
                 "sha256:c58b7c231a9c4890cd3c2b5d2b23bd63fa807ff934d68579e3f6c3a1735e8a7c"
             ],
             "version": "==1.30.0"
-        },
-        "subprocess32": {
-            "hashes": [
-                "sha256:24a7f627ef7a5695138601b665057ad131fa26e80d49d5ffa6b4fdb2357a80d3",
-                "sha256:6bc82992316eef3ccff319b5033809801c0c3372709c5f6985299c88ac7225c3"
-            ],
-            "index": "pypi",
-            "version": "==3.5.3"
         },
         "tornado": {
             "hashes": [

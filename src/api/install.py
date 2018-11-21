@@ -50,7 +50,7 @@ def install(argv=None):
     logtime = datetime.date.strftime(today, r'%H%M%S')
 
     # mkdir for logs
-    logpath = pathlib.Path(os.path.join(config['Path']['logdir'], 'update', logdate))
+    logpath = pathlib.Path(os.path.join(config['Path']['logdir'], 'install', logdate))
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras

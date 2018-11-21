@@ -38,6 +38,7 @@
         "printw",
         "ptime",
         "qflag",
+        "r'Requires",
         "rcpath",
         "reinstallation",
         "scpt",
@@ -48,6 +49,7 @@
         "tcsetattr",
         "tmpath",
         "tmpdir",
+        "topo",
         "uninstalled",
         "vflag"
     ],

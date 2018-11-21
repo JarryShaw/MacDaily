@@ -61,7 +61,7 @@ class PipUpdate(PipCommand, UpdateCommand):
         else:
             # self._var__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
             text = proc.decode()
-            start = text.rfind('[')
+            start = text.find('[')
             stop = text.rfind(']') + 1
             context = json.loads(text[start:stop])
             self._var__temp_pkgs = set(map(lambda item: item['name'], context))
