@@ -170,7 +170,7 @@ def launch_daemons(config, password, quiet=False, verbose=False):
         Label=str(),
         UserName=getpass.getuser(),
         Program=osascript,
-        ProgramArguments=[osascript, '-e', ''],
+        ProgramArguments=[osascript, ''],
         # RunAtLoad=True,
         RootDirectory=str(pathlib.Path.home()),
         EnvironmentVariables=dict(os.environ),
@@ -183,7 +183,7 @@ def launch_daemons(config, password, quiet=False, verbose=False):
     for mode, time in config['Daemon'].items():
         (root / mode).mkdir(parents=True, exist_ok=True)
 
-        name = 'com.macdaily.{}.plist'.format(mode)
+        name = 'com.macdaily.{}'.format(mode)
         path = os.path.join(ROOT, 'res', 'daemon-{}.applescript'.format(mode))
         pout = str(root / mode / 'stdout.log')
         perr = str(root / mode / 'stderr.log')
@@ -210,12 +210,12 @@ def launch_daemons(config, password, quiet=False, verbose=False):
 
         PLIST = copy.copy(PLIST_BASE)
         PLIST['Label'] = name
-        PLIST['ProgramArguments'][2] = path
+        PLIST['ProgramArguments'][1] = path
         PLIST['StartCalendarInterval'] = time
         PLIST['StandardOutPath'] = pout
         PLIST['StandardErrorPath'] = perr
 
-        plist = os.path.expanduser('~/Library/LaunchAgents/{}'.format(name))
+        plist = os.path.expanduser('~/Library/LaunchAgents/{}.plist'.format(name))
         text = 'Adding Launch Agent {!r}'.format(plist)
         print_misc(text, os.devnull, verbose)
         if os.path.exists(plist):

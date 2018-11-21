@@ -98,14 +98,9 @@ you may use the script below.
     # or explicitly...
     $ pip install macdaily ptyng
 
-And for **tree** format support in ``dependency`` command, you may need
-|pipdeptree|_ and |dictdumper|_, then implicitly you can use the following
-script to do so. However, if you would like to use ``pipdeptree`` for all
-installed Python distributions, it is highly recommended to install
-``pipdeptree`` with each executable.
+And for **tree** format support in ``dependency`` command, you will need
+|dictdumper|_, then implicitly you can use the following script to do so.
 
-.. |pipdeptree| replace:: ``pipdeptree``
-.. _pipdeptree: https://github.com/naiquevin/pipdeptree
 .. |dictdumper| replace:: ``dictdumper``
 .. _dictdumper: https://github.com/JarryShaw/DictDumper
 
@@ -113,7 +108,7 @@ installed Python distributions, it is highly recommended to install
 
     $ pip install macdaily[tree]
     # or explicitly...
-    $ pip install macdaily pipdeptree dictdumper
+    $ pip install macdaily dictdumper
 
 Configuration
 -------------
@@ -397,8 +392,6 @@ manual. And here is a brief catalogue for the manuals.
 - `Dependency Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst>`__
 
   - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#brew>`__
-  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#gem>`__
-  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#npm>`__
   - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#pip>`__
 
 - `Install Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst>`__
