@@ -24,7 +24,7 @@ except ImportError:
     import subprocess
 
 
-def run_script(argv, quiet, verbose, sudo=False, password=None):
+def run_script(argv, quiet=False, verbose=False, sudo=False, password=None):
     args = ' '.join(argv)
     print_scpt(args, os.devnull, verbose)
     try:
@@ -33,9 +33,9 @@ def run_script(argv, quiet, verbose, sudo=False, password=None):
             sudo_argv.extend(argv)
             with make_pipe(password, verbose) as pipe:
                 subprocess.check_call(sudo_argv, stdin=pipe.stdout,
-                                      stdout=subprocess.DEVNULL, stderr=make_stderr(quiet))
+                                      stdout=subprocess.DEVNULL, stderr=make_stderr(verbose))
         else:
-            subprocess.check_call(argv, stdout=subprocess.DEVNULL, stderr=make_stderr(quiet))
+            subprocess.check_call(argv, stdout=subprocess.DEVNULL, stderr=make_stderr(verbose))
     except subprocess.SubprocessError:
         text = f"macdaily: {red}launch{reset}: command `{bold}{args!r}{reset} failed"
         print_term(text, os.devnull, quiet)
@@ -216,7 +216,7 @@ def launch_daemons(config, password, quiet=False, verbose=False):
         PLIST['StandardErrorPath'] = perr
 
         plist = os.path.expanduser(f'~/Library/LaunchAgents/{name}.plist')
-        text = f'Adding Launch Agent {plist!r}'
+        text = f'Adding Launch Agent {name!r}'
         print_misc(text, os.devnull, verbose)
         if os.path.exists(plist):
             run_script(['launchctl', 'unload', '-w', plist], quiet, verbose)

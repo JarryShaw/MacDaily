@@ -38,6 +38,7 @@
         "prinstall",
         "printw",
         "ptime",
+        "pypcapkit",
         "qflag",
         "r'Requires",
         "rcpath",
@@ -63,7 +64,7 @@
     "restructuredtext.updateOnTextChanged": "true",
     "restructuredtext.updateDelay": 300,
     "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/sphinx-build",
-    "restructuredtext.confPath": "/Users/jarryshaw/Documents/GitHub/MacDailyX/sphinx/source",
+    "restructuredtext.confPath": "${workspaceFolder}/sphinx/source",
     "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/doc8",
     "restructuredtext.rst2htmlCommand": "/usr/local/bin/rst2html.py",
 }

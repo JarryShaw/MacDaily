@@ -1,7 +1,7 @@
 :Command Executable:
     ``macdaily launch`` | ``md-launch``
 :Supported Commands:
-    ``askpass``, ``confirm``
+    ``askpass``, ``confirm``, ``daemons``
 
 =================================
 MacDaily Dependency Launch Helper

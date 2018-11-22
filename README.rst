@@ -98,7 +98,7 @@ you may use the script below.
     # or explicitly...
     $ pip install macdaily ptyng
 
-And for **tree** format support in ``dependency`` command, you will need
+For **tree** format support in ``dependency`` command, you will need
 |dictdumper|_, then implicitly you can use the following script to do so.
 
 .. |dictdumper| replace:: ``dictdumper``
@@ -109,6 +109,29 @@ And for **tree** format support in ``dependency`` command, you will need
     $ pip install macdaily[tree]
     # or explicitly...
     $ pip install macdaily dictdumper
+
+And |configupdater| is required to support modification of configuration file
+in ``config`` command, since MacDaily intend to maintain the original layout
+and information of a configuration file after modifying it. To install, the
+sample script is as below.
+
+.. |configupdater| replace:: ``ConfigUpdater``
+.. _configupdater: https://configupdater.readthedocs.io
+
+.. code:: shell
+
+    $ pip install macdaily[config]
+    # or explicitly...
+    $ pip install macdaily configupdater
+
+To install all requirements for full support of MacDaily, you may simply run
+the following script when installation.
+
+.. code:: shell
+
+    $ pip install macdaily[all]
+    # or explicitly...
+    $ pip install macdaily configupdater dictdumper ptyng
 
 Configuration
 -------------

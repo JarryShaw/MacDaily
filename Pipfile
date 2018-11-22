@@ -4,14 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pipdeptree = "*"
-ptyng = "*"
+configupdater = "*"
+dictdumper = ">=0.6.3"
+ptyng = ">=0.2.0.post4"
 
 [dev-packages]
-macdaily = {path = ".", editable = true}
-ptyng = ">=0.2.0.post4"
-pipdeptree = "*"
-dictdumper = ">=0.6.3"
+macdaily = {path = ".",editable = true}
+subprocess32 = ">=3.5.3"
+pathlib2 = ">=2.3.2"
 "doc8" = "*"
 sphinx = "*"
 sphinx-autobuild = "*"
@@ -20,7 +20,7 @@ rope = "*"
 "autopep8" = "*"
 pylint = "*"
 pycodestyle = "*"
-isort = {extras = ["pipfile", "requirements"], version = "*"}
+isort = {extras = ["pipfile", "requirements"],version = "*"}
 
 [requires]
 python_version = "3.7"

@@ -3,6 +3,9 @@
 # print a trace of simple commands
 set -x
 
+# update version string
+python3 setup-version.py
+
 # duplicate distribution files
 mkdir -p release
 rm -rf release/src \

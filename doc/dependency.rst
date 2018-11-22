@@ -28,6 +28,14 @@ of packages installed through --
 - |brew|_ -- `Homebrew <https://brew.sh>`__
 - |pip|_ -- `Pip Installs Packages <https://pypy.org>`__
 
+And for **tree** format support in this command, you will need to install
+|dictdumper|_, which was a sub-project from development of |pypcapkit|_.
+
+.. |dictdumper| replace:: ``DictDumper``
+.. _dictdumper: https://github.com/JarryShaw/DictDumper
+.. |pypcapkit| replace:: ``PyPCAPKit``
+.. _pypcapkit: https://github.com/JarryShaw/PyPCAPKit
+
 This command was originally inspired from and leveraged |pipdeptree|_.
 However, if you would like to use ``pipdeptree`` for all installed Python
 distributions, it is highly recommended to install ``pipdeptree`` with each
