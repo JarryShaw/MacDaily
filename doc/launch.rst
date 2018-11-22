@@ -31,7 +31,7 @@ Usage
 
 .. code:: man
 
-    usage: macdaily launch [-h] [-V] [-a] [-q] [-v] [PROG [PROG ...]]
+    usage: macdaily launch [options] <prog-selection> ...
 
     MacDaily Dependency Launch Helper
 

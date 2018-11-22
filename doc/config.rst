@@ -31,7 +31,7 @@ Usage
 
 .. code:: man
 
-    usage: macdaily config [-h] [-V] [options] <key> <value> ...
+    usage: macdaily config [options] <key> <value> ...
 
     MacDaily Runtime Configuration Helper
 

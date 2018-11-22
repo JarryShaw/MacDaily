@@ -19,7 +19,7 @@ def get_launch_parser():
 
     parser = argparse.ArgumentParser(prog='macdaily-launch',
                                      description='MacDaily Dependency Launch Helper',
-                                     usage='macdaily launch [-h] [-V] [-a] [-q] [-v] [PROG [PROG ...]]',
+                                     usage='macdaily launch [options] <prog-selection> ...',
                                      epilog='aliases: init')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 

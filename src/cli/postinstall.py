@@ -19,7 +19,7 @@ def get_postinstall_parser():
 
     parser = argparse.ArgumentParser(prog='macdaily-postinstall',
                                      description='Homebrew Cask Postinstall Automator',
-                                     usage='macdaily postinstall <general-options> <spec-options> <misc-options> ...',
+                                     usage='macdaily postinstall [options] ...',
                                      epilog='aliases: post, ps')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
