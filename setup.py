@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import platform
-import re
 import sys
 
 import pkg_resources
@@ -16,13 +15,14 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version string
-context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
-for line in context.splitlines():
-    match = re.match(rb"__version__ = '(.*)'", line)
-    if match is None:
-        continue
-    __version__ = match.groups()[0].decode()
-    break
+__version__ = '2018.11.22.dev38'
+# context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
+# for line in context.splitlines():
+#     match = re.match(rb"__version__ = '(.*)'", line)
+#     if match is None:
+#         continue
+#     __version__ = match.groups()[0].decode()
+#     break
 
 # set-up script for pip distribution
 setuptools.setup(
@@ -40,10 +40,11 @@ setuptools.setup(
     include_package_data=True,
     zip_safe=True,
     extras_require={
-        'all': ['ptyng>=0.2.0.post4', 'dictdumper>=0.6.3'],
+        ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
+        'all': ['ptyng>=0.2.0.post4', 'dictdumper>=0.6.3', 'configupdater'],
         'ptyng': ['ptyng>=0.2.0.post4'],
         'tree': ['dictdumper>=0.6.3'],
-        ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
+        'config': ['configupdater'],
     },
     entry_points={
         'console_scripts': [
@@ -56,6 +57,7 @@ setuptools.setup(
             'md-launch = macdaily.api.launch:launch',
             'md-install = macdaily.api.install:install',
             'md-dependency = macdaily.api.dependency:dependency [tree]',
+            'md-config = macdaily.api.config:config [config]',
         ]
     },
     packages=setuptools.find_namespace_packages(

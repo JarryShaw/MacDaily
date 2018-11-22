@@ -13,8 +13,8 @@ import traceback
 import tty
 
 from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
-                                 dim, grey, program, purple, python, red,
-                                 reset, under, yellow)
+                                 dim, grey, length, program, purple, python,
+                                 red, reset, under, yellow)
 from macdaily.util.error import UnsupportedOS
 
 try:
@@ -38,7 +38,7 @@ def beholder(func):
         except Exception:
             print('macdaily: {}error{}: operation failed'.format(red, reset), file=sys.stderr)
             sys.stdout.write(reset)
-            sys.tracebacklimit = 0
+            # sys.tracebacklimit = 0
             raise
     return wrapper
 
@@ -117,7 +117,7 @@ def print_info(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print('{}{}|💼|{} {}{}{}'.format(bold, blue, reset, bold, text, reset), end=end)
+        print_wrap('{}{}|💼|{} {}{}{}'.format(bold, blue, reset, bold, text, reset), end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
                          (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
@@ -128,7 +128,7 @@ def print_misc(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print('{}{}|📌|{} {}{}{}'.format(bold, grey, reset, bold, text, reset), end=end)
+        print_wrap('{}{}|📌|{} {}{}{}'.format(bold, grey, reset, bold, text, reset), end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
                          (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
@@ -141,7 +141,7 @@ def print_scpt(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print('{}{}|📜|{} {}{}{}'.format(bold, purple, reset, bold, text, reset), end=end)
+        print_wrap('{}{}|📜|{} {}{}{}'.format(bold, purple, reset, bold, text, reset), end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
                          (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
@@ -152,7 +152,7 @@ def print_term(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print(text, end=end)
+        print_wrap(text, end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
                          (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
@@ -163,11 +163,15 @@ def print_text(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print('{}{}{}'.format(dim, text, reset), end=end)
+        print_wrap('{}{}{}'.format(dim, text, reset), end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
                          (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
         fd.write(context)
+
+
+def print_wrap(text, length=length, **kwargs):
+    print(wrap_text(text, length), **kwargs)
 
 
 def record(file, args, today, config=None, redirect=False):
@@ -433,3 +437,11 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
         return sudo_argv
     return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
                prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=suffix)
+
+
+def wrap_text(string, length=length):
+    # text = '\n'.join(textwrap.wrap(string, length))
+    # if string.endswith(os.linesep):
+    #     return f'{text}{os.linesep}'
+    # return text
+    return string

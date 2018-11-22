@@ -9,10 +9,11 @@ import re
 import shlex
 import sys
 
-from macdaily.cmd.launch import launch_askpass, launch_confirm, run_script
-from macdaily.util.const import ROOT
+from macdaily.cmd.launch import (launch_askpass, launch_confirm,
+                                 launch_daemons, run_script)
+from macdaily.util.const import ROOT, bold, purple, reset, under
 from macdaily.util.error import ConfigNotFoundError
-
+from macdaily.util.misc import get_pass, print_misc, print_term, print_wrap
 
 CONFIG = ['[Path]',
           '# In this section, paths for log files are specified.',
@@ -72,7 +73,8 @@ CONFIG = ['[Path]',
 
 
 def get_config():
-    config = configparser.ConfigParser(inline_comment_prefixes=(';',),
+    config = configparser.ConfigParser(allow_no_value=True,
+                                       inline_comment_prefixes=(';',),
                                        interpolation=configparser.ExtendedInterpolation())
     config.SECTCRE = re.compile(r'\[\s*(?P<header>[^]]+?)\s*\]')
     config.read_string(os.linesep.join(CONFIG))
@@ -156,3 +158,69 @@ def parse_config(quiet=False, verbose=False):
     cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout', None)
 
     return dict(cfg_dict)
+
+
+def make_config(quiet=False, verbose=False):
+    print_wrap('Entering interactive command line setup procedure...'.format())
+    print_wrap('Default settings are shown as in the square brackets.'.format())
+    print_wrap('Please directly {}{}ENTER{} if you prefer the default settings.'.format(bold, under, reset))
+
+    rcpath = os.path.expanduser('~/.dailyrc')
+    try:
+        with open(rcpath, 'w') as config_file:
+            config_file.write(os.linesep.join(CONFIG[:4]))
+            print()
+            print_wrap('For logging utilities, we recommend you to set up your {}hard disk{} path.'.format(bold, reset))
+            print_wrap('You may change other path preferences in configuration `{}~/.dailyrc{}` later.'.format(under, reset))
+            print_wrap('Please note that all paths must be valid under all circumstances.'.format())
+            dskdir = input('Name of your external hard disk []: ').ljust(41)
+            config_file.write('dskdir = /Volumes/{} ; path where your hard disk lies\n'.format(dskdir))
+
+            config_file.write(os.linesep.join(CONFIG[5:38]))
+            print()
+            print_wrap('In default, we will run {}update{} and {}logging{} commands twice a day.'.format(bold, reset, bold, reset))
+            print_wrap('You may change daily commands preferences in configuration `{}~/.dailyrc{}` later.'.format(under, reset))
+            print_wrap('Please enter schedule as {}{}HH:MM-CMD{} format, '
+                       'and each separates with {}comma{}.'.format(bold, under, reset, under, reset))
+            timing = input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ')
+            if timing:
+                config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
+            else:
+                config_file.write(os.linesep.join(CONFIG[38:41]))
+
+            config_file.write(os.linesep.join(CONFIG[41:51]))
+            print()
+            print_wrap('For better stability, {}MacDaily{} depends on several helper programs.'.format(bold, reset))
+            print_wrap('Your password may be necessary during the launch process.')
+            askpass = launch_askpass(quiet=quiet, verbose=verbose)
+            confirm = launch_confirm(quiet=quiet, verbose=verbose)
+
+            config_file.write('askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks\n'.format(askpass.ljust(49)))
+            config_file.write('confirm = {} ; confirm utility for MacDaily\n'.format(confirm.ljust(49)))
+            print()
+            print_wrap('Also, {}MacDaily{} supports several different environment setups.'.format(bold, reset))
+            print_wrap('You may set up these variables here, '
+                       'or later manually in configuration `{}~/.dailyrc{}`.'.format(under, reset))
+            print_wrap('Please enter these specifications as instructed below.'.format())
+            shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(8)
+            config_file.write('bash-timeout = {} ; timeout limit for each shell script in seconds\n'.format(shtout))
+            print()
+            print_wrap('Configuration for {}MacDaily{} finished. Now launching...\n'.format(bold, reset))
+    except BaseException:
+        os.remove(rcpath)
+        print(reset)
+        raise
+
+    # parse config
+    config = parse_config(quiet, verbose)
+    askpass = config['Miscellanea']['askpass']
+
+    # ask for password
+    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
+    print_term(text, os.devnull, redirect=quiet)
+    password = get_pass(askpass)
+
+    # launch daemons
+    path = launch_daemons(config, password, quiet, verbose)
+    text = 'Launched helper program {}daemons{}{} at {}{}{}'.format(under, reset, bold, under, path, reset)
+    print_misc(text, os.devnull, redirect=quiet)

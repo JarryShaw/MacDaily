@@ -8,7 +8,7 @@ from macdaily.util.const import __version__, bold, reset
 
 def get_launch_parser():
     #######################################################
-    # Logging CLI
+    # Launch CLI
     #   * options
     #       - optional arguments
     #       - specification arguments

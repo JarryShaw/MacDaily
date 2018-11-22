@@ -31,7 +31,7 @@ def launch(argv=None):
     # record program status
     text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
     print_term(text, os.devnull, redirect=quiet)
-    record(os.devnull, args, today, redirect=verbose)
+    record(os.devnull, args, today, config, redirect=verbose)
 
     # ask for password
     text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
