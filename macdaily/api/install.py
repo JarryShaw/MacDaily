@@ -19,8 +19,8 @@ from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, purple, red, reset,
                                  under, yellow)
 from macdaily.util.misc import (beholder, get_pass, make_description,
-                                make_namespace, print_info, print_misc,
-                                print_term, print_text, record)
+                                make_namespace, print_misc, print_term,
+                                print_text, record)
 
 try:
     import pathlib2 as pathlib

@@ -8,9 +8,9 @@ import sys
 
 from macdaily.cli.config import get_config_parser, parse_args
 from macdaily.cmd.config import make_config, parse_config
-from macdaily.util.const import (__version__, bold, green, length, purple, red,
-                                 reset, under, yellow)
-from macdaily.util.misc import beholder, get_pass, print_term, record
+from macdaily.util.const import (__version__, bold, green, length, red, reset,
+                                 yellow)
+from macdaily.util.misc import beholder, print_term, record
 
 
 @beholder

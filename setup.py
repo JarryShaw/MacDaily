@@ -15,7 +15,7 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
 # version string
-__version__ = '2018.11.22.dev38'
+__version__ = '2018.11.22.dev39'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -58,6 +58,7 @@ setuptools.setup(
             'md-install = macdaily.api.install:install',
             'md-dependency = macdaily.api.dependency:dependency [tree]',
             'md-config = macdaily.api.config:config [config]',
+            'md-cleanup = macdaily.api.cleanup:cleanup',
         ]
     },
     packages=setuptools.find_namespace_packages(
