@@ -14,8 +14,12 @@ if platform.system() != 'Darwin':
             super().__init__(message, *args, **kwargs)
     raise UnsupportedOS('macdaily: script runs only on macOS')
 
+# README
+with open('README.rst') as file:
+    long_description = file.read()
+
 # version string
-__version__ = '2018.11.22.dev39'
+__version__ = '2018.11.22.dev40'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -34,7 +38,8 @@ setuptools.setup(
     license='GNU General Public License v3 (GPLv3)',
     keywords='daily utility script',
     description='Package day-care manager on macOS.',
-    long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
+    long_description=long_description,
+    # long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
     include_package_data=True,
@@ -59,6 +64,8 @@ setuptools.setup(
             'md-dependency = macdaily.api.dependency:dependency [tree]',
             'md-config = macdaily.api.config:config [config]',
             'md-cleanup = macdaily.api.cleanup:cleanup',
+            # 'md-bundle = macdaily.api.bundle:bundle',
+            'md-archive = macdaily.api.archive:archive',
         ]
     },
     packages=setuptools.find_namespace_packages(

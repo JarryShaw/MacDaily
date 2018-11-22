@@ -19,7 +19,7 @@ def get_config_parser():
 
     parser = argparse.ArgumentParser(prog='macdaily-config',
                                      description='MacDaily Runtime Configuration Helper',
-                                     usage='macdaily config [-h] [-V] [options] <key> <value> ...',
+                                     usage='macdaily config [options] <key> <value> ...',
                                      epilog='aliases: init')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
