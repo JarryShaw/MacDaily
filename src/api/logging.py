@@ -86,11 +86,7 @@ def logging(argv=None):
             continue
 
         # update logging specifications
-        namespace = getattr(args, mode, None)
-        if namespace is None:
-            if not args.all:
-                continue
-            namespace = vars(args)
+        namespace = getattr(args, mode, vars(args))
 
         # check master controlling flags
         if args.quiet:

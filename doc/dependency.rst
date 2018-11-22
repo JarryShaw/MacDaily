@@ -215,7 +215,6 @@ NB
     does not have ``pip`` installed. And it is
     `not recommended <https://docs.python.org/3/using/mac.html>`__ to do so.
 
-
 TODO
 ----
 

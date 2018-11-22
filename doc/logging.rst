@@ -365,6 +365,16 @@ MacDaily ``logging-pip`` command uses ``python -m pip freeze`` to record
 installed Python packages. The corresponding log file will be named as
 ``requirements.txt``.
 
+Possible Python executables and corresponding flags are listed as below.
+
+.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/doc/img/Python.png
+
+NB
+    Python provided by macOS system (normally located at ``/usr/bin/python`` or
+    ``/System/Library/Frameworks/Python.framework/Versions/Current/bin/python``)
+    does not have ``pip`` installed. And it is
+    `not recommended <https://docs.python.org/3/using/mac.html>`__ to do so.
+
 .. raw:: html
 
     <h4>

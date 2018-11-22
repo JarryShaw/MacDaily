@@ -110,7 +110,7 @@ For **tree** format support in ``dependency`` command, you will need
     # or explicitly...
     $ pip install macdaily dictdumper
 
-And |configupdater| is required to support modification of configuration file
+And |configupdater|_ is required to support modification of configuration file
 in ``config`` command, since MacDaily intend to maintain the original layout
 and information of a configuration file after modifying it. To install, the
 sample script is as below.
@@ -353,6 +353,8 @@ valid.
 | |archive|_     |                                               |
 +----------------+-----------------------------------------------+
 | |bundle|_      |                                               |
++----------------+-----------------------------------------------+
+| |cleanup|_     | ``clean``                                     |
 +----------------+-----------------------------------------------+
 | |config|_      | ``cfg``                                       |
 +----------------+-----------------------------------------------+

@@ -88,9 +88,6 @@ class LoggingCommand(Command):
         return self._parse_args(namespace)
 
     def _run_proc(self):
-        self._pkgs = list()
-        self._fail = list()
-        self._lost = list()
         for path in self._exec:
             text = f'Using {self.name} executable {path!r}'
             print_info(text, self._file, redirect=self._qflag)
