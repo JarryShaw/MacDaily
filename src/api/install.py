@@ -15,6 +15,7 @@ from macdaily.cls.install.mas import MasInstall
 from macdaily.cls.install.npm import NpmInstall
 from macdaily.cls.install.pip import PipInstall
 from macdaily.cls.install.system import SystemInstall
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, purple, red, reset,
                                  under, yellow)
@@ -111,6 +112,10 @@ def install(argv=None):
         cmd_list.append(command)
         brew_renew = command.time
 
+    archive = None
+    if not args.no_cleanup:
+        archive = make_archive(config, 'install', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of install command{reset}'
     print_term(text, filename, redirect=quiet)
 
@@ -135,6 +140,11 @@ def install(argv=None):
             verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
             text = f'All {under}{desc(False)}{reset}{bold} installation{noun} succeed{verb}'
             print_misc(text, filename, redirect=verbose)
+
+    if archive:
+        formatted_list = f'{reset}{bold}, {under}'.join(archive)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = f'macdaily: {purple}install{reset}: no packages installed'

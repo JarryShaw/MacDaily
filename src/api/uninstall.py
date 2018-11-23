@@ -10,6 +10,7 @@ from macdaily.cli.uninstall import parse_args
 from macdaily.cls.uninstall.brew import BrewUninstall
 from macdaily.cls.uninstall.cask import CaskUninstall
 from macdaily.cls.uninstall.pip import PipUninstall
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
@@ -110,6 +111,10 @@ def uninstall(argv=None):
         cmd_list.append(command)
         brew_renew = command.time
 
+    archive = None
+    if not args.no_cleanup:
+        archive = make_archive(config, 'uninstall', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of uninstall command{reset}'
     print_term(text, filename, redirect=quiet)
 
@@ -152,6 +157,11 @@ def uninstall(argv=None):
         else:
             text = f'Hit all {under}{desc(False)}{reset}{bold} specifications'
             print_misc(text, filename, redirect=verbose)
+
+    if archive:
+        formatted_list = f'{reset}{bold}, {under}'.join(archive)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = f'macdaily: {purple}uninstall{reset}: no packages removed'

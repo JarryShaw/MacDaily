@@ -40,8 +40,8 @@ python3 setup.py sdist bdist_egg bdist_wheel
 platform=$( python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))" )
 file=$( ls dist/*.tar.gz )
 name=${file%*.tar.gz*}
-cp "${name}-py3-none-any.whl" "${name}-py37-none-${platform}.whl"
-cp "${name}-py3-none-any.whl" "${name}-py36-none-${platform}.whl"
+cp "${name}-py3-none-any.whl" "${name}-cp37-none-${platform}.whl"
+cp "${name}-py3-none-any.whl" "${name}-cp36-none-${platform}.whl"
 mv "${name}-py3.7.egg" "${name}-py3.6.egg"
 rm dist/*.tar.gz "${name}-py3-none-any.whl"
 
@@ -63,12 +63,12 @@ fi
 #     $python setup.py bdist_egg
 # done
 python3 setup.py sdist bdist_egg bdist_wheel
-cp "${name}-py3-none-any.whl" "${name}-py35-none-${platform}.whl"
-cp "${name}-py3-none-any.whl" "${name}-py34-none-${platform}.whl"
+cp "${name}-py3-none-any.whl" "${name}-cp35-none-${platform}.whl"
+cp "${name}-py3-none-any.whl" "${name}-cp34-none-${platform}.whl"
 cp "${name}-py3.7.egg" "${name}-py3.5.egg"
 cp "${name}-py3.7.egg" "${name}-py3.4.egg"
 cp "${name}-py3.6.egg" "${name}-py3.7.egg"
-rm "${name}-py3-none-any.whl"
+# rm "${name}-py3-none-any.whl"
 
 # distribute to PyPI and TestPyPI
 twine upload dist/* -r pypi --skip-existing

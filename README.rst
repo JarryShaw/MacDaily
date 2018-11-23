@@ -246,6 +246,20 @@ working. However, you may set up this part with |config|_ command.
 Usage Manual
 ------------
 
+.. code:: man
+
+    usage: macdaily [options] <command> ...
+
+    macOS Automate Package Manager
+
+    optional arguments:
+      -h, --help     show this help message and exit
+      -V, --version  show program's version number and exit
+
+    Commands:
+      MacDaily provides a friendly CLI workflow for the administrator of macOS
+      to manipulate packages
+
 Start-Up
 ~~~~~~~~
 
@@ -358,21 +372,21 @@ valid.
 +----------------+-----------------------------------------------+
 | |config|_      | ``cfg``                                       |
 +----------------+-----------------------------------------------+
-| |launch|_      | ``init``                                      |
+| |dependency|_  | ``deps``, ``dp``                              |
 +----------------+-----------------------------------------------+
 | |install|_     | ``i``                                         |
 +----------------+-----------------------------------------------+
-| |update|_      | ``up``, ``upgrade``                           |
+| |launch|_      | ``init``                                      |
 +----------------+-----------------------------------------------+
-| |uninstall|_   | ``un``, ``unlink``, ``remove``, ``rm``, ``r`` |
-+----------------+-----------------------------------------------+
-| |reinstall|_   | ``re``                                        |
+| |logging|_     | ``log``                                       |
 +----------------+-----------------------------------------------+
 | |postinstall|_ | ``post``, ``ps``,                             |
 +----------------+-----------------------------------------------+
-| |dependency|_  | ``deps``, ``dp``                              |
+| |reinstall|_   | ``re``                                        |
 +----------------+-----------------------------------------------+
-| |logging|_     | ``log``                                       |
+| |uninstall|_   | ``un``, ``unlink``, ``remove``, ``rm``, ``r`` |
++----------------+-----------------------------------------------+
+| |update|_      | ``up``, ``upgrade``                           |
 +----------------+-----------------------------------------------+
 
 Generals
@@ -520,12 +534,14 @@ TODO
 
 - ✔️ support configuration
 - ✔️ support command aliases
-- ❌ reconstruct archiving procedure
+- ✔️ reconstruct archiving procedure
 - ❌ support ``gem`` and ``npm`` in all commands
-- ❌ considering support more versions of Python
+- ✔️ considering support more versions of Python
 - ✔️ optimise ``KeyboardInterrupt`` handling procedure
+- ❌ implement further specifications for package indication mini-language
 - ✔️ review ``pip`` implementation and version indication
-- ❌ add ``--user`` for ``pip`` commands
+- ✔️ add ``--user`` for ``pip`` commands
+- ❌ implement ``bundle`` and ``help`` commands
 
 .. |archive| replace:: ``archive``
 .. _archive: https://github.com/JarryShaw/MacDaily/blob/dev/doc/archive.rst

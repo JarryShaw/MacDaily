@@ -53,28 +53,29 @@ Usage
     macOS Package Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -a, --all       log all packages installed through Atom, RubyGems, Node.js,
-                      Homebrew, Caskroom, Mac App Store, and etc
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -a, --all         log all packages installed through Atom, RubyGems,
+                        Node.js, Homebrew, Caskroom, Mac App Store, and etc
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
     control arguments:
       options used to disable logging of certain mode
 
-      --no-apm        do not log Atom plug-ins
-      --no-app        do not log Mac applications
-      --no-gem        do not log Ruby gems
-      --no-mas        do not log macOS applications
-      --no-npm        do not log Node.js modules
-      --no-pip        do not log Python packages
-      --no-tap        do not log Homebrew Taps
-      --no-brew       do not log Homebrew formulae
-      --no-cask       do not log Homebrew Casks
+      --no-apm          do not log Atom plug-ins
+      --no-app          do not log system applications
+      --no-gem          do not log Ruby gems
+      --no-mas          do not log macOS applications
+      --no-npm          do not log Node.js modules
+      --no-pip          do not log Python packages
+      --no-tap          do not log Homebrew Taps
+      --no-brew         do not log Homebrew formulae
+      --no-cask         do not log Homebrew Casks
 
     mode selection:
       log existing packages installed through a specified method, e.g.: apm,
@@ -134,21 +135,22 @@ Commands
 
 .. code:: man
 
-    usage: macdaily logging apm [-h] [-V] [-b] [-q] [-v] [-l]
+    usage: macdaily logging apm [options] ...
 
     Atom Plug-In Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     specification arguments:
-      -b, --beta      log Atom Beta plug-ins
+      -b, --beta        log Atom Beta plug-ins
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-apm`` command uses ``apm list --installed --bare``
 to record installed Atom plug-ins. The corresponding log file will be
@@ -168,18 +170,19 @@ NB
 
 .. code:: man
 
-    usage: macdaily logging app [-h] [-V] [-q] [-v] [-l]
+    usage: macdaily logging app [options] ...
 
     Mac Application Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-app`` command uses ``sudo python macdaily/res/find.py /`` to
 record installed Mac applications. The corresponding log file will be named as
@@ -195,18 +198,19 @@ record installed Mac applications. The corresponding log file will be named as
 
 .. code:: man
 
-    usage: macdaily logging brew [-h] [-V] [-q] [-v] [-l]
+    usage: macdaily logging brew [options] ...
 
     Homebrew Formula Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-brew`` command uses ``brew bundle dump`` to record
 installed Homebrew formulae. The corresponding log file will be named
@@ -222,18 +226,19 @@ as ``Brewfile``.
 
 .. code:: man
 
-    usage: macdaily logging cask [-h] [-V] [-q] [-v] [-l]
+    usage: macdaily logging cask [options] ...
 
     Homebrew Cask Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-cask`` command uses ``brew bundle dump`` to record
 installed Homebrew Casks. The corresponding log file will be named
@@ -249,22 +254,23 @@ as ``Brewfile``.
 
 .. code:: man
 
-    usage: macdaily logging gem [-h] [-V] [-b] [-s] [-q] [-v] [-l]
+    usage: macdaily logging gem [options] ...
 
     Ruby Gem Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     specification arguments:
-      -b, --brew      log gems of Ruby installed from Homebrew
-      -s, --system    log gems of Ruby provided by macOS system
+      -b, --brew        log gems of Ruby installed from Homebrew
+      -s, --system      log gems of Ruby provided by macOS system
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-gem`` command uses ``gem lock <gem-version>`` to record
 installed Ruby gems. The corresponding log file will be named as ``lockdown.rb``.
@@ -279,18 +285,19 @@ installed Ruby gems. The corresponding log file will be named as ``lockdown.rb``
 
 .. code:: man
 
-    usage: macdaily logging mas [-h] [-V] [-q] [-v] [-l]
+    usage: macdaily logging mas [options] ...
 
     macOS Application Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-mas`` command uses ``brew bundle dump`` to record
 installed macOS applications. The corresponding log file will be named
@@ -306,21 +313,22 @@ as ``Brewfile``.
 
 .. code:: man
 
-    usage: macdaily logging npm [-h] [-V] [-i] [-q] [-v] [-l]
+    usage: macdaily logging npm [options] ...
 
     Node.js Module Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     specification arguments:
-      -i, --long      show extended information
+      -i, --long        show extended information
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-npm`` command uses ``npm list --json --global`` to
 record installed Node.js modules. The corresponding log file will be named
@@ -336,8 +344,7 @@ as ``package.json``.
 
 .. code:: man
 
-    usage: macdaily logging pip [-h] [-V] [-n] [-b] [-c] [-e VER [VER ...]] [-r]
-                                [-s] [-q] [-v] [-l]
+    usage: macdaily logging pip [options] ...
 
     Python Package Logging Automator
 
@@ -346,7 +353,7 @@ as ``package.json``.
       -V, --version         show program's version number and exit
 
     specification arguments:
-      -n, --exclude-editable
+      -x, --exclude-editable
                             exclude editable package from output
       -b, --brew            log packages of Python installed from Homebrew
       -c, --cpython         log packages of CPython implementation
@@ -359,6 +366,7 @@ as ``package.json``.
     general arguments:
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -l, --show-log        open log in Console.app upon completion of command
 
 MacDaily ``logging-pip`` command uses ``python -m pip freeze`` to record
@@ -385,18 +393,19 @@ NB
 
 .. code:: man
 
-    usage: macdaily logging tap [-h] [-V] [-q] [-v] [-l]
+    usage: macdaily logging tap [options] ...
 
-    macOS Application Logging Automator
+    Homebrew Tap Logging Automator
 
     optional arguments:
-      -h, --help      show this help message and exit
-      -V, --version   show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     general arguments:
-      -q, --quiet     run in quiet mode, with no output information
-      -v, --verbose   run in verbose mode, with detailed output information
-      -l, --show-log  open log in Console.app upon completion of command
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
 MacDaily ``logging-tap`` command uses ``brew bundle dump`` to record
 installed Homebrew Taps. The corresponding log file will be named

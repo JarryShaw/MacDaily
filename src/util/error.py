@@ -10,13 +10,13 @@ class Error(Exception):
         super().__init__(*args, **kwargs)
 
 
-class ModeError(Error, NameError):
-    pass
-
-
 class UnsupportedOS(Error, RuntimeError):
     pass
 
 
 class ConfigNotFoundError(Error, FileNotFoundError):
+    pass
+
+
+class CommandNotImplemented(Error, NotImplementedError):
     pass

@@ -90,7 +90,7 @@ Commands
 
 .. code:: man
 
-    usage: macdaily cleanup brew [options] <modules>
+    usage: macdaily cleanup brew [options] ...
 
     Homebrew Formula Cache Cleanup
 
@@ -117,7 +117,7 @@ Formulae, which lies under ``~/Library/Caches/Homebrew``.
 
 .. code:: man
 
-    usage: macdaily cleanup cask [options] <modules>
+    usage: macdaily cleanup cask [options] ...
 
     Homebrew Cask Cache Cleanup
 
@@ -143,7 +143,7 @@ Formulae, which lies under ``~/Library/Caches/Homebrew/Cask``.
 
 .. code:: man
 
-    usage: macdaily cleanup npm [options] <modules>
+    usage: macdaily cleanup npm [options] ...
 
     Node.js Module Cache Cleanup
 
@@ -168,7 +168,7 @@ and ``npm cache clean --force`` commands.
 
 .. code:: man
 
-    usage: macdaily cleanup pip [options] <modules>
+    usage: macdaily cleanup pip [options] ...
 
     Python Package Cache Cleanup
 
@@ -207,7 +207,7 @@ TODO
 ----
 
 - ✔️ reconstruct cleanup CLI
-- ❌ implement further spec for the mini-language
+- ❌ implement further spec for cleanup commands
 
 .. |brew| replace:: ``brew``
 .. _brew: #brew

@@ -36,18 +36,20 @@ Usage
     MacDaily Dependency Launch Helper
 
     optional arguments:
-      -h, --help     show this help message and exit
-      -V, --version  show program's version number and exit
+      -h, --help        show this help message and exit
+      -V, --version     show program's version number and exit
 
     specification arguments:
-      PROG           helper program to launch, choose from 'askpass',
-                     'confirm' and 'daemons'
+      PROG              helper program to launch, choose from 'askpass',
+                        'confirm' and 'daemons'
 
     general arguments:
-      -a, --all      launch all help programs, i.e.  'askpass', 'confirm'
-                     and 'daemons'
-      -q, --quiet    run in quiet mode, with no output information
-      -v, --verbose  run in verbose mode, with detailed output information
+      -a, --all         launch all help programs, i.e. 'askpass',
+                        'confirm' and 'daemons'
+      -q, --quiet       run in quiet mode, with no output information
+      -v, --verbose     run in verbose mode, with detailed output information
+      -n, --no-cleanup  do not run cleanup process
+      -l, --show-log    open log in Console.app upon completion of command
 
     aliases: init
 

@@ -61,7 +61,7 @@ def get_npm_parser():
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-cleanup-npm',
                                          description='Node.js Module Cache Cleanup',
-                                         usage='macdaily cleanup npm [options] <modules>')
+                                         usage='macdaily cleanup npm [options] ...')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -86,7 +86,7 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-cleanup-pip',
                                          description='Python Package Cache Cleanup',
-                                         usage='macdaily cleanup pip [options] <modules>')
+                                         usage='macdaily cleanup pip [options] ...')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -124,7 +124,7 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-cleanup-brew',
                                           description='Homebrew Formula Cache Cleanup',
-                                          usage='macdaily cleanup brew [options] <modules>')
+                                          usage='macdaily cleanup brew [options] ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -149,7 +149,7 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-cleanup-cask',
                                           description='Homebrew Cask Cache Cleanup',
-                                          usage='macdaily cleanup cask [options] <modules>')
+                                          usage='macdaily cleanup cask [options] ...')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 

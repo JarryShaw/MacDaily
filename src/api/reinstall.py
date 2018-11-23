@@ -9,6 +9,7 @@ import uuid
 from macdaily.cli.reinstall import parse_args
 from macdaily.cls.reinstall.brew import BrewReinstall
 from macdaily.cls.reinstall.cask import CaskReinstall
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
@@ -105,6 +106,10 @@ def reinstall(argv=None):
         cmd_list.append(command)
         brew_renew = command.time
 
+    archive = None
+    if not args.no_cleanup:
+        archive = make_archive(config, 'reinstall', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of reinstall command{reset}'
     print_term(text, filename, redirect=quiet)
 
@@ -147,6 +152,11 @@ def reinstall(argv=None):
         else:
             text = f'Hit all {under}{desc(False)}{reset}{bold} specifications'
             print_misc(text, filename, redirect=verbose)
+
+    if archive:
+        formatted_list = f'{reset}{bold}, {under}'.join(archive)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = f'macdaily: {purple}reinstall{reset}: no packages reinstalled'
