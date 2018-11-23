@@ -161,6 +161,9 @@ def parse_config(quiet=False, verbose=False):
 
 
 def make_config(quiet=False, verbose=False):
+    if not sys.stdin.isatty():
+        raise OSError(5, 'Input/output error')
+
     print_wrap(f'Entering interactive command line setup procedure...')
     print_wrap(f'Default settings are shown as in the square brackets.')
     print_wrap(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
@@ -168,7 +171,7 @@ def make_config(quiet=False, verbose=False):
     rcpath = os.path.expanduser('~/.dailyrc')
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.write(os.linesep.join(CONFIG[:4]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[:4]))
             print()
             print_wrap(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             print_wrap(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -176,7 +179,7 @@ def make_config(quiet=False, verbose=False):
             dskdir = input('Name of your external hard disk []: ').ljust(41)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.write(os.linesep.join(CONFIG[5:38]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[5:38]))
             print()
             print_wrap(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print_wrap(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -186,9 +189,9 @@ def make_config(quiet=False, verbose=False):
             if timing:
                 config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
             else:
-                config_file.write(os.linesep.join(CONFIG[38:41]))
+                config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[38:41]))
 
-            config_file.write(os.linesep.join(CONFIG[41:51]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[41:51]))
             print()
             print_wrap(f'For better stability, {bold}MacDaily{reset} depends on several helper programs.')
             print_wrap('Your password may be necessary during the launch process.')

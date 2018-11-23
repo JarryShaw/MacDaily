@@ -216,18 +216,23 @@ def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logf
         file.write(f'command: {args!r}\n')
 
     try:
-        if sudo and password is not None:
-            sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
-            sudo_argv.extend(argv)
-            with make_pipe(password, verbose) as pipe:
-                proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
-                                               stderr=make_stderr(verbose))
+        if sudo:
+            if password is not None:
+                sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
+                sudo_argv.extend(argv)
+                with make_pipe(password, verbose) as pipe:
+                    proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
+                                                   stderr=make_stderr(verbose))
+            else:
+                sudo_argv = ['sudo']
+                sudo_argv.extend(argv)
+                proc = subprocess.check_output(sudo_argv, stderr=make_stderr(verbose))
         else:
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
         print_term(f"macdaily: {red}misc{reset}: "
-                   f"command `{bold}{' '.join(error.args)!r}{reset}' failed", logfile, redirect=quiet)
+                   f"command `{bold}{' '.join(error.cmd)!r}{reset}' failed", logfile, redirect=quiet)
         raise
     else:
         context = proc.decode()
