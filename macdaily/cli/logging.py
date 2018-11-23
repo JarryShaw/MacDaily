@@ -32,6 +32,8 @@ def get_logging_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                            help='do not run cleanup process')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
 
@@ -67,7 +69,7 @@ def get_apm_parser():
 
     apm_parser = argparse.ArgumentParser(prog='macdaily-logging-apm',
                                          description='Atom Plug-In Logging Automator',
-                                         usage='macdaily logging apm [-h] [-V] [-b] [-q] [-v] [-l]')
+                                         usage='macdaily logging apm [options] ...')
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -80,6 +82,8 @@ def get_apm_parser():
                                 help='run in quiet mode, with no output information')
     apm_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    apm_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     apm_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -99,7 +103,7 @@ def get_app_parser():
 
     app_parser = argparse.ArgumentParser(prog='macdaily-logging-app',
                                          description='Mac Application Logging Automator',
-                                         usage='macdaily logging app [-h] [-V] [-q] [-v] [-l]')
+                                         usage='macdaily logging app [options] ...')
     app_parser.add_argument('-V', '--version', action='version', version=__version__)
     app_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -108,6 +112,8 @@ def get_app_parser():
                                 help='run in quiet mode, with no output information')
     app_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    app_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     app_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -127,7 +133,7 @@ def get_gem_parser():
 
     gem_parser = argparse.ArgumentParser(prog='macdaily-logging-gem',
                                          description='Ruby Gem Logging Automator',
-                                         usage='macdaily logging gem [-h] [-V] [-b] [-s] [-q] [-v] [-l]')
+                                         usage='macdaily logging gem [options] ...')
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -142,6 +148,8 @@ def get_gem_parser():
                                 help='run in quiet mode, with no output information')
     gem_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    gem_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     gem_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -160,7 +168,7 @@ def get_mas_parser():
 
     mas_parser = argparse.ArgumentParser(prog='macdaily-logging-mas',
                                          description='macOS Application Logging Automator',
-                                         usage='macdaily logging mas [-h] [-V] [-q] [-v] [-l]')
+                                         usage='macdaily logging mas [options] ...')
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -169,6 +177,8 @@ def get_mas_parser():
                                 help='run in quiet mode, with no output information')
     mas_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    mas_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     mas_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -187,7 +197,7 @@ def get_npm_parser():
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-logging-npm',
                                          description='Node.js Module Logging Automator',
-                                         usage='macdaily logging npm [-h] [-V] [-i] [-q] [-v] [-l]')
+                                         usage='macdaily logging npm [options] ...')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -200,6 +210,8 @@ def get_npm_parser():
                                 help='run in quiet mode, with no output information')
     npm_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    npm_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     npm_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -219,13 +231,12 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-logging-pip',
                                          description='Python Package Logging Automator',
-                                         usage=('macdaily logging pip [-h] [-V] [-n] [-b] [-c] [-e VER [VER ...]] [-r] '
-                                                '[-s] [-q] [-v] [-l]'))
+                                         usage=('macdaily logging pip [options] ...'))
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
-    pip_spec_group.add_argument('-n', '--exclude-editable', action='store_true',
+    pip_spec_group.add_argument('-x', '--exclude-editable', action='store_true',
                                 help='exclude editable package from output')
     pip_spec_group.add_argument('-b', '--brew', action='store_true',
                                 help='log packages of Python installed from Homebrew')
@@ -244,6 +255,8 @@ def get_pip_parser():
                                 help='run in quiet mode, with no output information')
     pip_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     pip_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -263,7 +276,7 @@ def get_tap_parser():
 
     tap_parser = argparse.ArgumentParser(prog='macdaily-logging-tap',
                                          description='Homebrew Tap Logging Automator',
-                                         usage='macdaily logging tap [-h] [-V] [-q] [-v] [-l]')
+                                         usage='macdaily logging tap [options] ...')
     tap_parser.add_argument('-V', '--version', action='version', version=__version__)
     tap_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -272,6 +285,8 @@ def get_tap_parser():
                                 help='run in quiet mode, with no output information')
     tap_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    tap_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     tap_genl_group.add_argument('-l', '--show-log', action='store_true',
                                 help='open log in Console.app upon completion of command')
 
@@ -291,7 +306,7 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-logging-brew',
                                           description='Homebrew Formula Logging Automator',
-                                          usage='macdaily logging brew [-h] [-V] [-q] [-v] [-l]')
+                                          usage='macdaily logging brew [options] ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -300,6 +315,8 @@ def get_brew_parser():
                                  help='run in quiet mode, with no output information')
     brew_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
+    brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
     brew_genl_group.add_argument('-l', '--show-log', action='store_true',
                                  help='open log in Console.app upon completion of command')
 
@@ -319,7 +336,7 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-logging-cask',
                                           description='Homebrew Cask Logging Automator',
-                                          usage='macdaily logging cask [-h] [-V] [-q] [-v] [-l]')
+                                          usage='macdaily logging cask [options] ...')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -328,6 +345,8 @@ def get_cask_parser():
                                  help='run in quiet mode, with no output information')
     cask_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
+    cask_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
     cask_genl_group.add_argument('-l', '--show-log', action='store_true',
                                  help='open log in Console.app upon completion of command')
 

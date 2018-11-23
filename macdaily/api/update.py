@@ -15,6 +15,7 @@ from macdaily.cls.update.mas import MasUpdate
 from macdaily.cls.update.npm import NpmUpdate
 from macdaily.cls.update.pip import PipUpdate
 from macdaily.cls.update.system import SystemUpdate
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
                                  reset, under, yellow)
@@ -111,6 +112,10 @@ def update(argv=None):
         cmd_list.append(command)
         brew_renew = command.time
 
+    archive = None
+    if not args.no_cleanup:
+        archive = make_archive(config, 'update', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = '{}{}|📖|{} {}MacDaily report of update command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
@@ -153,6 +158,11 @@ def update(argv=None):
         else:
             text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
             print_misc(text, filename, redirect=verbose)
+
+    if archive:
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = 'macdaily: {}update{}: no packages upgraded'.format(purple, reset)

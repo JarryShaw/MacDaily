@@ -19,7 +19,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.22.dev40'
+__version__ = '2018.11.23a0'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -53,19 +53,20 @@ setuptools.setup(
     },
     entry_points={
         'console_scripts': [
-            # 'macdaily = macdaily.__main__:main',
-            'md-update = macdaily.api.update:update',
-            'md-uninstall = macdaily.api.uninstall:uninstall',
-            'md-reinstall = macdaily.api.reinstall:reinstall',
-            'md-postinstall = macdaily.api.postinstall:postinstall',
-            'md-logging = macdaily.api.logging:logging',
-            'md-launch = macdaily.api.launch:launch',
-            'md-install = macdaily.api.install:install',
-            'md-dependency = macdaily.api.dependency:dependency [tree]',
-            'md-config = macdaily.api.config:config [config]',
-            'md-cleanup = macdaily.api.cleanup:cleanup',
-            # 'md-bundle = macdaily.api.bundle:bundle',
+            'macdaily = macdaily.__main__:main',
             'md-archive = macdaily.api.archive:archive',
+            # 'md-bundle = macdaily.api.bundle:bundle',
+            'md-cleanup = macdaily.api.cleanup:cleanup',
+            'md-config = macdaily.api.config:config [config]',
+            'md-dependency = macdaily.api.dependency:dependency [tree]',
+            # 'md-help = macdaily.api.help:help',
+            'md-install = macdaily.api.install:install',
+            'md-launch = macdaily.api.launch:launch',
+            'md-logging = macdaily.api.logging:logging',
+            'md-postinstall = macdaily.api.postinstall:postinstall',
+            'md-reinstall = macdaily.api.reinstall:reinstall',
+            'md-uninstall = macdaily.api.uninstall:uninstall',
+            'md-update = macdaily.api.update:update',
         ]
     },
     packages=setuptools.find_namespace_packages(
@@ -97,8 +98,13 @@ setuptools.setup(
         'macdaily.res': ['*.py', '*.applescript'],
     },
     classifiers=[
+        # 'Development Status :: 7 - Inactive',
+        # 'Development Status :: 6 - Mature',
         # 'Development Status :: 5 - Production/Stable',
-        'Development Status :: 2 - Pre-Alpha',
+        # 'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
+        # 'Development Status :: 2 - Pre-Alpha',
+        # 'Development Status :: 1 - Planning',
         'Environment :: Console',
         'Environment :: MacOS X',
         'Intended Audience :: Developers',

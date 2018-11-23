@@ -16,6 +16,7 @@ from macdaily.cls.logging.mas import MasLogging
 from macdaily.cls.logging.npm import NpmLogging
 from macdaily.cls.logging.pip import PipLogging
 from macdaily.cls.logging.tap import TapLogging
+from macdaily.cmd.archive import make_archive, make_storage
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, purple, red, reset,
                                  under, yellow)
@@ -68,6 +69,7 @@ def logging(argv=None):
 
     cmd_list = list()
     log_list = list()
+    file_list = list()
     for mode in {'apm', 'app', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'tap'}:
         # mkdir for logs
         logpath = pathlib.Path(os.path.join(config['Path']['logdir'], 'logging', mode, logdate))
@@ -95,6 +97,8 @@ def logging(argv=None):
             namespace['verbose'] = True
         if args.show_log:
             namespace['show_log'] = True
+        if args.no_cleanup:
+            namespace['no_cleanup'] = True
 
         # run command
         cmd_cls = globals()['{}Logging'.format(mode.capitalize())]
@@ -106,12 +110,21 @@ def logging(argv=None):
         log_list.append(filename)
         brew_renew = command.time
 
+        if not namespace['no_cleanup']:
+            archive = make_archive(config, 'logging/{}'.format(mode), today, zipfile=False,
+                                   quiet=quiet, verbose=verbose, logfile=filename)
+            file_list.extend(archive)
+
         if namespace.get('show_log', False):
             try:
                 subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), filename, redirect=verbose)
                 print('macdaily: {}logging{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
+
+    if not args.no_cleanup:
+        storage = make_storage(config, today, quiet=quiet, verbose=verbose, logfile=filename)
+        file_list.extend(storage)
 
     text = '{}{}|📖|{} {}MacDaily report of logging command{}'.format(bold, green, reset, bold, reset)
     print_term(text, os.devnull, redirect=quiet)
@@ -123,6 +136,11 @@ def logging(argv=None):
         print_misc(text, os.devnull, redirect=quiet)
         for file in log_list:
             print_term(text, file, redirect=True)
+
+    if file_list:
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(file_list)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = 'macdaily: {}logging{}: no packages recorded'.format(purple, reset)

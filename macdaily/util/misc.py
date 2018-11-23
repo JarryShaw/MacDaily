@@ -22,23 +22,31 @@ try:
 except ImportError:
     import subprocess
 
+# error-not-raised flag
+FLAG = True
+
 
 def beholder(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        global FLAG
         if platform.system() != 'Darwin':
             raise UnsupportedOS('macdaily: error: script runs only on macOS')
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
-            print('macdaily: {}error{}: operation interrupted'.format(red, reset), file=sys.stderr)
+            if FLAG:
+                FLAG = False
+                print('macdaily: {}error{}: operation interrupted'.format(red, reset), file=sys.stderr)
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
         except Exception:
-            print('macdaily: {}error{}: operation failed'.format(red, reset), file=sys.stderr)
+            if FLAG:
+                FLAG = False
+                print('macdaily: {}error{}: operation failed'.format(red, reset), file=sys.stderr)
             sys.stdout.write(reset)
-            # sys.tracebacklimit = 0
+            sys.tracebacklimit = 0
             raise
     return wrapper
 
@@ -198,6 +206,35 @@ def record(file, args, today, config=None, redirect=False):
             for key, value in config.items():
                 for k, v, in value.items():
                     log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
+
+
+def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logfile=os.devnull):
+    args = ' '.join(argv)
+    print_scpt(args, logfile, verbose)
+    with open(logfile, 'a') as file:
+        file.write('Script started on {}\n'.format(date()))
+        file.write('command: {!r}\n'.format(args))
+
+    try:
+        if sudo and password is not None:
+            sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
+            sudo_argv.extend(argv)
+            with make_pipe(password, verbose) as pipe:
+                proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
+                                               stderr=make_stderr(verbose))
+        else:
+            proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
+    except subprocess.CalledProcessError as error:
+        print_text(traceback.format_exc(), logfile, redirect=verbose)
+        print_term("macdaily: {}misc{}: "
+                   "command `{}{!r}{}' failed".format(red, reset, bold, ' '.join(error.args), reset), logfile, redirect=quiet)
+        raise
+    else:
+        context = proc.decode()
+        print_text(context, logfile, redirect=verbose)
+    finally:
+            with open(logfile, 'a') as file:
+                file.write('Script done on {}\n'.format(date()))
 
 
 def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,

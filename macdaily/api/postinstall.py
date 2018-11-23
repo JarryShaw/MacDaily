@@ -7,6 +7,7 @@ import traceback
 import uuid
 
 from macdaily.cli.postinstall import parse_args
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.cmd.postinstall import PostinstallCommand
 from macdaily.util.const import (__version__, bold, green, pink, purple, red,
@@ -75,6 +76,10 @@ def postinstall(argv=None):
         text = 'macdaily-postinstall: {}brew{}: command disabled'.format(yellow, reset)
         print_term(text, filename, redirect=verbose)
 
+    archive = None
+    if not args.no_cleanup:
+        archive = make_archive(config, 'postinstall', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = '{}{}|📖|{} {}MacDaily report of postinstall command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
@@ -117,7 +122,13 @@ def postinstall(argv=None):
         else:
             text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
             print_misc(text, filename, redirect=verbose)
-    else:
+
+    if archive:
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        print_misc(text, filename, redirect=quiet)
+
+    if not enabled:
         text = 'macdaily: {}postinstall{}: no Homebrew formulae postinstalled'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 

@@ -11,6 +11,7 @@ from macdaily.cls.cleanup.brew import BrewCleanup
 from macdaily.cls.cleanup.cask import CaskCleanup
 from macdaily.cls.cleanup.npm import NpmCleanup
 from macdaily.cls.cleanup.pip import PipCleanup
+from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.const import (__version__, bold, green, purple, reset,
                                  under, yellow)
@@ -92,12 +93,20 @@ def cleanup(argv=None):
         cmd_list.append(command)
         brew_renew = command.time
 
+    # archive ancient logs
+    archive = make_archive(config, 'cleanup', today, quiet=quiet, verbose=verbose, logfile=filename)
+
     text = '{}{}|📖|{} {}MacDaily report of cleanup command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
     for command in cmd_list:
         text = 'Pruned caches of {}{}{}{}'.format(under, command.name, reset, bold)
         print_misc(text, os.devnull, redirect=quiet)
+
+    if archive:
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
         text = 'macdaily: {}cleanup{}: no caches cleanup'.format(purple, reset)

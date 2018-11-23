@@ -36,6 +36,10 @@ def get_launch_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                            help='do not run cleanup process')
+    genl_group.add_argument('-l', '--show-log', action='store_true',
+                            help='open log in Console.app upon completion of command')
 
     return parser
 

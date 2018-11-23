@@ -24,10 +24,10 @@ def get_archive_parser():
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('path', nargs='*', metavar='CMD',
-                            help=('archive logs of specified command, e.g. cleanup, dependency, '
-                                  'logging, postinstall, reinstall, uninstall, update, logging/apm, '
-                                  'logging/app, logging/brew, logging/cask, logging/gem, logging/mas, '
-                                  'logging/npm, logging/pip, logging/tap'))
+                            help=('archive logs of specified command, e.g. archive, cleanup, '
+                                  'dependency, logging, postinstall, reinstall, uninstall, update, '
+                                  'logging/apm, logging/app, logging/brew, logging/cask, logging/gem, '
+                                  'logging/mas, logging/npm, logging/pip and logging/tap'))
 
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-a', '--all', action='store_true',
@@ -38,6 +38,8 @@ def get_archive_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-l', '--show-log', action='store_true',
+                            help='open log in Console.app upon completion of command')
 
     return parser
 
