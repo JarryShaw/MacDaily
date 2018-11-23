@@ -3,7 +3,6 @@
 import platform
 import sys
 
-import pkg_resources
 import setuptools
 
 # check platform
@@ -19,7 +18,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.23a0'
+__version__ = '2018.11.23a1'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -69,26 +68,26 @@ setuptools.setup(
             'md-update = macdaily.api.update:update',
         ]
     },
-    packages=setuptools.find_namespace_packages(
-        include=['macdaily', 'macdaily.*'],
-    ),
-    # packages=[
-    #     'macdaily',
-    #     'macdaily.api',
-    #     'macdaily.cli',
-    #     'macdaily.cls',
-    #     'macdaily.cls.bundle',
-    #     'macdaily.cls.cleanup',
-    #     'macdaily.cls.dependency',
-    #     'macdaily.cls.install',
-    #     'macdaily.cls.logging',
-    #     'macdaily.cls.reinstall',
-    #     'macdaily.cls.uninstall',
-    #     'macdaily.cls.update',
-    #     'macdaily.cmd',
-    #     'macdaily.core',
-    #     'macdaily.util',
-    # ],
+    # packages=setuptools.find_namespace_packages(
+    #     include=['macdaily', 'macdaily.*'],
+    # ),
+    packages=[
+        'macdaily',
+        'macdaily.api',
+        'macdaily.cli',
+        'macdaily.cls',
+        'macdaily.cls.bundle',
+        'macdaily.cls.cleanup',
+        'macdaily.cls.dependency',
+        'macdaily.cls.install',
+        'macdaily.cls.logging',
+        'macdaily.cls.reinstall',
+        'macdaily.cls.uninstall',
+        'macdaily.cls.update',
+        'macdaily.cmd',
+        'macdaily.core',
+        'macdaily.util',
+    ],
     package_data={
         '': [
             'LICENSE',
