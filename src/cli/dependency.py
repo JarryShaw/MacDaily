@@ -31,11 +31,13 @@ def get_dependency_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                            help='do not run cleanup process')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
     genl_group.add_argument('-f', '--tree', action='store_true',
                             help='show dependencies as a tree [requires DictDumper]')
-    genl_group.add_argument('-n', '--topological', action='store_true',
+    genl_group.add_argument('-o', '--topological', action='store_true',
                             help='show dependencies in topological order')
     genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                             help='max display depth of the dependency tree')
@@ -98,9 +100,11 @@ def get_pip_parser():
                                 help='run in quiet mode, with no output information')
     pip_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     pip_genl_group.add_argument('-f', '--tree', action='store_true',
                                 help='show dependencies as a tree [requires DictDumper]')
-    pip_genl_group.add_argument('-n', '--topological', action='store_true',
+    pip_genl_group.add_argument('-o', '--topological', action='store_true',
                                 help='show dependencies in topological order')
     pip_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                                 help='max display depth of the dependency tree')
@@ -146,9 +150,11 @@ def get_brew_parser():
                                  help='run in quiet mode, with no output information')
     brew_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
+    brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
     brew_genl_group.add_argument('-f', '--tree', action='store_true',
                                  help='show dependencies as a tree [requires DictDumper]')
-    brew_genl_group.add_argument('-n', '--topological', action='store_true',
+    brew_genl_group.add_argument('-o', '--topological', action='store_true',
                                  help='show dependencies in topological order')
     brew_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                                  help='max display depth of the dependency tree')

@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/python",
+    "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/python",
     "cSpell.language": "en-GB",
     "cSpell.words": [
         "Dict",
@@ -71,5 +71,4 @@
     "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/sphinx-build",
     "restructuredtext.confPath": "${workspaceFolder}/sphinx/source",
     "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/doc8",
-    "restructuredtext.rst2htmlCommand": "/usr/local/bin/rst2html.py",
 }

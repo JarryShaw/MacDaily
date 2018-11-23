@@ -62,9 +62,10 @@ Usage
                             Homebrew
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -l, --show-log        open log in Console.app upon completion of command
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -o, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
@@ -155,8 +156,9 @@ Commands
       -a, --all             query all Homebrew formulae installed through Homebrew
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -o, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
@@ -197,8 +199,9 @@ might give a trivial *did-you-mean* correction.
                             Package Index
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -o, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
