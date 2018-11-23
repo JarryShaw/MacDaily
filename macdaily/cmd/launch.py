@@ -9,7 +9,7 @@ import pwd
 import shutil
 import sys
 
-from macdaily.util.const import ROOT, bold, red, reset
+from macdaily.util.const import ROOT, bold, red, reset, under
 from macdaily.util.misc import (make_pipe, make_stderr, print_info, print_misc,
                                 print_scpt, print_term, python, run_script)
 
@@ -50,20 +50,25 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
     if os.path.isfile(askpass):
         owner = pwd.getpwuid(os.stat(askpass).st_uid).pw_name
         if user != owner:
-            run_script(['chown', user, askpass], quiet, verbose, sudo=True, password=password, logfile=logfile)
+            run_script(['chown', user, askpass], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
     else:
         try:
             pathlib.Path(askpass).touch()
         except PermissionError:
             owner = 'root'
-            run_script(['touch', askpass], quiet, verbose, sudo=True, password=password, logfile=logfile)
-            run_script(['chown', user, askpass], quiet, verbose, sudo=True, password=password, logfile=logfile)
+            run_script(['touch', askpass], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
+            run_script(['chown', user, askpass], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
 
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', 'u+x', askpass], quiet, verbose, logfile=logfile)
+    run_script(['chmod', 'u+x', askpass], quiet, verbose,
+               sudo=True, password=password, logfile=logfile)
     if user != owner:
-        run_script(['chown', owner, askpass], quiet, verbose, logfile=logfile)
+        run_script(['chown', owner, askpass], quiet, verbose,
+                   sudo=True, password=password, logfile=logfile)
 
     PLIST = collections.OrderedDict(
         Label='com.macdaily.askpass',
@@ -116,25 +121,33 @@ def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull
     if os.path.isfile(confirm):
         owner = pwd.getpwuid(os.stat(confirm).st_uid).pw_name
         if user != owner:
-            run_script(['chown', user, confirm], quiet, verbose, sudo=True, password=password, logfile=logfile)
+            run_script(['chown', user, confirm], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
     else:
         try:
             pathlib.Path(confirm).touch()
         except PermissionError:
             owner = 'root'
-            run_script(['touch', confirm], quiet, verbose, sudo=True, password=password, logfile=logfile)
-            run_script(['chown', user, confirm], quiet, verbose, sudo=True, password=password, logfile=logfile)
+            run_script(['touch', confirm], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
+            run_script(['chown', user, confirm], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
 
     with open(confirm, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', 'u+x', confirm], quiet, verbose, logfile=logfile)
+    run_script(['chmod', 'u+x', confirm], quiet, verbose,
+               sudo=True, password=password, logfile=logfile)
     if user != owner:
-        run_script(['chown', owner, confirm], quiet, verbose, logfile=logfile)
+        run_script(['chown', owner, confirm], quiet, verbose,
+                   sudo=True, password=password, logfile=logfile)
 
     return confirm
 
 
 def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devnull):
+    text = 'Launching MacDaily LaunchAgent program'
+    print_info(text, logfile, quiet)
+
     def make_daemon(mode, argv):
         DAEMON = ['#!/usr/bin/env osascript',
                   '',
@@ -171,24 +184,32 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         perr = str(root / mode / 'stderr.log')
         argv = ' '.join(config['Command'].get(mode)) or '--help'
 
+        text = 'Adding {}{}{}{} command LaunchAgent {!r}'.format(under, mode, reset, bold, name)
+        print_misc(text, logfile, quiet)
+
         user = owner = getpass.getuser()
         if os.path.isfile(path):
             owner = pwd.getpwuid(os.stat(path).st_uid).pw_name
             if user != owner:
-                run_script(['chown', user, path], quiet, verbose, sudo=True, password=password, logfile=logfile)
+                run_script(['chown', user, path], quiet, verbose,
+                           sudo=True, password=password, logfile=logfile)
         else:
             try:
                 pathlib.Path(path).touch()
             except PermissionError:
                 owner = 'root'
-                run_script(['touch', path], quiet, verbose, sudo=True, password=password, logfile=logfile)
-                run_script(['chown', user, path], quiet, verbose, sudo=True, password=password, logfile=logfile)
+                run_script(['touch', path], quiet, verbose,
+                           sudo=True, password=password, logfile=logfile)
+                run_script(['chown', user, path], quiet, verbose,
+                           sudo=True, password=password, logfile=logfile)
 
         with open(path, 'w') as file:
             file.write(make_daemon(mode, argv))
-        run_script(['chmod', 'u+x', path], quiet, verbose, logfile=logfile)
+        run_script(['chmod', 'u+x', path], quiet, verbose,
+                   sudo=True, password=password, logfile=logfile)
         if user != owner:
-            run_script(['chown', owner, path], quiet, verbose, logfile=logfile)
+            run_script(['chown', owner, path], quiet, verbose,
+                       sudo=True, password=password, logfile=logfile)
 
         PLIST = copy.copy(PLIST_BASE)
         PLIST['Label'] = name

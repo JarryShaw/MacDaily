@@ -216,18 +216,23 @@ def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logf
         file.write('command: {!r}\n'.format(args))
 
     try:
-        if sudo and password is not None:
-            sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
-            sudo_argv.extend(argv)
-            with make_pipe(password, verbose) as pipe:
-                proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
-                                               stderr=make_stderr(verbose))
+        if sudo:
+            if password is not None:
+                sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
+                sudo_argv.extend(argv)
+                with make_pipe(password, verbose) as pipe:
+                    proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
+                                                   stderr=make_stderr(verbose))
+            else:
+                sudo_argv = ['sudo']
+                sudo_argv.extend(argv)
+                proc = subprocess.check_output(sudo_argv, stderr=make_stderr(verbose))
         else:
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
         print_term("macdaily: {}misc{}: "
-                   "command `{}{!r}{}' failed".format(red, reset, bold, ' '.join(error.args), reset), logfile, redirect=quiet)
+                   "command `{}{!r}{}' failed".format(red, reset, bold, ' '.join(error.cmd), reset), logfile, redirect=quiet)
         raise
     else:
         context = proc.decode()
