@@ -73,7 +73,7 @@ MacDaily ``askpass`` helper program locates at
 ``SUDO_ASKPASS`` environment variable and used with ``sudo --askpass`` command
 (c.f. ``sudo(8)`` and ``sudo.conf(5)``).
 
-.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/doc/img/askpass.png
+.. image:: https://github.com/JarryShaw/MacDaily/tree/master/doc/img/askpass.png
 
 .. raw:: html
 
@@ -91,7 +91,7 @@ MacDaily ``confirm`` helper program locates at
 ``macdaily/res/confirm.applescript`` by default. It is to help MacDaily ask for
 confirmation when ``stdin`` is not available.
 
-.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/doc/img/confirm.png
+.. image:: https://github.com/JarryShaw/MacDaily/tree/master/doc/img/confirm.png
 
 .. raw:: html
 

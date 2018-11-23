@@ -274,27 +274,29 @@ get our hands dirty with some simple commands.
 .. code:: shell
 
     # call from PATH
-    $ macdaily [command ...] [flag ...]
+    $ macdaily [command ...] [option ...]
     # or call as Python module
-    $ python -m macdaily [command ...] [flag ...]
+    $ python -m macdaily [command ...] [option ...]
+    # or call a certain command
+    $ md-${command} [option ...]
 
-2. How to set up my disks and daemons?
+2. How to set up my disks and daemons interactively?
 
 .. code:: shell
 
-    $ macdaily config
+    $ macdaily config --interactive
 
 3.  How to relaunch daemons after I manually modified ``~/.dailyrc``?
 
 .. code:: shell
 
-    $ macdaily launch
+    $ macdaily launch daemons
 
-4.  How to archive ancient logs without running any commands?
+4.  How to archive all ancient logs without running any commands?
 
 .. code:: shell
 
-    $ macdaily archive
+    $ macdaily archive --all
 
 5.  How to update all outdated packages?
 
@@ -374,6 +376,8 @@ valid.
 +----------------+-----------------------------------------------+
 | |dependency|_  | ``deps``, ``dp``                              |
 +----------------+-----------------------------------------------+
+| ``help``       | ``doc``                                       |
++----------------+-----------------------------------------------+
 | |install|_     | ``i``                                         |
 +----------------+-----------------------------------------------+
 | |launch|_      | ``init``                                      |
@@ -388,6 +392,26 @@ valid.
 +----------------+-----------------------------------------------+
 | |update|_      | ``up``, ``upgrade``                           |
 +----------------+-----------------------------------------------+
+
+For more information, MacDaily provides ``commands`` to help you find out the
+expecting command.
+
+.. code:: shell
+
+    $ macdaily commands
+    MacDaily available commands & corresponding subsidiaries:
+        archive
+        bundle          dump, load
+        cleanup         brew, cask, npm, pip
+        config
+        dependency      brew, pip
+        install         apm, brew ,cask, gem, mas, npm, pip, system
+        launch          askpass, confirm, daemons
+        logging         apm, app, brew, cask, gem, mas, npm, pip, tap
+        postinstall
+        reinstall       brew, cask
+        uninstall       brew, cask, pip
+        update          apm, brew, cask, gem, mas, npm, pip, system
 
 Generals
 ~~~~~~~~
@@ -414,89 +438,89 @@ more detailed usage information, please refer to manuals of corresponding
 commands. For developers, internal details can be found in |miscellanea|_
 manual. And here is a brief catalogue for the manuals.
 
-- `Archive Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/archive.rst>`__
-- `Bundle Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/bundle.rst>`__
+- `Archive Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/archive.rst>`__
+- `Bundle Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/bundle.rst>`__
 
-  - `Dump Macfile <https://github.com/JarryShaw/MacDaily/blob/dev/doc/bundle.rst#dump>`__
-  - `Load Macfile <https://github.com/JarryShaw/MacDaily/blob/dev/doc/bundle.rst#load>`__
+  - `Dump Macfile <https://github.com/JarryShaw/MacDaily/tree/master/doc/bundle.rst#dump>`__
+  - `Load Macfile <https://github.com/JarryShaw/MacDaily/tree/master/doc/bundle.rst#load>`__
 
-- `Cleanup Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst>`__
+- `Cleanup Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst>`__
 
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst#brew>`__
-  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst#npm>`__
-  - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst#pip>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst#brew>`__
+  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst#npm>`__
+  - `Python Packages <https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst#pip>`__
 
-- `Config Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/config.rst>`__
-- `Dependency Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst>`__
+- `Config Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/config.rst>`__
+- `Dependency Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst>`__
 
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#brew>`__
-  - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst#pip>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst#brew>`__
+  - `Python Packages <https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst#pip>`__
 
-- `Install Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst>`__
+- `Install Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst>`__
 
-  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#apm>`__
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#cask>`__
-  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#gem>`__
-  - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#mas>`__
-  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst#npm>`__
-  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#pip>`__
-  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/install.rst#system>`__
+  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#apm>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#cask>`__
+  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#gem>`__
+  - `macOS Applications <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#mas>`__
+  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#npm>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/install.rst#pip>`__
+  - `System Software <https://github.com/JarryShaw/MacDaily/tree/master/src/install.rst#system>`__
 
-- `Launch Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst>`__
+- `Launch Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst>`__
 
-  - `Askpass Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#askpass>`__
-  - `Confirm Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#confirm>`__
-  - `Daemons Helper Program <https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst#daemons>`__
+  - `Askpass Helper Program <https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst#askpass>`__
+  - `Confirm Helper Program <https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst#confirm>`__
+  - `Daemons Helper Program <https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst#daemons>`__
 
-- `Logging Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst>`__
+- `Logging Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst>`__
 
-  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#apm>`__
-  - `Mac Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#app>`__
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#cask>`__
-  - `Ruby Gem <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#gem>`__
-  - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#mas>`__
-  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#npm>`__
-  - `Python Packages <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#pip>`__
-  - `Third-party Repositories <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#tap>`__
+  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#apm>`__
+  - `Mac Applications <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#app>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#cask>`__
+  - `Ruby Gem <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#gem>`__
+  - `macOS Applications <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#mas>`__
+  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#npm>`__
+  - `Python Packages <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#pip>`__
+  - `Third-party Repositories <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#tap>`__
 
-- `Postinstall Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/postinstall.rst>`__
-- `Reinstall Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/reinstall.rst>`__
+- `Postinstall Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/postinstall.rst>`__
+- `Reinstall Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/reinstall.rst>`__
 
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst#cask>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst#cask>`__
 
-- `Uninstall Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/uninstall.rst>`__
+- `Uninstall Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/uninstall.rst>`__
 
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/uninstall.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/uninstall.rst#cask>`__
-  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/uninstall.rst#pip>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/uninstall.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/uninstall.rst#cask>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/uninstall.rst#pip>`__
 
-- `Update Command <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst>`__
+- `Update Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst>`__
 
-  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#apm>`__
-  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#brew>`__
-  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#cask>`__
-  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#gem>`__
-  - `macOS Applications <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#mas>`__
-  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst#npm>`__
-  - `Python Package <https://github.com/JarryShaw/MacDaily/blob/dev/src/update.rst#pip>`__
-  - `System Software <https://github.com/JarryShaw/MacDaily/blob/dev/src/update.rst#system>`__
+  - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#apm>`__
+  - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#brew>`__
+  - `Caskroom Binaries <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#cask>`__
+  - `Ruby Gems <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#gem>`__
+  - `macOS Applications <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#mas>`__
+  - `Node.js Modules <https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst#npm>`__
+  - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#pip>`__
+  - `System Software <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#system>`__
 
-- `Developer Manual <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst>`__
+- `Developer Manual <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst>`__
 
-  - `Project Structure <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#repo>`__
-  - `Command Classes <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#cmd>`__
-  - `Miscellaneous Utilities <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#util>`__
+  - `Project Structure <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#repo>`__
+  - `Command Classes <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#cmd>`__
+  - `Miscellaneous Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#util>`__
 
-    - `ANSI Sequences <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#color>`__
-    - `Print Utilities <https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#print>`__
+    - `ANSI Sequences <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#color>`__
+    - `Print Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#print>`__
     - |script|_
 
 .. |script| replace:: UNIX ``script``
-.. _script: https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst#script
+.. _script: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#script
 
 Troubleshooting
 ---------------
@@ -544,31 +568,31 @@ TODO
 - ❌ implement ``bundle`` and ``help`` commands
 
 .. |archive| replace:: ``archive``
-.. _archive: https://github.com/JarryShaw/MacDaily/blob/dev/doc/archive.rst
+.. _archive: https://github.com/JarryShaw/MacDaily/tree/master/doc/archive.rst
 .. |bundle| replace:: ``bundle``
-.. _bundle: https://github.com/JarryShaw/MacDaily/blob/dev/doc/bundle.rst
+.. _bundle: https://github.com/JarryShaw/MacDaily/tree/master/doc/bundle.rst
 .. |cleanup| replace:: ``cleanup``
-.. _cleanup: https://github.com/JarryShaw/MacDaily/blob/dev/doc/cleanup.rst
+.. _cleanup: https://github.com/JarryShaw/MacDaily/tree/master/doc/cleanup.rst
 .. |config| replace:: ``config``
-.. _config: https://github.com/JarryShaw/MacDaily/blob/dev/doc/config.rst
+.. _config: https://github.com/JarryShaw/MacDaily/tree/master/doc/config.rst
 .. |dependency| replace:: ``dependency``
-.. _dependency: https://github.com/JarryShaw/MacDaily/blob/dev/doc/dependency.rst
+.. _dependency: https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst
 .. |install| replace:: ``install``
-.. _install: https://github.com/JarryShaw/MacDaily/blob/dev/doc/install.rst
+.. _install: https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst
 .. |launch| replace:: ``launch``
-.. _launch: https://github.com/JarryShaw/MacDaily/blob/dev/doc/launch.rst
+.. _launch: https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst
 .. |logging| replace:: ``logging``
-.. _logging: https://github.com/JarryShaw/MacDaily/blob/dev/doc/logging.rst
+.. _logging: https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst
 .. |miscellanea| replace:: ``miscellanea``
-.. _miscellanea: https://github.com/JarryShaw/MacDaily/blob/dev/doc/miscellanea.rst
+.. _miscellanea: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst
 .. |postinstall| replace:: ``postinstall``
-.. _postinstall: https://github.com/JarryShaw/MacDaily/blob/dev/doc/postinstall.rst
+.. _postinstall: https://github.com/JarryShaw/MacDaily/tree/master/doc/postinstall.rst
 .. |reinstall| replace:: ``reinstall``
-.. _reinstall: https://github.com/JarryShaw/MacDaily/blob/dev/doc/reinstall.rst
+.. _reinstall: https://github.com/JarryShaw/MacDaily/tree/master/doc/reinstall.rst
 .. |uninstall| replace:: ``uninstall``
-.. _uninstall: https://github.com/JarryShaw/MacDaily/blob/dev/doc/uninstall.rst
+.. _uninstall: https://github.com/JarryShaw/MacDaily/tree/master/doc/uninstall.rst
 .. |update| replace:: ``update``
-.. _update: https://github.com/JarryShaw/MacDaily/blob/dev/doc/update.rst
+.. _update: https://github.com/JarryShaw/MacDaily/tree/master/doc/update.rst
 
 .. |download| image:: http://pepy.tech/badge/macdaily
    :target: http://pepy.tech/count/macdaily

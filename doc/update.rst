@@ -499,7 +499,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 Possible Python executables and corresponding flags are listed as below.
 
-.. image:: https://github.com/JarryShaw/MacDaily/blob/dev/doc/img/Python.png
+.. image:: https://github.com/JarryShaw/MacDaily/tree/master/doc/img/Python.png
 
 NB
     Python provided by macOS system (normally located at ``/usr/bin/python`` or
