@@ -165,6 +165,10 @@ SEE ALSO
   * ``macdaily-dependency-brew``
   * ``macdaily-dependency-pip``
 
+* MacDaily Usage Information Manual
+
+  * ``macdaily-help``
+
 * macOS Package Automate Installer
 
   * ``macdaily-install``

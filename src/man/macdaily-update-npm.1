@@ -1,8 +1,8 @@
 .\" Man page generated from reStructuredText.
 .
-.TH MACDAILY-LOGGING-GEM 1 "November 24, 2018" "2018.11.24a3" ""
+.TH MACDAILY-UPDATE-NPM 1 "November 24, 2018" "2018.11.24a3" ""
 .SH NAME
-macdaily-logging-gem \- Ruby Gem Logging Automator
+macdaily-update-npm \- Node.js Module Update Automator
 .
 .nr rst2man-indent-level 0
 .
@@ -32,7 +32,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .SH SYNOPSIS
 .sp
-macdaily \fBlogging\fP \fIgem\fP [\fIoptions\fP] ...
+macdaily \fBupdate\fP \fInpm\fP [\fIoptions\fP] <\fImodules\fP>
 .SH OPTIONS
 .SS optional arguments
 .INDENT 0.0
@@ -46,14 +46,15 @@ show program\(aqs version number and exit
 .SS specification arguments
 .INDENT 0.0
 .TP
-.B \-b\fP,\fB  \-\-brew
-log gems of Ruby installed from Homebrew
-.TP
-.B \-s\fP,\fB  \-\-system
-log gems of Ruby provided by macOS system
+.B \-p \fIMOD\fP [\fIMOD\fP ...], \-\-packages \fIMOD\fP [\fIMOD\fP ...]
+name of Node.js modules to update
 .UNINDENT
 .SS general arguments
 .INDENT 0.0
+.TP
+.B \-a\fP,\fB  \-\-all
+update all Node.js modules installed through Node.js
+Package Manager
 .TP
 .B \-q\fP,\fB  \-\-quiet
 run in quiet mode, with no output information
@@ -61,34 +62,41 @@ run in quiet mode, with no output information
 .B \-v\fP,\fB  \-\-verbose
 run in verbose mode, with detailed output information
 .TP
+.B \-y\fP,\fB  \-\-yes
+yes for all selections
+.TP
 .B \-n\fP,\fB  \-\-no\-cleanup
 do not run cleanup process
+.UNINDENT
+.SS miscellaneous arguments
+.INDENT 0.0
 .TP
-.B \-l\fP,\fB  \-\-show\-log
-open log in \fIConsole.app\fP upon completion of command
+.B \-L \fIARG\fP, \-\-logging \fIARG\fP
+options for \fBnpm outdated \-\-global\fP command
+.TP
+.B \-U \fIARG\fP, \-\-update \fIARG\fP
+options for \fBnpm upgrade \-\-global <module>\fP command
 .UNINDENT
 .SH SEE ALSO
 .INDENT 0.0
 .IP \(bu 2
-\fBgem(1)\fP
+\fBnpm(1)\fP
 .IP \(bu 2
-\fBmacdaily\-logging\fP
+\fBmacdaily\-update\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-apm\fP
+\fBmacdaily\-update\-apm\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-app\fP
+\fBmacdaily\-update\-brew\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-brew\fP
+\fBmacdaily\-update\-cask\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-cask\fP
+\fBmacdaily\-update\-gem\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-mas\fP
+\fBmacdaily\-update\-mas\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-npm\fP
+\fBmacdaily\-update\-pip\fP
 .IP \(bu 2
-\fBmacdaily\-logging\-pip\fP
-.IP \(bu 2
-\fBmacdaily\-logging\-tap\fP
+\fBmacdaily\-update\-system\fP
 .UNINDENT
 .SH AUTHOR
 Jarry Shaw, a newbie programmer, is the author, owner

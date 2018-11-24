@@ -46,6 +46,7 @@ general arguments
 SEE ALSO
 ========
 
+* ``gem(1)``
 * ``macdaily-logging``
 * ``macdaily-logging-apm``
 * ``macdaily-logging-app``

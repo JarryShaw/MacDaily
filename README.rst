@@ -372,11 +372,13 @@ valid.
 +----------------+-----------------------------------------------+
 | |cleanup|_     | ``clean``                                     |
 +----------------+-----------------------------------------------+
+| ``commands``   |                                               |
++----------------+-----------------------------------------------+
 | |config|_      | ``cfg``                                       |
 +----------------+-----------------------------------------------+
 | |dependency|_  | ``deps``, ``dp``                              |
 +----------------+-----------------------------------------------+
-| ``help``       | ``doc``                                       |
+| |help|_        | ``doc``, ``man``                              |
 +----------------+-----------------------------------------------+
 | |install|_     | ``i``                                         |
 +----------------+-----------------------------------------------+
@@ -457,6 +459,7 @@ manual. And here is a brief catalogue for the manuals.
   - `Homebrew Formulae <https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst#brew>`__
   - `Python Packages <https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst#pip>`__
 
+- `Help Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/help.rst>`__
 - `Install Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst>`__
 
   - `Atom Plug-Ins <https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst#apm>`__
@@ -577,6 +580,8 @@ TODO
 .. _config: https://github.com/JarryShaw/MacDaily/tree/master/doc/config.rst
 .. |dependency| replace:: ``dependency``
 .. _dependency: https://github.com/JarryShaw/MacDaily/tree/master/doc/dependency.rst
+.. |help| replace:: ``help``
+.. _help: https://github.com/JarryShaw/MacDaily/tree/master/doc/help.rst
 .. |install| replace:: ``install``
 .. _install: https://github.com/JarryShaw/MacDaily/tree/master/doc/install.rst
 .. |launch| replace:: ``launch``

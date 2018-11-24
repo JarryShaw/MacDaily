@@ -8,7 +8,7 @@ from macdaily.api.archive import archive
 from macdaily.api.cleanup import cleanup
 from macdaily.api.config import config
 from macdaily.api.dependency import dependency
-# from macdaily.api.help import help
+from macdaily.api.help import help_
 from macdaily.api.install import install
 from macdaily.api.launch import launch
 from macdaily.api.logging import logging
@@ -16,44 +16,14 @@ from macdaily.api.postinstall import postinstall
 from macdaily.api.reinstall import reinstall
 from macdaily.api.uninstall import uninstall
 from macdaily.api.update import update
-from macdaily.util.const import __version__
+from macdaily.util.const import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE,
+                                 MAP_CLEANUP, MAP_COMMANDS, MAP_CONFIG,
+                                 MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
+                                 MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
+                                 MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE,
+                                 __version__)
 from macdaily.util.error import CommandNotImplemented
 from macdaily.util.misc import beholder
-
-# command mappings
-MAP_COMMANDS = {'commands'}
-MAP_HELP = {'help', 'doc'}
-MAP_ARCHIVE = {'archive'}
-MAP_BUNDLE = {'bundle'}
-MAP_CLEANUP = {'cleanup', 'clean'}
-MAP_CONFIG = {'config', 'cfg'}
-MAP_DEPENDENCY = {'dependency', 'deps', 'dp'}
-MAP_INSTALL = {'install', 'i'}
-MAP_LAUNCH = {'launch', 'init'}
-MAP_LOGGING = {'logging', 'log'}
-MAP_POSTINSTALL = {'postinstall', 'post', 'ps'}
-MAP_REINSTALL = {'reinstall', 're'}
-MAP_UNINSTALL = {'uninstall', 'un', 'unlink', 'remove', 'rm', 'r'}
-MAP_UPDATE = {'update', 'up', 'upgrade'}
-MAP_ALL = (MAP_COMMANDS | MAP_HELP | MAP_ARCHIVE | MAP_BUNDLE | MAP_CLEANUP | MAP_CONFIG | MAP_DEPENDENCY |
-           MAP_INSTALL | MAP_LAUNCH | MAP_LOGGING | MAP_POSTINSTALL | MAP_REINSTALL | MAP_UNINSTALL | MAP_UPDATE)
-
-# available commands
-COMMANDS = '''\
-MacDaily available commands & corresponding subsidiaries:
-    archive
-    bundle          dump, load
-    cleanup         brew, cask, npm, pip
-    config
-    dependency      brew, pip
-    install         apm, brew ,cask, gem, mas, npm, pip, system
-    launch          askpass, confirm, daemons
-    logging         apm, app, brew, cask, gem, mas, npm, pip, tap
-    postinstall
-    reinstall       brew, cask
-    uninstall       brew, cask, pip
-    update          apm, brew, cask, gem, mas, npm, pip, system
-'''
 
 
 def get_parser():
@@ -82,9 +52,6 @@ def main():
 
     if command in MAP_COMMANDS:
         print(COMMANDS, end='')
-    elif command in MAP_HELP:
-        # help_(options)
-        raise CommandNotImplemented
     elif command in MAP_ARCHIVE:
         archive(options)
     elif command in MAP_BUNDLE:
@@ -96,6 +63,8 @@ def main():
         config(options)
     elif command in MAP_DEPENDENCY:
         dependency(options)
+    elif command in MAP_HELP:
+        help_(options)
     elif command in MAP_INSTALL:
         install(options)
     elif command in MAP_LAUNCH:
