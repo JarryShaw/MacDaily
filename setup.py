@@ -18,7 +18,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.23a2'
+__version__ = '2018.11.24a3'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -33,10 +33,10 @@ setuptools.setup(
     version=__version__,
     author='Jarry Shaw',
     author_email='jarryshaw@icloud.com',
-    url='https://github.com/JarryShaw/macdaily#macdaily',
+    url='https://github.com/JarryShaw/MacDaily#macdaily',
     license='GNU General Public License v3 (GPLv3)',
     keywords='daily utility script',
-    description='Package day-care manager on macOS.',
+    description='macOS Automate Package Manager',
     long_description=long_description,
     # long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',
@@ -58,7 +58,7 @@ setuptools.setup(
             'md-cleanup = macdaily.api.cleanup:cleanup',
             'md-config = macdaily.api.config:config [config]',
             'md-dependency = macdaily.api.dependency:dependency [tree]',
-            # 'md-help = macdaily.api.help:help',
+            'md-help = macdaily.api.help:help_',
             'md-install = macdaily.api.install:install',
             'md-launch = macdaily.api.launch:launch',
             'md-logging = macdaily.api.logging:logging',
@@ -93,6 +93,7 @@ setuptools.setup(
             'LICENSE',
             'README.rst',
         ],
+        'macdaily.man': ['*.1'],
         'macdaily.img': ['*.icns'],
         'macdaily.res': ['*.py', '*.applescript'],
     },

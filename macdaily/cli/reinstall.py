@@ -129,7 +129,7 @@ def get_cask_parser():
                                  help='reinstall procedure ends after such binary, sort in initial alphabets')
     cask_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='reinstall even if the Cask does not appear to be present')
-    cask_spec_group.add_argument('-t', '--no_quarantine', action='store_true',
+    cask_spec_group.add_argument('-t', '--no-quarantine', action='store_true',
                                  help='prevent Gatekeeper from enforcing its security restrictions on the Cask')
     cask_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='CASK',
                                  help='name of Caskroom binaries to reinstall')
