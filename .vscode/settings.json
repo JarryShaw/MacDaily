@@ -23,6 +23,7 @@
         "dskdir",
         "dskname",
         "dskpath",
+        "emsp",
         "gecos",
         "genl",
         "getpwnam",
@@ -68,7 +69,7 @@
     "restructuredtext.builtDocumentationPath": "${workspaceRoot}/sphinx/build/html",
     "restructuredtext.updateOnTextChanged": "true",
     "restructuredtext.updateDelay": 300,
-    "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/sphinx-build",
+    "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/sphinx-build",
     "restructuredtext.confPath": "${workspaceFolder}/sphinx/source",
-    "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/doc8",
+    "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/doc8",
 }

@@ -6,6 +6,14 @@ set -x
 # update version string
 python3 setup-version.py
 
+# update manpages
+cd contrib
+for file in $( ls *.rst ); do
+    name=${file%.rst*}
+    pipenv run rst2man.py ${file} > "../src/man/${name}.1"
+done
+cd ..
+
 # duplicate distribution files
 mkdir -p release
 rm -rf release/src \

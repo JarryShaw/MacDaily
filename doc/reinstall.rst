@@ -186,7 +186,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
                           initial alphabets
     -f, --force           reinstall even if the Cask does not appear to be
                           present
-    -t, --no_quarantine   prevent Gatekeeper from enforcing its security
+    -t, --no-quarantine   prevent Gatekeeper from enforcing its security
                           restrictions on the Cask
     -p CASK [CASK ...], --packages CASK [CASK ...]
                           name of Caskroom binaries to reinstall

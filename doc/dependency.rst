@@ -65,7 +65,7 @@ Usage
       -n, --no-cleanup      do not run cleanup process
       -l, --show-log        open log in Console.app upon completion of command
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -o, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
@@ -158,7 +158,7 @@ Commands
       -v, --verbose         run in verbose mode, with detailed output information
       -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -o, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
@@ -201,7 +201,7 @@ might give a trivial *did-you-mean* correction.
       -v, --verbose         run in verbose mode, with detailed output information
       -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -o, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 

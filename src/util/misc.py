@@ -80,7 +80,7 @@ def get_pass(askpass):
             print(reset)
             raise
     return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
+                                   stderr=subprocess.DEVNULL).strip().decode()
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):

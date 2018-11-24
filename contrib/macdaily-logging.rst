@@ -1,0 +1,93 @@
+================
+macdaily-logging
+================
+
+-------------------------------
+macOS Package Logging Automator
+-------------------------------
+
+:Version: 2018.11.24a3
+:Date: November 24, 2018
+:Manual section: 1
+:Author:
+    Jarry Shaw, a newbie programmer, is the author, owner
+    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+:Copyright:
+    *MacDaily* is licensed under the **GNU General Public License v3.0**.
+
+SYNOPSIS
+========
+
+macdaily **logging** [*options*] <*mode-selection*> ...
+
+aliases: **log**
+
+DESCRIPTION
+===========
+
+*MacDaily* provides intelligent solution for package logging automation.
+*MacDaily* ``logging`` command will automatically record all existing packages
+installed through --
+
+- *apm* -- Atom Package Manager
+- *app* -- macOS Applications
+- *brew* -- Homebrew
+- *cask* -- Homebrew Casks
+- *gem* -- RubyGems
+- *mas* -- Mac App Store CLI
+- *npm* -- Node.js Package Manager
+- *pip* -- Pip Installs Packages
+- *tap* -- Homebrew Taps
+
+OPTIONS
+=======
+
+optional arguments
+------------------
+
+-h, --help         show this help message and exit
+-V, --version      show program's version number and exit
+
+general arguments
+-----------------
+
+-a, --all         log all packages installed through Atom, RubyGems,
+                  Node.js, Homebrew, Caskroom, Mac App Store, and etc
+-q, --quiet       run in quiet mode, with no output information
+-v, --verbose     run in verbose mode, with detailed output information
+-n, --no-cleanup  do not run cleanup process
+-l, --show-log    open log in *Console.app* upon completion of command
+
+control arguments
+-----------------
+
+options used to disable logging of certain mode
+
+--no-apm          do not log Atom plug-ins
+--no-app          do not log system applications
+--no-gem          do not log Ruby gems
+--no-mas          do not log macOS applications
+--no-npm          do not log Node.js modules
+--no-pip          do not log Python packages
+--no-tap          do not log Homebrew Taps
+--no-brew         do not log Homebrew formulae
+--no-cask         do not log Homebrew Casks
+
+mode selection
+--------------
+
+log existing packages installed through a specified method, e.g.: *apm*,
+*app*, *gem*, *mas*, *npm*, *pip*, *tap*, *brew*, *cask*
+
+SEE ALSO
+========
+
+* ``macdaily-logging-apm``
+* ``macdaily-logging-app``
+* ``macdaily-logging-brew``
+* ``macdaily-logging-cask``
+* ``macdaily-logging-gem``
+* ``macdaily-logging-mas``
+* ``macdaily-logging-npm``
+* ``macdaily-logging-pip``
+* ``macdaily-logging-tap``
