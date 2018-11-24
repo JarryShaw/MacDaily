@@ -347,7 +347,8 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
             return exp
 
     with open(file, 'ab') as typescript:
-        returncode = ptyng.spawn(argv, master_read, stdin_read, timeout=timeout)
+        returncode = ptyng.spawn(argv, master_read, stdin_read,
+                                 timeout=timeout, env=os.environ)
     # if not test.decode().endswith(os.linesep):
     #     sys.stdout.write(os.linesep)
     return returncode

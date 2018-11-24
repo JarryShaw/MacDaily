@@ -6,7 +6,7 @@ macdaily-cleanup-cask
 Homebrew Cask Cache Cleanup
 ---------------------------
 
-:Version: 2018.11.24a3
+:Version: 2018.11.24
 :Date: November 23, 2018
 :Manual section: 1
 :Author:

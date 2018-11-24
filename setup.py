@@ -3,7 +3,10 @@
 import platform
 import sys
 
-import setuptools
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 # check platform
 if platform.system() != 'Darwin':
@@ -18,7 +21,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.24a3'
+__version__ = '2018.11.24'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -28,7 +31,7 @@ __version__ = '2018.11.24a3'
 #     break
 
 # set-up script for pip distribution
-setuptools.setup(
+setup(
     name='macdaily',
     version=__version__,
     author='Jarry Shaw',
@@ -101,8 +104,8 @@ setuptools.setup(
         # 'Development Status :: 7 - Inactive',
         # 'Development Status :: 6 - Mature',
         # 'Development Status :: 5 - Production/Stable',
-        # 'Development Status :: 4 - Beta',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
+        # 'Development Status :: 3 - Alpha',
         # 'Development Status :: 2 - Pre-Alpha',
         # 'Development Status :: 1 - Planning',
         'Environment :: Console',

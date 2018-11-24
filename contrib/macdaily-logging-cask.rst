@@ -6,7 +6,7 @@ macdaily-logging-cask
 Homebrew Cask Logging Automator
 -------------------------------
 
-:Version: 2018.11.24a3
+:Version: 2018.11.24
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

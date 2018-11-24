@@ -34,11 +34,10 @@
         },
         "ptyng": {
             "hashes": [
-                "sha256:96854a1540e6bbfdc97f3c9311807eba9a223f336442d32346d9169dfb2e900f",
-                "sha256:f0999c565752a69bdb98995feb75cdc17f4c86846a65c63d95c794ec0fd5fbfb"
+                "sha256:d0e4e1bad7f9ca1bfc34f2f48f5c8a390c2e4ba0c8538f1fcbcc68357a249326"
             ],
             "index": "pypi",
-            "version": "==0.2.0.post4"
+            "version": "==0.2.1"
         }
     },
     "develop": {
