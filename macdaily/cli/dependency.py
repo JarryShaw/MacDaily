@@ -74,7 +74,7 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-dependency-pip',
                                          description='Python Package Dependency Query',
-                                         usage='macdaily dependency pip [options] <packages>')
+                                         usage='macdaily dependency pip [options] <packages> ...')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -125,7 +125,7 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-dependency-brew',
                                           description='Homebrew Formula Dependency Query',
-                                          usage='macdaily dependency brew [options] <formulae>')
+                                          usage='macdaily dependency brew [options] <formulae> ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 

@@ -63,12 +63,12 @@ CONFIG = ['[Path]',
           'update  = --all --quiet --show-log',
           'logging = --all --quiet --show-log',
           '',
-          '[Miscellanea]',
+          '[Miscellaneous]',
           '# In this section, miscellaneous specifications are assigned.',
           '# Please, under any circumstances, make sure all fields are valid.',
           'askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks',
           'confirm = ...                                               ; confirm utility for MacDaily',
-          'timeout = 300                                               ; timeout limit for shell commands in seconds',
+          'timeout = 1000                                              ; timeout limit for shell commands in seconds',
           '']
 
 
@@ -142,20 +142,20 @@ def parse_config(quiet=False, verbose=False):
     for mode, argv in config['Command'].items():
         cfg_dict['Command'][mode] = shlex.split(argv)
 
-    # Miscellanea section
-    askpass = os.path.realpath(config['Miscellanea']['askpass'])
+    # Miscellaneous section
+    askpass = os.path.realpath(config['Miscellaneous']['askpass'])
     if not os.access(askpass, os.X_OK):
         askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
         run_script(['sudo', 'chmod', 'u+x', askpass], quiet, verbose)
 
-    confirm = os.path.realpath(config['Miscellanea']['confirm'])
+    confirm = os.path.realpath(config['Miscellaneous']['confirm'])
     if not os.access(confirm, os.X_OK):
         confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
         run_script(['sudo', 'chmod', 'u+x', confirm], quiet, verbose)
 
-    cfg_dict['Miscellanea']['askpass'] = askpass
-    cfg_dict['Miscellanea']['confirm'] = confirm
-    cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout', None)
+    cfg_dict['Miscellaneous']['askpass'] = askpass
+    cfg_dict['Miscellaneous']['confirm'] = confirm
+    cfg_dict['Miscellaneous']['timeout'] = config['Miscellaneous'].getint('timeout', None)
 
     return dict(cfg_dict)
 
@@ -216,7 +216,7 @@ def make_config(quiet=False, verbose=False):
 
     # parse config
     config = parse_config(quiet, verbose)
-    askpass = config['Miscellanea']['askpass']
+    askpass = config['Miscellaneous']['askpass']
 
     # ask for password
     text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)

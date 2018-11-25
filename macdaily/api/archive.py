@@ -35,7 +35,7 @@ def archive(argv=None):
 
     # parse config & change environ
     config = parse_config(quiet, verbose)
-    os.environ['SUDO_ASKPASS'] = config['Miscellanea']['askpass']
+    os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
 
     # fetch current time
     today = datetime.datetime.today()

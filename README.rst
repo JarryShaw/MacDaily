@@ -4,13 +4,13 @@
 :Language: Python (version ≥ 3.4)
 :Environment: Console | Terminal
 
-========
-MacDaily
-========
+==========================================
+MacDaily - macOS Automated Package Manager
+==========================================
 
-|download| |version| |format| |status|
+|download| |version| |status|
 
-|python| |implementation|
+|format| |python| |implementation|
 
 - `About <#about>`__
 - `Installation <#installation>`__
@@ -29,14 +29,20 @@ MacDaily
 About
 -----
 
-  Package day-care manager on macOS.
+    Package day-care manager on macOS.
 
-**MacDaily** is a mediate collection of console scripts written in Python
+**MacDaily** is an all-in-one collection of console utility written in Python
 with support of `PTY <https://en.wikipedia.org/wiki/Pseudo_terminal>`__.
-Originally works as an automatic housekeeper for Mac to update all packages
-outdated, **MacDaily** is now fully functioned and end-user oriented. Without
-being aware of everything about your Mac, one can easily work around and
-manage packages out of no pain using **MacDaily**.
+Originally works as an automated housekeeper for Mac to update all packages
+outdated, **MacDaily** is now fully functioned and end-user oriented.
+
+**MacDaily** can manage packages of `Atom <https://atom.io>`__,
+`RubyGems <https://rubygems.org>`__, `Homebrew <https://brew.sh>`__,
+`Python <https://pypy.org>`__, `Node.js <https://nodejs.org>`__,
+`Mac App Store <https://en.wikipedia.org/wiki/App_Store_(macOS)>`__
+and even macOS software updates (c.f. ``softwareupdate(8)``). Without being
+aware of everything about your Mac, one can easily work around and manage
+packages out of no pain using **MacDaily**.
 
 Installation
 ------------
@@ -53,7 +59,7 @@ version from `PyPI <https://pypi.org>`__.
 
     $ pip install macdaily
 
-Or if you prefer the real-latest version and fetch from this Git
+Or if you prefer the hard-core real-latest version and fetch from this GitHub
 repository, then the script below should be used.
 
 .. code:: shell
@@ -75,7 +81,7 @@ approach is from `Homebrew <https://brew.sh>`__, as shown below.
 .. |expect| replace:: ``expect``
 .. _expect: https://core.tcl.tk/expect
 
-Or if you prefer not to install ``unbuffer``, MacDaily will use
+Or if you prefer not to install |expect|_, MacDaily will use
 |UNIX script utility|_ instead. Make sure that ``/usr/bin/script``
 exists and ``/usr/bin`` is in your ``PATH`` environment variable.
 
@@ -101,7 +107,7 @@ you may use the script below.
 For **tree** format support in ``dependency`` command, you will need
 |dictdumper|_, then implicitly you can use the following script to do so.
 
-.. |dictdumper| replace:: ``dictdumper``
+.. |dictdumper| replace:: ``DictDumper``
 .. _dictdumper: https://github.com/JarryShaw/DictDumper
 
 .. code:: shell
@@ -110,10 +116,10 @@ For **tree** format support in ``dependency`` command, you will need
     # or explicitly...
     $ pip install macdaily dictdumper
 
-And |configupdater|_ is required to support modification of configuration file
-in ``config`` command, since MacDaily intend to maintain the original layout
-and information of a configuration file after modifying it. To install, the
-sample script is as below.
+And |configupdater|_ is required to support modification of the configuration
+file in ``config`` command, since MacDaily intends to maintain the original
+layout and information of original configuration file after modification. To
+install, the sample script is as below.
 
 .. |configupdater| replace:: ``ConfigUpdater``
 .. _configupdater: https://configupdater.readthedocs.io
@@ -150,7 +156,7 @@ NB
 The configuration file should lie under ``~/.dailyrc``, which is hidden
 from Finder by macOS. To review or edit it, you may use text editors
 like ``vim`` and/or ``nano``, or other graphic editors, such as Sublime
-Text and/or Virtual Studio Code, or whatever you find favourable.
+Text and/or Visual Studio Code, or whatever you find favourable.
 
 .. code:: ini
 
@@ -202,12 +208,12 @@ Text and/or Virtual Studio Code, or whatever you find favourable.
     update  = --all --quiet --show-log
     logging = --all --quiet --show-log
 
-    [Miscellanea]
+    [Miscellaneous]
     # In this section, miscellaneous specifications are assigned.
     # Please, under any circumstances, make sure all fields are valid.
     askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks
     confirm = ...                                               ; confirm utility for MacDaily
-    timeout = 300                                               ; timeout limit for shell commands in seconds
+    timeout = 1000                                              ; timeout limit for shell commands in seconds
 
 Above is the default content of ``.dailyrc``, following the grammar of
 ``INI`` files. Lines and words after number sign (``#``) and semicolon
@@ -223,8 +229,8 @@ which allows MacDaily to archive your ancient logs and caches into
 somewhere never bothers.
 
 Please **NOTE** that, under all circumstances, of section ``Path``,
-all values would better be a **valid path name without blank
-characters** (``' \t\n\r\f\v'``), except your hard disk ``dskdir``.
+all values would better be a **valid path name**, possibly with ``~``
+user-home expansion.
 
 Besides, in section ``Daemon``, you can decide which command is
 scheduled and when to run such command, with the format of
@@ -237,28 +243,14 @@ will register all commands that set ``true`` in the above boolean values.
 
 Also, in section ``Option``, you may set up optional arguments for
 the daemons above. Do please make sure these commands are **valid**. And
-if omit, an empty arguments will be given.
+if omit, the help command ``--help`` will be given.
 
-Last but no least, in section ``Miscellanea``, you should **NEVER**
+Last but no least, in section ``Miscellaneous``, you should **NEVER**
 modify any contents under this section in order to keep MacDaily
 working. However, you may set up this part with |config|_ command.
 
 Usage Manual
 ------------
-
-.. code:: man
-
-    usage: macdaily [options] <command> ...
-
-    macOS Automate Package Manager
-
-    optional arguments:
-      -h, --help     show this help message and exit
-      -V, --version  show program's version number and exit
-
-    Commands:
-      MacDaily provides a friendly CLI workflow for the administrator of macOS
-      to manipulate packages
 
 Start-Up
 ~~~~~~~~
@@ -274,9 +266,9 @@ get our hands dirty with some simple commands.
 .. code:: shell
 
     # call from PATH
-    $ macdaily [command ...] [option ...]
+    $ macdaily <command> [option ...]
     # or call as Python module
-    $ python -m macdaily [command ...] [option ...]
+    $ python -m macdaily <command> [option ...]
     # or call a certain command
     $ md-${command} [option ...]
 
@@ -322,7 +314,7 @@ get our hands dirty with some simple commands.
 
 .. code:: shell
 
-    $ macdaily uninstall pip --brew --cpython --python=3.6 --package pytest
+    $ macdaily uninstall pip --brew --cpython --python=3.6 --package=pytest
 
 9.  How to reinstall all packages but do not cleanup caches?
 
@@ -348,7 +340,7 @@ get our hands dirty with some simple commands.
 
 .. code:: shell
 
-    $ macdaily logging dotapp
+    $ macdaily logging app
 
 13. How to dump a ``Macfile`` to keep track of all packages?
 
@@ -418,26 +410,24 @@ expecting command.
 Generals
 ~~~~~~~~
 
-The man page of MacDaily shows as below.
-
 .. code:: man
 
-    $ macdaily --help
-    usage: macdaily [-h] command
+    usage: macdaily [options] <command> ...
 
-    Package Day Care Manager
+    macOS Automated Package Manager
 
     optional arguments:
       -h, --help     show this help message and exit
       -V, --version  show program's version number and exit
 
-    Commands:
-      macdaily provides a friendly CLI workflow for the administrator of macOS to
-      manipulate packages
+    command selection:
+      MacDaily provides a friendly CLI workflow for the administrator of macOS
+      to manage and manipulate packages, see 'macdaily commands' for more
+      information
 
 Commands for ``macdaily`` is shown as above and they are mandatory. For
 more detailed usage information, please refer to manuals of corresponding
-commands. For developers, internal details can be found in |miscellanea|_
+commands. For developers, internal details can be found in |miscellaneous|_
 manual. And here is a brief catalogue for the manuals.
 
 - `Archive Command <https://github.com/JarryShaw/MacDaily/tree/master/doc/archive.rst>`__
@@ -512,18 +502,18 @@ manual. And here is a brief catalogue for the manuals.
   - `Python Package <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#pip>`__
   - `System Software <https://github.com/JarryShaw/MacDaily/tree/master/src/update.rst#system>`__
 
-- `Developer Manual <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst>`__
+- `Developer Manual <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst>`__
 
-  - `Project Structure <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#repo>`__
-  - `Command Classes <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#cmd>`__
-  - `Miscellaneous Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#util>`__
+  - `Project Structure <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#repo>`__
+  - `Command Classes <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#cmd>`__
+  - `Miscellaneous Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#util>`__
 
-    - `ANSI Sequences <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#color>`__
-    - `Print Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#print>`__
+    - `ANSI Sequences <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#color>`__
+    - `Print Utilities <https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#print>`__
     - |script|_
 
 .. |script| replace:: UNIX ``script``
-.. _script: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst#script
+.. _script: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst#script
 
 Troubleshooting
 ---------------
@@ -537,7 +527,7 @@ Troubleshooting
 
     Note that, normally, you can only find today's logs in the folder,
     since ``macdaily`` automatically archive ancient logs into
-    ``${logdir}/archive`` folder. And every week, ``${logdir}/archive``
+    ``${logdir}/arcfile`` folder. And every week, ``${logdir}/arcfile``
     folder will be tape-archived into ``${logdir}/tarfile``. Then after a
     month, and your hard disk available, they will be moved into
     ``/Volumes/Your Disk/Developers/archive.zip``.
@@ -551,10 +541,9 @@ Troubleshooting
     paths in ``~/.dailyrc`` manually, **EXCEPT** your disk path
     ``dskdir``.
 
-    But if you insist to do so, then make sure they are **VALID** and
-    **available** with permission granted, and most importantly, have
-    **NO** blank characters (``' \t\n\r\f\v'``) in the path, except
-    ``dskdir``.
+    But if you insist to do so, then make sure they are **VALID**, possibly
+    with ``~`` user-home expansion and most importantly, they must be
+    **available** with permission granted.
 
 TODO
 ----
@@ -588,8 +577,8 @@ TODO
 .. _launch: https://github.com/JarryShaw/MacDaily/tree/master/doc/launch.rst
 .. |logging| replace:: ``logging``
 .. _logging: https://github.com/JarryShaw/MacDaily/tree/master/doc/logging.rst
-.. |miscellanea| replace:: ``miscellanea``
-.. _miscellanea: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellanea.rst
+.. |miscellaneous| replace:: ``miscellaneous``
+.. _miscellaneous: https://github.com/JarryShaw/MacDaily/tree/master/doc/miscellaneous.rst
 .. |postinstall| replace:: ``postinstall``
 .. _postinstall: https://github.com/JarryShaw/MacDaily/tree/master/doc/postinstall.rst
 .. |reinstall| replace:: ``reinstall``

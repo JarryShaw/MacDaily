@@ -14,7 +14,7 @@ except ImportError:
     import pathlib
 
 # version string
-__version__ = '2018.11.24'
+__version__ = '2018.11.25'
 
 
 ###########################################################
@@ -28,8 +28,10 @@ MacDaily available commands & corresponding subsidiaries:
     archive
     bundle          dump, load
     cleanup         brew, cask, npm, pip
+    commands
     config
     dependency      brew, pip
+    help
     install         apm, brew, cask, gem, mas, npm, pip, system
     launch
     logging         apm, app, brew, cask, gem, mas, npm, pip, tap

@@ -21,7 +21,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.24'
+__version__ = '2018.11.25'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -39,7 +39,7 @@ setup(
     url='https://github.com/JarryShaw/MacDaily#macdaily',
     license='GNU General Public License v3 (GPLv3)',
     keywords='daily utility script',
-    description='macOS Automate Package Manager',
+    description='macOS Automated Package Manager',
     long_description=long_description,
     # long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',

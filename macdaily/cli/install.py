@@ -18,7 +18,7 @@ def get_install_parser():
     #######################################################
 
     parser = argparse.ArgumentParser(prog='macdaily-install',
-                                     description='macOS Package Automate Installer',
+                                     description='macOS Package Automated Installer',
                                      usage='macdaily install [options] <mode-selection> ...',
                                      epilog='aliases: i')
     parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -74,8 +74,8 @@ def get_apm_parser():
     #######################################################
 
     apm_parser = argparse.ArgumentParser(prog='macdaily-install-apm',
-                                         description='Atom Plug-In Automate Installer',
-                                         usage='macdaily install apm [options] <plug-ins>')
+                                         description='Atom Plug-In Automated Installer',
+                                         usage='macdaily install apm [options] <plug-ins> ...')
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -112,8 +112,8 @@ def get_gem_parser():
     #######################################################
 
     gem_parser = argparse.ArgumentParser(prog='macdaily-install-gem',
-                                         description='Ruby Gem Automate Installer',
-                                         usage='macdaily install gem [options] <gems>')
+                                         description='Ruby Gem Automated Installer',
+                                         usage='macdaily install gem [options] <gems> ...')
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -151,8 +151,8 @@ def get_mas_parser():
     #######################################################
 
     mas_parser = argparse.ArgumentParser(prog='macdaily-install-mas',
-                                         description='macOS Application Automate Installer',
-                                         usage='macdaily install mas [options] <applications>')
+                                         description='macOS Application Automated Installer',
+                                         usage='macdaily install mas [options] <applications> ...')
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -188,8 +188,8 @@ def get_npm_parser():
     #######################################################
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-install-npm',
-                                         description='Node.js Module Automate Installer',
-                                         usage='macdaily install npm [options] <modules>')
+                                         description='Node.js Module Automated Installer',
+                                         usage='macdaily install npm [options] <modules> ...')
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -226,8 +226,8 @@ def get_pip_parser():
     #######################################################
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-install-pip',
-                                         description='Python Package Automate Installer',
-                                         usage='macdaily install pip [options] <packages>')
+                                         description='Python Package Automated Installer',
+                                         usage='macdaily install pip [options] <packages> ...')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -279,8 +279,8 @@ def get_brew_parser():
     #######################################################
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-install-brew',
-                                          description='Homebrew Formula Automate Installer',
-                                          usage='macdaily install brew [options] <formulae>')
+                                          description='Homebrew Formula Automated Installer',
+                                          usage='macdaily install brew [options] <formulae> ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -317,8 +317,8 @@ def get_cask_parser():
     #######################################################
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-install-cask',
-                                          description='Homebrew Cask Automate Installer',
-                                          usage='macdaily install cask [options] <casks>')
+                                          description='Homebrew Cask Automated Installer',
+                                          usage='macdaily install cask [options] <casks> ...')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -355,8 +355,8 @@ def get_system_parser():
     #######################################################
 
     system_parser = argparse.ArgumentParser(prog='macdaily-install-system',
-                                            description='System Software Automate Installer',
-                                            usage='macdaily install system [options] <software>')
+                                            description='System Software Automated Installer',
+                                            usage='macdaily install system [options] <software> ...')
     system_parser.add_argument('-V', '--version', action='version', version=__version__)
     system_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 

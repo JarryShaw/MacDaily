@@ -21,20 +21,21 @@ from macdaily.util.const import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE,
                                  MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
                                  MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
                                  MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE,
-                                 __version__)
+                                 __version__, bold, reset)
 from macdaily.util.error import CommandNotImplemented
 from macdaily.util.misc import beholder
 
 
 def get_parser():
     parser = argparse.ArgumentParser(prog='MacDaily',
-                                     description='macOS Automate Package Manager',
+                                     description='macOS Automated Package Manager',
                                      usage='macdaily [options] <command> ...')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
-    group = parser.add_argument_group('Commands',
+    group = parser.add_argument_group('command selection',
                                       'MacDaily provides a friendly CLI workflow for the '
-                                      'administrator of macOS to manipulate packages')
+                                      'administrator of macOS to manipulate packages, see '
+                                      "`{}macdaily commands{} for more information".format(bold, reset))
     group.add_argument('command', metavar='CMD', help=argparse.SUPPRESS)
 
     return parser

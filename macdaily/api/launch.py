@@ -36,7 +36,7 @@ def launch(argv=None):
 
     # parse config & change environ
     config = parse_config(quiet, verbose)
-    os.environ['SUDO_ASKPASS'] = config['Miscellanea']['askpass']
+    os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
 
     # fetch current time
     today = datetime.datetime.today()
@@ -49,7 +49,7 @@ def launch(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
-    askpass = config['Miscellanea']['askpass']
+    askpass = config['Miscellaneous']['askpass']
 
     # record program status
     text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
