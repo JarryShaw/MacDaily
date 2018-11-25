@@ -6,7 +6,7 @@ macdaily
 macOS Automated Package Manager
 -------------------------------
 
-:Version: v2018.11.25
+:Version: v2018.11.25.post1
 :Date: November 23, 2018
 :Manual section: 1
 :Author:
@@ -28,13 +28,12 @@ with support of `PTY <https://en.wikipedia.org/wiki/Pseudo_terminal>`__.
 Originally works as an automated housekeeper for Mac to update all packages
 outdated, **MacDaily** is now fully functioned and end-user oriented.
 
-**MacDaily** can manage packages of `Atom <https://atom.io>`__,
-`RubyGems <https://rubygems.org>`__, `Homebrew <https://brew.sh>`__,
-`Python <https://pypy.org>`__, `Node.js <https://nodejs.org>`__,
-`Mac App Store <https://en.wikipedia.org/wiki/App_Store_(macOS)>`__
-and even macOS software updates (c.f. ``softwareupdate(8)``). Without being
-aware of everything about your Mac, one can easily work around and manage
-packages out of no pain using **MacDaily**.
+**MacDaily** can manage packages of various distributions of
+`Atom <https://atom.io>`__, `RubyGems <https://rubygems.org>`__,
+`Homebrew <https://brew.sh>`__, `Python <https://pypy.org>`__,
+`Node.js <https://nodejs.org>`__, and even macOS software updates (c.f.
+``softwareupdate(8)``). Without being aware of everything about your Mac, one
+can easily work around and manage packages out of no pain using **MacDaily**.
 
 EXAMPLES
 ========
