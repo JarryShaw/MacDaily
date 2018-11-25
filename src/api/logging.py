@@ -135,7 +135,7 @@ def logging(argv=None):
         text = f'Recorded existing {under}{command.desc[1]}{reset}{bold} at {under}{command.sample}{reset}'
         print_misc(text, os.devnull, redirect=quiet)
         for file in log_list:
-            print_term(text, file, redirect=True)
+            print_misc(text, file, redirect=True)
 
     if file_list:
         formatted_list = f'{reset}{bold}, {under}'.join(file_list)

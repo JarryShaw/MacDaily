@@ -38,9 +38,8 @@ def help_(argv=None):
 
     def _find_help(cmd, sub, man):
         pth = None
-        if man == set():
-            if sub is None:
-                pth = os.path.join(ROOT, f'man/macdaily-{cmd}.1')
+        if sub is None:
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}.1')
         if sub in man:
             pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{sub}.1')
         if pth is None:

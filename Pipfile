@@ -12,6 +12,8 @@ ptyng = ">=0.2.0.post4"
 macdaily = {path = ".",editable = true}
 subprocess32 = ">=3.5.3"
 pathlib2 = ">=2.3.2"
+psutil = "*"
+homebrew-pypi-poet = "*"
 docutils = "*"
 pygments = "*"
 "doc8" = "*"
