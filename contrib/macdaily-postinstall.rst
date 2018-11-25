@@ -6,12 +6,12 @@ macdaily-postinstall
 Homebrew Cask Postinstall Automator
 -----------------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
@@ -28,6 +28,25 @@ DESCRIPTION
 *MacDaily* provides intelligent solution for package postinstall automation.
 *MacDaily* ``postinstall`` command will automatically postinstall all specified
 packages installed through Homebrew (``brew(1)``).
+
+For ``--packages`` option that take package names, a
+mini-language for condition specification is provided.
+
++--------------+-------------------------+
+|    Format    |      Specification      |
++==============+=========================+
+| ``package``  | postinstall ``package`` |
++--------------+-------------------------+
+| ``!package`` | ignore ``package``      |
++--------------+-------------------------+
+
+NB
+    Since exclamation mark (``!``) has special meanings in ``bash(1)``
+    scripts, it is highly recommended using ``'!package'`` literal to
+    specify ignoring packages.
+
+When using ``--packages`` option, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
 
 OPTIONS
 =======

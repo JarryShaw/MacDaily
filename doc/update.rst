@@ -125,6 +125,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -138,7 +141,7 @@ Commands
 
 .. code:: man
 
-    usage: macdaily update apm [options] <plug-ins>
+    usage: macdaily update apm [options] <plug-ins> ...
 
     Atom Plug-In Update Automator
 
@@ -163,7 +166,7 @@ Commands
                             options for 'apm upgrade --list' command
       -U ARG, --update ARG  options for 'apm upgrade <plug-in>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -190,7 +193,7 @@ NB
 
 .. code:: man
 
-    usage: macdaily update brew [options] <formulae>
+    usage: macdaily update brew [options] <formulae> ...
 
     Homebrew Formula Update Automator
 
@@ -219,7 +222,7 @@ NB
                             options for 'brew outdated' command
       -U ARG, --update ARG  options for 'brew upgrade <formula>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -242,7 +245,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 .. code:: man
 
-    usage: macdaily update cask [options] <casks>
+    usage: macdaily update cask [options] <casks> ...
 
     Homebrew Cask Update Automator
 
@@ -275,7 +278,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'brew cask outdated' command
       -U ARG, --update ARG  options for 'brew cask upgrade <cask>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -298,7 +301,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 .. code:: man
 
-    usage: macdaily update gem [options] <gems>
+    usage: macdaily update gem [options] <gems> ...
 
     Ruby Gem Update Automator
 
@@ -323,7 +326,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'gem outdated' command
       -U ARG, --update ARG  options for 'gem update <gem>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -351,7 +354,7 @@ NB
 
 .. code:: man
 
-    usage: macdaily update mas [options] <applications>
+    usage: macdaily update mas [options] <applications> ...
 
     macOS Application Update Automator
 
@@ -376,7 +379,7 @@ NB
       -U ARG, --update ARG  options for 'mas upgrade <application>'
                             command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -399,7 +402,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 .. code:: man
 
-    usage: macdaily update npm [options] <modules>
+    usage: macdaily update npm [options] <modules> ...
 
     Node.js Module Update Automator
 
@@ -425,7 +428,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -U ARG, --update ARG  options for 'npm upgrade --global <module>'
                             command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -448,7 +451,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
 .. code:: man
 
-    usage: macdaily update pip [options] <packages>
+    usage: macdaily update pip [options] <packages> ...
 
     Python Package Update Automator
 
@@ -484,7 +487,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -U ARG, --update ARG  options for 'pip install --upgrade <package>'
                             command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -517,7 +520,7 @@ NB
 
 .. code:: man
 
-    usage: macdaily update system [options] <software>
+    usage: macdaily update system [options] <software> ...
 
     System Software Update Automator
 
@@ -546,7 +549,7 @@ NB
       -U ARG, --update ARG  options for 'softwareupdate --install
                             <software>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.

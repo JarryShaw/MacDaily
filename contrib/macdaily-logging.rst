@@ -6,12 +6,12 @@ macdaily-logging
 macOS Package Logging Automator
 -------------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
@@ -38,6 +38,45 @@ installed through --
 - *npm* -- Node.js Package Manager
 - *pip* -- Pip Installs Packages
 - *tap* -- Homebrew Taps
+
+*MacDaily* ``logging`` supports using with multiple commands. Say, you would
+like to record Python packages and Homebrew formulae, each with different flags
+and options, then simply use the following command.
+
+.. code:: shell
+
+    macdaily logging [global-options] pip [pip-options] brew [brew-options]
+
+But please note that, global options ``--yes``, ``--quiet`` and ``--show-log``
+are **mandatory** for all commands once set to ``True``. That is to say, if you
+set these flags in global options, they will overwrite corresponding flags in
+command specific options.
+
+NB
+    *MacDaily* will record installed packages using following package
+    manager requirement specification formats.
+
++----------+----------------------+
+| Command  |       Log File       |
++==========+======================+
+| ``apm``  | ``packages.txt``     |
++----------+----------------------+
+| ``app``  | ``macOS.log``        |
++----------+----------------------+
+| ``brew`` | ``Brewfile``         |
++----------+----------------------+
+| ``cask`` | ``Brewfile``         |
++----------+----------------------+
+| ``gem``  | ``lockdown.rb``      |
++----------+----------------------+
+| ``mas``  | ``Brewfile``         |
++----------+----------------------+
+| ``npm``  | ``package.json``     |
++----------+----------------------+
+| ``pip``  | ``requirements.txt`` |
++----------+----------------------+
+| ``tap``  | ``Brewfile``         |
++----------+----------------------+
 
 OPTIONS
 =======

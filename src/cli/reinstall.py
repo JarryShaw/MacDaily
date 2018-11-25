@@ -18,7 +18,7 @@ def get_reinstall_parser():
     #######################################################
 
     parser = argparse.ArgumentParser(prog='macdaily-reinstall',
-                                     description='Automate macOS Package Reinstaller',
+                                     description='Automated macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
                                      epilog='aliases: re')
     parser.add_argument('-V', '--version', action='version', version=__version__)
@@ -71,8 +71,8 @@ def get_brew_parser():
     #######################################################
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-reinstall-brew',
-                                          description='Automate Homebrew Formula Reinstaller',
-                                          usage='macdaily reinstall brew [options] <formulae>')
+                                          description='Automated Homebrew Formula Reinstaller',
+                                          usage='macdaily reinstall brew [options] <formulae> ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -117,8 +117,8 @@ def get_cask_parser():
     #######################################################
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-reinstall-cask',
-                                          description='Automate Homebrew Cask Reinstaller',
-                                          usage='macdaily reinstall cask [options] <casks>')
+                                          description='Automated Homebrew Cask Reinstaller',
+                                          usage='macdaily reinstall cask [options] <casks> ...')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 

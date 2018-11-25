@@ -6,12 +6,12 @@ macdaily-cleanup
 macOS Package Cache Cleanup
 ---------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 23, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
@@ -33,6 +33,19 @@ through --
 - *cask* -- Homebrew Casks
 - *npm* -- Node.js Package Manager
 - *pip* -- Pip Installs Packages
+
+*MacDaily* ``cleanup`` supports using with multiple commands. Say, you would
+like to cleanup Python and Homebrew caches, each with different flags and
+options, then simply use the following command.
+
+.. code:: shell
+
+    macdaily cleanup [global-options] pip [pip-options] brew [brew-options]
+
+But please note that, global options ``--quiet`` and ``--verbose`` are
+**mandatory** for all commands once set to ``True``. That is to say, if you set
+these flags in global options, they will overwrite corresponding flags in
+command specific options.
 
 OPTIONS
 =======

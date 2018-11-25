@@ -3,9 +3,9 @@
 :Supported Commands:
     ``brew``, ``cask``, ``pip``
 
-====================================
-Automatate macOS Package Uninstaller
-====================================
+===================================
+Automated macOS Package Uninstaller
+===================================
 
 - `About <#about>`__
 - `Usage <#usage>`__
@@ -37,7 +37,7 @@ Usage
 
     usage: macdaily uninstall [options] <mode-selection> ...
 
-    Automate macOS Package Uninstaller
+    Automated macOS Package Uninstaller
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -109,6 +109,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -116,15 +119,15 @@ Commands
 
     <h4>
       <a name="brew">
-        Automate Homebrew Formula Uninstaller
+        Automated Homebrew Formula Uninstaller
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily uninstall brew [options] <formulae>
+    usage: macdaily uninstall brew [options] <formulae> ...
 
-    Automate Homebrew Formula Uninstaller
+    Automated Homebrew Formula Uninstaller
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -162,7 +165,7 @@ Commands
       -U ARG, --uninstall ARG
                             options for 'brew uninstall <formula>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -179,15 +182,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="cask">
-        Automate Homebrew Cask Uninstaller
+        Automated Homebrew Cask Uninstaller
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily uninstall cask [options] <casks>
+    usage: macdaily uninstall cask [options] <casks> ...
 
-    Automate Homebrew Cask Uninstaller
+    Automated Homebrew Cask Uninstaller
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -215,7 +218,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -U ARG, --uninstall ARG
                             options for 'brew cask uninstall <cask>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -232,15 +235,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="pip">
-        Automate Python Package Uninstaller
+        Automated Python Package Uninstaller
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily uninstall pip [options] <packages>
+    usage: macdaily uninstall pip [options] <packages> ...
 
-    Automate Python Package Uninstaller
+    Automated Python Package Uninstaller
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -277,7 +280,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -U ARG, --uninstall ARG
                             options for 'pip uninstall <package>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 NB

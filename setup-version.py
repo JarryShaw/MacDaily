@@ -34,7 +34,7 @@ for rst in os.listdir(os.path.join(os.path.dirname(__file__), 'contrib')):
             if match is None:
                 context.append(line)
             else:
-                context.append(f':Version: {__version__}\n')
+                context.append(f':Version: v{__version__}\n')
 
     with open(os.path.join(os.path.dirname(__file__), 'contrib', rst), 'w') as file:
         file.writelines(context)

@@ -43,7 +43,7 @@ def logging(argv=None):
 
     # parse config & change environ
     config = parse_config(quiet, verbose)
-    os.environ['SUDO_ASKPASS'] = config['Miscellanea']['askpass']
+    os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
 
     # fetch current time
     today = datetime.datetime.today()
@@ -51,9 +51,9 @@ def logging(argv=None):
     logtime = datetime.date.strftime(today, r'%H%M%S')
 
     # prepare command paras
-    timeout = config['Miscellanea']['timeout']
-    confirm = config['Miscellanea']['confirm']
-    askpass = config['Miscellanea']['askpass']
+    timeout = config['Miscellaneous']['timeout']
+    confirm = config['Miscellaneous']['confirm']
+    askpass = config['Miscellaneous']['askpass']
     disk_dir = config['Path']['arcdir']
     brew_renew = None
 

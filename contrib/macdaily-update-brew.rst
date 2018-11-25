@@ -6,19 +6,19 @@ macdaily-update-brew
 Homebrew Formula Update Automator
 ---------------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
 SYNOPSIS
 ========
 
-macdaily **update** *brew* [*options*] <*formulae*>
+macdaily **update** *brew* [*options*] <*formulae*> ...
 
 OPTIONS
 =======

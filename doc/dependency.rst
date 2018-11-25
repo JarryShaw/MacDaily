@@ -119,6 +119,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -132,7 +135,7 @@ Commands
 
 .. code:: man
 
-    usage: macdaily dependency brew [options] <formulae>
+    usage: macdaily dependency brew [options] <formulae> ...
 
     Homebrew Formula Dependency Query
 
@@ -162,7 +165,7 @@ Commands
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 .. raw:: html
@@ -175,7 +178,7 @@ might give a trivial *did-you-mean* correction.
 
 .. code:: man
 
-    usage: macdaily dependency pip [options] <packages>
+    usage: macdaily dependency pip [options] <packages> ...
 
     Python Package Dependency Query
 
@@ -205,7 +208,7 @@ might give a trivial *did-you-mean* correction.
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 Possible Python executables and corresponding flags are listed as below.

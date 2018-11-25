@@ -2,16 +2,16 @@
 macdaily
 ========
 
-------------------------------
-macOS Automate Package Manager
-------------------------------
+-------------------------------
+macOS Automated Package Manager
+-------------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 23, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
@@ -23,12 +23,18 @@ macdaily [*options*] <*command*> ...
 DESCRIPTION
 ===========
 
-**MacDaily** is a mediate collection of console scripts written in Python
+**MacDaily** is an all-in-one collection of console utility written in Python
 with support of `PTY <https://en.wikipedia.org/wiki/Pseudo_terminal>`__.
-Originally works as an automatic housekeeper for Mac to update all packages
-outdated, **MacDaily** is now fully functioned and end-user oriented. Without
-being aware of everything about your Mac, one can easily work around and
-manage packages out of no pain using **MacDaily**.
+Originally works as an automated housekeeper for Mac to update all packages
+outdated, **MacDaily** is now fully functioned and end-user oriented.
+
+**MacDaily** can manage packages of `Atom <https://atom.io>`__,
+`RubyGems <https://rubygems.org>`__, `Homebrew <https://brew.sh>`__,
+`Python <https://pypy.org>`__, `Node.js <https://nodejs.org>`__,
+`Mac App Store <https://en.wikipedia.org/wiki/App_Store_(macOS)>`__
+and even macOS software updates (c.f. ``softwareupdate(8)``). Without being
+aware of everything about your Mac, one can easily work around and manage
+packages out of no pain using **MacDaily**.
 
 EXAMPLES
 ========
@@ -42,9 +48,9 @@ EXAMPLES
 .. code:: shell
 
     # call from PATH
-    $ macdaily [command ...] [option ...]
+    $ macdaily <command> [option ...]
     # or call as Python module
-    $ python -m macdaily [command ...] [option ...]
+    $ python -m macdaily <command> [option ...]
     # or call a certain command
     $ md-${command} [option ...]
 
@@ -76,7 +82,7 @@ EXAMPLES
 
 .. code:: shell
 
-    $ macdaily update brew --package=hello
+    $ macdaily update brew --packages=hello
 
 - How to update without a certain package (eg: update all packages
   except Python package *ptyng*)?
@@ -91,7 +97,7 @@ EXAMPLES
 .. code:: shell
 
     $ macdaily uninstall pip \
-          --brew --cpython --python=3.6 --package pytest
+          --brew --cpython --python=3.6 --packages=pytest
 
 - How to reinstall all packages but do not cleanup caches?
 
@@ -111,7 +117,7 @@ EXAMPLES
 
 .. code:: shell
 
-   $ macdaily dependency brew  --tree --package=gnupg
+   $ macdaily dependency brew  --tree --packages=gnupg
 
 - How to log all applications on my Mac, a.k.a. *\*.app* files?
 
@@ -134,14 +140,31 @@ optional arguments
 -h, --help     show this help message and exit
 -V, --version  show program's version number and exit
 
-Commands
---------
+command selection
+-----------------
 
-**MacDaily** provides a friendly CLI workflow for the administrator of macOS
-to manipulate packages
+MacDaily provides a friendly CLI workflow for the administrator of macOS
+to manipulate packages, see **macdaily commands** for more information
+
+:archive: archive ancient runtime logs
+:bundle: bundler for all packages on your Mac
+:cleanup: remove outdated downloads, caches, etc.
+:commands: show available commands and corresponding subsidiaries
+:config: get and set MacDaily runtime options
+:dependency: show dependencies for packages
+:help: show man pages for *command*
+:install: install packages
+:launch: launch daemon services and helper programs
+:logging: record packages on your Mac
+:postinstall: run the post-install steps for Homebrew *formula*
+:reinstall: reinstall existing packages
+:uninstall: recursively uninstall packages
+:update: update packages
 
 SEE ALSO
 ========
+
+* MacDaily documentation: *https://github.com/JarryShaw/MacDaily#generals*
 
 * MacDaily Log Archive Utility
 
@@ -169,7 +192,7 @@ SEE ALSO
 
   * ``macdaily-help``
 
-* macOS Package Automate Installer
+* macOS Package Automated Installer
 
   * ``macdaily-install``
   * ``macdaily-install-apm``
@@ -202,13 +225,13 @@ SEE ALSO
 
   * ``macdaily-postinstall``
 
-* Automate macOS Package Reinstaller
+* Automated macOS Package Reinstaller
 
   * ``macdaily-reinstall``
   * ``macdaily-reinstall-brew``
   * ``macdaily-reinstall-cask``
 
-* Automate macOS Package Uninstaller
+* Automated macOS Package Uninstaller
 
   * ``macdaily-uninstall``
   * ``macdaily-uninstall-brew``
@@ -226,3 +249,12 @@ SEE ALSO
   * ``macdaily-update-npm``
   * ``macdaily-update-pip``
   * ``macdaily-update-system``
+
+BUGS
+====
+
+If any bugs, please file issues on GitHub:
+
+:JarryShaw/MacDaily: https://github.com/JarryShaw/MacDaily/issues
+
+Contribution is welcome.

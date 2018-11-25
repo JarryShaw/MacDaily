@@ -73,4 +73,5 @@
     "restructuredtext.sphinxBuildPath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/sphinx-build",
     "restructuredtext.confPath": "${workspaceFolder}/sphinx/source",
     "restructuredtext.linter.executablePath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/doc8",
+    "search.usePCRE2": true,
 }

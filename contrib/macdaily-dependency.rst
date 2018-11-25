@@ -6,12 +6,12 @@ macdaily-dependency
 macOS Package Dependency Query
 ------------------------------
 
-:Version: 2018.11.24
+:Version: v2018.11.25
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
-    Jarry Shaw, a newbie programmer, is the author, owner
-    and maintainer of *MacDaily*. Please contact at *jarryshaw@icloud.com*.
+    Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+    of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
     *MacDaily* is licensed under the **GNU General Public License v3.0**.
 
@@ -39,6 +39,39 @@ This command was originally inspired from and leveraged *pipdeptree*.
 However, if you would like to use *pipdeptree* for all installed Python
 distributions, it is highly recommended to install *pipdeptree* with each
 executable, which can be a bit fussy.
+
+*MacDaily* ``dependency`` supports using with multiple commands. Say, you would
+like to query Python package dependencies and Homebrew formula dependencies,
+each with different flags and options, then simply use the following command.
+
+.. code:: shell
+
+    macdaily dependency [global-options] pip [pip-options] brew [brew-options]
+
+But please note that, global options ``--depth``, ``--quiet``, ``--verbose``
+and ``--topological`` are **mandatory** for all commands once set to ``True``
+(or legal value for ``depth`` option). That is to say, if you set these flags
+in global options, they will overwrite corresponding flags in command specific
+options.
+
+For all options that take package names, a mini-language for condition
+specification is provided.
+
++--------------+---------------------+
+|    Format    |    Specification    |
++==============+=====================+
+| ``package``  | query ``package``   |
++--------------+---------------------+
+| ``!package`` | ignore ``package``  |
++--------------+---------------------+
+
+NB
+    Since exclamation mark (``!``) has special meanings in ``bash(1)``
+    scripts, it is highly recommended using ``'!package'`` literal to
+    specify ignoring packages.
+
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
 
 OPTIONS
 =======

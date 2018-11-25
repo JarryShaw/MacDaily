@@ -4,9 +4,9 @@
     ``apm``, ``brew``, ``cask``, ``gem``,
     ``mas``, ``npm``, ``pip``, ``system``
 
-================================
-macOS Package Automate Installer
-================================
+=================================
+macOS Package Automated Installer
+=================================
 
 - `About <#about>`__
 - `Usage <#usage>`__
@@ -48,7 +48,7 @@ Usage
 
     usage: macdaily install [options] <mode-selection> ...
 
-    macOS Package Automate Installer
+    macOS Package Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -111,6 +111,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -118,15 +121,15 @@ Commands
 
     <h4>
       <a name="apm">
-        Atom Plug-In Automate Installer
+        Atom Plug-In Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install apm [options] <plug-ins>
+    usage: macdaily install apm [options] <plug-ins> ...
 
-    Atom Plug-In Automate Installer
+    Atom Plug-In Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -162,15 +165,15 @@ NB
 
     <h4>
       <a name="brew">
-        Homebrew Formula Automate Installer
+        Homebrew Formula Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install brew [options] <formulae>
+    usage: macdaily install brew [options] <formulae> ...
 
-    Homebrew Formula Automate Installer
+    Homebrew Formula Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -202,15 +205,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="cask">
-        Homebrew Cask Automate Installer
+        Homebrew Cask Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install cask [options] <casks>
+    usage: macdaily install cask [options] <casks> ...
 
-    Homebrew Cask Automate Installer
+    Homebrew Cask Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -242,15 +245,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="gem">
-        Ruby Gem Automate Installer
+        Ruby Gem Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install gem [options] <gems>
+    usage: macdaily install gem [options] <gems> ...
 
-    Ruby Gem Automate Installer
+    Ruby Gem Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -288,15 +291,15 @@ NB
 
     <h4>
       <a name="mas">
-        macOS Application Automate Installer
+        macOS Application Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install mas [options] <applications>
+    usage: macdaily install mas [options] <applications> ...
 
-    macOS Application Automate Installer
+    macOS Application Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -319,7 +322,7 @@ NB
 
 Since `Mac App Store CLI <https://github.com/mas-cli/mas#mas-cli>`__ (``mas``)
 uses *integral IDs* as application token, when packages specified in
-``--package`` option are integral, MacDaily uses ``mas install`` command
+``--packages`` option are integral, MacDaily uses ``mas install`` command
 directly; otherwise, MacDaily calls ``mas lucky`` command instead.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -336,15 +339,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="npm">
-        Node.js Module Automate Installer
+        Node.js Module Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install npm [options] <modules>
+    usage: macdaily install npm [options] <modules> ...
 
-    Node.js Module Automate Installer
+    Node.js Module Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -377,15 +380,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="pip">
-        Python Package Automate Installer
+        Python Package Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install pip [options] <packages>
+    usage: macdaily install pip [options] <packages> ...
 
-    Python Package Automate Installer
+    Python Package Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -436,15 +439,15 @@ NB
 
     <h4>
       <a name="system">
-        System Software Automate Installer
+        System Software Automated Installer
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily install system [options] <software>
+    usage: macdaily install system [options] <software> ...
 
-    System Software Automate Installer
+    System Software Automated Installer
 
     optional arguments:
       -h, --help            show this help message and exit
