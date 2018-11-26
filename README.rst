@@ -15,8 +15,8 @@ MacDaily - macOS Automated Package Manager
 - `About <#about>`__
 - `Installation <#installation>`__
 
-  - |install_brew|_
-  - |install_pip|_
+  - |install-brew|_
+  - |install-pip|_
 
 - `Configuration <#configuration>`__
 - `Usage Manual <#usage-manual>`__
@@ -28,10 +28,10 @@ MacDaily - macOS Automated Package Manager
 - `Troubleshooting <#troubleshooting>`__
 - `TODO <#todo>`__
 
-.. |install_brew| replace:: MacDaily is now ``brew``able 🍺
-.. _install_brew: #brew
-.. |install_pip| replace:: Legacy installation through ``pip`` 🐍
-.. _install_pip: #pip
+.. |install-brew| replace:: MacDaily is now ``brew``-able 🍺
+.. _install-brew: #brew
+.. |install-pip| replace:: Legacy installation through ``pip`` 🐍
+.. _install-pip: #pip
 
 --------------
 
