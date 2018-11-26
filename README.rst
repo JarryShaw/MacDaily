@@ -14,6 +14,10 @@ MacDaily - macOS Automated Package Manager
 
 - `About <#about>`__
 - `Installation <#installation>`__
+
+  - |install_brew|_
+  - |install_pip|_
+
 - `Configuration <#configuration>`__
 - `Usage Manual <#usage-manual>`__
 
@@ -23,6 +27,11 @@ MacDaily - macOS Automated Package Manager
 
 - `Troubleshooting <#troubleshooting>`__
 - `TODO <#todo>`__
+
+.. |install_brew| replace:: MacDaily is now ``brew``able 🍺
+.. _install_brew: #brew
+.. |install_pip| replace:: Legacy installation through ``pip`` 🐍
+.. _install_pip: #pip
 
 --------------
 
@@ -49,6 +58,36 @@ Installation
 NB
     MacDaily runs only with support of Python from version **3.4**
     or higher. And it shall only work ideally on **macOS**.
+
+.. raw:: html
+
+    <h4>
+      <a name="brew">
+        MacDaily is now <code>brew</code>able 🍺
+      </a>
+    </h4>
+
+Though not introduced to
+`Homebrew core <https://github.com/Homebrew/homebrew-core>`__ database yet,
+**MacDaily** is still available for ``brew``. Use the following commands to
+add the `Tap <https://github.com/JarryShaw/homebrew-tap>`__ to your local
+Homebrew installation (``$(BREW_PREFIX)/Homebrew/Library/Taps/``) and install
+**MacDaily** through Homebrew.
+
+.. code:: shell
+
+    $ brew tap jarryshaw/tap
+    $ brew install macdaily
+    # or simply, a one-liner
+    $ brew install jarryshaw/tap/macdaily
+
+.. raw:: html
+
+    <h4>
+      <a name="pip">
+        Legacy installation through <code>pip</code> 🐍
+      </a>
+    </h4>
 
 Just as many Python packages, MacDaily can be installed through
 ``pip`` using the following command, which will get you the latest
