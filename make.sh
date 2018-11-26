@@ -113,3 +113,29 @@ else
     git commit -a -S -m "$1"
 fi
 git push
+
+# file new release
+# git tag "v2018.11.25.post2" && \
+# git push --tags
+# go run github.com/aktau/github-release release \
+#     --user JarryShaw \
+#     --repo MacDaily \
+#     --tag "v2018.11.25.post2" \
+#     --name 'MacDaily v2018.11.25.post2' \
+#     --description 'Test with github.com/aktau/github-release'
+
+# update Homebrew Formulae
+pipenv run python3 setup-formula.py
+cd Formula
+git pull
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+git add .
+if [[ -z "$1" ]] ; then
+    git commit -a -S
+else
+    git commit -a -S -m "$1"
+fi
+git push
