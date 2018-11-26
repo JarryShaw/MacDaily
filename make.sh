@@ -105,8 +105,15 @@ if [[ $ret -ne "0" ]] ; then
     exit $ret
 fi
 
+# get version string
+version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
 # upload to GitHub
 git pull && \
+git tag "v${version}" && \
 git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
@@ -127,17 +134,10 @@ fi
 #     fi
 # done
 
-# get version string
-version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" ) && \
-git tag "v${version}" && \
-git push --tags
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
-
 # upload develop environment
 cd .. && \
 git pull && \
+git tag "v${version}" && \
 git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
