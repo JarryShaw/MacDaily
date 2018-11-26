@@ -1,6 +1,6 @@
 [submodule "release"]
 	path = release
 	url = https://github.com/JarryShaw/MacDaily/tree/release
-[submodule "Formula"]
-	path = Formula
+[submodule "tap"]
+	path = tap
 	url = https://github.com/JarryShaw/homebrew-tap
