@@ -6,7 +6,7 @@ macdaily-install-gem
 Ruby Gem Automated Installer
 ----------------------------
 
-:Version: v2018.11.26
+:Version: v2018.11.26.post1
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
