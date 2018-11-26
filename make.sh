@@ -129,7 +129,7 @@ go run github.com/aktau/github-release release \
 
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py
-cd Formula
+cd tap
 git pull
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
