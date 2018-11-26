@@ -74,8 +74,8 @@ python3.4 setup.py bdist_egg
 python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
-twine upload dist/* -r pypi --skip-existing
-twine upload dist/* -r pypitest --skip-existing
+# twine upload dist/* -r pypi --skip-existing
+# twine upload dist/* -r pypitest --skip-existing
 
 # upload to GitHub
 git pull
@@ -99,6 +99,11 @@ git push
 #     fi
 # done
 
+# get version string
+version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
+git tag "v${version}" && \
+git push --tags
+
 # upload develop environment
 cd ..
 git pull
@@ -115,14 +120,12 @@ fi
 git push
 
 # file new release
-# git tag "v2018.11.25.post2" && \
-# git push --tags
-# go run github.com/aktau/github-release release \
-#     --user JarryShaw \
-#     --repo MacDaily \
-#     --tag "v2018.11.25.post2" \
-#     --name 'MacDaily v2018.11.25.post2' \
-#     --description 'Test with github.com/aktau/github-release'
+go run github.com/aktau/github-release release \
+    --user JarryShaw \
+    --repo MacDaily \
+    --tag "v${version}" \
+    --name "MacDaily v${version}" \
+    --description "$1"
 
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py

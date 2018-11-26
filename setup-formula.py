@@ -42,15 +42,20 @@ CONFIGUPDATER = subprocess.check_output(['poet', 'configupdater']).decode().stri
 DICTDUMPER = subprocess.check_output(['poet', 'dictdumper']).decode().strip()
 PSUTIL = subprocess.check_output(['poet', 'psutil']).decode().strip()
 PTYNG = subprocess.check_output(['poet', 'ptyng']).decode().strip()
+PATHLIB2 = subprocess.check_output(['poet', 'pathlib2']).decode().strip()
+SUBPROCESS32 = subprocess.check_output(['poet', 'subprocess32']).decode().strip()
 # print(CONFIGUPDATER)
 # print(DICTDUMPER)
 # print(PSUTIL)
 # print(PTYNG)
+# print(PATHLIB2)
+# print(SUBPROCESS32)
 
 FORMULA = f'''\
 class Macdaily < Formula
   include Language::Python::Virtualenv
 
+  version "{VERSION}"
   desc "macOS Automated Package Manager"
   homepage "https://github.com/JarryShaw/MacDaily#macdaily"
   url "{MACDAILY_URL}"
@@ -72,28 +77,36 @@ class Macdaily < Formula
   end
 
   depends_on "python"
-
   depends_on "expect" => :recommended
+  depends_on "theseal/ssh-askpass/ssh-askpass" => :optional
 
   {CONFIGUPDATER}
 
   {DICTDUMPER}
 
+  {PTYNG}
+
   {PSUTIL}
 
-  {PTYNG}
+  {PATHLIB2}
+
+  {SUBPROCESS32}
 
   def install
     virtualenv_install_with_resources
     man_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/man/*.1")
-    man_path.each_child do |f|
+    man_path.each do |f|
       man1.install f
     end
   end
 
-  def post_install
-    system bin/"macdaily", "launch", "--all"
-  end
+  # def post_install
+  #   text = <<~EOS
+  #     To run postinstall process, please directly call
+  #       `macdaily launch askpass confirm`
+  #   EOS
+  #   puts text
+  # end
 
   def caveats
     text = <<~EOS
@@ -110,6 +123,9 @@ class Macdaily < Formula
 
       For more information, check out `macdaily help` command. Online
       documentations available at GitHub repository.
+
+      To run postinstall process, please directly call
+        `macdaily launch askpass confirm`
 
       See: https://github.com/JarryShaw/MacDaily#generals
     EOS

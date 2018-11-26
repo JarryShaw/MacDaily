@@ -57,6 +57,7 @@
         "shtout",
         "stdict",
         "swch",
+        "tbody",
         "tcgetattr",
         "tcsetattr",
         "tmpath",
