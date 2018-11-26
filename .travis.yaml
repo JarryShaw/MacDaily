@@ -1,0 +1,21 @@
+dist: trusty
+sudo: false
+
+os: osx
+
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "pypy3.5"
+
+# command to install dependencies
+install:
+  - pip install pipenv
+  - pipenv install --dev
+
+# command to run tests
+script:
+  - macdaily --help

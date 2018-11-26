@@ -8,16 +8,12 @@
 MacDaily - macOS Automated Package Manager
 ==========================================
 
-|download| |version| |status|
+|download| |version| |status| |format|
 
-|format| |python| |implementation|
+|python| |implementation|
 
 - `About <#about>`__
 - `Installation <#installation>`__
-
-  - |install-brew|_
-  - |install-pip|_
-
 - `Configuration <#configuration>`__
 - `Usage Manual <#usage-manual>`__
 
@@ -27,11 +23,6 @@ MacDaily - macOS Automated Package Manager
 
 - `Troubleshooting <#troubleshooting>`__
 - `TODO <#todo>`__
-
-.. |install-brew| replace:: MacDaily is now ``brew``-able 🍺
-.. _install-brew: #brew
-.. |install-pip| replace:: Legacy installation through ``pip`` 🐍
-.. _install-pip: #pip
 
 --------------
 
@@ -85,7 +76,7 @@ Homebrew installation (``$(BREW_PREFIX)/Homebrew/Library/Taps/``) and install
 
     <h4>
       <a name="pip">
-        Legacy installation through <code>pip</code> 🐍
+        Legacy approach through <code>pip</code> 🐍
       </a>
     </h4>
 
