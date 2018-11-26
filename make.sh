@@ -74,8 +74,8 @@ python3.4 setup.py bdist_egg
 python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
-# twine upload dist/* -r pypi --skip-existing
-# twine upload dist/* -r pypitest --skip-existing
+twine upload dist/* -r pypi --skip-existing
+twine upload dist/* -r pypitest --skip-existing
 
 # upload to GitHub
 git pull
@@ -129,6 +129,7 @@ go run github.com/aktau/github-release release \
 
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py
+exit 0
 cd Formula
 git pull
 ret="$?"
