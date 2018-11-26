@@ -48,16 +48,16 @@ def launch(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
     askpass = config['Miscellaneous']['askpass']
 
     # record program status
-    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
+    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     # ask for password
-    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
+    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
@@ -69,10 +69,10 @@ def launch(argv=None):
     for program in set(args.program):
         if re.match(r'^(askpass|confirm|daemons)$', program, re.IGNORECASE) is None:
             parser = get_launch_parser()
-            parser.error(f"argument PROG: invalid choice: {program!r} (choose from 'askpass', 'confirm', 'daemons')")
+            parser.error("argument PROG: invalid choice: {!r} (choose from 'askpass', 'confirm', 'daemons')".format(program))
 
         # launch program
-        launch_func = globals()[f'launch_{program.lower()}']
+        launch_func = globals()['launch_{}'.format(program.lower())]
         path = launch_func(quiet=quiet, verbose=verbose, config=config, password=password, logfile=filename)
 
         # record program
@@ -82,20 +82,20 @@ def launch(argv=None):
     if not args.no_cleanup:
         archive = make_archive(config, 'launch', today, quiet=quiet, verbose=verbose, logfile=filename)
 
-    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of launch command{reset}'
+    text = '{}{}|📖|{} {}MacDaily report of launch command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
     for prog, path in prog_dict.items():
-        text = f'Launched helper program {under}{prog}{reset}{bold} at {under}{path}{reset}'
+        text = 'Launched helper program {}{}{}{} at {}{}{}'.format(under, prog, reset, bold, under, path, reset)
         print_misc(text, filename, redirect=quiet)
 
     if archive:
-        formatted_list = f'{reset}{bold}, {under}'.join(archive)
-        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
     if len(prog_dict) == 0:
-        text = f'macdaily: {purple}launch{reset}: no program launched'
+        text = 'macdaily: {}launch{}: no program launched'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 
     if args.show_log:
@@ -103,11 +103,11 @@ def launch(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print(f'macdaily: {red}launch{reset}: cannot show log file {filename!r}', file=sys.stderr)
+            print('macdaily: {}launch{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
 
     mode_str = ', '.join(prog_dict) if prog_dict else 'none'
-    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed launch process '
-            f'for {mode_str} helper programs{reset}')
+    text = ('{}{}|🍺|{} {}MacDaily successfully performed launch process '
+            'for {} helper programs{}'.format(bold, green, reset, bold, mode_str, reset))
     print_term(text, filename, redirect=quiet)
 
 

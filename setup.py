@@ -21,7 +21,7 @@ with open('README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.26.post1'
+__version__ = '2018.11.26.post2'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)

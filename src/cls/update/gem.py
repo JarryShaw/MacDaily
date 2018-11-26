@@ -43,7 +43,7 @@ class GemUpdate(GemCommand, UpdateCommand):
         sudo(argv, self._file, self._password,
              redirect=self._qflag, verbose=self._vflag)
 
-        text = f'Checking outdated {self.desc[1]}'
+        text = 'Checking outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'outdated']
@@ -56,8 +56,8 @@ class GemUpdate(GemCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -75,10 +75,10 @@ class GemUpdate(GemCommand, UpdateCommand):
             # self._var__temp_pkgs = set(map(lambda s: s.split()[0], filter(None, context.strip().splitlines())))
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_update(self, path):
-        text = f'Upgrading outdated {self.desc[1]}'
+        text = 'Upgrading outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'update']
@@ -90,7 +90,7 @@ class GemUpdate(GemCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
-            args = f'{argc} {package}'
+            args = '{} {}'.format(argc, package)
             print_scpt(args, self._file, redirect=self._qflag)
             yes = 'y' if self._yes else None
             if sudo(argv, self._file, self._password, timeout=self._timeout,

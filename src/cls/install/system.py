@@ -17,7 +17,7 @@ class SystemInstall(SystemCommand, InstallCommand):
         self._install_opts = namespace.get('install', str()).split()
 
     def _proc_install(self, path):
-        text = f'Installing specified {self.desc[1]}'
+        text = 'Installing specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, '--install']
@@ -31,7 +31,7 @@ class SystemInstall(SystemCommand, InstallCommand):
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
-            args = f'{argc} {package!r}'
+            args = '{} {!r}'.format(argc, package)
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):

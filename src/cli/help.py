@@ -25,7 +25,7 @@ def get_help_parser():
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('command', action='store', nargs='?', metavar='CMD',
-                            help=(f"display manual information about such command"))
+                            help=("display manual information about such command".format()))
 
     return parser
 

@@ -35,11 +35,11 @@ class MasLogging(MasCommand, LoggingCommand):
                                   stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            print(f'macdaily-{self.cmd}: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-{self.cmd}: {red}mas{reset}: you may find Bundler on '
-                    f'{purple_bg}{under}https://github.com/Homebrew/homebrew-bundle{reset}, '
-                    f'or install Bundler through following command -- '
-                    f"`{bold}brew tap homebrew/bundle{reset}'")
+            print('macdaily-{}: {}{}mas{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
+            text = ('macdaily-{}: {}mas{}: you may find Bundler on '
+                    '{}{}https://github.com/Homebrew/homebrew-bundle{}, '
+                    'or install Bundler through following command -- '
+                    "`{}brew tap homebrew/bundle{}'".format(self.cmd, red, reset, purple_bg, under, reset, bold, reset))
             print_term(text, self._file, redirect=self._qflag)
             return False
         self._var__exec_path = shutil.which('brew')
@@ -50,13 +50,13 @@ class MasLogging(MasCommand, LoggingCommand):
         self._verbose = namespace.get('verbose', False)
 
     def _proc_logging(self, path):
-        text = f'Listing installed {self.desc[1]}'
+        text = 'Listing installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         suffix = path.replace('/', ':')
         with tempfile.NamedTemporaryFile() as _temp_file:
-            logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
-            argv = [path, 'bundle', 'dump', '--force', f'--file={_temp_file.name}']
+            logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+            argv = [path, 'bundle', 'dump', '--force', '--file={}'.format(_temp_file.name)]
 
             print_scpt(argv, self._file, redirect=self._qflag)
             script(argv, self._file, shell=True,

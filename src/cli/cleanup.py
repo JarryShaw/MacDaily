@@ -191,9 +191,9 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get(f'get_{option}_parser')
+            get_parser = globals().get('get_{}_parser'.format(option))
             if get_parser is None:
-                main_parser.error(f'unrecognized arguments: {option}')
+                main_parser.error('unrecognized arguments: {}'.format(option))
 
             # parse mode arguments
             parser = get_parser()

@@ -55,7 +55,7 @@ def install(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
     timeout = config['Miscellaneous']['timeout']
     confirm = config['Miscellaneous']['confirm']
     askpass = config['Miscellaneous']['askpass']
@@ -63,12 +63,12 @@ def install(argv=None):
     brew_renew = None
 
     # record program status
-    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
+    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     # ask for password
-    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
+    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
@@ -76,15 +76,15 @@ def install(argv=None):
     for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
         # skip disabled commands
         if (not config['Mode'].get(mode, False)):
-            text = f'macdaily-install: {yellow}{mode}{reset}: command disabled'
+            text = 'macdaily-install: {}{}{}: command disabled'.format(yellow, mode, reset)
             print_term(text, filename, redirect=verbose)
             continue
 
         # skip commands with no package spec
-        packages = getattr(args, f'{mode}_pkgs', list())
+        packages = getattr(args, '{}_pkgs'.format(mode), list())
         namespace = getattr(args, mode, None)
         if not (packages or namespace):
-            text = f'macdaily-install: {yellow}{mode}{reset}: nothing to install'
+            text = 'macdaily-install: {}{}{}: nothing to install'.format(yellow, mode, reset)
             print_term(text, filename, redirect=verbose)
             continue
 
@@ -104,7 +104,7 @@ def install(argv=None):
             namespace['no_cleanup'] = True
 
         # run command
-        cmd_cls = globals()[f'{mode.capitalize()}Install']
+        cmd_cls = globals()['{}Install'.format(mode.capitalize())]
         command = cmd_cls(make_namespace(namespace), filename, timeout,
                           confirm, askpass, password, disk_dir, brew_renew)
 
@@ -116,38 +116,38 @@ def install(argv=None):
     if not args.no_cleanup:
         archive = make_archive(config, 'install', today, quiet=quiet, verbose=verbose, logfile=filename)
 
-    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of install command{reset}'
+    text = '{}{}|📖|{} {}MacDaily report of install command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
     for command in cmd_list:
         desc = make_description(command)
-        pkgs = f'{reset}{bold}, {green}'.join(command.packages)
-        fail = f'{reset}{bold}, {red}'.join(command.failed)
+        pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
+        fail = '{}{}, {}'.format(reset, bold, red).join(command.failed)
 
         if pkgs:
             flag = (len(pkgs) == 1)
-            text = f'Installed following {under}{desc(flag)}{reset}{bold}: {green}{pkgs}{reset}'
+            text = 'Installed following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, green, pkgs, reset)
             print_misc(text, filename, redirect=quiet)
         else:
-            text = f'No {under}{desc(False)}{reset}{bold} installed'
+            text = 'No {}{}{}{} installed'.format(under, desc(False), reset, bold)
             print_misc(text, filename, redirect=quiet)
 
         if fail:
             flag = (len(fail) == 1)
-            text = f'Installation of following {under}{desc(flag)}{reset}{bold} failed: {red}{fail}{reset}'
+            text = 'Installation of following {}{}{}{} failed: {}{}{}'.format(under, desc(flag), reset, bold, red, fail, reset)
             print_misc(text, filename, redirect=quiet)
         else:
             verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
-            text = f'All {under}{desc(False)}{reset}{bold} installation{noun} succeed{verb}'
+            text = 'All {}{}{}{} installation{} succeed{}'.format(under, desc(False), reset, bold, noun, verb)
             print_misc(text, filename, redirect=verbose)
 
     if archive:
-        formatted_list = f'{reset}{bold}, {under}'.join(archive)
-        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:
-        text = f'macdaily: {purple}install{reset}: no packages installed'
+        text = 'macdaily: {}install{}: no packages installed'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 
     if args.show_log:
@@ -155,12 +155,12 @@ def install(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print(f'macdaily: {red}install{reset}: cannot show log file {filename!r}', file=sys.stderr)
+            print('macdaily: {}install{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
 
     mode_lst = [command.mode for command in cmd_list]
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
-    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed install process '
-            f'for {mode_str} package managers{reset}')
+    text = ('{}{}|🍺|{} {}MacDaily successfully performed install process '
+            'for {} package managers{}'.format(bold, green, reset, bold, mode_str, reset))
     print_term(text, filename, redirect=quiet)
 
 

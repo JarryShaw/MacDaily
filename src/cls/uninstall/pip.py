@@ -39,7 +39,7 @@ class PipUninstall(PipCommand, UninstallCommand):
         argv = [path, '-m', 'pip', 'freeze']
         argv.extend(self._logging_opts)
 
-        text = f'Checking outdated {self.desc[1]}'
+        text = 'Checking outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         try:
@@ -57,10 +57,10 @@ class PipUninstall(PipCommand, UninstallCommand):
             self._var__temp_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_uninstall(self, path):
-        text = f'Uninstalling specified {self.desc[1]}'
+        text = 'Uninstalling specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         def _proc_dependency(package, _know_pkgs):
@@ -68,15 +68,15 @@ class PipUninstall(PipCommand, UninstallCommand):
             if self._ignore_deps:
                 return _deps_pkgs
 
-            text = f'Searching dependencies of {self.desc[0]} {under}{package}{reset}'
+            text = 'Searching dependencies of {} {}{}{}'.format(self.desc[0], under, package, reset)
             print_info(text, self._file, redirect=self._vflag)
 
             argv = [path, '-m', 'pip', 'show', package]
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             _temp_pkgs = set()
             try:
@@ -93,7 +93,7 @@ class PipUninstall(PipCommand, UninstallCommand):
                     break
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
 
             for package in _temp_pkgs:
                 _temp_pkgs = _proc_dependency(package, _know_pkgs)

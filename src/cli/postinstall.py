@@ -47,9 +47,9 @@ def get_postinstall_parser():
 
     misc_group = parser.add_argument_group(title='miscellaneous arguments')
     misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                            help=f"options for `{bold}brew list{reset}' command")
+                            help="options for `{}brew list{}' command".format(bold, reset))
     misc_group.add_argument('-P', '--postinstall', action='store', default=str(), metavar='ARG',
-                            help=f"options for `{bold}brew postinstall <formula>{reset}' command")
+                            help="options for `{}brew postinstall <formula>{}' command".format(bold, reset))
 
     return parser
 

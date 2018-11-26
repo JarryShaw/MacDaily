@@ -35,7 +35,7 @@ def get_parser():
     group = parser.add_argument_group('command selection',
                                       'MacDaily provides a friendly CLI workflow for the '
                                       'administrator of macOS to manipulate packages, see '
-                                      f"`{bold}macdaily commands{reset} for more information")
+                                      "`{}macdaily commands{} for more information".format(bold, reset))
     group.add_argument('command', metavar='CMD', help=argparse.SUPPRESS)
 
     return parser
@@ -81,8 +81,8 @@ def main():
     elif command in MAP_UPDATE:
         update(options)
     else:
-        parser.error(f"argument CMD: invalid choice: {command!r} "
-                     f"(choose from {', '.join(sorted(MAP_ALL))})")
+        parser.error("argument CMD: invalid choice: {!r} "
+                     "(choose from {})".format(command, ', '.join(sorted(MAP_ALL))))
 
 
 if __name__ == '__main__':

@@ -23,13 +23,13 @@ def config(argv=None):
     # enter interactive setup process
     if args.interactive:
         # record program status
-        text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
+        text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
         print_term(text, os.devnull, redirect=quiet)
         record(os.devnull, args, datetime.datetime.today(), redirect=verbose)
 
         # make config
         make_config(quiet, verbose)
-        text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed config process')
+        text = ('{}{}|🍺|{} {}MacDaily successfully performed config process'.format(bold, green, reset, bold))
         print_term(text, os.devnull, redirect=quiet)
         return
 
@@ -41,7 +41,7 @@ def config(argv=None):
     if args.list:
         for key, value in config.items():
             for k, v, in value.items():
-                print(f'{key}.{k}={v}')
+                print('{}.{}={}'.format(key, k, v))
         return
 
     # then key is mandatory
@@ -53,7 +53,7 @@ def config(argv=None):
     match = re.match(r'(\w+)\.(\w+)', args.key.strip())
     if match is None:
         parser = get_config_parser()
-        parser.error(f"argument KEY: invalid value: {args.key!r}")
+        parser.error("argument KEY: invalid value: {!r}".format(args.key))
     section, option = match.groups()
 
     # fetch value of a given key
@@ -63,10 +63,10 @@ def config(argv=None):
     try:
         import configupdater
     except ImportError:
-        print_term(f'macdaily-config: {yellow}brew{reset}: {bold}ConfigUpdater{reset} not installed, '
-                   f"which is mandatory for modification of configuration",
+        print_term('macdaily-config: {}brew{}: {}ConfigUpdater{} not installed, '
+                   "which is mandatory for modification of configuration".format(yellow, reset, bold, reset),
                    os.devnull, redirect=verbose)
-        print(f'macdaily-config: {red}brew{reset}: broken dependency', file=sys.stderr)
+        print('macdaily-config: {}brew{}: broken dependency'.format(red, reset), file=sys.stderr)
         raise
 
     # make ConfigUpdater
@@ -79,7 +79,7 @@ def config(argv=None):
     check_value = sum((args.true, args.false, (args.value is not None)))
     if check_value > 1:
         parser = get_config_parser()
-        parser.error(f"conflicting option(s): '--true', '--false' and {args.value!r}")
+        parser.error("conflicting option(s): '--true', '--false' and {!r}".format(args.value))
     elif check_value == 0:
         parser = get_config_parser()
         parser.error("the following arguments are required: '--true', '--false', or value")
@@ -106,11 +106,11 @@ def config(argv=None):
         updater[section][option] = comment
     elif args.add:
         if origin is None:
-            updater[section][option] = f'{formatted_value} {comment}'
+            updater[section][option] = '{} {}'.format(formatted_value, comment)
         else:
-            updater[section][option] = f'{origin}{os.linesep}    {value}'
+            updater[section][option] = '{}{}    {}'.format(origin, os.linesep, value)
     else:
-        updater[section][option] = f'{formatted_value} {comment}'
+        updater[section][option] = '{} {}'.format(formatted_value, comment)
 
     # update config file
     updater.update_file()

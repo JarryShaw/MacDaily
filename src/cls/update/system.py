@@ -31,7 +31,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
-        text = f'Checking outdated {self.desc[1]}'
+        text = 'Checking outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, '--list']
@@ -39,8 +39,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -65,11 +65,11 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             self._var__norm_pkgs = set(_norm_pkgs)
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
         self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
 
     def _proc_update(self, path):
-        text = f'Upgrading outdated {self.desc[1]}'
+        text = 'Upgrading outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         if self._recommend:
@@ -86,7 +86,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for package in _temp_pkgs:
-            args = f'{argc} {package!r}'
+            args = '{} {!r}'.format(argc, package)
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):
