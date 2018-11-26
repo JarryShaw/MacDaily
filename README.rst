@@ -8,9 +8,9 @@
 MacDaily - macOS Automated Package Manager
 ==========================================
 
-|download| |version| |status|
+|download| |version| |status| |format|
 
-|format| |python| |implementation|
+|python| |implementation|
 
 - `About <#about>`__
 - `Installation <#installation>`__
@@ -54,7 +54,7 @@ NB
 
     <h4>
       <a name="brew">
-        Install through Homebrew
+        MacDaily is now <code>brew</code>able 🍺
       </a>
     </h4>
 
@@ -63,7 +63,7 @@ Though not introduced to
 **MacDaily** is still available for ``brew``. Use the following commands to
 add the `Tap <https://github.com/JarryShaw/homebrew-tap>`__ to your local
 Homebrew installation (``$(BREW_PREFIX)/Homebrew/Library/Taps/``) and install
-MacDaily through Homebrew.
+**MacDaily** through Homebrew.
 
 .. code:: shell
 
@@ -76,7 +76,7 @@ MacDaily through Homebrew.
 
     <h4>
       <a name="pip">
-        Install through <code>pip</code>
+        Legacy approach through <code>pip</code> 🐍
       </a>
     </h4>
 
