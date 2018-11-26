@@ -50,6 +50,36 @@ NB
     MacDaily runs only with support of Python from version **3.4**
     or higher. And it shall only work ideally on **macOS**.
 
+.. raw:: html
+
+    <h4>
+      <a name="brew">
+        Install through Homebrew
+      </a>
+    </h4>
+
+Though not introduced to
+`Homebrew core <https://github.com/Homebrew/homebrew-core>`__ database yet,
+**MacDaily** is still available for ``brew``. Use the following commands to
+add the `Tap <https://github.com/JarryShaw/homebrew-tap>`__ to your local
+Homebrew installation (``$(BREW_PREFIX)/Homebrew/Library/Taps/``) and install
+MacDaily through Homebrew.
+
+.. code:: shell
+
+    $ brew tap jarryshaw/tap
+    $ brew install macdaily
+    # or simply, a one-liner
+    $ brew install jarryshaw/tap/macdaily
+
+.. raw:: html
+
+    <h4>
+      <a name="pip">
+        Install through <code>pip</code>
+      </a>
+    </h4>
+
 Just as many Python packages, MacDaily can be installed through
 ``pip`` using the following command, which will get you the latest
 version from `PyPI <https://pypi.org>`__.
