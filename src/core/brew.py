@@ -44,11 +44,11 @@ class BrewCommand(Command):
         self._var__exec_path = shutil.which('brew')
         flag = (self._var__exec_path is not None)
         if not flag:
-            print('macdaily-{}: {}{}brew{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
-            text = ('macdaily-{}: {}brew{}: you may find Homebrew on '
-                    '{}{}https://brew.sh{}, or install Homebrew through following command -- '
-                    '`{}/usr/bin/ruby -e "$(curl -fsSL '
-                    """https://raw.githubusercontent.com/Homebrew/install/master/install)"{}'""".format(self.cmd, red, reset, purple_bg, under, reset, bold, reset))
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}brew{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}brew{reset}: you may find Homebrew on '
+                    f'{purple_bg}{under}https://brew.sh{reset}, or install Homebrew through following command -- '
+                    f'`{bold}/usr/bin/ruby -e "$(curl -fsSL '
+                    f"""https://raw.githubusercontent.com/Homebrew/install/master/install)"{reset}'""")
             print_term(text, self._file, redirect=self._qflag)
         return flag
 
@@ -65,15 +65,15 @@ class BrewCommand(Command):
         del self._var__exec_path
 
     def _check_pkgs(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -86,7 +86,7 @@ class BrewCommand(Command):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
         text = 'Checking existence of specified packages'
         print_info(text, self._file, redirect=self._vflag)
@@ -121,16 +121,16 @@ class BrewCommand(Command):
         run(argv, self._file, redirect=self._qflag)
 
     def _proc_fixmissing(self, path):
-        text = 'Checking broken {} dependencies'.format(self.desc[0])
+        text = f'Checking broken {self.desc[0]} dependencies'
         print_info(text, self._file, redirect=self._qflag)
 
         def _proc_check():
-            argv = [path, 'missing', '--hide={!r}'.format(",".join(self._ignore))]
+            argv = [path, 'missing', f'--hide={",".join(self._ignore)!r}']
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write('Script started on {}\n'.format(date()))
-                file.write('command: {!r}\n'.format(args))
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
 
             _deps_pkgs = list()
             try:  # brew missing exits with a non-zero status if any formulae are missing dependencies
@@ -145,19 +145,19 @@ class BrewCommand(Command):
                     _deps_pkgs.extend(line.split()[1:])
             finally:
                 with open(self._file, 'a') as file:
-                    file.write('Script done on {}\n'.format(date()))
+                    file.write(f'Script done on {date()}\n')
             return set(_deps_pkgs)
 
         def _proc_confirm():
-            pkgs = '{}, {}'.format(reset, bold).join(_deps_pkgs)
-            text = 'macdaily-{}: {}brew{}: found broken dependencies: {}{}{}'.format(self.cmd, yellow, reset, bold, pkgs, reset)
+            pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
+            text = f'macdaily-{self.cmd}: {yellow}brew{reset}: found broken dependencies: {bold}{pkgs}{reset}'
             print_term(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
             while True:
                 ans = get_input(self._confirm, 'Would you like to reinstall?',
-                                prefix='Found broken dependencies: {}.\n\n'.format(", ".join(_deps_pkgs)),
-                                suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
+                                prefix=f'Found broken dependencies: {", ".join(_deps_pkgs)}.\n\n',
+                                suffix=f' ({green}y{reset}/{red}N{reset}) ')
                 if re.match(r'[yY]', ans):
                     return True
                 elif re.match(r'[nN]', ans):
@@ -167,11 +167,11 @@ class BrewCommand(Command):
 
         _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
-            text = 'macdaily-{}: {}brew{}: no broken dependencies'.format(self.cmd, green, reset)
+            text = f'macdaily-{self.cmd}: {green}brew{reset}: no broken dependencies'
             print_term(text, self._file, redirect=self._qflag)
             return
 
-        text = 'Fixing broken {} dependencies'.format(self.desc[0])
+        text = f'Fixing broken {self.desc[0]} dependencies'
         print_info(text, self._file, redirect=self._qflag)
 
         if _proc_confirm():
@@ -194,9 +194,9 @@ class BrewCommand(Command):
                 _done_pkgs |= _deps_pkgs
                 _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
 
-            text = 'macdaily-{}: {}brew{}: all broken dependencies fixed'.format(self.cmd, green, reset)
+            text = f'macdaily-{self.cmd}: {green}brew{reset}: all broken dependencies fixed'
         else:
-            text = 'macdaily-{}: {}brew{}: all broken dependencies remain'.format(self.cmd, red, reset)
+            text = f'macdaily-{self.cmd}: {red}brew{reset}: all broken dependencies remain'
         print_term(text, self._file, redirect=self._qflag)
 
     def _proc_cleanup(self):
@@ -241,8 +241,8 @@ class BrewCommand(Command):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write('Script started on {}\n'.format(date()))
-                file.write('command: {!r}\n'.format(args))
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
 
             fail = False
             try:
@@ -255,7 +255,7 @@ class BrewCommand(Command):
                 print_text(context, self._file, redirect=self._vflag)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write('Script done on {}\n'.format(date()))
+                    file.write(f'Script done on {date()}\n')
             if fail:
                 continue
 
@@ -294,6 +294,6 @@ class BrewCommand(Command):
                 print_text(os.linesep.join(sorted(file_list)), self._file, redirect=self._vflag)
 
         if flag:
-            text = ('macdaily-{}: {}brew{}: '
-                    'archive directory {}{}{} not found'.format(self.cmd, yellow, reset, bold, self._disk_dir, reset))
+            text = (f'macdaily-{self.cmd}: {yellow}brew{reset}: '
+                    f'archive directory {bold}{self._disk_dir}{reset} not found')
             print_term(text, self._file, redirect=self._vflag)

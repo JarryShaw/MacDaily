@@ -98,9 +98,9 @@ def get_brew_parser():
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew list{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew list{reset}' command")
     brew_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew reinstall <formula>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew reinstall <formula>{reset}' command")
 
     return brew_parser
 
@@ -148,9 +148,9 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew cask list{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew cask list{reset}' command")
     cask_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew cask reinstall <cask>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew cask reinstall <cask>{reset}' command")
 
     return cask_parser
 
@@ -184,9 +184,9 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get('get_{}_parser'.format(option))
+            get_parser = globals().get(f'get_{option}_parser')
             if get_parser is None:
-                main_parser.error('unrecognized arguments: {}'.format(option))
+                main_parser.error(f'unrecognized arguments: {option}')
 
             # parse mode arguments
             parser = get_parser()

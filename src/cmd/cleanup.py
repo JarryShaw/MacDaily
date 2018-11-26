@@ -41,7 +41,7 @@ class CleanupCommand(Command):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))
 
-        text = 'Running {} command for {}'.format(self.cmd, self.mode)
+        text = f'Running {self.cmd} command for {self.mode}'
         print_info(text, filename, redirect=self._qflag)
 
         # assign members

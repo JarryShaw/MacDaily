@@ -41,7 +41,7 @@ class PipUpdate(PipCommand, UpdateCommand):
             argv.append('--pre')
         argv.extend(self._logging_opts)
 
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         temp = copy.copy(argv)
@@ -49,8 +49,8 @@ class PipUpdate(PipCommand, UpdateCommand):
         args = ' '.join(temp)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         argv.append('--format=json')
         try:
@@ -90,10 +90,10 @@ class PipUpdate(PipCommand, UpdateCommand):
                                self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, '-m', 'pip', 'install', '--upgrade']
@@ -109,7 +109,7 @@ class PipUpdate(PipCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
-            args = '{} {}'.format(argc, package)
+            args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag, sethome=True):

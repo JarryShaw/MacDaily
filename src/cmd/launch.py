@@ -28,7 +28,7 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
     text = 'Launching MacDaily SSH-AskPass program'
     print_info(text, logfile, quiet)
 
-    path = 'Macintosh HD{}:img:askpass.icns'.format(ROOT.replace(os.path.sep, ":"))
+    path = f'Macintosh HD{ROOT.replace(os.path.sep, ":")}:img:askpass.icns'
     ASKPASS = ['#!/usr/bin/env osascript',
                '',
                '-- script based on https://github.com/theseal/ssh-askpass',
@@ -38,12 +38,12 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
                '    if args starts with "--help" or args starts with "-h" then',
                '        return "macdaily-askpass [-h|--help] [prompt]"',
                '    end if',
-               '    display dialog args with icon file ("{}") default button "OK" default answer "" with hidden answer'.format(path),  # noqa
+               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',  # noqa
                "    return result's text returned",
                'end run',
                '']
     askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
-    text = 'Making executable {!r}'.format(askpass)
+    text = f'Making executable {askpass!r}'
     print_misc(text, logfile, verbose)
 
     user = owner = getpass.getuser()
@@ -85,7 +85,7 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
         EnableTransactions=True,
     )
     plist = os.path.expanduser('~/Library/LaunchAgents/com.macdaily.askpass.plist')
-    text = 'Adding Launch Agent {!r}'.format(plist)
+    text = f'Adding Launch Agent {plist!r}'
     print_misc(text, logfile, verbose)
     if os.path.exists(plist):
         run_script(['launchctl', 'unload', '-w', plist], quiet, verbose, logfile=logfile)
@@ -101,7 +101,7 @@ def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull
     text = 'Launching MacDaily Confirmation program'
     print_info(text, logfile, quiet)
 
-    path = 'Macintosh HD{}:img:confirm.icns'.format(ROOT.replace(os.path.sep, ":"))
+    path = f'Macintosh HD{ROOT.replace(os.path.sep, ":")}:img:confirm.icns'
     ASKPASS = ['#!/usr/bin/env osascript',
                '',
                'on run argv',
@@ -109,12 +109,12 @@ def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull
                '    if args starts with "--help" or args starts with "-h" then',
                '        return "macdaily-confirm [-h|--help] [prompt]"',
                '    end if',
-               '    display dialog args with icon file ("{}") default button "Cancel"'.format(path),
+               f'    display dialog args with icon file ("{path}") default button "Cancel"',
                "    return result's button returned",
                'end run',
                '']
     confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
-    text = 'Making executable {!r}'.format(confirm)
+    text = f'Making executable {confirm!r}'
     print_misc(text, logfile, verbose)
 
     user = owner = getpass.getuser()
@@ -152,10 +152,10 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         DAEMON = ['#!/usr/bin/env osascript',
                   '',
                   '-- show notification',
-                  'display notification "Running scheduled {} scripts..." with title "MacDaily"'.format(mode),
+                  f'display notification "Running scheduled {mode} scripts..." with title "MacDaily"',
                   '',
                   '-- run script',
-                  'do shell script "{} -m macdaily {} {}"'.format(python, mode, argv),
+                  f'do shell script "{python} -m macdaily {mode} {argv}"',
                   '']
         return os.linesep.join(DAEMON)
 
@@ -178,13 +178,13 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
     for mode, time in config['Daemon'].items():
         (root / mode).mkdir(parents=True, exist_ok=True)
 
-        name = 'com.macdaily.{}'.format(mode)
-        path = os.path.join(ROOT, 'res', 'daemon-{}.applescript'.format(mode))
+        name = f'com.macdaily.{mode}'
+        path = os.path.join(ROOT, 'res', f'daemon-{mode}.applescript')
         pout = str(root / mode / 'stdout.log')
         perr = str(root / mode / 'stderr.log')
         argv = ' '.join(config['Command'].get(mode)) or '--help'
 
-        text = 'Adding {}{}{}{} command LaunchAgent {!r}'.format(under, mode, reset, bold, name)
+        text = f'Adding {under}{mode}{reset}{bold} command LaunchAgent {name!r}'
         print_misc(text, logfile, quiet)
 
         user = owner = getpass.getuser()
@@ -218,8 +218,8 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         PLIST['StandardOutPath'] = pout
         PLIST['StandardErrorPath'] = perr
 
-        plist = os.path.expanduser('~/Library/LaunchAgents/{}.plist'.format(name))
-        text = 'Adding Launch Agent {!r}'.format(name)
+        plist = os.path.expanduser(f'~/Library/LaunchAgents/{name}.plist')
+        text = f'Adding Launch Agent {name!r}'
         print_misc(text, logfile, verbose)
         if os.path.exists(plist):
             run_script(['launchctl', 'unload', '-w', plist], quiet, verbose, logfile=logfile)

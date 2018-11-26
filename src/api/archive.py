@@ -47,11 +47,11 @@ def archive(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
+    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
     disk_dir = config['Path']['arcdir']
 
     # record program status
-    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
+    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
@@ -72,9 +72,9 @@ def archive(argv=None):
         if mode not in all_pth:
             tmp_pth = all_pth.add('logging')
             with open(filename, 'a') as file:
-                file.write('macdaily: archive: invalid option: {!r}'.format(mode))
+                file.write(f'macdaily: archive: invalid option: {mode!r}')
             parser = get_archive_parser()
-            parser.error("argument CMD: invalid choice: {!r} (choose from {})".format(mode, ', '.join(sorted(tmp_pth))))
+            parser.error(f"argument CMD: invalid choice: {mode!r} (choose from {', '.join(sorted(tmp_pth))})")
 
         # make archives
         file_list = make_archive(config, mode, today, zipfile=False, quiet=quiet, verbose=verbose)
@@ -86,25 +86,25 @@ def archive(argv=None):
     if not args.no_storage:
         storage = make_storage(config, today, quiet=quiet, verbose=verbose)
 
-    text = '{}{}|📖|{} {}MacDaily report of archive command{}'.format(bold, green, reset, bold, reset)
+    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of archive command{reset}'
     print_term(text, filename, redirect=quiet)
 
     for mode, file_list in file_dict.items():
         if len(file_list):
-            formatted_list = '{}{}, {}'.format(reset, bold, under).join(file_list)
-            text = 'Archived following ancient logs of {}{}{}{}: {}{}{}'.format(pink, mode, reset, bold, under, formatted_list, reset)
+            formatted_list = f'{reset}{bold}, {under}'.join(file_list)
+            text = f'Archived following ancient logs of {pink}{mode}{reset}{bold}: {under}{formatted_list}{reset}'
         else:
-            text = 'No ancient logs of {}{}{}{} archived'.format(under, mode, reset, bold)
+            text = f'No ancient logs of {under}{mode}{reset}{bold} archived'
         print_misc(text, filename, redirect=quiet)
 
     if len(file_dict) == 0:
-        text = 'macdaily: {}archive{}: no logs archived'.format(purple, reset)
+        text = f'macdaily: {purple}archive{reset}: no logs archived'
         print_term(text, filename, redirect=quiet)
 
     if storage:
-        formatted_list = '{}{}, {}'.format(reset, bold, under).join(storage)
-        text = ('Stored following ancient archived into {}external hard disk{} '
-                '{} at {}{}{}{}: {}{}{}'.format(pink, reset, bold, under, disk_dir, reset, bold, under, formatted_list, reset))
+        formatted_list = f'{reset}{bold}, {under}'.join(storage)
+        text = (f'Stored following ancient archived into {pink}external hard disk{reset} '
+                f'{bold} at {under}{disk_dir}{reset}{bold}: {under}{formatted_list}{reset}')
         print_misc(text, filename, redirect=quiet)
 
     if args.show_log:
@@ -112,11 +112,11 @@ def archive(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print('macdaily: {}archive{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
+            print(f'macdaily: {red}archive{reset}: cannot show log file {filename!r}', file=sys.stderr)
 
     mode_str = ', '.join(file_dict) if file_dict else 'none'
-    text = ('{}{}|🍺|{} {}MacDaily successfully performed archive process '
-            'for {} helper programs{}'.format(bold, green, reset, bold, mode_str, reset))
+    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed archive process '
+            f'for {mode_str} helper programs{reset}')
     print_term(text, filename, redirect=quiet)
 
 

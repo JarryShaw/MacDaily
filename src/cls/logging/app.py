@@ -49,19 +49,19 @@ class AppLogging(LoggingCommand):
         self._exec = {sys.executable}
 
     def _proc_logging(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         suffix = path.replace('/', ':')
-        logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+        logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
 
         find = os.path.join(ROOT, 'res', 'find.py')
         argv = ['sudo', '--stdin', "--prompt=''", path, find, '/']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             with make_pipe(self._password, self._vflag) as pipe:
@@ -77,4 +77,4 @@ class AppLogging(LoggingCommand):
                 file.writelines(filter(None, context.strip().splitlines(True)))
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')

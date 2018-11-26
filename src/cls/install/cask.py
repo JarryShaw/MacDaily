@@ -18,7 +18,7 @@ class CaskInstall(CaskCommand, InstallCommand):
         self._install_opts = namespace.get('install', str()).split()
 
     def _proc_install(self, path):
-        text = 'Installing specified {}'.format(self.desc[1])
+        text = f'Installing specified {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'cask', 'install']
@@ -31,7 +31,7 @@ class CaskInstall(CaskCommand, InstallCommand):
         argv.extend(self._install_opts)
         argv.append('')
 
-        askpass = 'SUDO_ASKPASS={!r}'.format(self._askpass)
+        askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:
             argv[-1] = package
             print_scpt(' '.join(argv), self._file, redirect=self._qflag)

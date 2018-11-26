@@ -25,12 +25,12 @@ class UninstallCommand(Command):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            text = 'Using {} executable {!r}'.format(self.name, path)
+            text = f'Using {self.name} executable {path!r}'
             print_info(text, self._file, redirect=self._qflag)
             if self._proc_logging(path):
                 self._proc_uninstall(path)
             else:
-                text = 'No {} to uninstall for executable {!r}'.format(self.desc[1], path)
+                text = f'No {self.desc[1]} to uninstall for executable {path!r}'
                 print_info(text, self._file, redirect=self._qflag)
             self._proc_fixmissing(path)
         self._proc_cleanup()

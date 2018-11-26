@@ -30,7 +30,7 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
     arcpath.mkdir(parents=True, exist_ok=True)
     tarpath.mkdir(parents=True, exist_ok=True)
 
-    text = 'Moving ancient logs into {}GNU Zip Archives{}'.format(under, reset)
+    text = f'Moving ancient logs into {under}GNU Zip Archives{reset}'
     print_info(text, logfile, redirect=quiet)
 
     filelist = list()
@@ -41,11 +41,11 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
         absdir = os.path.abspath(os.path.join(logpath, subdir))
         glob_list = glob.glob(os.path.join(absdir, '*.log'))
         if glob_list:
-            tarname = os.path.join(arcpath, '{}.tar.gz'.format(subdir))
+            tarname = os.path.join(arcpath, f'{subdir}.tar.gz')
             if verbose:
-                print_scpt('tar -czf {} {}'.format(tarname, absdir), logfile, redirect=quiet)
+                print_scpt(f'tar -czf {tarname} {absdir}', logfile, redirect=quiet)
             else:
-                print_scpt('tar -czvf {} {}'.format(tarname, absdir), logfile, redirect=verbose)
+                print_scpt(f'tar -czvf {tarname} {absdir}', logfile, redirect=verbose)
             with tarfile.open(tarname, 'w:gz') as gz:
                 for absname in glob_list:
                     arcname = os.path.split(absname)[1]
@@ -54,7 +54,7 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
                     print_text(absname, logfile, redirect=verbose)
         shutil.rmtree(absdir)
 
-    text = 'Moving ancient archives into {}XZ Compressed Archives{}'.format(under, reset)
+    text = f'Moving ancient archives into {under}XZ Compressed Archives{reset}'
     print_info(text, logfile, redirect=quiet)
 
     ctime = datetime.datetime.fromtimestamp(os.stat(arcpath).st_birthtime)
@@ -62,11 +62,11 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
         glob_list = glob.glob(os.path.join(arcpath, '*.tar.gz'))
         if glob_list:
             arcdate = datetime.date.strftime(ctime, r'%y%m%d')
-            tarname = os.path.join(tarpath, '{}-{}.tar.xz'.format(arcdate, logdate))
+            tarname = os.path.join(tarpath, f'{arcdate}-{logdate}.tar.xz')
             if verbose:
-                print_scpt('tar -cJf {} {}'.format(tarname, arcpath), logfile, redirect=quiet)
+                print_scpt(f'tar -cJf {tarname} {arcpath}', logfile, redirect=quiet)
             else:
-                print_scpt('tar -cJvf {} {}'.format(tarname, arcpath), logfile, redirect=verbose)
+                print_scpt(f'tar -cJvf {tarname} {arcpath}', logfile, redirect=verbose)
             with tarfile.open(tarname, 'w:xz') as xz:
                 for absname in glob_list:
                     arcname = os.path.split(absname)[1]
@@ -92,7 +92,7 @@ def make_storage(config, today, quiet=False, verbose=False, logfile=os.devnull):
     if not os.path.isdir(tarpath):
         return arclist
 
-    text = 'Storing ancient archives at external hard disk {}{}{}'.format(under, dskpath, reset)
+    text = f'Storing ancient archives at external hard disk {under}{dskpath}{reset}'
     print_info(text, logfile, redirect=quiet)
 
     days = calendar.monthrange(year=today.year, month=today.month)[1]
@@ -102,11 +102,11 @@ def make_storage(config, today, quiet=False, verbose=False, logfile=os.devnull):
         if glob_list:
             with tempfile.TemporaryDirectory() as tmppath:
                 arcdate = datetime.date.strftime(ctime, r'%y%m%d')
-                tarname = os.path.join(tmppath, '{}-{}.tar.bz'.format(arcdate, logdate))
+                tarname = os.path.join(tmppath, f'{arcdate}-{logdate}.tar.bz')
                 if verbose:
-                    print_scpt('tar -cjf {} {}'.format(tarname, tarpath), logfile, redirect=quiet)
+                    print_scpt(f'tar -cjf {tarname} {tarpath}', logfile, redirect=quiet)
                 else:
-                    print_scpt('tar -cjvf {} {}'.format(tarname, tarpath), logfile, redirect=verbose)
+                    print_scpt(f'tar -cjvf {tarname} {tarpath}', logfile, redirect=verbose)
                 with tarfile.open(tarname, 'w:bz2') as bz:
                     for absname in glob_list:
                         arcname = pathlib.Path(absname).relative_to(tarpath)
@@ -116,9 +116,9 @@ def make_storage(config, today, quiet=False, verbose=False, logfile=os.devnull):
 
                 arcfile = os.path.join(config['Path']['arcdir'], 'archive.zip')
                 if verbose:
-                    print_scpt('tar -cZf {} {}'.format(arcfile, tarname), logfile, redirect=quiet)
+                    print_scpt(f'tar -cZf {arcfile} {tarname}', logfile, redirect=quiet)
                 else:
-                    print_scpt('tar -cZvf {} {}'.format(arcfile, tarname), logfile, redirect=verbose)
+                    print_scpt(f'tar -cZvf {arcfile} {tarname}', logfile, redirect=verbose)
                 with zipfile.ZipFile(arcfile, 'a', zipfile.ZIP_DEFLATED) as zf:
                     arcname = os.path.split(tarname)[1]
                     zf.write(tarname, arcname)

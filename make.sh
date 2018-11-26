@@ -5,25 +5,19 @@ set -x
 
 # update version string
 python3 setup-version.py
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
 
 # update manpages
-cd contrib && \
+cd contrib
 for file in $( ls *.rst ); do
     name=${file%.rst*}
     pipenv run rst2man.py ${file} > "../src/man/${name}.1"
-done && \
+done
 cd ..
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
 
 # duplicate distribution files
-mkdir -p release && \
+mkdir -p release
 rm -rf release/src \
-       release/macdaily && \
+       release/macdaily
 cp -r src \
       LICENSE \
       setup.py \
@@ -31,45 +25,31 @@ cp -r src \
       .gitignore \
       README.rst \
       MANIFEST.in \
-      .gitattributes release/ && \
+      .gitattributes release/
 rm -f release/**/dev_* \
       release/**/.DS_Store \
       release/**/typescript \
       release/**/__pycache__ \
-      release/src/res/daemon-*.applescript && \
-cd release/ && \
+      release/src/res/daemon-*.applescript
+cd release/
 mv src macdaily
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
 
 # prepare for PyPI distribution
-rm -rf build 2> /dev/null && \
+rm -rf build 2> /dev/null
 mkdir eggs \
       sdist \
-      wheels 2> /dev/null && \
-mv -f dist/*.egg eggs/ 2> /dev/null && \
-mv -f dist/*.whl wheels/ 2> /dev/null && \
-mv -f dist/*.tar.gz sdist/ 2> /dev/null && \
-rm -rf dist 2> /dev/null && \
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
+      wheels 2> /dev/null
+mv -f dist/*.egg eggs/ 2> /dev/null
+mv -f dist/*.whl wheels/ 2> /dev/null
+mv -f dist/*.tar.gz sdist/ 2> /dev/null
+rm -rf dist 2> /dev/null
 
 # fetch platform spec
 platform=$( python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))" )
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
 
 # make Python >=3.6 distribution
-python3.7 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp37' && \
-python3.6 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp36' && \
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
+python3.7 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp37'
+python3.6 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp36'
 
 # perform f2format
 f2format -n macdaily
@@ -88,38 +68,27 @@ fi
 #               /System/Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
 #     $python setup.py bdist_egg
 # done
-pypy3 setup.py bdist_wheel --plat-name="${platform}" --python-tag='pp35' && \
-python3.5 setup.py bdist_egg && \
-python3.4 setup.py bdist_egg && \
-python3 setup.py sdist && \
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
+pypy3 setup.py bdist_wheel --plat-name="${platform}" --python-tag='pp35'
+python3.5 setup.py bdist_egg
+python3.4 setup.py bdist_egg
+python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
-twine upload dist/* -r pypi --skip-existing && \
-twine upload dist/* -r pypitest --skip-existing && \
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
+twine upload dist/* -r pypi --skip-existing
+twine upload dist/* -r pypitest --skip-existing
 
 # get version string
 version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
 
 # upload to GitHub
-git pull && \
-git tag "v${version}" && \
-git add . && \
+git pull
+git tag "v${version}"
+git add .
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi && \
+fi
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
@@ -135,15 +104,15 @@ fi
 # done
 
 # upload develop environment
-cd .. && \
-git pull && \
-git tag "v${version}" && \
-git add . && \
+cd ..
+git pull
+git tag "v${version}"
+git add .
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi && \
+fi
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
@@ -162,15 +131,15 @@ if [[ $ret -ne "0" ]] ; then
 fi
 
 # update Homebrew Formulae
-pipenv run python3 setup-formula.py && \
-cd tap && \
-git pull && \
-git add . && \
+pipenv run python3 setup-formula.py
+cd tap
+git pull
+git add .
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi && \
+fi
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
@@ -178,8 +147,8 @@ if [[ $ret -ne "0" ]] ; then
 fi
 
 # aftermath
-cd .. && \
-git pull && \
-git add . && \
-git commit -a -S -m "Regular update after distribution" && \
+cd ..
+git pull
+git add .
+git commit -a -S -m "Regular update after distribution"
 git push

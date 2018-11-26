@@ -39,13 +39,13 @@ def help_(argv=None):
     def _find_help(cmd, sub, man):
         pth = None
         if sub is None:
-            pth = os.path.join(ROOT, 'man/macdaily-{}.1'.format(cmd))
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}.1')
         if sub in man:
-            pth = os.path.join(ROOT, 'man/macdaily-{}-{}.1'.format(cmd, sub))
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{sub}.1')
         if pth is None:
             parser = get_help_parser()
-            parser.error("argument CMD: invalid choice: {!r} "
-                         "(choose from {})".format(args.command, ', '.join(sorted(MAP_ALL))))
+            parser.error(f"argument CMD: invalid choice: {args.command!r} "
+                         f"(choose from {', '.join(sorted(MAP_ALL))})")
         os.execlp('man', 'man', pth)
 
     if cmd in MAP_ARCHIVE:
@@ -77,8 +77,8 @@ def help_(argv=None):
         _find_help('update', sub, MAN_UPDATE)
     else:
         parser = get_help_parser()
-        parser.error("argument CMD: invalid choice: {!r} "
-                     "(choose from {})".format(args.command, ', '.join(sorted(MAP_ALL))))
+        parser.error(f"argument CMD: invalid choice: {args.command!r} "
+                     f"(choose from {', '.join(sorted(MAP_ALL))})")
 
 
 if __name__ == '__main__':

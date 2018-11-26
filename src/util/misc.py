@@ -37,14 +37,14 @@ def beholder(func):
         except KeyboardInterrupt:
             if FLAG:
                 FLAG = False
-                print('macdaily: {}error{}: operation interrupted'.format(red, reset), file=sys.stderr)
+                print(f'macdaily: {red}error{reset}: operation interrupted', file=sys.stderr)
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
         except Exception:
             if FLAG:
                 FLAG = False
-                print('macdaily: {}error{}: operation failed'.format(red, reset), file=sys.stderr)
+                print(f'macdaily: {red}error{reset}: operation failed', file=sys.stderr)
             sys.stdout.write(reset)
             sys.tracebacklimit = 0
             raise
@@ -60,12 +60,12 @@ def date():
 def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
     if sys.stdin.isatty():
         try:
-            return input('{}{}'.format(prompt, suffix))
+            return input(f'{prompt}{suffix}')
         except KeyboardInterrupt:
             print(reset)
             raise
     try:
-        subprocess.check_call([shutil.which('osascript'), confirm, '{}{}'.format(prefix, prompt)],
+        subprocess.check_call([shutil.which('osascript'), confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         return 'N'
@@ -79,7 +79,7 @@ def get_pass(askpass):
         except KeyboardInterrupt:
             print(reset)
             raise
-    return subprocess.check_output([askpass, '🔑 Enter your password for {}.'.format(USER)],  # pylint: disable=E1101
+    return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
                                    stderr=subprocess.DEVNULL).strip().decode()
 
 
@@ -125,22 +125,22 @@ def print_info(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print_wrap('{}{}|💼|{} {}{}{}'.format(bold, blue, reset, bold, text, reset), end=end)
+        print_wrap(f'{bold}{blue}|💼|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
-                         (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
-        fd.write('|💼| {}'.format(context))
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(f'|💼| {context}')
 
 
 def print_misc(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print_wrap('{}{}|📌|{} {}{}{}'.format(bold, grey, reset, bold, text, reset), end=end)
+        print_wrap(f'{bold}{grey}|📌|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
-                         (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
-        fd.write('|📌| {}'.format(context))
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(f'|📌| {context}')
 
 
 def print_scpt(text, file, redirect=False):
@@ -149,11 +149,11 @@ def print_scpt(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print_wrap('{}{}|📜|{} {}{}{}'.format(bold, purple, reset, bold, text, reset), end=end)
+        print_wrap(f'{bold}{purple}|📜|{reset} {bold}{text}{reset}', end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
-                         (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
-        fd.write('|📜| {}'.format(context))
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
+        fd.write(f'|📜| {context}')
 
 
 def print_term(text, file, redirect=False):
@@ -163,7 +163,7 @@ def print_term(text, file, redirect=False):
         print_wrap(text, end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
-                         (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
         fd.write(context)
 
 
@@ -171,10 +171,10 @@ def print_text(text, file, redirect=False):
     flag = text.endswith(os.linesep)
     if not redirect:
         end = str() if flag else os.linesep
-        print_wrap('{}{}{}'.format(dim, text, reset), end=end)
+        print_wrap(f'{dim}{text}{reset}', end=end)
     with open(file, 'a') as fd:
         context = re.sub(r'(\033\[[0-9][0-9;]*m)|(\^D\x08\x08)', r'',
-                         (text if flag else '{}{}'.format(text, os.linesep)), flags=re.IGNORECASE)
+                         (text if flag else f'{text}{os.linesep}'), flags=re.IGNORECASE)
         fd.write(context)
 
 
@@ -184,36 +184,36 @@ def print_wrap(text, length=length, **kwargs):
 
 def record(file, args, today, config=None, redirect=False):
     # record program arguments
-    print_misc('{} {}'.format(python, program), file, redirect)
+    print_misc(f'{python} {program}', file, redirect)
     with open(file, 'a') as log:
-        log.writelines(['TIME: {!s}\n'.format(today), 'FILE: {}\n'.format(file)])
+        log.writelines([f'TIME: {today!s}\n', f'FILE: {file}\n'])
 
     # record parsed arguments
-    print_misc('Parsing command line arguments'.format(), file, redirect)
+    print_misc(f'Parsing command line arguments', file, redirect)
     with open(file, 'a') as log:
         for key, value in vars(args).items():
             if isinstance(value, dict):
                 for k, v, in value.items():
-                    log.write('ARG: {} -> {} = {}\n'.format(key, k, v))
+                    log.write(f'ARG: {key} -> {k} = {v}\n')
             else:
-                log.write('ARG: {} = {}\n'.format(key, value))
+                log.write(f'ARG: {key} = {value}\n')
 
     # record parsed configuration
     if config is not None:
-        print_misc('Parsing configuration file '
-                   '{!r}'.format(os.path.expanduser("~/.dailyrc")), file, redirect)
+        print_misc(f'Parsing configuration file '
+                   f'{os.path.expanduser("~/.dailyrc")!r}', file, redirect)
         with open(file, 'a') as log:
             for key, value in config.items():
                 for k, v, in value.items():
-                    log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
+                    log.write(f'CFG: {key} -> {k} = {v}\n')
 
 
 def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logfile=os.devnull):
     args = ' '.join(argv)
     print_scpt(args, logfile, verbose)
     with open(logfile, 'a') as file:
-        file.write('Script started on {}\n'.format(date()))
-        file.write('command: {!r}\n'.format(args))
+        file.write(f'Script started on {date()}\n')
+        file.write(f'command: {args!r}\n')
 
     try:
         if sudo:
@@ -231,15 +231,15 @@ def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logf
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
-        print_term("macdaily: {}misc{}: "
-                   "command `{}{!r}{}' failed".format(red, reset, bold, ' '.join(error.cmd), reset), logfile, redirect=quiet)
+        print_term(f"macdaily: {red}misc{reset}: "
+                   f"command `{bold}{' '.join(error.cmd)!r}{reset}' failed", logfile, redirect=quiet)
         raise
     else:
         context = proc.decode()
         print_text(context, logfile, redirect=verbose)
     finally:
             with open(logfile, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
 
 def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
@@ -254,15 +254,15 @@ def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
 
 
 def _ansi2text(password):
-    return ('{} -c "'
+    return (f'{sys.executable} -c "'
             'import re, sys\n'
-            'or line in sys.stdin:\n'
+            'for line in sys.stdin:\n'
             "    data = line.rstrip().replace('^D\x08\x08', '')\n"
             "    temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
-            "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
+            f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
             '    if text:\n'
             "        print(text, end='\\r\\n')\n"
-            '"'.format(sys.executable, _replace(password)))
+            '"')
 
 
 def _merge(argv):
@@ -274,19 +274,19 @@ def _merge(argv):
 def _replace(password):
     if password is None:
         return ''
-    return (".replace({!r}, '********')".format(password))
+    return (f".replace({password!r}, '********')")
 
 
 def _text2dim(password):
-    return ('{} -c "'
+    return (f'{sys.executable} -c "'
             'import re, sys\n'
-            'or line in sys.stdin:\n'
+            'for line in sys.stdin:\n'
             "    data = line.rstrip().replace('^D\x08\x08', '')\n"
-            "    temp = {!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{}', data, flags=re.IGNORECASE)\n"
-            "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
+            f"    temp = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', data, flags=re.IGNORECASE)\n"
+            f"    text = temp.replace('Password:', 'Password:\\r\\n'){_replace(password)}\n"
             '    if text:\n'
             "        print(text, end='\\r\\n')\n"
-            '"'.format(sys.executable, dim, dim, _replace(password)))
+            '"')
 
 
 def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
@@ -294,16 +294,16 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
     try:
         import ptyng
     except ImportError:
-        print_term("macdaily: {}misc{}: `{}unbuffer{}' and `{}script{}'"
-                   'not found in your {}PATH{}, {}PTYng{} not installed'.format(yellow, reset, bold, reset, bold, reset, under, reset, bold, reset),
+        print_term(f"macdaily: {yellow}misc{reset}: `{bold}unbuffer{reset}' and `{bold}script{reset}'"
+                   f'not found in your {under}PATH{reset}, {bold}PTYng{reset} not installed',
                    os.devnull, redirect=redirect)
-        print('macdaily: {}misc{}: broken dependency'.format(red, reset), file=sys.stderr)
+        print(f'macdaily: {red}misc{reset}: broken dependency', file=sys.stderr)
         raise
 
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
+        argv = f'{_merge(argv)} {suffix}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, _merge(argv))
+        argv = f'{prefix} {_merge(argv)}'
     if shell or isinstance(argv, str):
         argv = [executable, '-c', _merge(argv)]
 
@@ -357,13 +357,13 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
 def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
               executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
-    argv = 'unbuffer -p {} | tee -a >({} | col -b >> {}) | {}'.format(_merge(argv), _ansi2text(password), file, _text2dim(password))
+        argv = f'{_merge(argv)} {suffix}'
+    argv = f'unbuffer -p {_merge(argv)} | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >({ansi2text(password)} | col -b >> {file})'
     if yes is not None:
-        argv = 'yes {} | {}'.format(yes, argv)
+        argv = f'yes {yes} | {argv}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, argv)
+        argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
     mode = None
@@ -393,13 +393,13 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
 def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
             executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
-    argc = 'script -q /dev/null {} -c "'.format(SHELL)
+        argv = f'{_merge(argv)} {suffix}'
+    argc = f'script -q /dev/null {SHELL} -c "'
     if yes is not None:
-        argc = '{} yes {} |'.format(argc, yes)
-    argv = '{} {}" | tee -a >({} | col -b >> {}) | {}'.format(argc, _merge(argv), _ansi2text(password), file, _text2dim(password))
+        argc = f'{argc} yes {yes} |'
+    argv = f'{argc} {_merge(argv)}" | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, argv)
+        argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
     mode = None
@@ -437,8 +437,8 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
         args = " ".join(argv)
         if password is not None:
             args = args.replace(password, '********')
-        typescript.write('Script started on {}\n'.format(date()))
-        typescript.write('command: {!r}\n'.format(args))
+        typescript.write(f'Script started on {date()}\n')
+        typescript.write(f'command: {args!r}\n')
 
     if UNBUFFER is not None:
         returncode = _unbuffer(argv, file, password, yes, redirect, executable, prefix, suffix, timeout)
@@ -449,7 +449,7 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
 
     with open(file, 'a') as typescript:
         # print('Before:', typescript.tell())
-        typescript.write('Script done on {}\n'.format(date()))
+        typescript.write(f'Script done on {date()}\n')
         # print('After:', typescript.tell())
     sys.stdout.write(reset)
     return returncode
@@ -464,19 +464,19 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
             return None
         nonlocal yes
 
-        sudo_argv = "echo {!r} | sudo --stdin --validate --prompt='Password:\n' &&".format(password)
+        sudo_argv = f"echo {password!r} | sudo --stdin --validate --prompt='Password:\n' &&"
         if yes is not None:
             if UNBUFFER is not None or SCRIPT is None:
-                sudo_argv = '{} yes {} |'.format(sudo_argv, yes)
+                sudo_argv = f'{sudo_argv} yes {yes} |'
                 yes = None
         if askpass is not None:
-            sudo_argv = '{} SUDO_ASKPASS={!r} '.format(sudo_argv, askpass)
+            sudo_argv = f'{sudo_argv} SUDO_ASKPASS={askpass!r} '
 
-        sudo_argv = '{} sudo'.format(sudo_argv)
+        sudo_argv = f'{sudo_argv} sudo'
         if sethome:
-            sudo_argv = '{} --set-home'.format(sudo_argv)
+            sudo_argv = f'{sudo_argv} --set-home'
         if askpass is not None:
-            sudo_argv = "{} --askpass --prompt='🔑 Enter your password for {}.'".format(sudo_argv, USER)
+            sudo_argv = f"{sudo_argv} --askpass --prompt='🔑 Enter your password for {USER}.'"
         return sudo_argv
     return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
                prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=suffix)

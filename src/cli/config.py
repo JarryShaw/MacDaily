@@ -48,9 +48,9 @@ def get_config_parser():
     ctrl_group = parser.add_argument_group(title='control arguments',
                                            description='options used to set true or false')
     ctrl_group.add_argument('-T', '--true', action='store_true',
-                            help="set the value for a given key to `{}true{}'".format(bold, reset))
+                            help=f"set the value for a given key to `{bold}true{reset}'")
     ctrl_group.add_argument('-F', '--false', action='store_true',
-                            help="set the value for a given key to `{}false{}'".format(bold, reset))
+                            help=f"set the value for a given key to `{bold}false{reset}'")
 
     return parser
 

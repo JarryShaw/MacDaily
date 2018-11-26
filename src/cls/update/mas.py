@@ -25,7 +25,7 @@ class MasUpdate(MasCommand, UpdateCommand):
         self._update_opts = namespace.get('update', str()).split()
 
     def _check_list(self, path):
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'outdated']
@@ -33,8 +33,8 @@ class MasUpdate(MasCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -52,10 +52,10 @@ class MasUpdate(MasCommand, UpdateCommand):
             self._var__temp_pkgs = set(_temp_pkgs)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'upgrade']
@@ -63,8 +63,8 @@ class MasUpdate(MasCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for (code, package) in self._var__temp_pkgs:
-            print_scpt('{} {} [{}]'.format(argc, package, code), self._file, redirect=self._qflag)
-            if sudo('{} {}'.format(argc, code), self._file, self._password, timeout=self._timeout,
+            print_scpt(f'{argc} {package} [{code}]', self._file, redirect=self._qflag)
+            if sudo(f'{argc} {code}', self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):
                 self._fail.append(package)
             else:

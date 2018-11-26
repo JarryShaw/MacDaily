@@ -131,13 +131,13 @@ def get_brew_parser():
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
     brew_spec_group.add_argument('-b', '--include-build', action='store_true',
-                                 help='include the {}:build{} type dependencies'.format(bold, reset))
+                                 help=f'include the {bold}:build{reset} type dependencies')
     brew_spec_group.add_argument('-o', '--include-optional', action='store_true',
-                                 help='include {}:optional{} dependencies'.format(bold, reset))
+                                 help=f'include {bold}:optional{reset} dependencies')
     brew_spec_group.add_argument('-t', '--include-test', action='store_true',
-                                 help='include (non-recursive) {}:test{} dependencies'.format(bold, reset))
+                                 help=f'include (non-recursive) {bold}:test{reset} dependencies')
     brew_spec_group.add_argument('-s', '--skip-recommended', action='store_true',
-                                 help='skip {}:recommended{} type dependencies'.format(bold, reset))
+                                 help=f'skip {bold}:recommended{reset} type dependencies')
     brew_spec_group.add_argument('-r', '--include-requirements', action='store_true',
                                  help='include requirements in addition to dependencies')
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
@@ -191,9 +191,9 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get('get_{}_parser'.format(option))
+            get_parser = globals().get(f'get_{option}_parser')
             if get_parser is None:
-                main_parser.error('unrecognized arguments: {}'.format(option))
+                main_parser.error(f'unrecognized arguments: {option}')
 
             # parse mode arguments
             parser = get_parser()

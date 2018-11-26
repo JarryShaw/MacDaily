@@ -134,7 +134,7 @@ class Command(metaclass=abc.ABCMeta):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))
 
-        text = 'Running {} command for {}'.format(self.cmd, self.mode)
+        text = f'Running {self.cmd} command for {self.mode}'
         print_info(text, filename, redirect=self._qflag)
 
         # assign members
@@ -153,8 +153,8 @@ class Command(metaclass=abc.ABCMeta):
                 self._loc_exec()
                 self._run_proc()
             else:
-                text = ('macdaily-{}: {}{}{}: '
-                        'no {}{}{} to {}'.format(self.cmd, yellow, self.mode, reset, bold, self.desc[1], reset, self.act[0]))
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'no {bold}{self.desc[1]}{reset} to {self.act[0]}')
                 print_term(text, filename, redirect=self._qflag)
 
         # remove temp vars
@@ -219,26 +219,26 @@ class Command(metaclass=abc.ABCMeta):
     def _check_confirm(self):
         self._var__temp_pkgs -= self._ignore
         if not self._var__temp_pkgs:
-            text = 'macdaily-{}: {}{}{}: no {}{}{} to {}'.format(self.cmd, green, self.mode, reset, bold, self.desc[1], reset, self.act[0])
+            text = f'macdaily-{self.cmd}: {green}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
             print_term(text, self._file, redirect=self._qflag)
             return True
 
         job = self.job[1] if len(self._var__temp_pkgs) else self.job[0]
-        bold_pkgs = '{}, {}'.format(reset, bold).join(self._var__temp_pkgs)
-        text = ('macdaily-{}: {}{}{}: '
-                '{} {} available for {}{}{}'.format(self.cmd, green, self.mode, reset, self.desc[0], job, bold, bold_pkgs, reset))
+        bold_pkgs = f'{reset}, {bold}'.join(self._var__temp_pkgs)
+        text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
+                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
         print_term(text, self._file, redirect=self._qflag)
         if self._yes or self._quiet:
             return True
         while True:
-            ans = get_input(self._confirm, 'Would you like to {}?'.format(self.act[0]),
-                            prefix='{} {} available for {}.\n\n'.format(self.desc[0], job, ", ".join(self._var__temp_pkgs)),
-                            suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
+            ans = get_input(self._confirm, f'Would you like to {self.act[0]}?',
+                            prefix=f'{self.desc[0]} {job} available for {", ".join(self._var__temp_pkgs)}.\n\n',
+                            suffix=f' ({green}y{reset}/{red}N{reset}) ')
             if re.match(r'[yY]', ans):
                 return True
             elif re.match(r'[nN]', ans):
-                text = ('macdaily-{}: {}{}{}: '
-                        '{} {} postponed due to user cancellation'.format(self.cmd, yellow, self.mode, reset, self.desc[0], job))
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'{self.desc[0]} {job} postponed due to user cancellation')
                 print_term(text, self._file, redirect=self._qflag)
                 return False
             else:
@@ -246,14 +246,14 @@ class Command(metaclass=abc.ABCMeta):
 
     def _did_you_mean(self):
         for package in self._var__lost_pkgs:
-            pattern = r'.*{}.*'.format(package)
-            matches = '{}, {}'.format(reset, bold).join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),
+            pattern = rf'.*{package}.*'
+            matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),
                                                      self._var__real_pkgs))
-            print('macdaily-{}: {}{}{}: '
-                  'no available {} with the name {}{!r}{}'.format(self.cmd, red, self.mode, reset, self.desc[0], bold, package, reset), file=sys.stderr)
+            print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
+                  f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
             if matches:
-                text = ('macdaily-{}: {}{}{}: '
-                        'did you mean any of the following {}: {}{}{}?'.format(self.cmd, yellow, self.mode, reset, self.desc[1], bold, matches, reset))
+                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
+                        f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
                 print_term(text, self._file, redirect=self._qflag)
         del self._var__lost_pkgs
         del self._var__real_pkgs
