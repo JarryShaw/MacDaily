@@ -129,7 +129,6 @@ go run github.com/aktau/github-release release \
 
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py
-
 cd Formula
 git pull
 ret="$?"
@@ -142,4 +141,15 @@ if [[ -z "$1" ]] ; then
 else
     git commit -a -S -m "$1"
 fi
+git push
+
+# aftermath
+cd ..
+git pull
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+git add .
+git commit -a -S -m "Regular update after distribution"
 git push
