@@ -132,7 +132,7 @@ fi
 
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py
-cd tap
+cd Tap
 git pull
 git add .
 if [[ -z "$1" ]] ; then

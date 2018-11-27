@@ -138,5 +138,5 @@ class Macdaily < Formula
 end
 '''
 
-with open(os.path.join(os.path.dirname(__file__), 'tap/Formula/macdaily.rb'), 'w') as file:
+with open(os.path.join(os.path.dirname(__file__), 'Tap/Formula/macdaily.rb'), 'w') as file:
     file.write(FORMULA)
