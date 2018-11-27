@@ -256,7 +256,7 @@ def run(argv, file, *, redirect=False, password=None, yes=None, shell=False,
 def _ansi2text(password):
     return ('{} -c "'
             'import re, sys\n'
-            'or line in sys.stdin:\n'
+            'for line in sys.stdin:\n'
             "    data = line.rstrip().replace('^D\x08\x08', '')\n"
             "    temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
             "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
@@ -280,7 +280,7 @@ def _replace(password):
 def _text2dim(password):
     return ('{} -c "'
             'import re, sys\n'
-            'or line in sys.stdin:\n'
+            'for line in sys.stdin:\n'
             "    data = line.rstrip().replace('^D\x08\x08', '')\n"
             "    temp = {!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{}', data, flags=re.IGNORECASE)\n"
             "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
