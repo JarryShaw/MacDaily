@@ -6,7 +6,7 @@ macdaily-config
 MacDaily Runtime Configuration Helper
 -------------------------------------
 
-:Version: v2018.11.26.post3
+:Version: v2018.11.27
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
