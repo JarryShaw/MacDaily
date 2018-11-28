@@ -21,7 +21,7 @@ with open('./README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.27'
+__version__ = '2018.11.28'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -44,7 +44,7 @@ setup(
     # long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
-    include_package_data=True,
+    # include_package_data=True,
     zip_safe=True,
     extras_require={
         ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
