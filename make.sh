@@ -83,14 +83,14 @@ twine upload dist/* -r pypitest --skip-existing
 version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
 
 # upload to GitHub
-git pull
-git tag "v${version}"
-git add .
+git pull && \
+git tag "v${version}" && \
+git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi
+fi && \
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
@@ -107,14 +107,14 @@ fi
 
 # upload develop environment
 cd ..
-git pull
-git tag "v${version}"
-git add .
+git pull && \
+git tag "v${version}" && \
+git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi
+fi && \
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
@@ -128,6 +128,7 @@ go run github.com/aktau/github-release release \
     --tag "v${version}" \
     --name "MacDaily v${version}" \
     --description "$1"
+ret="$?"
 if [[ $ret -ne "0" ]] ; then
     exit $ret
 fi
@@ -135,22 +136,31 @@ fi
 # update Homebrew Formulae
 pipenv run python3 setup-formula.py
 cd Tap
-git pull
-git add .
+git pull && \
+git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi
+fi && \
 git push
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
     exit $ret
 fi
 
-# aftermath
+# update maintenance information
 cd ..
-git pull
-git add .
-git commit -a -S -m "Regular update after distribution"
+maintainer changelog && \
+maintainer contributor && \
+maintainer contributing
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
+# aftermath
+git pull && \
+git add . && \
+git commit -a -S -m "Regular update after distribution" && \
 git push

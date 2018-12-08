@@ -6,7 +6,7 @@ macdaily
 macOS Automated Package Manager
 -------------------------------
 
-:Version: v2018.11.28
+:Version: v2018.12.08
 :Date: November 23, 2018
 :Manual section: 1
 :Author:
