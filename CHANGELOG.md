@@ -1,5 +1,8 @@
 # Change Log
 
+## [v2018.12.08.post1](https://github.com/JarryShaw/MacDaily/tree/v2018.12.08.post1) (2018-12-08)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.08...v2018.12.08.post1)
+
 ## [v2018.12.08](https://github.com/JarryShaw/MacDaily/tree/v2018.12.08) (2018-12-08)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.11.28...v2018.12.08)
 
