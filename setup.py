@@ -21,7 +21,7 @@ with open('./README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.12.08'
+__version__ = '2018.12.08.post1'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -37,7 +37,7 @@ setup(
     author='Jarry Shaw',
     author_email='jarryshaw@icloud.com',
     url='https://github.com/JarryShaw/MacDaily#macdaily',
-    license='GNU General Public License v3 (GPLv3)',
+    license='Apple Public Source License',
     keywords='daily utility script',
     description='macOS Automated Package Manager',
     long_description=long_description,
@@ -111,7 +111,7 @@ setup(
         'Environment :: Console',
         'Environment :: MacOS X',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: Apple Public Source License',
         'Natural Language :: English',
         'Operating System :: MacOS',
         'Operating System :: MacOS :: MacOS X',
