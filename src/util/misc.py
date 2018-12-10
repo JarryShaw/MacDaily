@@ -63,26 +63,29 @@ def beholder(func):
 def retry(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        QUEUE = multiprocessing.Queue(1)
-        kwargs['queue'] = QUEUE
-        for _ in range(3):
-            proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
-            timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
-            timer.start()
-            proc.start()
-            proc.join()
-            timer.cancel()
-            if proc.exitcode == 0:
-                break
+        if sys.stdin.isatty():
+            return func(*args, **kwargs)
         else:
-            raise TimeExpired(f'macdaily: {red}misc{reset}: function {func.__qualname__!r} '
-                              f'retry timeout after {TIMEOUT} seconds')
+            QUEUE = multiprocessing.Queue(1)
+            kwargs['queue'] = QUEUE
+            for _ in range(3):
+                proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+                timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
+                timer.start()
+                proc.start()
+                proc.join()
+                timer.cancel()
+                if proc.exitcode == 0:
+                    break
+            else:
+                raise TimeExpired(f'macdaily: {red}misc{reset}: function {func.__qualname__!r} '
+                                  f'retry timeout after {TIMEOUT} seconds')
 
-        RETURN = QUEUE.get(timeout=TIMEOUT)
-        if RETURN is None:
-            raise TimeExpired(f'macdaily: {red}misc{reset}: function {func.__qualname__!r} '
-                              f'retry timeout after {TIMEOUT} seconds')
-        return RETURN
+            RETURN = QUEUE.get(timeout=TIMEOUT)
+            if RETURN is None:
+                raise TimeExpired(f'macdaily: {red}misc{reset}: function {func.__qualname__!r} '
+                                  f'retry timeout after {TIMEOUT} seconds')
+            return RETURN
     return wrapper
 
 
@@ -117,13 +120,17 @@ def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:
             RETURN = getpass.getpass(prompt='Password:')
-            return queue.put(RETURN)
+            if queue is not None:
+                queue.put(RETURN)
+            return RETURN
         except KeyboardInterrupt:
             print(reset)
             raise
     RETURN = subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
                                      stderr=subprocess.DEVNULL).strip().decode()
-    return queue.put(RETURN)
+    if queue is not None:
+        queue.put(RETURN)
+    return RETURN
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):
