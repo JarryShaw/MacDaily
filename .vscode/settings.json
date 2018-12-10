@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/python",
+    "python.pythonPath": "/Users/jarryshaw/.local/share/virtualenvs/MacDaily-GJI6aV75/bin/python",
     "cSpell.language": "en-GB",
     "cSpell.words": [
         "Dict",
@@ -48,6 +48,7 @@
         "ptime",
         "pypcapkit",
         "qflag",
+        "qualname",
         "r'Requires",
         "rcpath",
         "reinstallation",
@@ -55,6 +56,7 @@
         "scpt",
         "setup",
         "shtout",
+        "signum",
         "stdict",
         "swch",
         "tbody",

@@ -6,7 +6,7 @@ macdaily-update-brew
 Homebrew Formula Update Automator
 ---------------------------------
 
-:Version: v2018.12.08.post1
+:Version: v2018.12.10
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

@@ -6,7 +6,7 @@ macdaily-cleanup
 macOS Package Cache Cleanup
 ---------------------------
 
-:Version: v2018.12.08.post1
+:Version: v2018.12.10
 :Date: November 23, 2018
 :Manual section: 1
 :Author:
