@@ -4,6 +4,7 @@ import contextlib
 import datetime
 import functools
 import getpass
+import multiprocessing
 import os
 import platform
 import re
@@ -15,7 +16,12 @@ import tty
 from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
                                  dim, grey, length, program, purple, python,
                                  red, reset, under, yellow)
-from macdaily.util.error import UnsupportedOS
+from macdaily.util.error import UnsupportedOS, TimeExpired
+
+try:
+    import threading
+except ImportError:
+    import dummy_threading as threading
 
 try:
     import subprocess32 as subprocess
@@ -24,6 +30,9 @@ except ImportError:
 
 # error-not-raised flag
 FLAG = True
+
+# timeout interval
+TIMEOUT = int(os.environ.get('TIMEOUT', '60'))
 
 
 def beholder(func):
@@ -51,36 +60,67 @@ def beholder(func):
     return wrapper
 
 
+def retry(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        QUEUE = multiprocessing.Queue(1)
+        kwargs['queue'] = QUEUE
+        for _ in range(3):
+            proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
+            timer.start()
+            proc.start()
+            proc.join()
+            timer.cancel()
+            if proc.exitcode == 0:
+                break
+        else:
+            raise TimeExpired('macdaily: {}misc{}: function {!r} '
+                              'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
+
+        RETURN = QUEUE.get(timeout=TIMEOUT)
+        if RETURN is None:
+            raise TimeExpired('macdaily: {}misc{}: function {!r} '
+                              'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
+        return RETURN
+    return wrapper
+
+
 def date():
     now = datetime.datetime.now()
     txt = datetime.datetime.strftime(now, '%+')
     return txt
 
 
-def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
+@retry
+def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
-            return input('{}{}'.format(prompt, suffix))
+            RETURN = input('{}{}'.format(prompt, suffix))
+            return queue.put(RETURN)
         except KeyboardInterrupt:
             print(reset)
             raise
     try:
-        subprocess.check_call([shutil.which('osascript'), confirm, '{}{}'.format(prefix, prompt)],
+        subprocess.check_call(['osascript', confirm, '{}{}'.format(prefix, prompt)],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        return 'N'
-    return 'Y'
+        return queue.put('N')
+    return queue.put('Y')
 
 
-def get_pass(askpass):
+@retry
+def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:
-            return getpass.getpass(prompt='Password:')
+            RETURN = getpass.getpass(prompt='Password:')
+            return queue.put(RETURN)
         except KeyboardInterrupt:
             print(reset)
             raise
-    return subprocess.check_output([askpass, '🔑 Enter your password for {}.'.format(USER)],  # pylint: disable=E1101
-                                   stderr=subprocess.DEVNULL).strip().decode()
+    RETURN = subprocess.check_output([askpass, '🔑 Enter your password for {}.'.format(USER)],  # pylint: disable=E1101
+                                     stderr=subprocess.DEVNULL).strip().decode()
+    return queue.put(RETURN)
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):
