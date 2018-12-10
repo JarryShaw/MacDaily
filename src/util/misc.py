@@ -97,7 +97,8 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
             RETURN = input(f'{prompt}{suffix}')
-            return queue.put(RETURN)
+            queue.put(RETURN)
+            return RETURN
         except KeyboardInterrupt:
             print(reset)
             raise
@@ -105,8 +106,10 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
         subprocess.check_call(['osascript', confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        return queue.put('N')
-    return queue.put('Y')
+        queue.put('N')
+        return 'N'
+    queue.put('Y')
+    return 'Y'
 
 
 @retry
