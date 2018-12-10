@@ -63,26 +63,29 @@ def beholder(func):
 def retry(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        QUEUE = multiprocessing.Queue(1)
-        kwargs['queue'] = QUEUE
-        for _ in range(3):
-            proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
-            timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
-            timer.start()
-            proc.start()
-            proc.join()
-            timer.cancel()
-            if proc.exitcode == 0:
-                break
+        if sys.stdin.isatty():
+            return func(*args, **kwargs)
         else:
-            raise TimeExpired('macdaily: {}misc{}: function {!r} '
-                              'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
+            QUEUE = multiprocessing.Queue(1)
+            kwargs['queue'] = QUEUE
+            for _ in range(3):
+                proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+                timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
+                timer.start()
+                proc.start()
+                proc.join()
+                timer.cancel()
+                if proc.exitcode == 0:
+                    break
+            else:
+                raise TimeExpired('macdaily: {}misc{}: function {!r} '
+                                  'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
 
-        RETURN = QUEUE.get(timeout=TIMEOUT)
-        if RETURN is None:
-            raise TimeExpired('macdaily: {}misc{}: function {!r} '
-                              'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
-        return RETURN
+            RETURN = QUEUE.get(timeout=TIMEOUT)
+            if RETURN is None:
+                raise TimeExpired('macdaily: {}misc{}: function {!r} '
+                                  'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
+            return RETURN
     return wrapper
 
 
@@ -97,7 +100,8 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
             RETURN = input('{}{}'.format(prompt, suffix))
-            return queue.put(RETURN)
+            queue.put(RETURN)
+            return RETURN
         except KeyboardInterrupt:
             print(reset)
             raise
@@ -105,8 +109,10 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
         subprocess.check_call(['osascript', confirm, '{}{}'.format(prefix, prompt)],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        return queue.put('N')
-    return queue.put('Y')
+        queue.put('N')
+        return 'N'
+    queue.put('Y')
+    return 'Y'
 
 
 @retry
@@ -114,13 +120,17 @@ def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:
             RETURN = getpass.getpass(prompt='Password:')
-            return queue.put(RETURN)
+            if queue is not None:
+                queue.put(RETURN)
+            return RETURN
         except KeyboardInterrupt:
             print(reset)
             raise
     RETURN = subprocess.check_output([askpass, '🔑 Enter your password for {}.'.format(USER)],  # pylint: disable=E1101
                                      stderr=subprocess.DEVNULL).strip().decode()
-    return queue.put(RETURN)
+    if queue is not None:
+        queue.put(RETURN)
+    return RETURN
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):
