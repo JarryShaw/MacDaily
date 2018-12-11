@@ -14,14 +14,15 @@ if platform.system() != 'Darwin':
         def __init__(self, message, *args, **kwargs):
             sys.tracebacklimit = 0
             super().__init__(message, *args, **kwargs)
-    raise UnsupportedOS('macdaily: script runs only on macOS')
+    print('macdaily: error: script runs only on macOS', file=sys.stderr)
+    raise UnsupportedOS
 
 # README
 with open('./README.rst') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.12.10.post1'
+__version__ = '2018.12.11'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -89,6 +90,9 @@ setup(
         'macdaily.cls.update',
         'macdaily.cmd',
         'macdaily.core',
+        'macdaily.man',
+        'macdaily.img',
+        'macdaily.res',
         'macdaily.util',
     ],
     package_data={

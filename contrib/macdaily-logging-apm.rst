@@ -6,7 +6,7 @@ macdaily-logging-apm
 Atom Plug-In Logging Automator
 ------------------------------
 
-:Version: v2018.12.10.post1
+:Version: v2018.12.11
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
