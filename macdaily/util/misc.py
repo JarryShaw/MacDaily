@@ -16,7 +16,7 @@ import tty
 from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
                                  dim, grey, length, program, purple, python,
                                  red, reset, under, yellow)
-from macdaily.util.error import UnsupportedOS, TimeExpired
+from macdaily.util.error import ChildExit, TimeExpired, UnsupportedOS
 
 try:
     import threading
@@ -40,7 +40,8 @@ def beholder(func):
     def wrapper(*args, **kwargs):
         global FLAG
         if platform.system() != 'Darwin':
-            raise UnsupportedOS('macdaily: error: script runs only on macOS')
+            print_term('macdaily: error: script runs only on macOS', os.devnull)
+            raise UnsupportedOS
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
@@ -77,15 +78,15 @@ def retry(func):
                 timer.cancel()
                 if proc.exitcode == 0:
                     break
+                if proc.exitcode != 9:
+                    print_term('macdaily: {}misc{}: function {!r} '
+                               'exits with exit status {} on child process'.format(yellow, reset, func.__qualname__, proc.exitcode), os.devnull)
+                    raise ChildExit
             else:
-                raise TimeExpired('macdaily: {}misc{}: function {!r} '
-                                  'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
-
-            RETURN = QUEUE.get(timeout=TIMEOUT)
-            if RETURN is None:
-                raise TimeExpired('macdaily: {}misc{}: function {!r} '
-                                  'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT))
-            return RETURN
+                print_term('macdaily: {}misc{}: function {!r} '
+                           'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT), os.devnull)
+                raise TimeExpired
+            return QUEUE.get(block=False)
     return wrapper
 
 
@@ -99,9 +100,7 @@ def date():
 def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
-            RETURN = input('{}{}'.format(prompt, suffix))
-            queue.put(RETURN)
-            return RETURN
+            return input('{}{}'.format(prompt, suffix))
         except KeyboardInterrupt:
             print(reset)
             raise
@@ -109,20 +108,20 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
         subprocess.check_call(['osascript', confirm, '{}{}'.format(prefix, prompt)],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        queue.put('N')
-        return 'N'
-    queue.put('Y')
-    return 'Y'
+        RETURN = 'N'
+    else:
+        RETURN = 'Y'
+    finally:
+        if queue is not None:
+            queue.put(RETURN)
+        return RETURN
 
 
 @retry
 def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:
-            RETURN = getpass.getpass(prompt='Password:')
-            if queue is not None:
-                queue.put(RETURN)
-            return RETURN
+            return getpass.getpass(prompt='Password:')
         except KeyboardInterrupt:
             print(reset)
             raise
