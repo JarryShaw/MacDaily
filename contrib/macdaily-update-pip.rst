@@ -6,14 +6,14 @@ macdaily-update-pip
 Python Package Update Automator
 -------------------------------
 
-:Version: v2018.12.12
+:Version: v2018.12.12.post1
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
     of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
 :Copyright:
-    *MacDaily* is licensed under the **GNU General Public License v3.0**.
+    *MacDaily* is licensed under the **Apple Open Source License**.
 
 SYNOPSIS
 ========
