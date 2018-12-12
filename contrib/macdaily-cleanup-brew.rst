@@ -6,7 +6,7 @@ macdaily-cleanup-brew
 Homebrew Formula Cache Cleanup
 ------------------------------
 
-:Version: v2018.12.11
+:Version: v2018.12.12
 :Date: November 23, 2018
 :Manual section: 1
 :Author:

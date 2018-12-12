@@ -18,11 +18,11 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS
 
 # README
-with open('./README.rst') as file:
+with open('./README.rst', encoding='utf-8') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.12.11'
+__version__ = '2018.12.12'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)

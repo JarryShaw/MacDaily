@@ -6,7 +6,7 @@ macdaily-dependency-brew
 Homebrew Formula Dependency Query
 ---------------------------------
 
-:Version: v2018.12.11
+:Version: v2018.12.12
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

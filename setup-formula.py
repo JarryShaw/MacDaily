@@ -80,6 +80,10 @@ class Macdaily < Formula
   depends_on "expect" => :recommended
   depends_on "theseal/ssh-askpass/ssh-askpass" => :optional
 
+  option "without-config", "build without config modification support"
+  option "without-tree", "build without tree format support"
+  option "without-ptyng", "build without alternative PTY support"
+
   {CONFIGUPDATER}
 
   {DICTDUMPER}
@@ -93,10 +97,40 @@ class Macdaily < Formula
   {SUBPROCESS32}
 
   def install
-    virtualenv_install_with_resources
+    venv = virtualenv_create(libexec, "python3")
+    if build.with?("config")
+      venv.pip_install resource("configupdater")
+    end
+
+    if build.with?("tree")
+      venv.pip_install resource("dictdumper")
+    end
+
+    if build.with?("ptyng")
+      venv.pip_install resource("ptyng")
+
+      exitcode = `#{{libexec}}/"bin/python" -c "print(__import__('os').system('ps axo pid=,stat= > /dev/null 2>&1'))"`
+      if !( exitcode =~ /0/ )
+        venv.pip_install resource("psutil")
+      end
+    end
+
+    version = `#{{libexec}}/"bin/python" -c "print('%s.%s' % __import__('sys').version_info[:2])"`
+    if ( version =~ /3.4/ )
+      %w[pathlib2 six subprocess32].each do |r|
+        venv.pip_install resource(r)
+      end
+    end
+    venv.pip_install_and_link buildpath
+
     man_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/man/*.1")
+    dir_name = File.dirname man_path[0]
+    dest = File.join(dir_name, "temp.1")
+
     man_path.each do |f|
+      FileUtils.cp f, dest
       man1.install f
+      FileUtils.mv dest, f
     end
   end
 
