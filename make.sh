@@ -6,6 +6,16 @@ set -x
 # update version string
 python3 setup-version.py
 
+# update manpages
+rm -rf src/man
+mkdir -p src/man
+cd contrib
+for file in $( ls *.rst ); do
+    name=${file%.rst*}
+    pipenv run rst2man.py ${file} > "../src/man/${name}.1"
+done
+cd ..
+
 # duplicate distribution files
 mkdir -p release
 rm -rf release/src \
@@ -34,16 +44,14 @@ mkdir eggs \
 mv -f dist/*.egg eggs/ 2> /dev/null
 mv -f dist/*.whl wheels/ 2> /dev/null
 mv -f dist/*.tar.gz sdist/ 2> /dev/null
+rm -rf dist 2> /dev/null
+
+# fetch platform spec
+platform=$( python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))" )
 
 # make Python >=3.6 distribution
-python3 setup.py sdist bdist_egg bdist_wheel
-platform=$( python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))" )
-file=$( ls dist/*.tar.gz )
-name=${file%*.tar.gz*}
-cp "${name}-py3-none-any.whl" "${name}-cp37-none-${platform}.whl"
-cp "${name}-py3-none-any.whl" "${name}-cp36-none-${platform}.whl"
-mv "${name}-py3.7.egg" "${name}-py3.6.egg"
-rm dist/*.tar.gz "${name}-py3-none-any.whl"
+python3.7 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp37'
+python3.6 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp36'
 
 # perform f2format
 f2format -n macdaily
@@ -62,31 +70,32 @@ fi
 #               /System/Library/Frameworks/Python.framework/Versions/?.?/bin/python?.? ; do
 #     $python setup.py bdist_egg
 # done
-python3 setup.py sdist bdist_egg bdist_wheel
-cp "${name}-py3-none-any.whl" "${name}-cp35-none-${platform}.whl"
-cp "${name}-py3-none-any.whl" "${name}-cp34-none-${platform}.whl"
-cp "${name}-py3.7.egg" "${name}-py3.5.egg"
-cp "${name}-py3.7.egg" "${name}-py3.4.egg"
-cp "${name}-py3.6.egg" "${name}-py3.7.egg"
-# rm "${name}-py3-none-any.whl"
+python3.5 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp35'
+python3.4 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag='cp34'
+pypy3 setup.py bdist_wheel --plat-name="${platform}" --python-tag='pp35'
+python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
 twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 
+# get version string
+version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
+
 # upload to GitHub
-git pull
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
-git add .
+git pull && \
+git tag "v${version}" && \
+git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
-fi
+fi && \
 git push
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
 
 # # archive original files
 # for file in $( ls archive ) ; do
@@ -98,15 +107,60 @@ git push
 
 # upload develop environment
 cd ..
-git pull
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
-fi
-git add .
+git pull && \
+git tag "v${version}" && \
+git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
 else
     git commit -a -S -m "$1"
+fi && \
+git push
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
 fi
+
+# file new release
+go run github.com/aktau/github-release release \
+    --user JarryShaw \
+    --repo MacDaily \
+    --tag "v${version}" \
+    --name "MacDaily v${version}" \
+    --description "$1"
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
+# update Homebrew Formulae
+pipenv run python3 setup-formula.py
+cd Tap
+git pull && \
+git add . && \
+if [[ -z "$1" ]] ; then
+    git commit -a -S
+else
+    git commit -a -S -m "$1"
+fi && \
+git push
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
+# update maintenance information
+cd ..
+maintainer changelog && \
+maintainer contributor && \
+maintainer contributing
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
+# aftermath
+git pull && \
+git add . && \
+git commit -a -S -m "Regular update after distribution" && \
 git push

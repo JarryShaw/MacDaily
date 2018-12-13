@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = /Users/jarryshaw/.local/share/virtualenvs/MacDailyX-TzIb7UfT/bin/sphinx-build
+SPHINXBUILD   = /Users/jarryshaw/.local/share/virtualenvs/Daily-aO5EHdne/bin/sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
 

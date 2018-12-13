@@ -10,6 +10,14 @@ class Error(Exception):
         super().__init__(*args, **kwargs)
 
 
+class ChildExit(Error, ChildProcessError):
+    pass
+
+
+class TimeExpired(Error, TimeoutError):
+    pass
+
+
 class UnsupportedOS(Error, RuntimeError):
     pass
 

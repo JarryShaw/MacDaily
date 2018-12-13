@@ -41,9 +41,10 @@ Usage
 
     specification arguments:
       -a, --add          adds a new line to the option without altering any
-                         existing values
+                         existing values [requires ConfigUpdater]
       -g, --get          get the value for a given key
       -u, --unset        remove the line matching the key from config file
+                         [requires ConfigUpdater]
       -i, --interactive  enter interactive configuration mode
       -l, --list         list all variables set in config file, along with their
                          values

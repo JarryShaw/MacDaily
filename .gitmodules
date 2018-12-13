@@ -1,0 +1,6 @@
+[submodule "release"]
+	path = release
+	url = https://github.com/JarryShaw/MacDaily/tree/release
+[submodule "devel"]
+	path = devel
+	url = https://github.com/JarryShaw/MacDaily/tree/dev

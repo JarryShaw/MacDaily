@@ -43,7 +43,7 @@ def install(argv=None):
 
     # parse config & change environ
     config = parse_config(quiet, verbose)
-    os.environ['SUDO_ASKPASS'] = config['Miscellanea']['askpass']
+    os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
 
     # fetch current time
     today = datetime.datetime.today()
@@ -56,9 +56,9 @@ def install(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
-    timeout = config['Miscellanea']['timeout']
-    confirm = config['Miscellanea']['confirm']
-    askpass = config['Miscellanea']['askpass']
+    timeout = config['Miscellaneous']['timeout']
+    confirm = config['Miscellaneous']['confirm']
+    askpass = config['Miscellaneous']['askpass']
     disk_dir = config['Path']['arcdir']
     brew_renew = None
 

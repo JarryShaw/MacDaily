@@ -4,6 +4,7 @@ import contextlib
 import datetime
 import functools
 import getpass
+import multiprocessing
 import os
 import platform
 import re
@@ -15,7 +16,12 @@ import tty
 from macdaily.util.const import (SCRIPT, SHELL, UNBUFFER, USER, blue, bold,
                                  dim, grey, length, program, purple, python,
                                  red, reset, under, yellow)
-from macdaily.util.error import UnsupportedOS
+from macdaily.util.error import ChildExit, TimeExpired, UnsupportedOS
+
+try:
+    import threading
+except ImportError:
+    import dummy_threading as threading
 
 try:
     import subprocess32 as subprocess
@@ -25,13 +31,17 @@ except ImportError:
 # error-not-raised flag
 FLAG = True
 
+# timeout interval
+TIMEOUT = int(os.environ.get('TIMEOUT', '60'))
+
 
 def beholder(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         global FLAG
         if platform.system() != 'Darwin':
-            raise UnsupportedOS('macdaily: error: script runs only on macOS')
+            print_term('macdaily: error: script runs only on macOS', os.devnull)
+            raise UnsupportedOS
         try:
             return func(*args, **kwargs)
         except KeyboardInterrupt:
@@ -51,13 +61,43 @@ def beholder(func):
     return wrapper
 
 
+def retry(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if sys.stdin.isatty():
+            return func(*args, **kwargs)
+        else:
+            QUEUE = multiprocessing.Queue(1)
+            kwargs['queue'] = QUEUE
+            for _ in range(3):
+                proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+                timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
+                timer.start()
+                proc.start()
+                proc.join()
+                timer.cancel()
+                if proc.exitcode == 0:
+                    break
+                if proc.exitcode != 9:
+                    print_term(f'macdaily: {yellow}misc{reset}: function {func.__qualname__!r} '
+                               f'exits with exit status {proc.exitcode} on child process', os.devnull)
+                    raise ChildExit
+            else:
+                print_term(f'macdaily: {red}misc{reset}: function {func.__qualname__!r} '
+                           f'retry timeout after {TIMEOUT} seconds', os.devnull)
+                raise TimeExpired
+            return QUEUE.get(block=False)
+    return wrapper
+
+
 def date():
     now = datetime.datetime.now()
     txt = datetime.datetime.strftime(now, '%+')
     return txt
 
 
-def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
+@retry
+def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
             return input(f'{prompt}{suffix}')
@@ -65,22 +105,31 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix=''):
             print(reset)
             raise
     try:
-        subprocess.check_call([shutil.which('osascript'), confirm, f'{prefix}{prompt}'],
+        subprocess.check_call(['osascript', confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
-        return 'N'
-    return 'Y'
+        RETURN = 'N'
+    else:
+        RETURN = 'Y'
+    finally:
+        if queue is not None:
+            queue.put(RETURN)
+        return RETURN
 
 
-def get_pass(askpass):
+@retry
+def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:
             return getpass.getpass(prompt='Password:')
         except KeyboardInterrupt:
             print(reset)
             raise
-    return subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).strip().decode()
+    RETURN = subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
+                                     stderr=subprocess.DEVNULL).strip().decode()
+    if queue is not None:
+        queue.put(RETURN)
+    return RETURN
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):
@@ -216,18 +265,23 @@ def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logf
         file.write(f'command: {args!r}\n')
 
     try:
-        if sudo and password is not None:
-            sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
-            sudo_argv.extend(argv)
-            with make_pipe(password, verbose) as pipe:
-                proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
-                                               stderr=make_stderr(verbose))
+        if sudo:
+            if password is not None:
+                sudo_argv = ['sudo', '--stdin', '--prompt=Password:\n']
+                sudo_argv.extend(argv)
+                with make_pipe(password, verbose) as pipe:
+                    proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
+                                                   stderr=make_stderr(verbose))
+            else:
+                sudo_argv = ['sudo']
+                sudo_argv.extend(argv)
+                proc = subprocess.check_output(sudo_argv, stderr=make_stderr(verbose))
         else:
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
         print_term(f"macdaily: {red}misc{reset}: "
-                   f"command `{bold}{' '.join(error.args)!r}{reset}' failed", logfile, redirect=quiet)
+                   f"command `{bold}{' '.join(error.cmd)!r}{reset}' failed", logfile, redirect=quiet)
         raise
     else:
         context = proc.decode()
@@ -342,7 +396,8 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
             return exp
 
     with open(file, 'ab') as typescript:
-        returncode = ptyng.spawn(argv, master_read, stdin_read, timeout=timeout)
+        returncode = ptyng.spawn(argv, master_read, stdin_read,
+                                 timeout=timeout, env=os.environ)
     # if not test.decode().endswith(os.linesep):
     #     sys.stdout.write(os.linesep)
     return returncode

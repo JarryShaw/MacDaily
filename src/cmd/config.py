@@ -63,12 +63,12 @@ CONFIG = ['[Path]',
           'update  = --all --quiet --show-log',
           'logging = --all --quiet --show-log',
           '',
-          '[Miscellanea]',
+          '[Miscellaneous]',
           '# In this section, miscellaneous specifications are assigned.',
           '# Please, under any circumstances, make sure all fields are valid.',
           'askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks',
           'confirm = ...                                               ; confirm utility for MacDaily',
-          'timeout = 300                                               ; timeout limit for shell commands in seconds',
+          'timeout = 1000                                              ; timeout limit for shell commands in seconds',
           '']
 
 
@@ -142,25 +142,28 @@ def parse_config(quiet=False, verbose=False):
     for mode, argv in config['Command'].items():
         cfg_dict['Command'][mode] = shlex.split(argv)
 
-    # Miscellanea section
-    askpass = os.path.realpath(config['Miscellanea']['askpass'])
+    # Miscellaneous section
+    askpass = os.path.realpath(config['Miscellaneous']['askpass'])
     if not os.access(askpass, os.X_OK):
         askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
         run_script(['sudo', 'chmod', 'u+x', askpass], quiet, verbose)
 
-    confirm = os.path.realpath(config['Miscellanea']['confirm'])
+    confirm = os.path.realpath(config['Miscellaneous']['confirm'])
     if not os.access(confirm, os.X_OK):
         confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
         run_script(['sudo', 'chmod', 'u+x', confirm], quiet, verbose)
 
-    cfg_dict['Miscellanea']['askpass'] = askpass
-    cfg_dict['Miscellanea']['confirm'] = confirm
-    cfg_dict['Miscellanea']['timeout'] = config['Miscellanea'].getint('timeout', None)
+    cfg_dict['Miscellaneous']['askpass'] = askpass
+    cfg_dict['Miscellaneous']['confirm'] = confirm
+    cfg_dict['Miscellaneous']['timeout'] = config['Miscellaneous'].getint('timeout', None)
 
     return dict(cfg_dict)
 
 
 def make_config(quiet=False, verbose=False):
+    if not sys.stdin.isatty():
+        raise OSError(5, 'Input/output error')
+
     print_wrap(f'Entering interactive command line setup procedure...')
     print_wrap(f'Default settings are shown as in the square brackets.')
     print_wrap(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
@@ -168,7 +171,7 @@ def make_config(quiet=False, verbose=False):
     rcpath = os.path.expanduser('~/.dailyrc')
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.write(os.linesep.join(CONFIG[:4]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[:4]))
             print()
             print_wrap(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             print_wrap(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -176,7 +179,7 @@ def make_config(quiet=False, verbose=False):
             dskdir = input('Name of your external hard disk []: ').ljust(41)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.write(os.linesep.join(CONFIG[5:38]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[5:38]))
             print()
             print_wrap(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print_wrap(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -186,9 +189,9 @@ def make_config(quiet=False, verbose=False):
             if timing:
                 config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
             else:
-                config_file.write(os.linesep.join(CONFIG[38:41]))
+                config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[38:41]))
 
-            config_file.write(os.linesep.join(CONFIG[41:51]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[41:51]))
             print()
             print_wrap(f'For better stability, {bold}MacDaily{reset} depends on several helper programs.')
             print_wrap('Your password may be necessary during the launch process.')
@@ -213,7 +216,7 @@ def make_config(quiet=False, verbose=False):
 
     # parse config
     config = parse_config(quiet, verbose)
-    askpass = config['Miscellanea']['askpass']
+    askpass = config['Miscellaneous']['askpass']
 
     # ask for password
     text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'

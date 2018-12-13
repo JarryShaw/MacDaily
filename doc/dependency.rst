@@ -62,9 +62,10 @@ Usage
                             Homebrew
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -l, --show-log        open log in Console.app upon completion of command
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
@@ -118,6 +119,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -131,7 +135,7 @@ Commands
 
 .. code:: man
 
-    usage: macdaily dependency brew [options] <formulae>
+    usage: macdaily dependency brew [options] <formulae> ...
 
     Homebrew Formula Dependency Query
 
@@ -155,12 +159,13 @@ Commands
       -a, --all             query all Homebrew formulae installed through Homebrew
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 .. raw:: html
@@ -173,7 +178,7 @@ might give a trivial *did-you-mean* correction.
 
 .. code:: man
 
-    usage: macdaily dependency pip [options] <packages>
+    usage: macdaily dependency pip [options] <packages> ...
 
     Python Package Dependency Query
 
@@ -197,12 +202,13 @@ might give a trivial *did-you-mean* correction.
                             Package Index
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+      -n, --no-cleanup      do not run cleanup process
       -f, --tree            show dependencies as a tree [requires DictDumper]
-      -n, --topological     show dependencies in topological order
+      -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 Possible Python executables and corresponding flags are listed as below.

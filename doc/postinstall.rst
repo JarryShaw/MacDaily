@@ -77,7 +77,7 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.

@@ -3,8 +3,10 @@
 import platform
 import sys
 
-import pkg_resources
-import setuptools
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 # check platform
 if platform.system() != 'Darwin':
@@ -12,14 +14,15 @@ if platform.system() != 'Darwin':
         def __init__(self, message, *args, **kwargs):
             sys.tracebacklimit = 0
             super().__init__(message, *args, **kwargs)
-    raise UnsupportedOS('macdaily: script runs only on macOS')
+    print('macdaily: error: script runs only on macOS', file=sys.stderr)
+    raise UnsupportedOS
 
 # README
-with open('README.rst') as file:
+with open('./README.rst', encoding='utf-8') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2018.11.23a0'
+__version__ = '2018.12.12.post1'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
 # for line in context.splitlines():
 #     match = re.match(rb"__version__ = '(.*)'", line)
@@ -29,21 +32,21 @@ __version__ = '2018.11.23a0'
 #     break
 
 # set-up script for pip distribution
-setuptools.setup(
+setup(
     name='macdaily',
     version=__version__,
     author='Jarry Shaw',
     author_email='jarryshaw@icloud.com',
-    url='https://github.com/JarryShaw/macdaily#macdaily',
-    license='GNU General Public License v3 (GPLv3)',
+    url='https://github.com/JarryShaw/MacDaily#macdaily',
+    license='Apple Public Source License',
     keywords='daily utility script',
-    description='Package day-care manager on macOS.',
+    description='macOS Automated Package Manager',
     long_description=long_description,
     # long_description=pkg_resources.resource_string(__name__, 'README.rst').decode(),
     long_description_content_type='text/x-rst; charset=UTF-8',
     python_requires='>=3.4',
-    include_package_data=True,
-    zip_safe=True,
+    # include_package_data=True,
+    # zip_safe=True,
     extras_require={
         ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
         'all': ['ptyng>=0.2.0.post4', 'dictdumper>=0.6.3', 'configupdater'],
@@ -59,7 +62,7 @@ setuptools.setup(
             'md-cleanup = macdaily.api.cleanup:cleanup',
             'md-config = macdaily.api.config:config [config]',
             'md-dependency = macdaily.api.dependency:dependency [tree]',
-            # 'md-help = macdaily.api.help:help',
+            'md-help = macdaily.api.help:help_',
             'md-install = macdaily.api.install:install',
             'md-launch = macdaily.api.launch:launch',
             'md-logging = macdaily.api.logging:logging',
@@ -69,31 +72,35 @@ setuptools.setup(
             'md-update = macdaily.api.update:update',
         ]
     },
-    packages=setuptools.find_namespace_packages(
-        include=['macdaily', 'macdaily.*'],
-    ),
-    # packages=[
-    #     'macdaily',
-    #     'macdaily.api',
-    #     'macdaily.cli',
-    #     'macdaily.cls',
-    #     'macdaily.cls.bundle',
-    #     'macdaily.cls.cleanup',
-    #     'macdaily.cls.dependency',
-    #     'macdaily.cls.install',
-    #     'macdaily.cls.logging',
-    #     'macdaily.cls.reinstall',
-    #     'macdaily.cls.uninstall',
-    #     'macdaily.cls.update',
-    #     'macdaily.cmd',
-    #     'macdaily.core',
-    #     'macdaily.util',
-    # ],
+    # packages=setuptools.find_namespace_packages(
+    #     include=['macdaily', 'macdaily.*'],
+    # ),
+    packages=[
+        'macdaily',
+        'macdaily.api',
+        'macdaily.cli',
+        'macdaily.cls',
+        'macdaily.cls.bundle',
+        'macdaily.cls.cleanup',
+        'macdaily.cls.dependency',
+        'macdaily.cls.install',
+        'macdaily.cls.logging',
+        'macdaily.cls.reinstall',
+        'macdaily.cls.uninstall',
+        'macdaily.cls.update',
+        'macdaily.cmd',
+        'macdaily.core',
+        'macdaily.man',
+        'macdaily.img',
+        'macdaily.res',
+        'macdaily.util',
+    ],
     package_data={
         '': [
             'LICENSE',
             'README.rst',
         ],
+        'macdaily.man': ['*.1'],
         'macdaily.img': ['*.icns'],
         'macdaily.res': ['*.py', '*.applescript'],
     },
@@ -101,14 +108,14 @@ setuptools.setup(
         # 'Development Status :: 7 - Inactive',
         # 'Development Status :: 6 - Mature',
         # 'Development Status :: 5 - Production/Stable',
-        # 'Development Status :: 4 - Beta',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
+        # 'Development Status :: 3 - Alpha',
         # 'Development Status :: 2 - Pre-Alpha',
         # 'Development Status :: 1 - Planning',
         'Environment :: Console',
         'Environment :: MacOS X',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: Apple Public Source License',
         'Natural Language :: English',
         'Operating System :: MacOS',
         'Operating System :: MacOS :: MacOS X',

@@ -31,11 +31,13 @@ def get_dependency_parser():
                             help='run in quiet mode, with no output information')
     genl_group.add_argument('-v', '--verbose', action='store_true',
                             help='run in verbose mode, with detailed output information')
+    genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                            help='do not run cleanup process')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
     genl_group.add_argument('-f', '--tree', action='store_true',
                             help='show dependencies as a tree [requires DictDumper]')
-    genl_group.add_argument('-n', '--topological', action='store_true',
+    genl_group.add_argument('-g', '--topological', action='store_true',
                             help='show dependencies in topological order')
     genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                             help='max display depth of the dependency tree')
@@ -72,7 +74,7 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-dependency-pip',
                                          description='Python Package Dependency Query',
-                                         usage='macdaily dependency pip [options] <packages>')
+                                         usage='macdaily dependency pip [options] <packages> ...')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -98,9 +100,11 @@ def get_pip_parser():
                                 help='run in quiet mode, with no output information')
     pip_genl_group.add_argument('-v', '--verbose', action='store_true',
                                 help='run in verbose mode, with detailed output information')
+    pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                help='do not run cleanup process')
     pip_genl_group.add_argument('-f', '--tree', action='store_true',
                                 help='show dependencies as a tree [requires DictDumper]')
-    pip_genl_group.add_argument('-n', '--topological', action='store_true',
+    pip_genl_group.add_argument('-g', '--topological', action='store_true',
                                 help='show dependencies in topological order')
     pip_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                                 help='max display depth of the dependency tree')
@@ -121,7 +125,7 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-dependency-brew',
                                           description='Homebrew Formula Dependency Query',
-                                          usage='macdaily dependency brew [options] <formulae>')
+                                          usage='macdaily dependency brew [options] <formulae> ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -146,9 +150,11 @@ def get_brew_parser():
                                  help='run in quiet mode, with no output information')
     brew_genl_group.add_argument('-v', '--verbose', action='store_true',
                                  help='run in verbose mode, with detailed output information')
+    brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
+                                 help='do not run cleanup process')
     brew_genl_group.add_argument('-f', '--tree', action='store_true',
                                  help='show dependencies as a tree [requires DictDumper]')
-    brew_genl_group.add_argument('-n', '--topological', action='store_true',
+    brew_genl_group.add_argument('-g', '--topological', action='store_true',
                                  help='show dependencies in topological order')
     brew_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
                                  help='max display depth of the dependency tree')

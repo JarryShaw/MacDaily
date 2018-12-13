@@ -188,12 +188,12 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         if self._greedy:
             argv.append('--greedy')
         argv.extend(self._update_opts)
-        argv.append('')
 
         temp = copy.copy(argv)
         if self._exhaust:
             temp.append('--exhaust')
         args = ' '.join(temp)
+        argv.append('')
 
         askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:

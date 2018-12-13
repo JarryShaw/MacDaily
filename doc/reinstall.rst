@@ -3,9 +3,9 @@
 :Supported Commands:
     ``brew``, ``cask``
 
-====================================
-Automatate macOS Package Reinstaller
-====================================
+===================================
+Automated macOS Package Reinstaller
+===================================
 
 - `About <#about>`__
 - `Usage <#usage>`__
@@ -36,7 +36,7 @@ Usage
 
     usage: macdaily reinstall [options] <mode-selection> ...
 
-    Automate macOS Package Reinstaller
+    Automated macOS Package Reinstaller
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -101,6 +101,9 @@ NB
     it is highly recommended using ``'!package'`` literal to specify
     ignoring packages.
 
+When using such options, if given wrong package name, *MacDaily*
+might give a trivial *did-you-mean* correction.
+
 Commands
 --------
 
@@ -108,15 +111,15 @@ Commands
 
     <h4>
       <a name="brew">
-        Automate Homebrew Formula Reinstaller
+        Automated Homebrew Formula Reinstaller
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily reinstall brew [options] <formulae>
+    usage: macdaily reinstall brew [options] <formulae> ...
 
-    Automate Homebrew Formula Reinstaller
+    Automated Homebrew Formula Reinstaller
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -146,7 +149,7 @@ Commands
       -R ARG, --reinstall ARG
                           options for 'brew reinstall <formula>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.
@@ -163,15 +166,15 @@ For *miscellaneous arguments*, the runtime commands are as below.
 
     <h4>
       <a name="cask">
-        Automate Homebrew Cask Reinstaller
+        Automated Homebrew Cask Reinstaller
       </a>
     </h4>
 
 .. code:: man
 
-    usage: macdaily reinstall cask [options] <casks>
+    usage: macdaily reinstall cask [options] <casks> ...
 
-    Automate Homebrew Cask Reinstaller
+    Automated Homebrew Cask Reinstaller
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -186,7 +189,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
                           initial alphabets
     -f, --force           reinstall even if the Cask does not appear to be
                           present
-    -t, --no_quarantine   prevent Gatekeeper from enforcing its security
+    -t, --no-quarantine   prevent Gatekeeper from enforcing its security
                           restrictions on the Cask
     -p CASK [CASK ...], --packages CASK [CASK ...]
                           name of Caskroom binaries to reinstall
@@ -205,7 +208,7 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -R ARG, --reinstall ARG
                           options for 'brew cask reinstall <cask>' command
 
-When using ``--package`` option, if given wrong package name, MacDaily
+When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
 For *miscellaneous arguments*, the runtime commands are as below.

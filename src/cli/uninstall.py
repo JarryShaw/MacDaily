@@ -18,7 +18,7 @@ def get_uninstall_parser():
     #######################################################
 
     parser = argparse.ArgumentParser(prog='macdaily-uninstall',
-                                     description='Automate macOS Package Uninstaller',
+                                     description='Automated macOS Package Uninstaller',
                                      usage='macdaily uninstall [options] <mode-selection> ...',
                                      epilog='aliases: un, unlink, remove, rm, r')
     parser.add_argument('-V', '--version',
@@ -81,8 +81,8 @@ def get_pip_parser():
     #######################################################
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-uninstall-pip',
-                                         description='Automate Python Package Uninstaller',
-                                         usage='macdaily uninstall pip [options] <packages>')
+                                         description='Automated Python Package Uninstaller',
+                                         usage='macdaily uninstall pip [options] <packages> ...')
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -141,8 +141,8 @@ def get_brew_parser():
     #######################################################
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-uninstall-brew',
-                                          description='Automate Homebrew Formula Uninstaller',
-                                          usage='macdaily uninstall brew [options] <formulae>')
+                                          description='Automated Homebrew Formula Uninstaller',
+                                          usage='macdaily uninstall brew [options] <formulae> ...')
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -200,7 +200,7 @@ def get_cask_parser():
     #######################################################
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-uninstall-cask',
-                                          description='Automate Homebrew Cask Uninstaller',
+                                          description='Automated Homebrew Cask Uninstaller',
                                           usage='macdaily uninstall cask [options] <casks>')
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
