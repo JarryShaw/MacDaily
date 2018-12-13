@@ -3,4 +3,4 @@
 	url = https://github.com/JarryShaw/MacDaily/tree/release
 [submodule "devel"]
 	path = devel
-	url = https://github.com/JarryShaw/MacDaily/tree/dev
+	url = https://github.com/JarryShaw/MacDaily/tree/devel
