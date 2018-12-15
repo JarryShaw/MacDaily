@@ -33,7 +33,7 @@ for line in filter(lambda item: isinstance(item, bs4.element.Tag), table.tbody):
 # print(MACDAILY_URL)
 # print(MACDAILY_SHA)
 
-DEVEL_URL = f'https://codeload.github.com/JarryShaw/MacDaily/tar.gz/v{VERSION}'
+DEVEL_URL = f'https://codeload.github.com/JarryShaw/MacDaily/tar.gz/v{VERSION}.devel'
 DEVEL_SHA = hashlib.sha256(requests.get(DEVEL_URL).content).hexdigest()
 # print(DEVEL_URL)
 # print(DEVEL_SHA)

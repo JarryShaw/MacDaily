@@ -108,7 +108,7 @@ fi
 # upload develop environment
 cd ..
 git pull && \
-git tag "v${version}" && \
+# git tag "v${version}" && \
 git add . && \
 if [[ -z "$1" ]] ; then
     git commit -a -S
@@ -121,13 +121,27 @@ if [[ $ret -ne "0" ]] ; then
     exit $ret
 fi
 
-# file new release
+# file new release on master
 go run github.com/aktau/github-release release \
     --user JarryShaw \
     --repo MacDaily \
     --tag "v${version}" \
     --name "MacDaily v${version}" \
     --description "$1"
+ret="$?"
+if [[ $ret -ne "0" ]] ; then
+    exit $ret
+fi
+
+# file new release on devel
+go run github.com/aktau/github-release release \
+    --user JarryShaw \
+    --repo MacDaily \
+    --tag "v${version}.devel" \
+    --name "MacDaily v${version}.devel" \
+    --description "$1" \
+    --target "devel" \
+    --pre-release
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
     exit $ret
@@ -151,9 +165,9 @@ fi
 
 # update maintenance information
 cd ..
-maintainer changelog && \
-maintainer contributor && \
-maintainer contributing
+go run github.com/gaocegege/maintainer changelog && \
+go run github.com/gaocegege/maintainer contributor && \
+go run github.com/gaocegege/maintainer contributing
 ret="$?"
 if [[ $ret -ne "0" ]] ; then
     exit $ret
