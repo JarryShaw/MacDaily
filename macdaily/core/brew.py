@@ -15,14 +15,11 @@ from macdaily.util.const import (bold, flash, green, purple_bg, red, red_bg,
 from macdaily.util.misc import (date, get_input, make_stderr, print_info,
                                 print_scpt, print_term, print_text, run, sudo)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
-    import pathlib
-
-try:
     import subprocess32 as subprocess
-except ImportError:
+else:
+    import pathlib
     import subprocess
 
 

@@ -12,9 +12,9 @@ import zipfile
 from macdaily.util.const import reset, under
 from macdaily.util.misc import print_info, print_scpt, print_text
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
+else:
     import pathlib
 
 

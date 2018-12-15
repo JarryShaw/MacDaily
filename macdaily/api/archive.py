@@ -15,14 +15,11 @@ from macdaily.util.const import (__version__, bold, green, pink, purple, red,
 from macdaily.util.misc import (beholder, print_misc, print_term, print_text,
                                 record)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
-    import pathlib
-
-try:
     import subprocess32 as subprocess
-except ImportError:
+else:
+    import pathlib
     import subprocess
 
 
@@ -36,6 +33,7 @@ def archive(argv=None):
     # parse config & change environ
     config = parse_config(quiet, verbose)
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
+    os.environ['TIMEOUT'] = config['Miscellaneous']['retry']
 
     # fetch current time
     today = datetime.datetime.today()

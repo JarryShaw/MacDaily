@@ -12,9 +12,9 @@ from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
 from macdaily.util.misc import (date, print_info, print_scpt, print_term,
                                 print_text, run, sudo, make_stderr)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 

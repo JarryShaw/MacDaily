@@ -36,6 +36,7 @@ def config(argv=None):
     # parse config & change environ
     config = parse_config(quiet, verbose)
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
+    os.environ['TIMEOUT'] = config['Miscellaneous']['retry']
 
     # list existing config
     if args.list:
@@ -63,10 +64,10 @@ def config(argv=None):
     try:
         import configupdater
     except ImportError:
-        print_term('macdaily-config: {}brew{}: {}ConfigUpdater{} not installed, '
+        print_term('macdaily-config: {}error{}: {}ConfigUpdater{} not installed, '
                    "which is mandatory for modification of configuration".format(yellow, reset, bold, reset),
                    os.devnull, redirect=verbose)
-        print('macdaily-config: {}brew{}: broken dependency'.format(red, reset), file=sys.stderr)
+        print('macdaily-config: {}error{}: broken dependency'.format(red, reset), file=sys.stderr)
         raise
 
     # make ConfigUpdater

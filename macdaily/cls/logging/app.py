@@ -10,9 +10,9 @@ from macdaily.util.const import ROOT
 from macdaily.util.misc import (date, make_pipe, make_stderr, print_info,
                                 print_scpt, print_text)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 

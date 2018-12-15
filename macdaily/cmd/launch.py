@@ -13,14 +13,11 @@ from macdaily.util.const import ROOT, bold, red, reset, under
 from macdaily.util.misc import (make_pipe, make_stderr, print_info, print_misc,
                                 print_scpt, print_term, python, run_script)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
-    import pathlib
-
-try:
     import subprocess32 as subprocess
-except ImportError:
+else:
+    import pathlib
     import subprocess
 
 
@@ -64,7 +61,7 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
 
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', 'u+x', askpass], quiet, verbose,
+    run_script(['chmod', '+x', askpass], quiet, verbose,
                sudo=True, password=password, logfile=logfile)
     if user != owner:
         run_script(['chown', owner, askpass], quiet, verbose,
@@ -135,7 +132,7 @@ def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull
 
     with open(confirm, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', 'u+x', confirm], quiet, verbose,
+    run_script(['chmod', '+x', confirm], quiet, verbose,
                sudo=True, password=password, logfile=logfile)
     if user != owner:
         run_script(['chown', owner, confirm], quiet, verbose,
@@ -205,7 +202,7 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
 
         with open(path, 'w') as file:
             file.write(make_daemon(mode, argv))
-        run_script(['chmod', 'u+x', path], quiet, verbose,
+        run_script(['chmod', '+x', path], quiet, verbose,
                    sudo=True, password=password, logfile=logfile)
         if user != owner:
             run_script(['chown', owner, path], quiet, verbose,

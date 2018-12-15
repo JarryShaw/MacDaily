@@ -23,9 +23,9 @@ try:
 except ImportError:
     import dummy_threading as threading
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 # error-not-raised flag

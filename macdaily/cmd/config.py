@@ -68,7 +68,8 @@ CONFIG = ['[Path]',
           '# Please, under any circumstances, make sure all fields are valid.',
           'askpass = ...                                               ; SUDO_ASKPASS utility for Homebrew Casks',
           'confirm = ...                                               ; confirm utility for MacDaily',
-          'timeout = 1000                                              ; timeout limit for shell commands in seconds',
+          'limit   = 1000                                              ; timeout limit for shell scripts in seconds',
+          'retry   = 60                                                ; retry timeout for input prompts in seconds',
           '']
 
 
@@ -146,16 +147,17 @@ def parse_config(quiet=False, verbose=False):
     askpass = os.path.realpath(config['Miscellaneous']['askpass'])
     if not os.access(askpass, os.X_OK):
         askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
-        run_script(['sudo', 'chmod', 'u+x', askpass], quiet, verbose)
+        run_script(['sudo', 'chmod', '+x', askpass], quiet, verbose)
 
     confirm = os.path.realpath(config['Miscellaneous']['confirm'])
     if not os.access(confirm, os.X_OK):
         confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
-        run_script(['sudo', 'chmod', 'u+x', confirm], quiet, verbose)
+        run_script(['sudo', 'chmod', '+x', confirm], quiet, verbose)
 
     cfg_dict['Miscellaneous']['askpass'] = askpass
     cfg_dict['Miscellaneous']['confirm'] = confirm
-    cfg_dict['Miscellaneous']['timeout'] = config['Miscellaneous'].getint('timeout', None)
+    cfg_dict['Miscellaneous']['limit'] = config['Miscellaneous'].getint('limit', 1000)
+    cfg_dict['Miscellaneous']['retry'] = config['Miscellaneous'].getint('retry', 60)
 
     return dict(cfg_dict)
 
@@ -205,8 +207,10 @@ def make_config(quiet=False, verbose=False):
             print_wrap('You may set up these variables here, '
                        'or later manually in configuration `{}~/.dailyrc{}`.'.format(under, reset))
             print_wrap('Please enter these specifications as instructed below.'.format())
-            shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(8)
-            config_file.write('bash-timeout = {} ; timeout limit for each shell script in seconds\n'.format(shtout))
+            shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(49)
+            config_file.write('limit = {} ; timeout limit for shell scripts in seconds\n'.format(shtout))
+            retout = (input('Retry timeout for input prompts in seconds [60]:') or '60').ljust(49)
+            config_file.write('retry = {} ; retry timeout for input prompts in seconds\n'.format(retout))
             print()
             print_wrap('Configuration for {}MacDaily{} finished. Now launching...\n'.format(bold, reset))
     except BaseException:

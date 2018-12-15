@@ -2,6 +2,7 @@
 Tap
 Logs
 LaunchAgents
+Pipfile.lock
 
 dev_*
 *.pages

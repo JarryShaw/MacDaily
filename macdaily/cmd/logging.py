@@ -6,9 +6,9 @@ import os
 from macdaily.cls.command import Command
 from macdaily.util.misc import print_info
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
+else:
     import pathlib
 
 

@@ -13,9 +13,9 @@ from macdaily.util.const import length
 from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
                                 print_text, run)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 
@@ -188,12 +188,12 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         if self._greedy:
             argv.append('--greedy')
         argv.extend(self._update_opts)
-        argv.append('')
 
         temp = copy.copy(argv)
         if self._exhaust:
             temp.append('--exhaust')
         args = ' '.join(temp)
+        argv.append('')
 
         askpass = 'SUDO_ASKPASS={!r}'.format(self._askpass)
         for package in self._var__temp_pkgs:
