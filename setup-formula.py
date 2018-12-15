@@ -60,7 +60,7 @@ class Macdaily < Formula
   homepage "https://github.com/JarryShaw/MacDaily#macdaily"
   url "{MACDAILY_URL}"
   sha256 "{MACDAILY_SHA}"
-  head "https://github.com/JarryShaw/MacDaily.git", :branch => "release"
+  head "https://github.com/JarryShaw/MacDaily.git", :branch => "master"
 
   bottle :unneeded
 
