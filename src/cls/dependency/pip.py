@@ -15,9 +15,9 @@ from macdaily.util.misc import (bold, date, make_stderr, print_info,
                                 print_scpt, print_term, print_text, red, reset,
                                 under, yellow)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 

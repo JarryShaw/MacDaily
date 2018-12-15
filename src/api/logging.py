@@ -23,14 +23,11 @@ from macdaily.util.const import (__version__, bold, green, purple, red, reset,
 from macdaily.util.misc import (beholder, get_pass, make_namespace, print_misc,
                                 print_term, print_text, record)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import pathlib2 as pathlib
-except ImportError:
-    import pathlib
-
-try:
     import subprocess32 as subprocess
-except ImportError:
+else:
+    import pathlib
     import subprocess
 
 
@@ -44,6 +41,7 @@ def logging(argv=None):
     # parse config & change environ
     config = parse_config(quiet, verbose)
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
+    os.environ['TIMEOUT'] = config['Miscellaneous']['retry']
 
     # fetch current time
     today = datetime.datetime.today()
@@ -51,9 +49,9 @@ def logging(argv=None):
     logtime = datetime.date.strftime(today, r'%H%M%S')
 
     # prepare command paras
-    timeout = config['Miscellaneous']['timeout']
     confirm = config['Miscellaneous']['confirm']
     askpass = config['Miscellaneous']['askpass']
+    timeout = config['Miscellaneous']['limit']
     disk_dir = config['Path']['arcdir']
     brew_renew = None
 

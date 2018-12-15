@@ -15,9 +15,9 @@ from macdaily.util.const import bold, green, red, reset, yellow
 from macdaily.util.misc import (date, get_input, make_stderr, print_info,
                                 print_scpt, print_term, print_text, sudo)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 

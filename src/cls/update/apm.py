@@ -9,9 +9,9 @@ from macdaily.core.apm import ApmCommand
 from macdaily.util.misc import (date, make_stderr, print_info, print_scpt,
                                 print_text, run)
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 

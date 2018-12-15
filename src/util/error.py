@@ -14,11 +14,7 @@ class ChildExit(Error, ChildProcessError):
     pass
 
 
-class TimeExpired(Error, TimeoutError):
-    pass
-
-
-class UnsupportedOS(Error, RuntimeError):
+class CommandNotImplemented(Error, NotImplementedError):
     pass
 
 
@@ -26,5 +22,9 @@ class ConfigNotFoundError(Error, FileNotFoundError):
     pass
 
 
-class CommandNotImplemented(Error, NotImplementedError):
+class TimeExpired(Error, TimeoutError):
+    pass
+
+
+class UnsupportedOS(Error, RuntimeError):
     pass

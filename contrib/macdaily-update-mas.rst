@@ -6,7 +6,7 @@ macdaily-update-mas
 macOS Application Update Automator
 ----------------------------------
 
-:Version: v2018.12.12.post1
+:Version: v2018.12.15
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

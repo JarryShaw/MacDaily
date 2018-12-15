@@ -6,9 +6,9 @@ from macdaily.core.brew import BrewCommand
 from macdaily.util.const import MAX, MIN, reset, under
 from macdaily.util.misc import date, print_info, print_scpt, print_text, run
 
-try:
+if sys.version_info[:2] == (3, 4):
     import subprocess32 as subprocess
-except ImportError:
+else:
     import subprocess
 
 
