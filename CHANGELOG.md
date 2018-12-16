@@ -1,17 +1,32 @@
 # Change Log
 
+## [v2018.12.16](https://github.com/JarryShaw/MacDaily/tree/v2018.12.16) (2018-12-16)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.16.devel...v2018.12.16)
+
+**Merged pull requests:**
+
+- Fixed minor bugs in launch command [\#16](https://github.com/JarryShaw/MacDaily/pull/16) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2018.12.16.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.16.devel) (2018-12-16)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15...v2018.12.16.devel)
+
+**Merged pull requests:**
+
+- Merge devel branch  from master branch [\#15](https://github.com/JarryShaw/MacDaily/pull/15) ([JarryShaw](https://github.com/JarryShaw))
+- Update devel branch based on master \[2018.12.15\] [\#14](https://github.com/JarryShaw/MacDaily/pull/14) ([JarryShaw](https://github.com/JarryShaw))
+
 ## [v2018.12.15](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15)
 
 **Merged pull requests:**
 
 - Merge devel branch on v2018.12.15 [\#13](https://github.com/JarryShaw/MacDaily/pull/13) ([JarryShaw](https://github.com/JarryShaw))
 
-## [v2018.12.15.dev](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.dev) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15.dev)
-
 ## [v2018.12.15.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.devel) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.devel)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15.devel)
+
+## [v2018.12.15.dev](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.dev) (2018-12-15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.dev)
 
 **Merged pull requests:**
 
