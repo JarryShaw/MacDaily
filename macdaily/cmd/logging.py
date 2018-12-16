@@ -2,6 +2,7 @@
 
 import abc
 import os
+import sys
 
 from macdaily.cls.command import Command
 from macdaily.util.misc import print_info
