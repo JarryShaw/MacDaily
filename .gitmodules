@@ -1,6 +1,9 @@
 [submodule "release"]
 	path = release
 	url = https://github.com/JarryShaw/MacDaily/tree/release
-[submodule "devel"]
-	path = devel
-	url = https://github.com/JarryShaw/MacDaily/tree/devel
+[submodule "util/askpass"]
+	path = util/askpass
+	url = https://github.com/JarryShaw/askpass
+[submodule "util/confirm"]
+	path = util/confirm
+	url = https://github.com/JarryShaw/confirm

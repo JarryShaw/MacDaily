@@ -5,6 +5,7 @@ LaunchAgents
 Pipfile.lock
 
 dev_*
+devel
 *.pages
 archive/
 typescript
