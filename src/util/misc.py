@@ -257,7 +257,8 @@ def record(file, args, today, config=None, redirect=False):
                     log.write(f'CFG: {key} -> {k} = {v}\n')
 
 
-def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logfile=os.devnull):
+def run_script(argv, quiet=False, verbose=False, sudo=False,
+               password=None, logfile=os.devnull, env=os.environ):
     args = ' '.join(argv)
     print_scpt(args, logfile, verbose)
     with open(logfile, 'a') as file:
@@ -271,13 +272,13 @@ def run_script(argv, quiet=False, verbose=False, sudo=False, password=None, logf
                 sudo_argv.extend(argv)
                 with make_pipe(password, verbose) as pipe:
                     proc = subprocess.check_output(sudo_argv, stdin=pipe.stdout,
-                                                   stderr=make_stderr(verbose))
+                                                   stderr=make_stderr(verbose), env=env)
             else:
                 sudo_argv = ['sudo']
                 sudo_argv.extend(argv)
-                proc = subprocess.check_output(sudo_argv, stderr=make_stderr(verbose))
+                proc = subprocess.check_output(sudo_argv, stderr=make_stderr(verbose), env=env)
         else:
-            proc = subprocess.check_output(argv, stderr=make_stderr(verbose))
+            proc = subprocess.check_output(argv, stderr=make_stderr(verbose), env=env)
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
         print_term(f"macdaily: {red}misc{reset}: "
