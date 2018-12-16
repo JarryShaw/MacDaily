@@ -6,7 +6,7 @@ macdaily-logging-npm
 Node.js Module Logging Automator
 --------------------------------
 
-:Version: v2018.12.15
+:Version: v2018.12.16
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
