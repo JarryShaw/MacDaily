@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import contextlib
 import copy
 import getpass
 import os
@@ -89,7 +90,8 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
     with open(plist, 'wb') as file:
         plistlib.dump(PLIST, file, sort_keys=False)
     run_script(['launchctl', 'load', '-w', plist], quiet, verbose, logfile=logfile)
-    run_script(['ssh-add', '-c'], quiet, verbose, logfile=logfile)
+    with contextlib.suppress(subprocess.CalledProcessError):
+        run_script(['ssh-add', '-c'], quiet, verbose, logfile=logfile)
 
     return askpass
 

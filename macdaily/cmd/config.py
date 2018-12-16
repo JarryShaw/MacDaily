@@ -154,10 +154,18 @@ def parse_config(quiet=False, verbose=False):
         confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
         run_script(['sudo', 'chmod', '+x', confirm], quiet, verbose)
 
+    limit = config['Miscellaneous'].getint('limit', 1000)
+    retry = config['Miscellaneous'].getint('retry', 60)
+
     cfg_dict['Miscellaneous']['askpass'] = askpass
     cfg_dict['Miscellaneous']['confirm'] = confirm
-    cfg_dict['Miscellaneous']['limit'] = config['Miscellaneous'].getint('limit', 1000)
-    cfg_dict['Miscellaneous']['retry'] = config['Miscellaneous'].getint('retry', 60)
+    cfg_dict['Miscellaneous']['limit'] = limit
+    cfg_dict['Miscellaneous']['retry'] = retry
+
+    # set up environment variables
+    os.environ['TIMEOUT'] = retry
+    os.environ['SSH_ASKPASS'] = askpass
+    os.environ['SUDO_ASKPASS'] = askpass
 
     return dict(cfg_dict)
 
