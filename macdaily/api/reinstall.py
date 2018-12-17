@@ -35,7 +35,6 @@ def reinstall(argv=None):
     # parse config & change environ
     config = parse_config(quiet, verbose)
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
-    os.environ['TIMEOUT'] = config['Miscellaneous']['retry']
 
     # fetch current time
     today = datetime.datetime.today()
