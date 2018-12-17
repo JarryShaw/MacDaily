@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2018.12.17](https://github.com/JarryShaw/MacDaily/tree/v2018.12.17) (2018-12-17)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.17.devel...v2018.12.17)
+
+**Merged pull requests:**
+
+- Fixed minor bugs when modifying os.environ [\#18](https://github.com/JarryShaw/MacDaily/pull/18) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2018.12.17.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.17.devel) (2018-12-17)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.16.post1...v2018.12.17.devel)
+
 ## [v2018.12.16.post1](https://github.com/JarryShaw/MacDaily/tree/v2018.12.16.post1) (2018-12-16)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.16.post1.devel...v2018.12.16.post1)
 
