@@ -163,7 +163,7 @@ def parse_config(quiet=False, verbose=False):
     cfg_dict['Miscellaneous']['retry'] = retry
 
     # set up environment variables
-    os.environ['TIMEOUT'] = retry
+    os.environ['TIMEOUT'] = str(retry)
     os.environ['SSH_ASKPASS'] = askpass
     os.environ['SUDO_ASKPASS'] = askpass
 
