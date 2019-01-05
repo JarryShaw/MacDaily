@@ -40,6 +40,7 @@ DEVEL_SHA = hashlib.sha256(requests.get(DEVEL_URL).content).hexdigest()
 
 CONFIGUPDATER = subprocess.check_output(['poet', 'configupdater']).decode().strip()
 DICTDUMPER = subprocess.check_output(['poet', 'dictdumper']).decode().strip()
+PSUTIL = subprocess.check_output(['poet', 'psutil']).decode().strip()
 PTYNG = subprocess.check_output(['poet', 'ptyng']).decode().strip()
 PATHLIB2 = subprocess.check_output(['poet', 'pathlib2']).decode().strip()
 SUBPROCESS32 = subprocess.check_output(['poet', 'subprocess32']).decode().strip()
@@ -81,6 +82,8 @@ class Macdaily < Formula
   {CONFIGUPDATER}
 
   {DICTDUMPER}
+
+  {PSUTIL}
 
   {PTYNG}
 
