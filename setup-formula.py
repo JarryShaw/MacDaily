@@ -33,7 +33,7 @@ for line in filter(lambda item: isinstance(item, bs4.element.Tag), table.tbody):
 # print(MACDAILY_URL)
 # print(MACDAILY_SHA)
 
-DEVEL_URL = f'https://codeload.github.com/JarryShaw/MacDaily/tar.gz/v{VERSION}.devel'
+DEVEL_URL = f'https://github.com/JarryShaw/MacDaily/archive/v{VERSION}.devel.tar.gz'
 DEVEL_SHA = hashlib.sha256(requests.get(DEVEL_URL).content).hexdigest()
 # print(DEVEL_URL)
 # print(DEVEL_SHA)
@@ -55,26 +55,23 @@ FORMULA = f'''\
 class Macdaily < Formula
   include Language::Python::Virtualenv
 
-  version "{VERSION}"
   desc "macOS Automated Package Manager"
   homepage "https://github.com/JarryShaw/MacDaily#macdaily"
   url "{MACDAILY_URL}"
   sha256 "{MACDAILY_SHA}"
+
   head "https://github.com/JarryShaw/MacDaily.git", :branch => "master"
-
-  bottle :unneeded
-
-  # bottle do
-  #   cellar :any_skip_relocation
-  #   sha256 "" => :mojave
-  #   sha256 "" => :high_sierra
-  #   sha256 "" => :sierra
-  # end
 
   devel do
     url "{DEVEL_URL}"
     sha256 "{DEVEL_SHA}"
   end
+
+  bottle :unneeded
+
+  option "without-config", "build without config modification support"
+  option "without-tree", "build without tree format support"
+  option "without-ptyng", "build without alternative PTY support"
 
   depends_on "python"
   depends_on "expect" => :recommended
@@ -82,17 +79,13 @@ class Macdaily < Formula
   depends_on "jarryshaw/tap/confirm" => :optional
   depends_on "theseal/ssh-askpass/ssh-askpass" => :optional
 
-  option "without-config", "build without config modification support"
-  option "without-tree", "build without tree format support"
-  option "without-ptyng", "build without alternative PTY support"
-
   {CONFIGUPDATER}
 
   {DICTDUMPER}
 
-  {PTYNG}
-
   {PSUTIL}
+
+  {PTYNG}
 
   {PATHLIB2}
 
@@ -113,13 +106,13 @@ class Macdaily < Formula
       venv.pip_install resource("ptyng")
 
       exitcode = `#{{libexec}}/"bin/python" -c "print(__import__('os').system('ps axo pid=,stat= > /dev/null 2>&1'))"`
-      if !( exitcode =~ /0/ )
+      if exitcode !~ /0/
         venv.pip_install resource("psutil")
       end
     end
 
     version = `#{{libexec}}/"bin/python" -c "print('%s.%s' % __import__('sys').version_info[:2])"`
-    if ( version =~ /3.4/ )
+    if version =~ /3.4/
       %w[pathlib2 six subprocess32].each do |r|
         venv.pip_install resource(r)
       end
@@ -131,9 +124,9 @@ class Macdaily < Formula
     dest = File.join(dir_name, "temp.1")
 
     man_path.each do |f|
-      FileUtils.cp f, dest
+      cp f, dest
       man1.install f
-      FileUtils.mv dest, f
+      mv dest, f
     end
   end
 
