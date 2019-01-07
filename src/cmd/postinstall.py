@@ -4,10 +4,13 @@ import sys
 import traceback
 
 from macdaily.core.brew import BrewCommand
-from macdaily.util.const import MAX, MIN, reset, under
-from macdaily.util.misc import date, print_info, print_scpt, print_text, run
+from macdaily.util.const.string import MAX, MIN
+from macdaily.util.const.term import reset, under
+from macdaily.util.tools.misc import date
+from macdaily.util.tools.print import print_info, print_scpt, print_text
+from macdaily.util.tools.script import run
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import subprocess32 as subprocess
 else:
     import subprocess

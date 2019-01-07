@@ -7,12 +7,15 @@ import sys
 import traceback
 
 from macdaily.cls.command import Command
-from macdaily.util.const import (bold, flash, purple_bg, red, red_bg, reset,
-                                 under)
-from macdaily.util.misc import (date, print_info, print_scpt, print_term,
-                                print_text, run, sudo, make_stderr)
+from macdaily.util.const.term import (bold, flash, purple_bg, red, red_bg,
+                                      reset, under)
+from macdaily.util.tools.make import make_stderr
+from macdaily.util.tools.misc import date
+from macdaily.util.tools.print import (print_info, print_scpt, print_term,
+                                       print_text)
+from macdaily.util.tools.script import run, sudo
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import subprocess32 as subprocess
 else:
     import subprocess

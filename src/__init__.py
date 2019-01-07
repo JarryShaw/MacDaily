@@ -4,7 +4,7 @@ import importlib
 import platform
 import sys
 
-from macdaily.util.const import red, reset
+from macdaily.util.const.term import red, reset
 from macdaily.util.error import UnsupportedOS
 
 # check platform
@@ -13,7 +13,7 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS
 
 # check dependencies
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     def test_import(module):
         try:
             importlib.import_module(module)

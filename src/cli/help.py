@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from macdaily.util.const import __version__
+from macdaily.util.const.macro import VERSION as __version__
 
 
 def get_help_parser():

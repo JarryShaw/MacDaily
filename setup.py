@@ -23,9 +23,9 @@ with open('./README.rst', encoding='utf-8') as file:
 
 # version string
 __version__ = '2018.12.17'
-# context = pkg_resources.resource_string(__name__, 'macdaily/util/const.py')
+# context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
-#     match = re.match(rb"__version__ = '(.*)'", line)
+#     match = re.match(rb"VERSION = '(.*)'", line)
 #     if match is None:
 #         continue
 #     __version__ = match.groups()[0].decode()
@@ -94,6 +94,8 @@ setup(
         'macdaily.img',
         'macdaily.res',
         'macdaily.util',
+        'macdaily.util.const',
+        'macdaily.util.tools',
     ],
     package_data={
         '': [
