@@ -35,10 +35,11 @@ def beholder(func):
 
         def _finale(epilogue):
             global FUNC_FLAG
-            FUNC_FLAG = False
-            sys.stdout.write(reset)
-            sys.stderr.write(reset)
-            kill(os.getpid(), signal.SIGKILL)
+            if FUNC_FLAG:
+                FUNC_FLAG = False
+                sys.stdout.write(reset)
+                sys.stderr.write(reset)
+                kill(os.getpid(), signal.SIGKILL)
             return epilogue
 
         def _funeral(last_words):
@@ -51,10 +52,7 @@ def beholder(func):
             print(last_words, file=sys.stderr)
 
         try:
-            epilogue = func(*args, **kwargs)
-            if FUNC_FLAG:
-                return _finale(epilogue)
-            return epilogue
+            return _finale(func(*args, **kwargs))
         except KeyboardInterrupt:
             if ERR_FLAG:
                 _funeral(f'macdaily: {red}error{reset}: operation interrupted')
