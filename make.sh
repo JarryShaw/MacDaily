@@ -80,7 +80,7 @@ twine upload dist/* -r pypi --skip-existing
 twine upload dist/* -r pypitest --skip-existing
 
 # get version string
-version=$( cat macdaily/util/const.py | grep "__version__" | sed "s/__version__ = '\(.*\)'/\1/" )
+version=$( cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/" )
 
 # upload to GitHub
 git pull && \
