@@ -5,10 +5,11 @@ import traceback
 
 from macdaily.cmd.install import InstallCommand
 from macdaily.core.mas import MasCommand
-from macdaily.util.misc import (date, get_input, make_stderr, print_info,
-                                print_scpt, print_text, sudo)
+from macdaily.util.tools.misc import date
+from macdaily.util.tools.print import print_info, print_scpt
+from macdaily.util.tools.script import sudo
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import subprocess32 as subprocess
 else:
     import subprocess

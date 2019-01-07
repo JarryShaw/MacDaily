@@ -16,14 +16,16 @@ from macdaily.api.postinstall import postinstall
 from macdaily.api.reinstall import reinstall
 from macdaily.api.uninstall import uninstall
 from macdaily.api.update import update
-from macdaily.util.const import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE,
-                                 MAP_CLEANUP, MAP_COMMANDS, MAP_CONFIG,
-                                 MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
-                                 MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
-                                 MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE,
-                                 __version__, bold, reset)
+from macdaily.util.const.macro import (COMMANDS, MAP_ALL, MAP_ARCHIVE,
+                                       MAP_BUNDLE, MAP_CLEANUP, MAP_COMMANDS,
+                                       MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP,
+                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING,
+                                       MAP_POSTINSTALL, MAP_REINSTALL,
+                                       MAP_UNINSTALL, MAP_UPDATE)
+from macdaily.util.const.macro import VERSION as __version__
+from macdaily.util.const.term import bold, reset
 from macdaily.util.error import CommandNotImplemented
-from macdaily.util.misc import beholder
+from macdaily.util.tools.deco import beholder
 
 
 def get_parser():
@@ -35,7 +37,7 @@ def get_parser():
     group = parser.add_argument_group('command selection',
                                       'MacDaily provides a friendly CLI workflow for the '
                                       'administrator of macOS to manipulate packages, see '
-                                      "`{}macdaily commands{} for more information".format(bold, reset))
+                                      "`{}macdaily commands{}' for more information".format(bold, reset))
     group.add_argument('command', metavar='CMD', help=argparse.SUPPRESS)
 
     return parser

@@ -5,8 +5,8 @@ import shutil
 import sys
 
 from macdaily.cls.command import Command
-from macdaily.util.const import bold, flash, red, red_bg, reset
-from macdaily.util.misc import print_term, print_info
+from macdaily.util.const.term import bold, flash, red, red_bg, reset
+from macdaily.util.tools.print import print_info, print_term
 
 
 class SystemCommand(Command):

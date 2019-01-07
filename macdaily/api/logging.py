@@ -18,12 +18,16 @@ from macdaily.cls.logging.pip import PipLogging
 from macdaily.cls.logging.tap import TapLogging
 from macdaily.cmd.archive import make_archive, make_storage
 from macdaily.cmd.config import parse_config
-from macdaily.util.const import (__version__, bold, green, purple, red, reset,
-                                 under, yellow)
-from macdaily.util.misc import (beholder, get_pass, make_namespace, print_misc,
-                                print_term, print_text, record)
+from macdaily.util.const.macro import VERSION as __version__
+from macdaily.util.const.term import (bold, green, purple, red, reset, under,
+                                      yellow)
+from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.get import get_pass
+from macdaily.util.tools.make import make_namespace
+from macdaily.util.tools.misc import record
+from macdaily.util.tools.print import print_misc, print_term, print_text
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import pathlib2 as pathlib
     import subprocess32 as subprocess
 else:

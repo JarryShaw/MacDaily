@@ -6,8 +6,9 @@ import os
 import re
 import sys
 
-from macdaily.util.const import bold, green, red, reset, yellow
-from macdaily.util.misc import get_input, print_info, print_term
+from macdaily.util.const.term import bold, green, red, reset, yellow
+from macdaily.util.tools.get import get_input
+from macdaily.util.tools.print import print_info, print_term
 
 
 class Command(metaclass=abc.ABCMeta):

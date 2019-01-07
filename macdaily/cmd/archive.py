@@ -10,10 +10,10 @@ import tarfile
 import tempfile
 import zipfile
 
-from macdaily.util.const import reset, under
-from macdaily.util.misc import print_info, print_scpt, print_text
+from macdaily.util.const.term import reset, under
+from macdaily.util.tools.print import print_info, print_scpt, print_text
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import pathlib2 as pathlib
 else:
     import pathlib

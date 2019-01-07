@@ -2,7 +2,8 @@
 
 from macdaily.cmd.install import InstallCommand
 from macdaily.core.gem import GemCommand
-from macdaily.util.misc import print_info, print_scpt, sudo
+from macdaily.util.tools.print import print_info, print_scpt
+from macdaily.util.tools.script import sudo
 
 
 class GemInstall(GemCommand, InstallCommand):
