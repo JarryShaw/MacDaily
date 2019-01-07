@@ -10,11 +10,14 @@ import pwd
 import shutil
 import sys
 
-from macdaily.util.const import ROOT, bold, red, reset, under
-from macdaily.util.misc import (make_pipe, make_stderr, print_info, print_misc,
-                                print_scpt, print_term, python, run_script)
+from macdaily.util.const.macro import PYTHON, ROOT
+from macdaily.util.const.term import bold, red, reset, under
+from macdaily.util.tools.make import make_pipe, make_stderr
+from macdaily.util.tools.misc import run_script
+from macdaily.util.tools.print import (print_info, print_misc, print_scpt,
+                                       print_term)
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import pathlib2 as pathlib
     import subprocess32 as subprocess
 else:
@@ -154,7 +157,7 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
                   f'display notification "Running scheduled {mode} scripts..." with title "MacDaily"',
                   '',
                   '-- run script',
-                  f'do shell script "{python} -m macdaily {mode} {argv}"',
+                  f'do shell script "{PYTHON} -m macdaily {mode} {argv}"',
                   '']
         return os.linesep.join(DAEMON)
 

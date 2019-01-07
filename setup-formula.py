@@ -8,9 +8,9 @@ import subprocess
 import bs4
 import requests
 
-with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const.py')) as file:
+with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const/macro.py')) as file:
     for line in file:
-        match = re.match(r"__version__ = '(.*)'", line)
+        match = re.match(r"VERSION = '(.*)'", line)
         if match is None:
             continue
         VERSION = match.groups()[0]

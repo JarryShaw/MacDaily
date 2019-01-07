@@ -3,7 +3,7 @@
 import abc
 
 from macdaily.cls.command import Command
-from macdaily.util.misc import print_info
+from macdaily.util.tools.print import print_info
 
 
 class ReinstallCommand(Command):

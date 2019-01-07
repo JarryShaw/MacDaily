@@ -4,16 +4,18 @@ import os
 import sys
 
 from macdaily.cli.help import get_help_parser, parse_args
-from macdaily.util.const import (COMMANDS, MAN_ARCHIVE, MAN_BUNDLE,
-                                 MAN_CLEANUP, MAN_COMMANDS, MAN_CONFIG,
-                                 MAN_DEPENDENCY, MAN_HELP, MAN_INSTALL,
-                                 MAN_LAUNCH, MAN_LOGGING, MAN_POSTINSTALL,
-                                 MAN_REINSTALL, MAN_UNINSTALL, MAN_UPDATE,
-                                 MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP,
-                                 MAP_COMMANDS, MAP_CONFIG, MAP_DEPENDENCY,
-                                 MAP_HELP, MAP_INSTALL, MAP_LAUNCH,
-                                 MAP_LOGGING, MAP_POSTINSTALL, MAP_REINSTALL,
-                                 MAP_UNINSTALL, MAP_UPDATE, ROOT)
+from macdaily.util.const.macro import (COMMANDS, MAN_ARCHIVE, MAN_BUNDLE,
+                                       MAN_CLEANUP, MAN_COMMANDS, MAN_CONFIG,
+                                       MAN_DEPENDENCY, MAN_HELP, MAN_INSTALL,
+                                       MAN_LAUNCH, MAN_LOGGING,
+                                       MAN_POSTINSTALL, MAN_REINSTALL,
+                                       MAN_UNINSTALL, MAN_UPDATE, MAP_ALL,
+                                       MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP,
+                                       MAP_COMMANDS, MAP_CONFIG,
+                                       MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
+                                       MAP_LAUNCH, MAP_LOGGING,
+                                       MAP_POSTINSTALL, MAP_REINSTALL,
+                                       MAP_UNINSTALL, MAP_UPDATE, ROOT)
 from macdaily.util.error import CommandNotImplemented
 
 

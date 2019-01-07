@@ -10,10 +10,12 @@ import shlex
 import sys
 
 from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
-from macdaily.util.const import ROOT, bold, purple, reset, under
+from macdaily.util.const.macro import ROOT
+from macdaily.util.const.term import bold, purple, reset, under
 from macdaily.util.error import ConfigNotFoundError
-from macdaily.util.misc import (get_pass, print_misc, print_term, print_wrap,
-                                run_script)
+from macdaily.util.tools.get import get_pass
+from macdaily.util.tools.misc import run_script
+from macdaily.util.tools.print import print_misc, print_term, print_wrap
 
 CONFIG = ['[Path]',
           '# In this section, paths for log files are specified.',

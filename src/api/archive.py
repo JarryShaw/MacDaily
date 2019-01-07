@@ -10,12 +10,14 @@ import uuid
 from macdaily.cli.archive import get_archive_parser, parse_args
 from macdaily.cmd.archive import make_archive, make_storage
 from macdaily.cmd.config import parse_config
-from macdaily.util.const import (__version__, bold, green, pink, purple, red,
-                                 reset, under)
-from macdaily.util.misc import (beholder, print_misc, print_term, print_text,
-                                record)
+from macdaily.util.const.macro import VERSION as __version__
+from macdaily.util.const.term import (bold, green, pink, purple, red, reset,
+                                      under)
+from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.misc import record
+from macdaily.util.tools.print import print_misc, print_term, print_text
 
-if sys.version_info[:2] == (3, 4):
+if sys.version_info[:2] <= (3, 4):
     import pathlib2 as pathlib
     import subprocess32 as subprocess
 else:
