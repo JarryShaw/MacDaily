@@ -34,7 +34,7 @@ def kill(pid, signal):
         except OSError as error:
             message = ('failed to send signal to process %d '
                        'with error message: %s') % (chld, error)
-            warnings.showwarning(message, ResourceWarning, __file__, 34)
+            warnings.showwarning(message, ResourceWarning, __file__, 33)
 
 
 def record(file, args, today, config=None, redirect=False):
