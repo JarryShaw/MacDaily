@@ -4,6 +4,9 @@ import datetime
 import os
 import sys
 import traceback
+import warnings
+
+from ptyng import _fetch_child  # pylint: disable=E0611
 
 from macdaily.util.const.macro import PROGRAM, PYTHON
 from macdaily.util.const.term import bold, red, reset
@@ -21,6 +24,17 @@ def date():
     now = datetime.datetime.now()
     txt = datetime.datetime.strftime(now, '%+')
     return txt
+
+
+def kill(pid, signal):
+    """Kill a process with a signal."""
+    for chld in reversed(_fetch_child(pid)[1:]):
+        try:
+            os.kill(chld, signal)
+        except OSError as error:
+            message = ('failed to send signal to process %d '
+                       'with error message: %s') % (chld, error)
+            warnings.showwarning(message, ResourceWarning, __file__, 34)
 
 
 def record(file, args, today, config=None, redirect=False):
