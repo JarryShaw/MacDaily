@@ -6,7 +6,7 @@ macdaily-install-mas
 macOS Application Automated Installer
 -------------------------------------
 
-:Version: v2018.12.17
+:Version: v2019.01.07
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
