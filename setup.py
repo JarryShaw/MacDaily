@@ -22,7 +22,7 @@ with open('./README.rst', encoding='utf-8') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2019.01.07'
+__version__ = '2019.01.08'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)

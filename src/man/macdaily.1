@@ -1,0 +1,471 @@
+.\" Man page generated from reStructuredText.
+.
+.TH MACDAILY 1 "November 23, 2018" "v2019.01.08" ""
+.SH NAME
+macdaily \- macOS Automated Package Manager
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.sp
+macdaily [\fIoptions\fP] <\fIcommand\fP> ...
+.SH DESCRIPTION
+.sp
+\fBMacDaily\fP is an all\-in\-one collection of console utility written in Python
+with support of \fI\%PTY\fP\&.
+Originally works as an automated housekeeper for Mac to update all packages
+outdated, \fBMacDaily\fP is now fully functioned and end\-user oriented.
+.sp
+\fBMacDaily\fP can manage packages of various distributions of
+\fI\%Atom\fP, \fI\%RubyGems\fP,
+\fI\%Homebrew\fP, \fI\%Python\fP,
+\fI\%Node.js\fP, and even macOS software updates (c.f.
+\fBsoftwareupdate(8)\fP). Without being aware of everything about your Mac, one
+can easily work around and manage packages out of no pain using \fBMacDaily\fP\&.
+.SH EXAMPLES
+.INDENT 0.0
+.TP
+.B NOTE
+all acronyms and aliases are left out for a quick and
+clear view of \fBMacDaily\fP
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to use \fBMacDaily\fP?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# call from PATH
+$ macdaily <command> [option ...]
+# or call as Python module
+$ python \-m macdaily <command> [option ...]
+# or call a certain command
+$ md\-${command} [option ...]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to set up my disks and daemons interactively?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily config \-\-interactive
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to relaunch daemons after I manually modified \fI~/.dailyrc\fP?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily launch daemons
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to archive all ancient logs without running any commands?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily archive \-\-all
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to update all outdated packages?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily update \-\-all
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to update a certain package (eg: \fIhello\fP from Homebrew)?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily update brew \-\-packages=hello
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to update without a certain package (eg: update all packages
+except Python package \fIptyng\fP)?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily update \-\-all \-\-pip=\(aq!ptyng\(aq
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to uninstall a certain package along with its dependencies (eg:
+\fIpytest\fP from brewed CPython version 3.6)?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily uninstall pip \e
+      \-\-brew \-\-cpython \-\-python=3\&.6 \-\-packages=pytest
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to reinstall all packages but do not cleanup caches?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily reinstall \-\-all \-\-no\-cleanup
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to postinstall packages whose name ranges between \fIstart\fP and
+\fIstop\fP alphabetically?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily postinstall \-\-all \-\-start=start \-\-end=stop
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to show dependency of a certain package as a tree (eg: \fIgnupg\fP
+from Homebrew) ?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily dependency brew  \-\-tree \-\-packages=gnupg
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to log all applications on my Mac, a.k.a. \fI*.app\fP files?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily logging dotapp
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+How to dump a \fIMacfile\fP to keep track of all packages?
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+$ macdaily bundle dump
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH OPTIONS
+.SS optional arguments
+.INDENT 0.0
+.TP
+.B \-h\fP,\fB  \-\-help
+show this help message and exit
+.TP
+.B \-V\fP,\fB  \-\-version
+show program\(aqs version number and exit
+.UNINDENT
+.SS command selection
+.sp
+MacDaily provides a friendly CLI workflow for the administrator of macOS
+to manipulate packages, see \fBmacdaily commands\fP for more information
+.INDENT 0.0
+.TP
+.B archive
+archive ancient runtime logs
+.TP
+.B bundle
+bundler for all packages on your Mac
+.TP
+.B cleanup
+remove outdated downloads, caches, etc.
+.TP
+.B commands
+show available commands and corresponding subsidiaries
+.TP
+.B config
+get and set MacDaily runtime options
+.TP
+.B dependency
+show dependencies for packages
+.TP
+.B help
+show man pages for \fIcommand\fP
+.TP
+.B install
+install packages
+.TP
+.B launch
+launch daemon services and helper programs
+.TP
+.B logging
+record packages on your Mac
+.TP
+.B postinstall
+run the post\-install steps for Homebrew \fIformula\fP
+.TP
+.B reinstall
+reinstall existing packages
+.TP
+.B uninstall
+recursively uninstall packages
+.TP
+.B update
+update packages
+.UNINDENT
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+MacDaily documentation: \fIhttps://github.com/JarryShaw/MacDaily#generals\fP
+.IP \(bu 2
+MacDaily Log Archive Utility
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-archive\fP
+.UNINDENT
+.IP \(bu 2
+macOS Package Cache Cleanup
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-cleanup\fP
+.IP \(bu 2
+\fBmacdaily\-cleanup\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-cleanup\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-cleanup\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-cleanup\-pip\fP
+.UNINDENT
+.IP \(bu 2
+MacDaily Runtime Configuration Helper
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-config\fP
+.UNINDENT
+.IP \(bu 2
+macOS Package Dependency Query
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-dependency\fP
+.IP \(bu 2
+\fBmacdaily\-dependency\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-dependency\-pip\fP
+.UNINDENT
+.IP \(bu 2
+MacDaily Usage Information Manual
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-help\fP
+.UNINDENT
+.IP \(bu 2
+macOS Package Automated Installer
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-install\fP
+.IP \(bu 2
+\fBmacdaily\-install\-apm\fP
+.IP \(bu 2
+\fBmacdaily\-install\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-install\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-install\-gem\fP
+.IP \(bu 2
+\fBmacdaily\-install\-mas\fP
+.IP \(bu 2
+\fBmacdaily\-install\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-install\-pip\fP
+.IP \(bu 2
+\fBmacdaily\-install\-system\fP
+.UNINDENT
+.IP \(bu 2
+MacDaily Dependency Launch Helper
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-launch\fP
+.UNINDENT
+.IP \(bu 2
+macOS Package Logging Automator
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-logging\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-apm\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-app\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-gem\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-mas\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-pip\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-tap\fP
+.UNINDENT
+.IP \(bu 2
+Homebrew Cask Postinstall Automator
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-postinstall\fP
+.UNINDENT
+.IP \(bu 2
+Automated macOS Package Reinstaller
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-reinstall\fP
+.IP \(bu 2
+\fBmacdaily\-reinstall\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-reinstall\-cask\fP
+.UNINDENT
+.IP \(bu 2
+Automated macOS Package Uninstaller
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-uninstall\fP
+.IP \(bu 2
+\fBmacdaily\-uninstall\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-uninstall\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-uninstall\-pip\fP
+.UNINDENT
+.IP \(bu 2
+macOS Package Update Automator
+.INDENT 2.0
+.IP \(bu 2
+\fBmacdaily\-update\fP
+.IP \(bu 2
+\fBmacdaily\-update\-apm\fP
+.IP \(bu 2
+\fBmacdaily\-update\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-update\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-update\-gem\fP
+.IP \(bu 2
+\fBmacdaily\-update\-mas\fP
+.IP \(bu 2
+\fBmacdaily\-update\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-update\-pip\fP
+.IP \(bu 2
+\fBmacdaily\-update\-system\fP
+.UNINDENT
+.UNINDENT
+.SH BUGS
+.sp
+If any bugs, please file issues on GitHub:
+.INDENT 0.0
+.TP
+.B JarryShaw/MacDaily
+\fI\%https://github.com/JarryShaw/MacDaily/issues\fP
+.UNINDENT
+.sp
+Contribution is welcome.
+.SH AUTHOR
+Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+of MacDaily. Please contact me at jarryshaw@icloud.com.
+.SH COPYRIGHT
+MacDaily is licensed under the Apple Open Source License.
+.\" Generated by docutils manpage writer.
+.

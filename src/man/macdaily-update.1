@@ -1,0 +1,234 @@
+.\" Man page generated from reStructuredText.
+.
+.TH MACDAILY-UPDATE 1 "November 24, 2018" "v2019.01.08" ""
+.SH NAME
+macdaily-update \- macOS Package Update Automator
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.sp
+macdaily \fBupdate\fP [\fIoptions\fP] <\fImode\-selection\fP> ...
+.sp
+aliases: \fBup\fP, \fBupgrade\fP
+.SH DESCRIPTION
+.sp
+\fIMacDaily\fP provides intelligent solution for package update automation.
+\fIMacDaily\fP \fBupdate\fP command will automatically update all outdated packages
+installed through \-\-
+.INDENT 0.0
+.IP \(bu 2
+\fIapm\fP \-\- Atom Package Manager
+.IP \(bu 2
+\fIbrew\fP \-\- Homebrew
+.IP \(bu 2
+\fIcask\fP \-\- Homebrew Casks
+.IP \(bu 2
+\fIgem\fP \-\- RubyGems
+.IP \(bu 2
+\fImas\fP \-\- Mac App Store CLI
+.IP \(bu 2
+\fInpm\fP \-\- Node.js Package Manager
+.IP \(bu 2
+\fIpip\fP \-\- Pip Installs Packages
+.IP \(bu 2
+\fIsystem\fP \-\- macOS Software Update (\fBsoftwareupdate(8)\fP)
+.UNINDENT
+.sp
+\fIMacDaily\fP \fBupdate\fP supports using with multiple commands. Say, you would
+like to update Python packages and Homebrew formulae, each with different flags
+and options, then simply use the following command.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+macdaily update [global\-options] pip [pip\-options] brew [brew\-options]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+But please note that, global options \fB\-\-yes\fP, \fB\-\-quiet\fP, \fB\-\-verbose\fP
+and \fB\-\-no\-cleanup\fP are \fBmandatory\fP for all commands once set to \fBTrue\fP\&.
+That is to say, if you set these flags in global options, they will overwrite
+corresponding flags in command specific options.
+.sp
+For all options that take package names, a mini\-language for condition
+specification is provided.
+.TS
+center;
+|l|l|.
+_
+T{
+Format
+T}	T{
+Specification
+T}
+_
+T{
+\fBpackage\fP
+T}	T{
+upgrade \fBpackage\fP
+T}
+_
+T{
+\fB!package\fP
+T}	T{
+ignore \fBpackage\fP
+T}
+_
+.TE
+.INDENT 0.0
+.TP
+.B NB
+Since exclamation mark (\fB!\fP) has special meanings in \fBbash(1)\fP
+scripts, it is highly recommended using \fB\(aq!package\(aq\fP literal to
+specify ignoring packages.
+.UNINDENT
+.sp
+When using such options, if given wrong package name, \fIMacDaily\fP
+might give a trivial \fIdid\-you\-mean\fP correction.
+.SH OPTIONS
+.SS optional arguments
+.INDENT 0.0
+.TP
+.B \-h\fP,\fB  \-\-help
+show this help message and exit
+.TP
+.B \-V\fP,\fB  \-\-version
+show program\(aqs version number and exit
+.UNINDENT
+.SS general arguments
+.INDENT 0.0
+.TP
+.B \-a\fP,\fB  \-\-all
+update all packages installed through Atom, RubyGems,
+Node.js, Homebrew, Caskroom, Mac App Store, and etc
+.TP
+.B \-q\fP,\fB  \-\-quiet
+run in quiet mode, with no output information
+.TP
+.B \-v\fP,\fB  \-\-verbose
+run in verbose mode, with detailed output information
+.TP
+.B \-l\fP,\fB  \-\-show\-log
+open log in \fIConsole.app\fP upon completion of command
+.TP
+.B \-y\fP,\fB  \-\-yes
+yes for all selections
+.TP
+.B \-n\fP,\fB  \-\-no\-cleanup
+do not run cleanup process
+.UNINDENT
+.SS package arguments
+.sp
+options used to specify packages of each mode
+.sp
+\-\-apm \fIPI\fP [\fIPI\fP ...] name of Atom plug\-ins to update
+.INDENT 0.0
+.TP
+.B \-\-gem \fIGEM\fP [\fIGEM\fP ...]
+name of Ruby gems to update
+.TP
+.B \-\-mas \fIAPP\fP [\fIAPP\fP ...]
+name of macOS applications to update
+.TP
+.B \-\-npm \fIMOD\fP [\fIMOD\fP ...]
+name of Node.js modules to update
+.TP
+.B \-\-pip \fIPKG\fP [\fIPKG\fP ...]
+name of Python packages to update
+.TP
+.B \-\-brew \fIFORM\fP [\fIFORM\fP ...]
+name of Homebrew formulae to update
+.TP
+.B \-\-cask \fICASK\fP [\fICASK\fP ...]
+name of Caskroom binaries to update
+.TP
+.B \-\-system \fISW\fP [\fISW\fP ...]
+name of system software to update
+.UNINDENT
+.SS control arguments
+.sp
+options used to disable update of certain mode
+.INDENT 0.0
+.TP
+.B \-\-no\-apm
+do not update Atom plug\-ins
+.TP
+.B \-\-no\-gem
+do not update Ruby gems
+.TP
+.B \-\-no\-mas
+do not update macOS applications
+.TP
+.B \-\-no\-npm
+do not update Node.js modules
+.TP
+.B \-\-no\-pip
+do not update Python packages
+.TP
+.B \-\-no\-brew
+do not update Homebrew formulae
+.TP
+.B \-\-no\-cask
+do not update Caskroom binaries
+.TP
+.B \-\-no\-system
+do not update system software
+.UNINDENT
+.SS mode selection
+.sp
+update outdated packages installed through a specified method, e.g.: \fIapm\fP,
+\fIgem\fP, \fImas\fP, \fInpm\fP, \fIpip\fP, \fIbrew\fP, \fIcask\fP, \fIsystem\fP
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+\fBmacdaily\-update\-apm\fP
+.IP \(bu 2
+\fBmacdaily\-update\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-update\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-update\-gem\fP
+.IP \(bu 2
+\fBmacdaily\-update\-mas\fP
+.IP \(bu 2
+\fBmacdaily\-update\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-update\-pip\fP
+.IP \(bu 2
+\fBmacdaily\-update\-system\fP
+.UNINDENT
+.SH AUTHOR
+Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+of MacDaily. Please contact me at jarryshaw@icloud.com.
+.SH COPYRIGHT
+MacDaily is licensed under the Apple Open Source License.
+.\" Generated by docutils manpage writer.
+.

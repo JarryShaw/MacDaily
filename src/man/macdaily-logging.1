@@ -1,0 +1,245 @@
+.\" Man page generated from reStructuredText.
+.
+.TH MACDAILY-LOGGING 1 "November 24, 2018" "v2019.01.08" ""
+.SH NAME
+macdaily-logging \- macOS Package Logging Automator
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.sp
+macdaily \fBlogging\fP [\fIoptions\fP] <\fImode\-selection\fP> ...
+.sp
+aliases: \fBlog\fP
+.SH DESCRIPTION
+.sp
+\fIMacDaily\fP provides intelligent solution for package logging automation.
+\fIMacDaily\fP \fBlogging\fP command will automatically record all existing packages
+installed through \-\-
+.INDENT 0.0
+.IP \(bu 2
+\fIapm\fP \-\- Atom Package Manager
+.IP \(bu 2
+\fIapp\fP \-\- macOS Applications
+.IP \(bu 2
+\fIbrew\fP \-\- Homebrew
+.IP \(bu 2
+\fIcask\fP \-\- Homebrew Casks
+.IP \(bu 2
+\fIgem\fP \-\- RubyGems
+.IP \(bu 2
+\fImas\fP \-\- Mac App Store CLI
+.IP \(bu 2
+\fInpm\fP \-\- Node.js Package Manager
+.IP \(bu 2
+\fIpip\fP \-\- Pip Installs Packages
+.IP \(bu 2
+\fItap\fP \-\- Homebrew Taps
+.UNINDENT
+.sp
+\fIMacDaily\fP \fBlogging\fP supports using with multiple commands. Say, you would
+like to record Python packages and Homebrew formulae, each with different flags
+and options, then simply use the following command.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+macdaily logging [global\-options] pip [pip\-options] brew [brew\-options]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+But please note that, global options \fB\-\-yes\fP, \fB\-\-quiet\fP and \fB\-\-show\-log\fP
+are \fBmandatory\fP for all commands once set to \fBTrue\fP\&. That is to say, if you
+set these flags in global options, they will overwrite corresponding flags in
+command specific options.
+.INDENT 0.0
+.TP
+.B NB
+\fIMacDaily\fP will record installed packages using following package
+manager requirement specification formats.
+.UNINDENT
+.TS
+center;
+|l|l|.
+_
+T{
+Command
+T}	T{
+Log File
+T}
+_
+T{
+\fBapm\fP
+T}	T{
+\fBpackages.txt\fP
+T}
+_
+T{
+\fBapp\fP
+T}	T{
+\fBmacOS.log\fP
+T}
+_
+T{
+\fBbrew\fP
+T}	T{
+\fBBrewfile\fP
+T}
+_
+T{
+\fBcask\fP
+T}	T{
+\fBBrewfile\fP
+T}
+_
+T{
+\fBgem\fP
+T}	T{
+\fBlockdown.rb\fP
+T}
+_
+T{
+\fBmas\fP
+T}	T{
+\fBBrewfile\fP
+T}
+_
+T{
+\fBnpm\fP
+T}	T{
+\fBpackage.json\fP
+T}
+_
+T{
+\fBpip\fP
+T}	T{
+\fBrequirements.txt\fP
+T}
+_
+T{
+\fBtap\fP
+T}	T{
+\fBBrewfile\fP
+T}
+_
+.TE
+.SH OPTIONS
+.SS optional arguments
+.INDENT 0.0
+.TP
+.B \-h\fP,\fB  \-\-help
+show this help message and exit
+.TP
+.B \-V\fP,\fB  \-\-version
+show program\(aqs version number and exit
+.UNINDENT
+.SS general arguments
+.INDENT 0.0
+.TP
+.B \-a\fP,\fB  \-\-all
+log all packages installed through Atom, RubyGems,
+Node.js, Homebrew, Caskroom, Mac App Store, and etc
+.TP
+.B \-q\fP,\fB  \-\-quiet
+run in quiet mode, with no output information
+.TP
+.B \-v\fP,\fB  \-\-verbose
+run in verbose mode, with detailed output information
+.TP
+.B \-n\fP,\fB  \-\-no\-cleanup
+do not run cleanup process
+.TP
+.B \-l\fP,\fB  \-\-show\-log
+open log in \fIConsole.app\fP upon completion of command
+.UNINDENT
+.SS control arguments
+.sp
+options used to disable logging of certain mode
+.INDENT 0.0
+.TP
+.B \-\-no\-apm
+do not log Atom plug\-ins
+.TP
+.B \-\-no\-app
+do not log system applications
+.TP
+.B \-\-no\-gem
+do not log Ruby gems
+.TP
+.B \-\-no\-mas
+do not log macOS applications
+.TP
+.B \-\-no\-npm
+do not log Node.js modules
+.TP
+.B \-\-no\-pip
+do not log Python packages
+.TP
+.B \-\-no\-tap
+do not log Homebrew Taps
+.TP
+.B \-\-no\-brew
+do not log Homebrew formulae
+.TP
+.B \-\-no\-cask
+do not log Homebrew Casks
+.UNINDENT
+.SS mode selection
+.sp
+log existing packages installed through a specified method, e.g.: \fIapm\fP,
+\fIapp\fP, \fIgem\fP, \fImas\fP, \fInpm\fP, \fIpip\fP, \fItap\fP, \fIbrew\fP, \fIcask\fP
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+\fBmacdaily\-logging\-apm\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-app\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-cask\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-gem\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-mas\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-npm\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-pip\fP
+.IP \(bu 2
+\fBmacdaily\-logging\-tap\fP
+.UNINDENT
+.SH AUTHOR
+Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+of MacDaily. Please contact me at jarryshaw@icloud.com.
+.SH COPYRIGHT
+MacDaily is licensed under the Apple Open Source License.
+.\" Generated by docutils manpage writer.
+.

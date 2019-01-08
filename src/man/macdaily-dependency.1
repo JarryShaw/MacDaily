@@ -1,0 +1,192 @@
+.\" Man page generated from reStructuredText.
+.
+.TH MACDAILY-DEPENDENCY 1 "November 24, 2018" "v2019.01.08" ""
+.SH NAME
+macdaily-dependency \- macOS Package Dependency Query
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.sp
+macdaily \fBdependency\fP [\fIoptions\fP] <\fImode\-selection\fP> ...
+.sp
+aliases: \fBdeps\fP, \fBdp\fP
+.SH DESCRIPTION
+.sp
+\fIMacDaily\fP provides intelligent solution for package dependency query.
+\fIMacDaily\fP \fBdependency\fP command will automatically query dependencies
+of packages installed through \-\-
+.INDENT 0.0
+.IP \(bu 2
+\fIbrew\fP \-\- Homebrew
+.IP \(bu 2
+\fIpip\fP \-\- Pip Installs Packages
+.UNINDENT
+.sp
+And for \fBtree\fP format support in this command, you will need to install
+\fIDictDumper\fP, which was a sub\-project from development of \fIPyPCAPKit\fP\&.
+.sp
+This command was originally inspired from and leveraged \fIpipdeptree\fP\&.
+However, if you would like to use \fIpipdeptree\fP for all installed Python
+distributions, it is highly recommended to install \fIpipdeptree\fP with each
+executable, which can be a bit fussy.
+.sp
+\fIMacDaily\fP \fBdependency\fP supports using with multiple commands. Say, you would
+like to query Python package dependencies and Homebrew formula dependencies,
+each with different flags and options, then simply use the following command.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+macdaily dependency [global\-options] pip [pip\-options] brew [brew\-options]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+But please note that, global options \fB\-\-depth\fP, \fB\-\-quiet\fP, \fB\-\-verbose\fP
+and \fB\-\-topological\fP are \fBmandatory\fP for all commands once set to \fBTrue\fP
+(or legal value for \fBdepth\fP option). That is to say, if you set these flags
+in global options, they will overwrite corresponding flags in command specific
+options.
+.sp
+For all options that take package names, a mini\-language for condition
+specification is provided.
+.TS
+center;
+|l|l|.
+_
+T{
+Format
+T}	T{
+Specification
+T}
+_
+T{
+\fBpackage\fP
+T}	T{
+query \fBpackage\fP
+T}
+_
+T{
+\fB!package\fP
+T}	T{
+ignore \fBpackage\fP
+T}
+_
+.TE
+.INDENT 0.0
+.TP
+.B NB
+Since exclamation mark (\fB!\fP) has special meanings in \fBbash(1)\fP
+scripts, it is highly recommended using \fB\(aq!package\(aq\fP literal to
+specify ignoring packages.
+.UNINDENT
+.sp
+When using such options, if given wrong package name, \fIMacDaily\fP
+might give a trivial \fIdid\-you\-mean\fP correction.
+.SH OPTIONS
+.SS optional arguments
+.INDENT 0.0
+.TP
+.B \-h\fP,\fB  \-\-help
+show this help message and exit
+.TP
+.B \-V\fP,\fB  \-\-version
+show program\(aqs version number and exit
+.UNINDENT
+.SS general arguments
+.INDENT 0.0
+.TP
+.B \-a\fP,\fB  \-\-all
+query all packages installed through Python and
+Homebrew
+.TP
+.B \-q\fP,\fB  \-\-quiet
+run in quiet mode, with no output information
+.TP
+.B \-v\fP,\fB  \-\-verbose
+run in verbose mode, with detailed output information
+.TP
+.B \-n\fP,\fB  \-\-no\-cleanup
+do not run cleanup process
+.TP
+.B \-l\fP,\fB  \-\-show\-log
+open log in \fIConsole.app\fP upon completion of command
+.TP
+.B \-f\fP,\fB  \-\-tree
+show dependencies as a tree [requires \fIDictDumper\fP]
+.TP
+.B \-g\fP,\fB  \-\-topological
+show dependencies in topological order
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-d \fILEVEL\fP, \-\-depth \fILEVEL\fP
+max display depth of the dependency tree
+.UNINDENT
+.SS package arguments
+.sp
+options used to specify packages of each mode
+.INDENT 0.0
+.TP
+.B \-\-pip \fIPKG\fP [\fIPKG\fP ...]
+name of Python packages to query
+.TP
+.B \-\-brew \fIFORM\fP [\fIFORM\fP ...]
+name of Homebrew formulae to query
+.UNINDENT
+.SS control arguments
+.sp
+options used to disable update of certain mode
+.INDENT 0.0
+.TP
+.B \-\-no\-pip
+do not query Python packages
+.TP
+.B \-\-no\-brew
+do not query Homebrew formulae
+.UNINDENT
+.SS mode selection
+.sp
+query dependency of packages installed through a specified method, e.g.:
+\fIpip\fP, \fIbrew\fP
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+\fBmacdaily\-dependency\-brew\fP
+.IP \(bu 2
+\fBmacdaily\-dependency\-pip\fP
+.UNINDENT
+.SH AUTHOR
+Jarry Shaw, a newbie programmer, is the author, owner and maintainer
+of MacDaily. Please contact me at jarryshaw@icloud.com.
+.SH COPYRIGHT
+MacDaily is licensed under the Apple Open Source License.
+.\" Generated by docutils manpage writer.
+.
