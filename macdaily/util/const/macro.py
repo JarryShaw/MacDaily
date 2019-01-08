@@ -13,7 +13,7 @@ else:
     import pathlib
 
 # version string
-VERSION = '2019.01.07'
+VERSION = '2019.01.08'
 
 # terminal commands
 PYTHON = sys.executable         # Python version

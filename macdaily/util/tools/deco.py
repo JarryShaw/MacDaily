@@ -4,10 +4,12 @@ import functools
 import multiprocessing
 import os
 import platform
+import signal
 import sys
 
 from macdaily.util.const.term import red, reset, yellow
 from macdaily.util.error import ChildExit, TimeExpired, UnsupportedOS
+from macdaily.util.tools.misc import kill
 from macdaily.util.tools.print import print_term
 
 try:
@@ -17,7 +19,9 @@ except ImportError:
 
 
 # error-not-raised flag
-FLAG = True
+ERR_FLAG = True
+# func-not-called flag
+FUNC_FLAG = True
 # timeout interval
 TIMEOUT = int(os.environ.get('TIMEOUT', '60'))
 
@@ -25,25 +29,37 @@ TIMEOUT = int(os.environ.get('TIMEOUT', '60'))
 def beholder(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        global FLAG
         if platform.system() != 'Darwin':
             print_term('macdaily: error: script runs only on macOS', os.devnull)
             raise UnsupportedOS
-        try:
-            return func(*args, **kwargs)
-        except KeyboardInterrupt:
-            if FLAG:
-                FLAG = False
-                print('macdaily: {}error{}: operation interrupted'.format(red, reset), file=sys.stderr)
-            sys.stdout.write(reset)
+
+        def _finale(epilogue):
+            global FUNC_FLAG
+            if FUNC_FLAG:
+                FUNC_FLAG = False
+                sys.stdout.write(reset)
+                sys.stderr.write(reset)
+                kill(os.getpid(), signal.SIGKILL)
+            return epilogue
+
+        def _funeral(last_words):
+            global ERR_FLAG
+            ERR_FLAG = False
             sys.tracebacklimit = 0
+            sys.stdout.write(reset)
+            sys.stderr.write(reset)
+            kill(os.getpid(), signal.SIGKILL)
+            print(last_words, file=sys.stderr)
+
+        try:
+            return _finale(func(*args, **kwargs))
+        except KeyboardInterrupt:
+            if ERR_FLAG:
+                _funeral('macdaily: {}error{}: operation interrupted'.format(red, reset))
             raise
         except Exception:
-            if FLAG:
-                FLAG = False
-                print('macdaily: {}error{}: operation failed'.format(red, reset), file=sys.stderr)
-            sys.stdout.write(reset)
-            sys.tracebacklimit = 0
+            if ERR_FLAG:
+                _funeral('macdaily: {}error{}: operation failed'.format(red, reset))
             raise
     return wrapper
 
