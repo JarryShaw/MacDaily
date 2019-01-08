@@ -3,6 +3,7 @@
     "cSpell.language": "en-GB",
     "cSpell.words": [
         "Dict",
+        "SIGKILL",
         "TCSAFLUSH",
         "Uninstaller",
         "Uninstalling",
@@ -14,6 +15,7 @@
         "bpwd",
         "cfgdct",
         "cfgmode",
+        "chld",
         "cjvf",
         "ctime",
         "czvf",
@@ -53,6 +55,7 @@
         "rcpath",
         "reinstallation",
         "repos",
+        "retout",
         "scpt",
         "setup",
         "shtout",
@@ -66,8 +69,7 @@
         "tmpdir",
         "topo",
         "uninstalled",
-        "vflag",
-        "retout"
+        "vflag"
     ],
     "python.linting.pep8Args": [
         "--max-line-length=120",
