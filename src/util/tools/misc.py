@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import contextlib
 import datetime
 import os
 import sys
@@ -32,9 +33,11 @@ def kill(pid, signal):
         try:
             os.kill(chld, signal)
         except OSError as error:
+            with contextlib.suppress(OSError):
+                os.kill(chld, signal.SIGTERM)
             message = ('failed to send signal to process %d '
                        'with error message: %s') % (chld, error)
-            warnings.showwarning(message, ResourceWarning, __file__, 33)
+            warnings.showwarning(message, ResourceWarning, __file__, 34)
 
 
 def record(file, args, today, config=None, redirect=False):
