@@ -50,7 +50,7 @@ setup(
     extras_require={
         ':python_version == "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
         'all': ['ptyng>=0.2.0.post4', 'dictdumper>=0.6.3', 'configupdater'],
-        'ptyng': ['ptyng>=0.2.0.post4'],
+        'ptyng': ['ptyng>=0.3.3'],
         'tree': ['dictdumper>=0.6.3'],
         'config': ['configupdater'],
     },
