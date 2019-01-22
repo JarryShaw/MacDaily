@@ -1,20 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import traceback
 
 from macdaily.cmd.uninstall import UninstallCommand
 from macdaily.core.pip import PipCommand
+from macdaily.util.compat import subprocess
 from macdaily.util.const.term import reset, under
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
 from macdaily.util.tools.script import sudo
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class PipUninstall(PipCommand, UninstallCommand):

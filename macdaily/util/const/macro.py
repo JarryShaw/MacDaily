@@ -7,13 +7,10 @@ import pwd
 import shutil
 import sys
 
-if sys.version_info[:2] <= (3, 4):
-    import pathlib2 as pathlib
-else:
-    import pathlib
+from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.01.08'
+VERSION = '2019.01.22'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
@@ -29,8 +26,13 @@ UNBUFFER = shutil.which('unbuffer')
 
 # environment macros
 ROOT = str(pathlib.Path(__file__).resolve().parents[2])
-USER = pwd.getpwnam(getpass.getuser()).pw_gecos
 SHELL = os.getenv('SHELL', shutil.which('sh'))
+
+# user information
+NAME = getpass.getuser()
+PWD = pwd.getpwnam(NAME)
+USER = PWD.pw_gecos
+PASS = PWD.pw_passwd
 
 ###########################################################
 # Command Mappings

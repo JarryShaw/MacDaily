@@ -3,22 +3,17 @@
 import contextlib
 import datetime
 import os
-import sys
 import traceback
 import warnings
 
 from ptyng import _fetch_child  # pylint: disable=E0611
 
+from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import PROGRAM, PYTHON
 from macdaily.util.const.term import bold, red, reset
 from macdaily.util.tools.make import make_pipe, make_stderr
 from macdaily.util.tools.print import (print_misc, print_scpt, print_term,
                                        print_text)
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 def date():
@@ -35,9 +30,8 @@ def kill(pid, signal):
         except OSError as error:
             with contextlib.suppress(OSError):
                 os.kill(chld, signal.SIGTERM)
-            message = ('failed to send signal to process %d '
-                       'with error message: %s') % (chld, error)
-            warnings.showwarning(message, ResourceWarning, __file__, 34)
+            message = 'failed to send signal to process {} with error message: {!r}'.format(chld, error)
+            warnings.showwarning(message, ResourceWarning, __file__, 29)
 
 
 def record(file, args, today, config=None, redirect=False):

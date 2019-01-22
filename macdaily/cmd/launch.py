@@ -8,21 +8,14 @@ import os
 import plistlib
 import pwd
 import shutil
-import sys
 
+from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import PYTHON, ROOT
 from macdaily.util.const.term import bold, red, reset, under
 from macdaily.util.tools.make import make_pipe, make_stderr
 from macdaily.util.tools.misc import run_script
 from macdaily.util.tools.print import (print_info, print_misc, print_scpt,
                                        print_term)
-
-if sys.version_info[:2] <= (3, 4):
-    import pathlib2 as pathlib
-    import subprocess32 as subprocess
-else:
-    import pathlib
-    import subprocess
 
 
 def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull, *args, **kwargs):

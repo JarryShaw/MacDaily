@@ -12,6 +12,7 @@ from macdaily.cls.dependency.brew import BrewDependency
 from macdaily.cls.dependency.pip import PipDependency
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
+from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import (bold, green, pink, purple, red, reset,
                                       under, yellow)
@@ -19,13 +20,6 @@ from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.make import make_description, make_namespace
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text
-
-if sys.version_info[:2] <= (3, 4):
-    import pathlib2 as pathlib
-    import subprocess32 as subprocess
-else:
-    import pathlib
-    import subprocess
 
 
 @beholder

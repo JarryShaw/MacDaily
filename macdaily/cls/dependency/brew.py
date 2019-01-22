@@ -9,16 +9,12 @@ import traceback
 
 from macdaily.cmd.dependency import DependencyCommand
 from macdaily.core.brew import BrewCommand
+from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, red, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import (print_info, print_scpt, print_term,
                                        print_text)
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class BrewDependency(BrewCommand, DependencyCommand):

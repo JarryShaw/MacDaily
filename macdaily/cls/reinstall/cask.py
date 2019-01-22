@@ -1,20 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import traceback
 
 from macdaily.cmd.reinstall import ReinstallCommand
 from macdaily.core.cask import CaskCommand
+from macdaily.util.compat import subprocess
 from macdaily.util.const.string import MAX, MIN
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
 from macdaily.util.tools.script import run
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class CaskReinstall(CaskCommand, ReinstallCommand):

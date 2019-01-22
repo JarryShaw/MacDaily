@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import traceback
 
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.apm import ApmCommand
+from macdaily.util.compat import subprocess
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class ApmLogging(ApmCommand, LoggingCommand):
