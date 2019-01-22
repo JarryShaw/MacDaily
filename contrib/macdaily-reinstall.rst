@@ -7,7 +7,7 @@ Automated macOS Package Reinstaller
 -----------------------------------
 
 <<<<<<< HEAD
-:Version: v2019.01.08
+:Version: v2019.01.22
 =======
 :Version: v2019.01.22
 >>>>>>> devel
