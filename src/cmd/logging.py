@@ -2,15 +2,10 @@
 
 import abc
 import os
-import sys
 
 from macdaily.cls.command import Command
+from macdaily.util.compat import pathlib
 from macdaily.util.tools.print import print_info
-
-if sys.version_info[:2] <= (3, 4):
-    import pathlib2 as pathlib
-else:
-    import pathlib
 
 
 class LoggingCommand(Command):

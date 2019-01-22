@@ -8,16 +8,12 @@ import sys
 import traceback
 import tty
 
+from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import SCRIPT, SHELL, UNBUFFER, USER
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_term, print_text
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=None,

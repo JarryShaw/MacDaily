@@ -2,12 +2,8 @@
 
 import contextlib
 import os
-import sys
 
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
+from macdaily.util.compat import subprocess
 
 
 def make_context(redirect=False, devnull=open(os.devnull, 'w')):

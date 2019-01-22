@@ -6,7 +6,7 @@ macdaily-update-npm
 Node.js Module Update Automator
 -------------------------------
 
-:Version: v2019.01.07
+:Version: v2019.01.22
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
