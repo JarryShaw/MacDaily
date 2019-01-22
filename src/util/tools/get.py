@@ -3,17 +3,13 @@
 import getpass
 import sys
 
-from macdaily.util.const.macro import USER
+from macdaily.util.compat import subprocess
+from macdaily.util.const.macro import PASS, USER
 from macdaily.util.const.term import reset
 from macdaily.util.tools.deco import retry
 
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
-
-@retry
+@retry('N')
 def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
@@ -34,7 +30,7 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
         return RETURN
 
 
-@retry
+@retry(PASS)
 def get_pass(askpass, queue=None):
     if sys.stdin.isatty():
         try:

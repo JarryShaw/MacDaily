@@ -5,16 +5,12 @@ import sys
 import traceback
 
 from macdaily.cls.command import Command
+from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, flash, red, red_bg, reset
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import (print_info, print_scpt, print_term,
                                        print_text)
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class MasCommand(Command):

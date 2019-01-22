@@ -6,7 +6,7 @@ macdaily-cleanup-pip
 Python Package Cache Cleanup
 ----------------------------
 
-:Version: v2019.01.08
+:Version: v2019.01.22
 :Date: November 23, 2018
 :Manual section: 1
 :Author:

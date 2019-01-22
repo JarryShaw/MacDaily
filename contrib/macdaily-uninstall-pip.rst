@@ -6,7 +6,11 @@ macdaily-uninstall-pip
 Automated Python Package Uninstaller
 ------------------------------------
 
+<<<<<<< HEAD
 :Version: v2019.01.08
+=======
+:Version: v2019.01.22
+>>>>>>> devel
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

@@ -4,6 +4,7 @@
     "cSpell.words": [
         "Dict",
         "SIGKILL",
+        "SIGSTOP",
         "TCSAFLUSH",
         "Uninstaller",
         "Uninstalling",
@@ -56,6 +57,7 @@
         "reinstallation",
         "repos",
         "retout",
+        "scandir",
         "scpt",
         "setup",
         "shtout",

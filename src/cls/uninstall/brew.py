@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import sys
 import traceback
 
 from macdaily.cmd.uninstall import UninstallCommand
 from macdaily.core.brew import BrewCommand
+from macdaily.util.compat import subprocess
 from macdaily.util.const.term import reset, under
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
 from macdaily.util.tools.script import run
-
-if sys.version_info[:2] <= (3, 4):
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 
 class BrewUninstall(BrewCommand, UninstallCommand):

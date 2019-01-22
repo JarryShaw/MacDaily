@@ -2,26 +2,25 @@
 
 import contextlib
 import functools
-import os
-import re
+import pathlib
 import sys
 
 
 @functools.lru_cache(maxsize=128)
 def find(root):
     with contextlib.suppress(PermissionError):
-        for file in os.listdir(root):
-            path = os.path.join(root, file)
-            if os.path.islink(path):
-                continue
-            if os.path.isdir(path):
-                if re.match('^/Volumes', path) is not None:
+        for path in root.iterdir():
+            with contextlib.suppress(OSError):
+                if path.is_symlink():
                     continue
-                if os.path.splitext(path)[1] == '.app':
-                    print(path)
-                find(path)
+                if path.is_dir():
+                    if path.parts[:2] == ('/', 'Volumes'):
+                        continue
+                    if path.suffix == '.app':
+                        print(path)
+                    find(path)
 
 
 if __name__ == '__main__':
     sys.tracebacklimit = 0
-    sys.exit(find(sys.argv[1]))
+    sys.exit(find(pathlib.Path(sys.argv[1]).resolve(strict=True)))
