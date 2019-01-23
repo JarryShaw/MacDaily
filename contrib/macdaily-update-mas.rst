@@ -6,11 +6,7 @@ macdaily-update-mas
 macOS Application Update Automator
 ----------------------------------
 
-<<<<<<< HEAD
-:Version: v2019.01.22
-=======
-:Version: v2019.01.22
->>>>>>> devel
+:Version: v2019.01.23
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

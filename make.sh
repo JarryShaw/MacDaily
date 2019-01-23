@@ -55,9 +55,9 @@ python3.6 setup.py bdist_egg bdist_wheel --plat-name="${platform}" --python-tag=
 
 # perform f2format
 f2format -n macdaily
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # make Python <3.6 distribution
@@ -76,8 +76,13 @@ pypy3 setup.py bdist_wheel --plat-name="${platform}" --python-tag='pp35'
 python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
-twine upload dist/* -r pypi --skip-existing
+twine check dist/*
+twine upload dist/* -r pypi --skip-existing && \
 twine upload dist/* -r pypitest --skip-existing
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
+fi
 
 # get version string
 version=$( cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/" )
@@ -92,9 +97,9 @@ else
     git commit -a -S -m "$1"
 fi && \
 git push
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # # archive original files
@@ -116,9 +121,9 @@ else
     git commit -a -S -m "$1"
 fi && \
 git push
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # file new release on master
@@ -128,9 +133,9 @@ go run github.com/aktau/github-release release \
     --tag "v${version}" \
     --name "MacDaily v${version}" \
     --description "$1"
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # file new release on devel
@@ -142,9 +147,9 @@ go run github.com/aktau/github-release release \
     --description "$1" \
     --target "devel" \
     --pre-release
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # update Homebrew Formulae
@@ -158,9 +163,9 @@ else
     git commit -a -S -m "$1"
 fi && \
 git push
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # update maintenance information
@@ -168,9 +173,9 @@ cd ..
 go run github.com/gaocegege/maintainer changelog && \
 go run github.com/gaocegege/maintainer contributor && \
 go run github.com/gaocegege/maintainer contributing
-ret="$?"
-if [[ $ret -ne "0" ]] ; then
-    exit $ret
+returncode="$?"
+if [[ ${returncode} -ne "0" ]] ; then
+    exit ${returncode}
 fi
 
 # aftermath
