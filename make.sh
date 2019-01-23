@@ -76,7 +76,7 @@ pypy3 setup.py bdist_wheel --plat-name="${platform}" --python-tag='pp35'
 python3 setup.py sdist
 
 # distribute to PyPI and TestPyPI
-twine check dist/*
+twine check dist/* && \
 twine upload dist/* -r pypi --skip-existing && \
 twine upload dist/* -r pypitest --skip-existing
 returncode="$?"
