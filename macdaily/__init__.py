@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import importlib
+import os
 import platform
 import sys
+
+import tbtrim
 
 from macdaily.util.const.term import red, reset
 from macdaily.util.error import UnsupportedOS
@@ -22,3 +25,6 @@ if sys.version_info[:2] <= (3, 4):
             raise
     test_import('pathlib2')
     test_import('subprocess32')
+
+# set up sys.excepthook
+tbtrim.set_trim_rule(lambda filename: '{}macdaily{}'.format(os.path.sep, os.path.sep) in filename)
