@@ -44,12 +44,14 @@ PSUTIL = subprocess.check_output(['poet', 'psutil']).decode().strip()
 PTYNG = subprocess.check_output(['poet', 'ptyng']).decode().strip()
 PATHLIB2 = subprocess.check_output(['poet', 'pathlib2']).decode().strip()
 SUBPROCESS32 = subprocess.check_output(['poet', 'subprocess32']).decode().strip()
+TBTRIM = subprocess.check_output(['poet', 'tbtrim']).decode().strip()
 # print(CONFIGUPDATER)
 # print(DICTDUMPER)
 # print(PSUTIL)
 # print(PTYNG)
 # print(PATHLIB2)
 # print(SUBPROCESS32)
+# print(TBTRIM)
 
 FORMULA = f'''\
 class Macdaily < Formula
@@ -91,9 +93,12 @@ class Macdaily < Formula
 
   {SUBPROCESS32}
 
+  {TBTRIM}
+
   def install
-    # virtualenv_install_with_resources
     venv = virtualenv_create(libexec, "python3")
+    venv.pip_install resource("tbtrim")
+
     if build.with?("config")
       venv.pip_install resource("configupdater")
     end
