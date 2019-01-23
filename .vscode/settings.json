@@ -65,6 +65,7 @@
         "stdict",
         "swch",
         "tbody",
+        "tbtrim",
         "tcgetattr",
         "tcsetattr",
         "tmpath",
