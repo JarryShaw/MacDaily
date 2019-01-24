@@ -14,6 +14,8 @@ deprecated/
 __archive__/
 daemon-*.applescript
 
+.vscode/
+
 # Created by https://www.gitignore.io/api/python,macos,visualstudiocode
 
 ### macOS ###
