@@ -139,9 +139,9 @@ git-upload:
 	git pull
 	git add .
 	if [[ -z "$(message)" ]] ; then \
-		git commit -a -S \
+		git commit -a -S ; \
 	else \
-		git commit -a -S -m "$(message)" \
+		git commit -a -S -m "$(message)" ; \
 	fi
 	git push
 
@@ -173,14 +173,14 @@ release-devel:
 		--pre-release
 
 # run distribution process
-dist1:
+distro:
 	$(MAKE) message=$(message) \
 		setup-version manpages dist-prep
 	$(MAKE) message=$(message) DIR=release \
 		clean pypi git-tag git-upload
 	$(MAKE) message=$(message) \
 		git-upload release setup-formula
-	$(MAKE) message=$(message) -C Tap \
+	$(MAKE) message=$(message) DIR=Tap \
 		git-upload
 	$(MAKE) message=$(message) \
 		update-maintainer git-aftermath
