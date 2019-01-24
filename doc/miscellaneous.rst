@@ -149,21 +149,33 @@ detailed implementations. These properties are listed below.
       </a>
     </h3>
 
-+-------------------------+------------------------------+
-|        Submodule        |          Description         |
-+=========================+==============================+
-| ``macdaily.util.const`` | collection of contant macros |
-+-------------------------+------------------------------+
-| ``macdaily.util.error`` | user refined exceptions      |
-+-------------------------+------------------------------+
-| ``macdaily.util.misc``  | utility functions            |
-+-------------------------+------------------------------+
++--------------------------+------------------------------+
+|         Submodule        |          Description         |
++==========================+==============================+
+| ``macdaily.util.compat`` | compatibility support        |
++--------------------------+------------------------------+
+| ``macdaily.util.const``  | collection of contant macros |
++--------------------------+------------------------------+
+| ``macdaily.util.error``  | user refined exceptions      |
++--------------------------+------------------------------+
+| ``macdaily.util.tools``  | utility functions            |
++--------------------------+------------------------------+
 
 Version string, terminal commands, environment macros,
 `ANSI <https://en.wikipedia.org/wiki/ANSI_escape_code>`__
 strings and etc. can be found in ``macdaily.util.const``. Further
 information please refer to `ANSI Sequences <#color>`__
 section.
+
++--------------------------------+------------------------------+
+|            Submodule           |          Description         |
++================================+==============================+
+| ``macdaily.util.const.macro``  | collection of contant macros |
++--------------------------------+------------------------------+
+| ``macdaily.util.const.string`` | ``maxstr`` & ``minstr``      |
++--------------------------------+------------------------------+
+| ``macdaily.util.const.term``   | terminal display ANSI codes  |
++--------------------------------+------------------------------+
 
 For ``macdaily.util.error``, three user refined exceptions,
 ``ModeError`` (derived from ``NameError``), ``UnsupportedOS``
@@ -172,9 +184,25 @@ For ``macdaily.util.error``, three user refined exceptions,
 ``Error``, an ``Exception`` class that silence the error
 traceback.
 
-And in ``macdaily.util.misc``, various miscellaneous utility
+And in ``macdaily.util.tools``, various miscellaneous utility
 functions are defined. Further information please refer to
 `Print Utilities <#print>`__ and |script|_ sections.
+
++--------------------------------+------------------------------+
+|           Submodule            |          Description         |
++================================+==============================+
+| ``macdaily.util.tools.deco``   | decorators                   |
++--------------------------------+------------------------------+
+| ``macdaily.util.tools.get``    | ``get`` utilities            |
++--------------------------------+------------------------------+
+| ``macdaily.util.tools.make``   | ``make`` utilities           |
++--------------------------------+------------------------------+
+| ``macdaily.util.tools.misc``   | miscellaneous util functions |
++--------------------------------+------------------------------+
+| ``macdaily.util.tools.print``  | ``print`` utilities          |
++--------------------------------+------------------------------+
+| ``macdaily.util.tools.script`` | UNIX ``script`` utilities    |
++--------------------------------+------------------------------+
 
 .. raw:: html
 
