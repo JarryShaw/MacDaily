@@ -13,7 +13,7 @@ from macdaily.util.error import Error, UnsupportedOS
 
 # set up sys.excepthook
 tbtrim.set_trim_rule(lambda filename: ROOT in os.path.realpath(filename),
-                     exception=(Error, KeyboardInterrupt), strict=True)
+                     exception=(Error, KeyboardInterrupt), strict=False)
 
 # check platform
 if platform.system() != 'Darwin':
