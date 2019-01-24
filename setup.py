@@ -22,7 +22,7 @@ with open('./README.rst', encoding='utf-8') as file:
     long_description = file.read()
 
 # version string
-__version__ = '2019.01.23'
+__version__ = '2019.01.24'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)
@@ -47,7 +47,7 @@ setup(
     python_requires='>=3.4',
     # include_package_data=True,
     # zip_safe=True,
-    install_requires=['tbtrim'],
+    install_requires=['tbtrim>=0.2.0'],
     extras_require={
         ':python_version <= "3.4"': ['pathlib2>=2.3.2', 'subprocess32>=3.5.3'],
         'all': ['ptyng>=0.3.3', 'dictdumper>=0.6.3', 'configupdater'],
