@@ -9,7 +9,6 @@ version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VE
 message  =
 
 clean: clean-pyc clean-misc clean-pypi
-manpages: clean-manpages update-manpages
 release: release-master release-devel
 pipenv: update-pipenv
 pypi: dist-pypi dist-upload
@@ -34,19 +33,11 @@ clean-pyc:
 
 # remove devel files
 clean-misc: clean-pyc
-	find $(DIR) -iname 'dev_*' | xargs rm -f
 	find $(DIR) -iname .DS_Store | xargs rm -f
-	find $(DIR) -iname typescript | xargs rm -f
-	find $(DIR) -iname 'daemon-*.applescript' | xargs rm -f
 
 # remove pipenv
 clean-pipenv:
 	pipenv --rm
-
-# remove manpages
-clean-manpages:
-	rm -rf src/man
-	mkdir -p src/man
 
 # prepare for PyPI distribution
 .ONESHELL:
@@ -63,16 +54,6 @@ update-pipenv:
 	pipenv update
 	pipenv install --dev
 	pipenv clean
-
-# update manpages
-.ONESHELL:
-update-manpages:
-	set -x
-	cd contrib
-	for file in $$( ls *.rst ); do \
-		name=$${file%.rst*}; \
-		pipenv run rst2man.py $${file} > "../src/man/$${name}.1"; \
-	done
 
 # update maintenance information
 update-maintainer:
@@ -175,7 +156,7 @@ release-devel:
 # run distribution process
 distro:
 	$(MAKE) message=$(message) \
-		setup-version manpages dist-prep
+		setup-version dist-prep
 	$(MAKE) message=$(message) DIR=release \
 		clean pypi git-tag git-upload
 	$(MAKE) message=$(message) \
