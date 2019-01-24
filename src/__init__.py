@@ -9,7 +9,11 @@ import tbtrim
 
 from macdaily.util.const.macro import ROOT
 from macdaily.util.const.term import red, reset
-from macdaily.util.error import UnsupportedOS
+from macdaily.util.error import Error, UnsupportedOS
+
+# set up sys.excepthook
+tbtrim.set_trim_rule(lambda filename: ROOT in os.path.realpath(filename),
+                     exception=(Error, KeyboardInterrupt), strict=True)
 
 # check platform
 if platform.system() != 'Darwin':
@@ -26,6 +30,3 @@ if sys.version_info[:2] <= (3, 4):
             raise
     test_import('pathlib2')
     test_import('subprocess32')
-
-# set up sys.excepthook
-tbtrim.set_trim_rule(lambda filename: ROOT in os.path.realpath(filename))
