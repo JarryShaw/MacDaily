@@ -172,15 +172,25 @@ release-devel:
 		--target "devel" \
 		--pre-release
 
-# run distribution process
-distro:
-	$(MAKE) message=$(message) \
-		setup-version manpages dist-prep
-	$(MAKE) message=$(message) DIR=release \
+# run pre-distribution process
+dist-pre: setup-version manpages
+
+# run post-distribution process
+dist-post:
+	$(MAKE) message="$(message)" DIR=release \
 		clean pypi git-tag git-upload
-	$(MAKE) message=$(message) \
+	$(MAKE) message="$(message)" \
 		git-upload release setup-formula
-	$(MAKE) message=$(message) DIR=Tap \
+	$(MAKE) message="$(message)" DIR=Tap \
 		git-upload
-	$(MAKE) message=$(message) \
+	$(MAKE) message="$(message)" \
 		update-maintainer git-aftermath
+
+# run full distribution process
+dist-all: dist-pre dist-prep dist-post
+
+# run distro process in devel
+dist-devel: dist-pre git-upload
+
+# run distro process in master
+dist-master: dist-post
