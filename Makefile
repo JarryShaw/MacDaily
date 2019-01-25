@@ -193,4 +193,4 @@ dist-all: dist-pre dist-prep dist-post
 dist-devel: dist-pre git-upload
 
 # run distro process in master
-dist-master: dist-post
+dist-master: dist-prep dist-post
