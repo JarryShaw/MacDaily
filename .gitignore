@@ -3,6 +3,7 @@ Tap
 Logs
 LaunchAgents
 Pipfile.lock
+*.icloud
 
 dev_*
 devel
