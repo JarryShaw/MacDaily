@@ -18,8 +18,50 @@ if platform.system() != 'Darwin':
     raise UnsupportedOS
 
 # README
-with open('./README.rst', encoding='utf-8') as file:
-    long_description = file.read()
+# with open('./README.rst', encoding='utf-8') as file:
+#     long_description = file.read()
+long_description = """\
+:Platform:
+    OS X Yosemite, OS X El Capitan, macOS Sierra
+    macOS High Sierra, macOS Mojave
+:Language: Python (version ≥ 3.4)
+:Environment: Console | Terminal
+
+==========================================
+MacDaily - macOS Automated Package Manager
+==========================================
+
+|download| |version| |status| |format|
+
+|python| |implementation|
+
+    Package day-care manager on macOS.
+
+**MacDaily** is an all-in-one collection of console utility written in Python
+with support of `PTY <https://en.wikipedia.org/wiki/Pseudo_terminal>`__.
+Originally works as an automated housekeeper for Mac to update all packages
+outdated, **MacDaily** is now fully functioned and end-user oriented.
+
+**MacDaily** can manage packages of various distributions of
+`Atom <https://atom.io>`__, `RubyGems <https://rubygems.org>`__,
+`Homebrew <https://brew.sh>`__, `Python <https://pypy.org>`__,
+`Node.js <https://nodejs.org>`__, and even macOS software updates (c.f.
+``softwareupdate(8)``). Without being aware of everything about your Mac, one
+can easily work around and manage packages out of no pain using **MacDaily**.
+
+.. |download| image:: http://pepy.tech/badge/macdaily
+   :target: http://pepy.tech/count/macdaily
+.. |version| image:: https://img.shields.io/pypi/v/macdaily.svg
+   :target: https://pypi.org/project/macdaily
+.. |format| image:: https://img.shields.io/pypi/format/macdaily.svg
+   :target: https://pypi.org/project/macdaily
+.. |status| image:: https://img.shields.io/pypi/status/macdaily.svg
+   :target: https://pypi.org/project/macdaily
+.. |python| image:: https://img.shields.io/pypi/pyversions/macdaily.svg
+   :target: https://python.org
+.. |implementation| image:: https://img.shields.io/pypi/implementation/macdaily.svg
+   :target: http://pypy.org
+"""
 
 # version string
 __version__ = '2019.01.25'
