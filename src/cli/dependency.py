@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import bold, reset
+from macdaily.util.const.term import bold, reset, under
 
 
 def get_dependency_parser():
@@ -37,7 +37,7 @@ def get_dependency_parser():
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
     genl_group.add_argument('-f', '--tree', action='store_true',
-                            help='show dependencies as a tree [requires DictDumper]')
+                            help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
     genl_group.add_argument('-g', '--topological', action='store_true',
                             help='show dependencies in topological order')
     genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
@@ -104,7 +104,7 @@ def get_pip_parser():
     pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
     pip_genl_group.add_argument('-f', '--tree', action='store_true',
-                                help='show dependencies as a tree [requires DictDumper]')
+                                help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
     pip_genl_group.add_argument('-g', '--topological', action='store_true',
                                 help='show dependencies in topological order')
     pip_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
@@ -154,7 +154,7 @@ def get_brew_parser():
     brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')
     brew_genl_group.add_argument('-f', '--tree', action='store_true',
-                                 help='show dependencies as a tree [requires DictDumper]')
+                                 help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
     brew_genl_group.add_argument('-g', '--topological', action='store_true',
                                  help='show dependencies in topological order')
     brew_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',

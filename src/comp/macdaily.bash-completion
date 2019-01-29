@@ -1,0 +1,601 @@
+#!/usr/bin/env bash
+
+# Indicates there are no completions
+__macdaily_comp_null() {
+  COMPREPLY=""
+}
+
+__macdaily_comp_words_include() {
+  local i=1
+  while [[ "$i" -lt "$COMP_CWORD" ]]
+  do
+    if [[ "${COMP_WORDS[i]}" = "$1" ]]
+    then
+      return
+    fi
+    (( i++ ))
+  done
+  return 1
+}
+
+# Find the previous non-switch word
+__macdaily_comp_prev_none() {
+  local idx="$((COMP_CWORD - 1))"
+  local prv="${COMP_WORDS[idx]}"
+  while [[ "$prv" = -* ]]
+  do
+    if [[ "$prv" == "--" ]]
+    then
+      break
+    fi
+    (( idx-- ))
+    prv="${COMP_WORDS[idx]}"
+  done
+  echo "$prv"
+}
+
+# Find the previous switch word
+__macdaily_comp_prev_swch() {
+  local idx="$((COMP_CWORD - 1))"
+  local prv="${COMP_WORDS[idx]}"
+  while true
+  do
+    if [[ "$prv" == "--" ]]
+    then
+      :
+    elif [[ "$prv" = -* ]]
+    then
+      break
+    fi
+    (( idx-- ))
+    prv="${COMP_WORDS[idx]}"
+  done
+  echo "$prv"
+}
+
+__macdaily_comp() {
+  # break $1 on space, tab, and newline characters,
+  # and turn it into a newline separated list of words
+  local list s sep=$'\n' IFS=$' \t\n'
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  for s in $1
+  do
+    __macdaily_comp_words_include "$s" && continue
+    list="$list$s$sep"
+  done
+
+  IFS="$sep"
+  COMPREPLY=($(compgen -W "$list" -- "$cur"))
+}
+
+__macdaily_python_versions() {
+  local python_executable python_versions=""
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/python 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    python_versions="$($(brew --prefix 2>/dev/null)/Cellar/python/${python_executable}/bin/python3.? --version 2>/dev/null | grep ^Python | cut -c 8-10) ${python_versions}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/python@2 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    python_versions="$($(brew --prefix 2>/dev/null)/Cellar/python@2/${python_executable}/bin/python2.? --version 2>&1 | grep ^Python | cut -c 8-10) ${python_versions}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/pypy3 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    python_versions="$($(brew --prefix 2>/dev/null)/Cellar/pypy3/${python_executable}/bin/pypy3 --version 2>/dev/null | grep ^Python | cut -c 8-10) ${python_versions}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/pypy 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    python_versions="$($(brew --prefix 2>/dev/null)/Cellar/pypy/${python_executable}/bin/pypy --version 2>&1 | grep ^Python | cut -c 8-10) ${python_versions}"
+  fi
+
+  python_versions="$(ls /Library/Frameworks/Python.framework/Versions 2>/dev/null | grep [0-9]\.[0-9] | xargs) ${python_versions}"
+  echo ${python_versions} | sort | uniq
+}
+
+__macdaily_brew_installed() {
+  brew list -1 2>/dev/null | xargs
+}
+
+__macdaily_pip_installed() {
+  local pip_installed="" python_executable
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/python 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    pip_installed="$($(brew --prefix 2>/dev/null)/Cellar/python/${python_executable}/bin/python3.? -m pip freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/") ${pip_installed}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/python@2 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    pip_installed="$($(brew --prefix 2>/dev/null)/Cellar/python@2/${python_executable}/bin/python2.? -m pip freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/") ${pip_installed}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/pypy3 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    pip_installed="$($(brew --prefix 2>/dev/null)/Cellar/pypy3/${python_executable}/bin/pypy3 -m pip freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/") ${pip_installed}"
+  fi
+
+  python_executable="$(ls $(brew --prefix 2>/dev/null)/Cellar/pypy 2>/dev/null | sort | tail -1)"
+  if [[ ! -z "${python_executable}" ]]
+  then
+    pip_installed="$($(brew --prefix 2>/dev/null)/Cellar/pypy/${python_executable}/bin/pypy -m pip freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/") ${pip_installed}"
+  fi
+
+  for python_executable in /Library/Frameworks/Python.framework/Versions/?.?/bin/python?.?
+  do
+    pip_installed="$(python_executable -m pip freeze 2>/dev/null | sed "s/\(.*\)*==.*/\1/") ${pip_installed}"
+  done
+  echo ${pip_installed} | sort | uniq
+}
+
+__macdaily_dependency_pip() {
+  local cur prev opts cmds keys
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --all --quiet --verbose --no-cleanup --tree --topological --brew --cpython --pypy --system"
+  keys="--python --packages --depth"
+
+  if [[ ${prev} =~ "--help|--version" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --python ]]
+  then
+    local vals="$(__macdaily_python_versions)"
+    __macdaily_comp "${vals}"
+  elif [[ ${prev} == --depth ]]
+  then
+    __macdaily_comp_null
+  elif [[ ${prev} == --packages ]]
+  then
+    local vals="$(__macdaily_pip_installed)"
+    __macdaily_comp "${vals}"
+  fi
+
+  if [[ ${cur} =~ !* ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    if [[ ${cmd} == --packages ]]
+    then
+      local val comp_vals="" vals="$(__macdaily_pip_installed)"
+      for val in ${vals}
+      do
+        comp_vals="!${val} ${comp_vals}"
+      done
+      __macdaily_comp "${comp_vals}"
+    fi
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts} ${keys}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    if [[ ${cmd} == --packages ]]
+    then
+      local vals="$(__macdaily_pip_installed)"
+      __macdaily_comp "${vals}"
+      return
+    else
+      __macdaily_comp "${opts} ${keys}"
+      return
+    fi
+  fi
+}
+
+__macdaily_dependency_brew() {
+  local cur prev opts cmds keys
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --all --quiet --verbose --no-cleanup --tree --topological --include-build --include-optional --include-test --skip-recommended --include-requirements"
+  keys="--packages --depth"
+
+  if [[ ${prev} =~ "--help|--version" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --depth ]]
+  then
+    __macdaily_comp_null
+  elif [[ ${prev} == --packages ]]
+  then
+    local vals="$(__macdaily_brew_installed)"
+    __macdaily_comp "${vals}"
+  fi
+
+  if [[ ${cur} =~ !* ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    if [[ ${cmd} == --packages ]]
+    then
+      local val comp_vals="" vals="$(__macdaily_brew_installed)"
+      for val in ${vals}
+      do
+        comp_vals="!${val} ${comp_vals}"
+      done
+      __macdaily_comp "${comp_vals}"
+    fi
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts} ${keys}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    if [[ ${cmd} == --packages ]]
+    then
+      local vals="$(__macdaily_brew_installed)"
+      __macdaily_comp "${vals}"
+      return
+    else
+      __macdaily_comp "${opts} ${keys}"
+      return
+    fi
+  fi
+}
+
+_macdaily_dependency() {
+  local cur prev opts cmds keys
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --all --quiet --verbose --no-cleanup --show-log --tree --topological --no-pip --no-brew"
+  keys="--depth --pip --brew"
+  cmds="--all brew pip"
+
+  local prv="$(__macdaily_comp_prev_none)"
+  case ${prv} do
+    brew)
+      __macdaily_dependency_brew
+      return
+      ;;
+    pip)
+      __macdaily_dependency_pip
+      return
+      ;;
+    --)
+      __macdaily_comp "${cmds}"
+      return
+  esac
+
+  if [[ ${prev} =~ "--help|--version" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --all ]]
+  then
+    __macdaily_comp "${opts} ${keys}"
+    return
+  elif [[ ${prev} == --depth ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --pip ]]
+  then
+    local vals="$(__macdaily_pip_installed)"
+    __macdaily_comp "${vals}"
+    return
+  elif [[ ${prev} == --brew ]]
+  then
+    local vals="$(__macdaily_brew_installed)"
+    __macdaily_comp "${vals}"
+    return
+  fi
+
+  if [[ ${cur} =~ !* ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    case ${cmd} do
+      --pip)
+        local val comp_vals="" vals="$(__macdaily_pip_installed)"
+        for val in ${vals}
+        do
+          comp_vals="!${val} ${comp_vals}"
+        done
+        __macdaily_comp "${comp_vals}"
+        return
+        ;;
+      --brew)
+        local val comp_vals="" vals="$(__macdaily_brew_installed)"
+        for val in ${vals}
+        do
+          comp_vals="!${val} ${comp_vals}"
+        done
+        __macdaily_comp "${comp_vals}"
+        return
+        ;;
+    esac
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts} ${keys}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    local cmd="$(__macdaily_comp_prev_swch)"
+    case ${cmd} do
+      --pip)
+        local vals="$(__macdaily_pip_installed)"
+        __macdaily_comp "${vals}"
+        return
+        ;;
+      --brew)
+        local vals="$(__macdaily_brew_installed)"
+        __macdaily_comp "${vals}"
+        return
+        ;;
+      *)
+        __macdaily_comp "${cmds}"
+        return
+        ;;
+    esac
+  fi
+}
+
+_macdaily_config() {
+  local cur prev opts keys keys_regex
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --add --get --unset --interactive --list --quiet --verbose --true --false"
+  keys=$'\n'"$(macdaily config --list | sed 's/\(.*\)*=.*/\1/' | sed -e '$ d')"
+  keys_regex="$(echo ${keys} | tr ' ' '|')"
+
+  local prv="$(__macdaily_comp_prev_none)"
+  if [[ ${prv} =~ ${keys_regex} ]]
+  then
+    __macdaily_comp "${opts} $(macdaily config --get ${prv})"
+    return
+  fi
+
+  if [[ ${prev} =~ "--help|--version|--interactive|--list" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} =~ "--get|--unset|--true|--false" ]]
+  then
+    __macdaily_comp "${keys}"
+    return
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "${opts} ${keys}"
+    return
+  fi
+}
+
+__macdaily_cleanup_pip() {
+  local cur prev opts vals
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --quiet --verbose --brew --cpython --pypy --system --python"
+  vals="$(__macdaily_python_versions)"
+
+  if [[ ${cur} == "--python" ]]
+  then
+    __macdaily_comp "${vals}"
+    return
+  elif [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "-- ${opts}"
+    return
+  fi
+}
+
+__macdaily_cleanup_npm() {
+  local cur opts
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--help --version --quiet --verbose"
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "-- ${opts}"
+    return
+  fi
+}
+
+__macdaily_cleanup_cask() {
+  local cur opts
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--help --version --quiet --verbose"
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "-- ${opts}"
+    return
+  fi
+}
+
+__macdaily_cleanup_brew() {
+  local cur opts
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--help --version --quiet --verbose"
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "-- ${opts}"
+    return
+  fi
+}
+
+_macdaily_cleanup() {
+  local cmd cur prev opts cmds
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --all --quiet --verbose --show-log --no-npm --no-pip --no-brew --no-cask"
+  cmds="--all npm pip brew cask"
+
+  local prv="$(__macdaily_comp_prev_none)"
+  case ${prv} do
+    brew)
+      __macdaily_cleanup_brew
+      return
+      ;;
+    cask)
+      __macdaily_cleanup_cask
+      return
+      ;;
+    npm)
+      __macdaily_cleanup_npm
+      return
+      ;;
+    pip)
+      __macdaily_cleanup_pip
+      return
+      ;;
+    --)
+      __macdaily_comp "${cmds}"
+      return
+  esac
+
+  if [[ ${prev} =~ "--help|--version" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --all ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+   __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "${cmds}"
+    return
+  fi
+}
+
+_macdaily_bundle() {
+  __macdaily_comp_null
+}
+
+_macdaily_archive() {
+  local cur prev opts cmds
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  opts="--help --version --all --no-storage --quiet --verbose --show-log"
+  cmds="--all archive cleanup dependency logging postinstall reinstall uninstall update logging/apm logging/app logging/brew logging/cask logging/gem logging/mas logging/npm logging/pip logging/tap"
+
+  if [[ ${prev} =~ "--help|--version" ]]
+  then
+    __macdaily_comp_null
+    return
+  elif [[ ${prev} == --all ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  fi
+
+  if [[ ${cur} =~ -* ]]
+  then
+    __macdaily_comp "${opts}"
+    return
+  elif [[ ${cur} == * ]]
+  then
+    __macdaily_comp "${cmds}"
+    return
+  fi
+}
+
+_macdaily() {
+  local i=1 cmd
+
+  # find the subcommand
+  while [[ "$i" -lt "$COMP_CWORD" ]]
+  do
+    local s="${COMP_WORDS[i]}"
+    case "$s" in
+      -*)
+        ;;
+      *)
+        cmd="$s"
+        break
+        ;;
+    esac
+    (( i++ ))
+  done
+
+  if [[ "$i" -eq "$COMP_CWORD" ]]
+  then
+    # Prefix newline to prevent not checking the first command.
+    local cmds=$'\n'"$(macdaily commands | tail +2 | sed -e '$ d' | awk '{print $1}')"
+    __macdaily_comp "$cmds"
+    return
+  fi
+
+  # subcommands have their own completion functions
+  case "$cmd" in
+    archive)                          __macdaily_archive ;;
+    bundle)                           __macdaily_bundle ;;
+    cleanup|clean)                    __macdaily_cleanup ;;
+    config|cfg)                       __macdaily_config ;;
+    dependency|deps|dp)               __macdaily_dependency ;;
+    help|doc|man)                     __macdaily_help ;;
+    install|i)                        __macdaily_install ;;
+    launch|init)                      __macdaily_launch ;;
+    logging|log)                      __macdaily_logging ;;
+    postinstall|post|ps)              __macdaily_postinstall ;;
+    reinstall|re)                     __macdaily_reinstall ;;
+    uninstall|un|remove|rm|unlink|r)  __macdaily_uninstall ;;
+    update|up|upgrade)                __macdaily_update ;;
+    *)                                ;;
+  esac
+}
+
+# keep around for compatibility
+_macdaily_to_completion() {
+  _macdaily
+}
+
+complete -o bashdefault -o default -F _macdaily             macdaily
+complete -o bashdefault -o default -F _macdaily_archive     md-archive
+complete -o bashdefault -o default -F _macdaily_bundle      md-bundle
+complete -o bashdefault -o default -F _macdaily_cleanup     md-cleanup
+complete -o bashdefault -o default -F _macdaily_config      md-config
+complete -o bashdefault -o default -F _macdaily_dependency  md-dependency
+complete -o bashdefault -o default -F _macdaily_help        md-help
+complete -o bashdefault -o default -F _macdaily_install     md-install
+complete -o bashdefault -o default -F _macdaily_launch      md-launch
+complete -o bashdefault -o default -F _macdaily_logging     md-logging
+complete -o bashdefault -o default -F _macdaily_postinstall md-postinstall
+complete -o bashdefault -o default -F _macdaily_reinstall   md-reinstall
+complete -o bashdefault -o default -F _macdaily_uninstall   md-uninstall
+complete -o bashdefault -o default -F _macdaily_update      md-update
