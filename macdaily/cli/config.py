@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import bold, reset
+from macdaily.util.const.term import bold, reset, under
 
 
 def get_config_parser():
@@ -21,18 +21,18 @@ def get_config_parser():
     parser = argparse.ArgumentParser(prog='macdaily-config',
                                      description='MacDaily Runtime Configuration Helper',
                                      usage='macdaily config [options] <key> <value> ...',
-                                     epilog='aliases: init')
+                                     epilog='aliases: cfg')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('-a', '--add', action='store_true',
                             help=('adds a new line to the option without altering any '
-                                  'existing values [requires ConfigUpdater]'))
+                                  'existing values [requires {}ConfigUpdater{}]'.format(under, reset)))
     spec_group.add_argument('-g', '--get', action='store_true',
                             help='get the value for a given key')
     spec_group.add_argument('-u', '--unset', action='store_true',
                             help=('remove the line matching the key from config file '
-                                  '[requires ConfigUpdater]'))
+                                  '[requires {}ConfigUpdater{}]'.format(under, reset)))
     spec_group.add_argument('-i', '--interactive', action='store_true',
                             help='enter interactive configuration mode')
     spec_group.add_argument('-l', '--list', action='store_true',

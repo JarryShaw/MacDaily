@@ -38,7 +38,7 @@ def config(argv=None):
     # parse config & change environ
     config = parse_config(quiet, verbose)
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
-    os.environ['TIMEOUT'] = config['Miscellaneous']['retry']
+    os.environ['TIMEOUT'] = str(config['Miscellaneous']['retry'])
 
     # list existing config
     if args.list:

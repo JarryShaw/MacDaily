@@ -41,12 +41,12 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             file.write('command: {!r}\n'.format(args))
 
         try:
-            proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
+            proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
             self._var__temp_pkgs = set()
         else:
-            context = proc.decode()
+            context = proc.stdout.decode()
             print_text(context, self._file, redirect=self._vflag)
 
             _temp_pkgs = list()
