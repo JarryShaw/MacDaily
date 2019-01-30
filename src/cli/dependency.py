@@ -51,7 +51,7 @@ def get_dependency_parser():
                             help='name of Homebrew formulae to query')
 
     ctrl_group = parser.add_argument_group(title='control arguments',
-                                           description='options used to disable update of certain mode')
+                                           description='options used to disable query of certain mode')
     ctrl_group.add_argument('--no-pip', action='store_true', help='do not query Python packages')
     ctrl_group.add_argument('--no-brew', action='store_true', help='do not query Homebrew formulae')
 

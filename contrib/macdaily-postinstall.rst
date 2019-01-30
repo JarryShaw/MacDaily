@@ -6,7 +6,7 @@ macdaily-postinstall
 Homebrew Cask Postinstall Automator
 -----------------------------------
 
-:Version: v2019.01.25
+:Version: v2019.01.30
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
