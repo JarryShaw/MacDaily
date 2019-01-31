@@ -22,6 +22,9 @@ try:
 except ImportError:
     multiprocessing = threading
 
+    # make alias for multiprocessing.Process
+    setattr(multiprocessing, 'Process', threading.Thread)
+
     # make alias for multiprocessing.Queue
     import queue
-    setattr(threading, 'Queue', queue.Queue)
+    setattr(multiprocessing, 'Queue', queue.Queue)
