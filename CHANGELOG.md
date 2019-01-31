@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2019.01.31](https://github.com/JarryShaw/MacDaily/tree/v2019.01.31) (2019-01-31)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.31.devel...v2019.01.31)
+
+**Merged pull requests:**
+
+- New distribution \[2019.01.31\] [\#32](https://github.com/JarryShaw/MacDaily/pull/32) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2019.01.31.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.31.devel) (2019-01-31)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.30...v2019.01.31.devel)
+
 ## [v2019.01.30](https://github.com/JarryShaw/MacDaily/tree/v2019.01.30) (2019-01-30)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.30.devel...v2019.01.30)
 
@@ -123,17 +133,17 @@
 - Update devel branch based on master \[2018.12.15\] [\#14](https://github.com/JarryShaw/MacDaily/pull/14) ([JarryShaw](https://github.com/JarryShaw))
 
 ## [v2018.12.15](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15)
 
 **Merged pull requests:**
 
 - Merge devel branch on v2018.12.15 [\#13](https://github.com/JarryShaw/MacDaily/pull/13) ([JarryShaw](https://github.com/JarryShaw))
 
-## [v2018.12.15.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.devel) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15.devel)
-
 ## [v2018.12.15.dev](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.dev) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.dev)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15.dev)
+
+## [v2018.12.15.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.devel) (2018-12-15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.devel)
 
 **Merged pull requests:**
 
