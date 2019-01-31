@@ -58,36 +58,13 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
 
     with open(askpass, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', '+x', askpass], quiet, verbose,
-               sudo=True, password=password, logfile=logfile)
     if user != owner:
+        run_script(['chmod', '+x', askpass], quiet, verbose,
+                   sudo=True, password=password, logfile=logfile)
         run_script(['chown', owner, askpass], quiet, verbose,
                    sudo=True, password=password, logfile=logfile)
-
-    PLIST = collections.OrderedDict(
-        Label='com.macdaily.askpass',
-        ProgramArguments=['/usr/bin/ssh-agent', '-l'],
-        EnvironmentVariables=collections.OrderedDict(
-            SSH_ASKPASS=askpass,
-            DISPLAY=0,
-        ),
-        Sockets=collections.OrderedDict(
-            Listeners=collections.OrderedDict(
-                SecureSocketWithKey='SSH_AUTH_SOCK'
-            )
-        ),
-        EnableTransactions=True,
-    )
-    plist = os.path.expanduser('~/Library/LaunchAgents/com.macdaily.askpass.plist')
-    text = f'Adding Launch Agent {plist!r}'
-    print_misc(text, logfile, verbose)
-    if os.path.exists(plist):
-        run_script(['launchctl', 'unload', '-w', plist], quiet, verbose, logfile=logfile)
-    with open(plist, 'wb') as file:
-        plistlib.dump(PLIST, file, sort_keys=False)
-    run_script(['launchctl', 'load', '-w', plist], quiet, verbose, logfile=logfile)
-    with contextlib.suppress(subprocess.CalledProcessError):
-        run_script(['ssh-add', '-c'], quiet, verbose, logfile=logfile)
+    else:
+        run_script(['chmod', '+x', askpass], quiet, verbose, logfile=logfile)
 
     return askpass
 
@@ -130,11 +107,13 @@ def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull
 
     with open(confirm, 'w') as file:
         file.write(os.linesep.join(ASKPASS))
-    run_script(['chmod', '+x', confirm], quiet, verbose,
-               sudo=True, password=password, logfile=logfile)
     if user != owner:
+        run_script(['chmod', '+x', confirm], quiet, verbose,
+                   sudo=True, password=password, logfile=logfile)
         run_script(['chown', owner, confirm], quiet, verbose,
                    sudo=True, password=password, logfile=logfile)
+    else:
+        run_script(['chmod', '+x', confirm], quiet, verbose, logfile=logfile)
 
     return confirm
 

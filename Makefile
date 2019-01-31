@@ -181,7 +181,7 @@ dist-post:
 		clean pypi git-tag git-upload
 	$(MAKE) message="$(message)" \
 		git-upload release setup-formula
-	$(MAKE) message="$(message)" DIR=Tap \
+	$(MAKE) message="macdaily: $(version)" DIR=Tap \
 		git-upload
 	$(MAKE) message="$(message)" \
 		update-maintainer git-aftermath

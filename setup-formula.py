@@ -135,13 +135,10 @@ class Macdaily < Formula
     end
   end
 
-  # def post_install
-  #   text = <<~EOS
-  #     To run postinstall process, please directly call
-  #       `macdaily launch askpass confirm`
-  #   EOS
-  #   puts text
-  # end
+  def post_install
+    ENV["MACDAILY_LOGDIR"] = "/private/tmp/macdaily"
+    system bin/"macdaily", "launch", "askpass", "confirm", "--no-cleanup", "--quiet"
+  end
 
   def caveats
     text = <<~EOS
@@ -158,9 +155,6 @@ class Macdaily < Formula
 
       For more information, check out `macdaily help` command. Online
       documentations available at GitHub repository.
-
-      To run postinstall process, please directly call
-        `macdaily launch askpass confirm`
 
       See: https://github.com/JarryShaw/MacDaily#generals
     EOS

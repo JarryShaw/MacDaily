@@ -4,7 +4,9 @@ import collections
 import configparser
 import contextlib
 import datetime
+import getpass
 import os
+import pwd
 import re
 import shlex
 import sys
@@ -116,7 +118,8 @@ def parse_config(quiet=False, verbose=False):
 
     # Path section
     for name, path in config['Path'].items():
-        cfg_dict['Path'][name] = os.path.realpath(os.path.expanduser(path))
+        cfg_dict['Path'][name] = os.environ.get(f'MACDAILY_{name.upper()}',
+                                                os.path.realpath(os.path.expanduser(path)))
 
     # Mode section
     for mode in config['Mode'].keys():
@@ -146,15 +149,25 @@ def parse_config(quiet=False, verbose=False):
         cfg_dict['Command'][mode] = shlex.split(argv)
 
     # Miscellaneous section
-    askpass = os.path.realpath(config['Miscellaneous']['askpass'])
+    # askpass = os.path.realpath(config['Miscellaneous']['askpass'])
+    askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
     if not os.access(askpass, os.X_OK):
-        askpass = os.path.join(ROOT, 'res', 'askpass.applescript')
-        run_script(['sudo', 'chmod', '+x', askpass], quiet, verbose)
+        user = getpass.getuser()
+        owner = pwd.getpwuid(os.stat(askpass).st_uid).pw_name
+        if user == owner:
+            run_script(['chmod', '+x', askpass], quiet, verbose)
+        else:
+            run_script(['sudo', 'chmod', '+x', askpass], quiet, verbose)
 
-    confirm = os.path.realpath(config['Miscellaneous']['confirm'])
+    # confirm = os.path.realpath(config['Miscellaneous']['confirm'])
+    confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
     if not os.access(confirm, os.X_OK):
-        confirm = os.path.join(ROOT, 'res', 'confirm.applescript')
-        run_script(['sudo', 'chmod', '+x', confirm], quiet, verbose)
+        user = getpass.getuser()
+        owner = pwd.getpwuid(os.stat(confirm).st_uid).pw_name
+        if user == owner:
+            run_script(['chmod', '+x', confirm], quiet, verbose)
+        else:
+            run_script(['sudo', 'chmod', '+x', confirm], quiet, verbose)
 
     limit = config['Miscellaneous'].getint('limit', 1000)
     retry = config['Miscellaneous'].getint('retry', 60)
