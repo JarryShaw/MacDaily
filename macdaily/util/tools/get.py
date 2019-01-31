@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import getpass
+import os
 import sys
 
 from macdaily.util.compat import subprocess
@@ -32,6 +33,11 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
 
 @retry(PASS)
 def get_pass(askpass, queue=None):
+    SUDO_PASSWORD = os.environ.get('SUDO_PASSWORD')
+    if SUDO_PASSWORD is not None:
+        if queue is not None:
+            queue.put(SUDO_PASSWORD)
+        return SUDO_PASSWORD
     if sys.stdin.isatty():
         try:
             return getpass.getpass(prompt='Password:')
