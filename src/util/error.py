@@ -6,7 +6,7 @@ import sys
 
 class Error(Exception):
     def __init__(self, *args, **kwargs):
-        sys.tracebacklimit = 0
+        # sys.tracebacklimit = 0
         super().__init__(*args, **kwargs)
 
 

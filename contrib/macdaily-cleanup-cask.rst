@@ -6,7 +6,7 @@ macdaily-cleanup-cask
 Homebrew Cask Cache Cleanup
 ---------------------------
 
-:Version: v2019.01.31
+:Version: v2019.02.01
 :Date: November 23, 2018
 :Manual section: 1
 :Author:

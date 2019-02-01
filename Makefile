@@ -130,7 +130,12 @@ dist-prep:
 .ONESHELL:
 git-tag:
 	cd $(DIR)
-	git tag "v$(version)"
+	if [[ -z "$(message)" ]] ; then \
+		git tag --sign "v$(version)" ; \
+	else \
+		git tag --sign "v$(version)" --message "$(message)" ; \
+	fi
+	git push --tag
 
 # upload to GitHub
 .ONESHELL:
@@ -139,9 +144,9 @@ git-upload:
 	git pull
 	git add .
 	if [[ -z "$(message)" ]] ; then \
-		git commit -a -S ; \
+		git commit --all --gpg-sign ; \
 	else \
-		git commit -a -S -m "$(message)" ; \
+		git commit --all --gpg-sign --message "$(message)" ; \
 	fi
 	git push
 
@@ -149,7 +154,7 @@ git-upload:
 git-aftermath:
 	git pull
 	git add .
-	git commit -a -S -m "Regular update after distribution"
+	git commit --all --gpg-sign --message "Regular update after distribution"
 	git push
 
 # file new release on master

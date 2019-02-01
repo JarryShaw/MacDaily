@@ -6,7 +6,7 @@ macdaily-dependency-pip
 Python Package Dependency Query
 -------------------------------
 
-:Version: v2019.01.31
+:Version: v2019.02.01
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
