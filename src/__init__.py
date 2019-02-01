@@ -7,13 +7,13 @@ import sys
 
 import tbtrim
 
-from macdaily.util.const.macro import ROOT
 from macdaily.util.const.term import red, reset
+from macdaily.util.tools.misc import predicate
 from macdaily.util.error import Error, UnsupportedOS
 
 # set up sys.excepthook
-tbtrim.set_trim_rule(lambda filename: ROOT in os.path.realpath(filename),
-                     exception=(Error, KeyboardInterrupt), strict=False)
+tbtrim.set_trim_rule(predicate, strict=False,
+                     target=(Error, KeyboardInterrupt))
 
 # check platform
 if platform.system() != 'Darwin':
