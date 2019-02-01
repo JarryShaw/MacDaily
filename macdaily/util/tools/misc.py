@@ -9,7 +9,7 @@ import warnings
 from ptyng import _fetch_child  # pylint: disable=E0611
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import PROGRAM, PYTHON
+from macdaily.util.const.macro import PROGRAM, PYTHON, ROOT
 from macdaily.util.const.term import bold, red, reset
 from macdaily.util.tools.make import make_pipe, make_stderr
 from macdaily.util.tools.print import (print_misc, print_scpt, print_term,
@@ -32,6 +32,12 @@ def kill(pid, signal):
                 os.kill(chld, signal.SIGTERM)
             message = 'failed to send signal to process {} with error message: {!r}'.format(chld, error)
             warnings.showwarning(message, ResourceWarning, __file__, 29)
+
+
+def predicate(filename):
+    if os.path.basename(filename) == 'macdaily':
+        return True
+    return (ROOT in os.path.realpath(filename))
 
 
 def record(file, args, today, config=None, redirect=False):
@@ -91,5 +97,5 @@ def run_script(argv, quiet=False, verbose=False, sudo=False,
         context = proc.decode()
         print_text(context, logfile, redirect=verbose)
     finally:
-            with open(logfile, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+        with open(logfile, 'a') as file:
+            file.write('Script done on {}\n'.format(date()))

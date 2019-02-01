@@ -40,7 +40,7 @@ def beholder(func):
         def _funeral(last_words):
             global ERR_FLAG
             ERR_FLAG = False
-            sys.tracebacklimit = 0
+            # sys.tracebacklimit = 0
             sys.stdout.write(reset)
             sys.stderr.write(reset)
             kill(os.getpid(), signal.SIGKILL)

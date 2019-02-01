@@ -157,6 +157,11 @@ class Command(metaclass=abc.ABCMeta):
                 text = ('macdaily-{}: {}{}{}: '
                         'no {}{}{} to {}'.format(self.cmd, yellow, self.mode, reset, bold, self.desc[1], reset, self.act[0]))
                 print_term(text, filename, redirect=self._qflag)
+        else:
+            self._pkgs = list()
+            self._fail = list()
+            self._lost = list()
+            self._ilst = list()
 
         # remove temp vars
         [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]
