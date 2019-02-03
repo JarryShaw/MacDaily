@@ -6,7 +6,7 @@ macdaily-archive
 MacDaily Log Archive Utility
 ----------------------------
 
-:Version: v2019.02.01
+:Version: v2019.02.03
 :Date: November 23, 2018
 :Manual section: 1
 :Author:

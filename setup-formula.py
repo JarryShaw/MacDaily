@@ -124,6 +124,13 @@ class Macdaily < Formula
     end
     venv.pip_install_and_link buildpath
 
+    comp_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/comp/macdaily.bash-completion")[0]
+    comp_base = File.dirname comp_path[0]
+    bash_comp = File.join(comp_base, "macdaily")
+
+    cp comp_path, bash_comp
+    bash_completion.install bash_comp
+
     man_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/man/*.1")
     dir_name = File.dirname man_path[0]
     dest = File.join(dir_name, "temp.1")
