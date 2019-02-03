@@ -135,7 +135,6 @@ git-tag:
 	else \
 		git tag --sign "v$(version)" --message "$(message)" ; \
 	fi
-	git push --tag
 
 # upload to GitHub
 .ONESHELL:
