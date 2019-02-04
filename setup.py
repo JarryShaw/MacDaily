@@ -64,7 +64,7 @@ can easily work around and manage packages out of no pain using **MacDaily**.
 """
 
 # version string
-__version__ = '2019.02.03'
+__version__ = '2019.02.04'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)
