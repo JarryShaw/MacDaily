@@ -124,8 +124,8 @@ class Macdaily < Formula
     end
     venv.pip_install_and_link buildpath
 
-    comp_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/comp/macdaily.bash-completion")[0]
-    comp_base = File.dirname comp_path[0]
+    comp_path = Pathname.new(libexec/"lib/python?.?/site-packages/macdaily/comp/macdaily.bash-completion")
+    comp_base = File.dirname comp_path
     bash_comp = File.join(comp_base, "macdaily")
 
     cp comp_path, bash_comp
@@ -143,8 +143,18 @@ class Macdaily < Formula
   end
 
   def post_install
-    ENV["MACDAILY_LOGDIR"] = "/private/tmp/macdaily"
-    system bin/"macdaily", "launch", "askpass", "confirm", "--no-cleanup", "--quiet"
+    f = File.new("/private/tmp/macdaily/launch.py", "w")
+    f.write <<~EOS
+      # -*- coding: utf-8 -*-
+
+      from macdaily.cmd.launch import launch_askpass, launch_confirm
+
+      launch_askpass(quiet=True, verbose=True)
+      launch_confirm(quiet=True, verbose=True)
+    EOS
+    f.close
+
+    system libexec/"bin/python", "/private/tmp/macdaily/launch.py"
   end
 
   def caveats
