@@ -6,7 +6,7 @@ macdaily-uninstall
 Automated macOS Package Uninstaller
 -----------------------------------
 
-:Version: v2019.02.03
+:Version: v2019.02.04
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
