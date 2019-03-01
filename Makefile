@@ -54,6 +54,7 @@ clean-manpages:
 # prepare for PyPI distribution
 .ONESHELL:
 clean-pypi:
+	set -ex
 	cd $(DIR)
 	mkdir -p sdist eggs wheels
 	find dist -iname '*.egg' -exec mv {} eggs \;
@@ -70,7 +71,7 @@ update-pipenv:
 # update manpages
 .ONESHELL:
 update-manpages:
-	set -x
+	set -ex
 	cd contrib
 	for file in $$( ls *.rst ); do \
 		name=$${file%.rst*}; \
@@ -89,6 +90,7 @@ dist-pypi: clean-pypi dist-pypi-new dist-pypi-old
 # make Python >=3.6 distribution
 .ONESHELL:
 dist-pypi-new:
+	set -ex
 	cd $(DIR)
 	python3.7 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp37'
 	python3.6 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp36'
@@ -100,6 +102,7 @@ dist-f2format:
 # make Python <3.6 distribution
 .ONESHELL:
 dist-pypi-old: dist-f2format
+	set -ex
 	cd $(DIR)
 	python3.5 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp35'
 	python3.4 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp34'
@@ -109,6 +112,7 @@ dist-pypi-old: dist-f2format
 # upload PyPI distribution
 .ONESHELL:
 dist-upload:
+	set -ex
 	cd $(DIR)
 	twine check dist/*
 	twine upload dist/* -r pypi --skip-existing
@@ -132,6 +136,7 @@ dist-prep:
 # add tag
 .ONESHELL:
 git-tag:
+	set -ex
 	cd $(DIR)
 	if [[ -z "$(message)" ]] ; then \
 		git tag --sign "v$(version)" ; \
@@ -142,6 +147,7 @@ git-tag:
 # upload to GitHub
 .ONESHELL:
 git-upload:
+	set -ex
 	cd $(DIR)
 	git pull
 	git add .
