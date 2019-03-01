@@ -1,3 +1,5 @@
+.PHONY: clean dist manpages release pipenv pypi setup
+
 SHELL := /usr/local/bin/bash
 DIR   ?= .
 
@@ -9,6 +11,7 @@ version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VE
 message  =
 
 clean: clean-pyc clean-misc clean-pypi
+dist: dist-all
 manpages: clean-manpages update-manpages
 release: release-master release-devel
 pipenv: update-pipenv

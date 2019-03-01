@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 configupdater = "*"
-dictdumper = ">=0.6.3"
-ptyng = ">=0.2.0.post4"
-tbtrim = "*"
+dictdumper = ">=0.7.0.post1"
+ptyng = ">=0.3.3"
+tbtrim = ">=0.2.1"
 
 [dev-packages]
 macdaily = {path = ".",editable = true}
