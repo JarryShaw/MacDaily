@@ -6,7 +6,7 @@ macdaily-reinstall
 Automated macOS Package Reinstaller
 -----------------------------------
 
-:Version: v2019.02.04
+:Version: v2019.03.01
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
