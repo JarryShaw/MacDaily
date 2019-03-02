@@ -100,7 +100,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
         mode = tty.tcgetattr(0)
 
     try:
-        returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
+        returncode = subprocess.check_call(argv, shell=True, executable=executable,
                                            timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
         if mode is not None:
@@ -123,7 +123,7 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
             executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
         argv = '{} {}'.format(_merge(argv), suffix)
-    argc = 'script -q /dev/null {} -c "'.format(SHELL)
+    argc = 'script -q /dev/null {} -c "'.format(executable)
     if yes is not None:
         argc = '{} yes {} |'.format(argc, yes)
     argv = '{} {}" | tee -a >({} | col -b >> {}) | {}'.format(argc, _merge(argv), _ansi2text(password), file, _text2dim(password))
@@ -136,7 +136,7 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
         mode = tty.tcgetattr(0)
 
     try:
-        returncode = subprocess.check_call(argv, shell=True, executable=SHELL,
+        returncode = subprocess.check_call(argv, shell=True, executable=executable,
                                            timeout=timeout, stderr=make_stderr(redirect))
     except subprocess.SubprocessError as error:
         if mode is not None:
@@ -209,7 +209,7 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
         def master_read(fd):
             return master_read_ng(fd, replace=old)
 
-        def stdin_read(fd):
+        def stdin_read(fd):  # pylint: disable=unused-argument
             return exp
 
     with open(file, 'ab') as typescript:

@@ -8,8 +8,8 @@ import sys
 import tbtrim
 
 from macdaily.util.const.term import red, reset
-from macdaily.util.tools.misc import predicate
 from macdaily.util.error import Error, UnsupportedOS
+from macdaily.util.tools.misc import predicate
 
 # set up sys.excepthook
 tbtrim.set_trim_rule(predicate, strict=False,
