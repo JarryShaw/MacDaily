@@ -77,9 +77,6 @@ class Macdaily < Formula
 
   depends_on "python"
   depends_on "expect" => :recommended
-  depends_on "jarryshaw/tap/askpass" => :optional
-  depends_on "jarryshaw/tap/confirm" => :optional
-  depends_on "theseal/ssh-askpass/ssh-askpass" => :optional
 
   {CONFIGUPDATER}
 
@@ -143,7 +140,7 @@ class Macdaily < Formula
   end
 
   def post_install
-    f = File.new("/private/tmp/macdaily/launch.py", "w")
+    f = File.new("/private/tmp/macdaily-launch.py", "w")
     f.write <<~EOS
       # -*- coding: utf-8 -*-
 
@@ -154,7 +151,7 @@ class Macdaily < Formula
     EOS
     f.close
 
-    system libexec/"bin/python", "/private/tmp/macdaily/launch.py"
+    system libexec/"bin/python", "/private/tmp/macdaily-launch.py"
   end
 
   def caveats

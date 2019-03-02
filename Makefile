@@ -8,7 +8,7 @@ platform = $(shell python3 -c "import distutils.util; print(distutils.util.get_p
 # get version string
 version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
 # commit message
-message  =
+message  ?= ""
 
 clean: clean-pyc clean-misc clean-pypi
 dist: dist-all
