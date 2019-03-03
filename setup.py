@@ -10,12 +10,7 @@ except ImportError:
 
 # check platform
 if platform.system() != 'Darwin':
-    class UnsupportedOS(RuntimeError):
-        def __init__(self, message, *args, **kwargs):
-            sys.tracebacklimit = 0
-            super().__init__(message, *args, **kwargs)
-    print('macdaily: error: script runs only on macOS', file=sys.stderr)
-    raise UnsupportedOS
+    sys.exit('macdaily: error: script runs only on macOS')
 
 # README
 # with open('./README.rst', encoding='utf-8') as file:
@@ -64,7 +59,7 @@ can easily work around and manage packages out of no pain using **MacDaily**.
 """
 
 # version string
-__version__ = '2019.03.02'
+__version__ = '2019.03.03'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)
