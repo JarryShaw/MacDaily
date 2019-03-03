@@ -6,7 +6,7 @@ macdaily-launch
 MacDaily Dependency Launch Helper
 ---------------------------------
 
-:Version: v2019.03.02
+:Version: v2019.03.03
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

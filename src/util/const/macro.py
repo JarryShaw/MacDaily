@@ -10,7 +10,7 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.03.02'
+VERSION = '2019.03.03'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
