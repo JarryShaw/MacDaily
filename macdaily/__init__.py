@@ -17,8 +17,7 @@ tbtrim.set_trim_rule(predicate, strict=False,
 
 # check platform
 if platform.system() != 'Darwin':
-    print('macdaily: error: script runs only on macOS', file=sys.stderr)
-    raise UnsupportedOS
+    raise UnsupportedOS('macdaily: error: script runs only on macOS')
 
 # check dependencies
 if sys.version_info[:2] <= (3, 4):
