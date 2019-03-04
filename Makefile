@@ -27,7 +27,7 @@ setup-version:
 	python3 setup-version.py
 
 # update Homebrew Formulae
-setup-formula:
+setup-formula: update-pipenv
 	pipenv run python3 setup-formula.py
 
 # remove *.pyc
