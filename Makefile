@@ -1,19 +1,19 @@
 .PHONY: clean dist manpages release pipenv pypi setup
 
-VERSION ?=
 SHELL   := /usr/local/bin/bash
 DIR     ?= .
 
 # get version string
-version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
+version ?= $(shell pipenv run python -c "import pkg_resources, time; print(pkg_resources.parse_version(time.strftime('%Y.%m.%d')))")
+VERSION := $(shell pipenv run python -c "import pkg_resources; print(pkg_resources.parse_version('$(version)'))")
 # commit message
-message  ?= ""
+message ?= ""
 
 # fetch platform spec
 platform       = $(shell pipenv run python -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))")
 python_version = $(shell pipenv run python -c "import sys; print('%s%s' % sys.version_info[:2])")
 implementation = $(shell pipenv run python -c "import sys; print(sys.implementation.name[:2])")
-archive        = "/tmp/macdaily-$(version)-$(implementation)$(version_info)-none-$(platform).whl"
+archive        = "/tmp/macdaily-$(VERSION)-$(implementation)$(python_version)-none-$(platform).whl"
 
 clean: clean-pyc clean-misc clean-pypi
 dist: dist-all
@@ -148,9 +148,9 @@ git-tag:
 	set -ex
 	cd $(DIR)
 	if [[ -z "$(message)" ]] ; then \
-	    git tag --sign "v$(version)" ; \
+	    git tag --sign "v$(VERSION)" ; \
 	else \
-	    git tag --sign "v$(version)" --message "$(message)" ; \
+	    git tag --sign "v$(VERSION)" --message "$(message)" ; \
 	fi
 
 # upload to GitHub
@@ -179,18 +179,18 @@ release-master:
 	go run github.com/aktau/github-release release \
 	    --user JarryShaw \
 	    --repo MacDaily \
-	    --tag "v$(version)" \
-	    --name "MacDaily v$(version)" \
+	    --tag "v$(VERSION)" \
+	    --name "MacDaily v$(VERSION)" \
 	    --description "$(message)"
 
 # file new release on devel
 release-devel: release-download
-	$(eval suffix := $(shell shasum -a256 $(realpath archive) | cut -c -6))
+	$(eval suffix := $(shell shasum -a256 $(archive) | cut -c -6))
 	go run github.com/aktau/github-release release \
 	    --user JarryShaw \
 	    --repo MacDaily \
-	    --tag "v$(version).$(suffix)-devel" \
-	    --name "MacDaily v$(version).$(suffix)-devel" \
+	    --tag "v$(VERSION).$(suffix)-devel" \
+	    --name "MacDaily v$(VERSION).$(suffix)-devel" \
 	    --description "$(message)" \
 	    --target "devel" \
 	    --pre-release
@@ -212,7 +212,7 @@ dist-post:
 	    clean pypi git-tag git-upload
 	$(MAKE) message="$(message)" \
 	    git-upload release setup-formula
-	$(MAKE) message="macdaily: $(version)" DIR=Tap \
+	$(MAKE) message="macdaily: $(VERSION)" DIR=Tap \
 	    git-upload
 	$(MAKE) message="$(message)" \
 	    update-maintainer git-aftermath
