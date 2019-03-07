@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
 import re
 import traceback
 
@@ -16,16 +15,16 @@ from macdaily.util.tools.script import sudo
 class SystemUpdate(SystemCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._recommend = namespace.get('recommended', False)
-        self._restart = namespace.get('restart', False)
+        self._recommend = namespace.get('recommended', False)  # pylint: disable=attribute-defined-outside-init
+        self._restart = namespace.get('restart', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._update_opts = namespace.get('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._update_opts = namespace.get('update', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         text = 'Checking outdated {}'.format(self.desc[1])
@@ -43,8 +42,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__rcmd_pkgs = set()
-            self._var__norm_pkgs = set()
+            self._var__rcmd_pkgs = set()  # pylint: disable=attribute-defined-outside-init
+            self._var__norm_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -58,12 +57,12 @@ class SystemUpdate(SystemCommand, UpdateCommand):
                 if flag == '-':
                     _norm_pkgs.append(name)
 
-            self._var__rcmd_pkgs = set(_rcmd_pkgs)
-            self._var__norm_pkgs = set(_norm_pkgs)
+            self._var__rcmd_pkgs = set(_rcmd_pkgs)  # pylint: disable=attribute-defined-outside-init
+            self._var__norm_pkgs = set(_norm_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))
-        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
+        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs  # pylint: disable=attribute-defined-outside-init
 
     def _proc_update(self, path):
         text = 'Upgrading outdated {}'.format(self.desc[1])

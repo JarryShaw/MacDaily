@@ -19,19 +19,19 @@ from macdaily.util.tools.script import run
 class CaskUpdate(CaskCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._exhaust = namespace.get('exhaust', False)
-        self._force = namespace.get('force', False)
-        self._greedy = namespace.get('greedy', False)
-        self._merge = namespace.get('merge', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._exhaust = namespace.get('exhaust', False)  # pylint: disable=attribute-defined-outside-init
+        self._force = namespace.get('force', False)  # pylint: disable=attribute-defined-outside-init
+        self._greedy = namespace.get('greedy', False)  # pylint: disable=attribute-defined-outside-init
+        self._merge = namespace.get('merge', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._update_opts = namespace.get('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._update_opts = namespace.get('update', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         if (self._brew_renew is None or time.time() - self._brew_renew >= 300):
@@ -39,7 +39,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             self._brew_renew = time.time()
 
         if self._exhaust:
-            return self._exhaust_check(path)
+            self._exhaust_check(path)
+            return
 
         text = 'Checking outdated {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
@@ -63,7 +64,7 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -71,7 +72,7 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             _temp_pkgs = list()
             for line in filter(None, context.strip().splitlines()):
                 _temp_pkgs.append(line.split(maxsplit=1)[0])
-            self._var__temp_pkgs = set(_temp_pkgs)
+            self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))
@@ -126,7 +127,7 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
             fail = True
         else:
             context = proc.decode()
@@ -166,8 +167,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
                 with open(self._file, 'a') as file:
                     file.write('Script done on {}\n'.format(date()))
 
-        self._var__temp_pkgs = set(_temp_pkgs)
-        max_len = len(max(_temp_pkgs, key=lambda s: len(s)))
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
+        max_len = len(max(_temp_pkgs, key=len))
         context = os.linesep.join(textwrap.wrap('    '.join(
             map(lambda s: s.ljust(max_len), self._var__temp_pkgs)), length))
         print_scpt('{} cask outdated list'.format(path), self._file, redirect=self._vflag)

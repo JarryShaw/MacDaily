@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import shutil
 import sys
 import traceback
 
@@ -39,8 +38,8 @@ class AppLogging(LoggingCommand):
         return True
 
     def _parse_args(self, namespace):
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         self._exec = {sys.executable}
@@ -71,7 +70,7 @@ class AppLogging(LoggingCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             with open(logfile, 'w') as file:
-                file.writelines(filter(None, context.strip().splitlines(True)))
+                file.writelines(filter(None, context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))

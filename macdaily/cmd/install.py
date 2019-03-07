@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import abc
-import copy
 
 from macdaily.cls.command import Command
 from macdaily.util.tools.print import print_info
@@ -46,7 +45,7 @@ class InstallCommand(Command):
             text = 'Using {} executable {!r}'.format(self.name, path)
             print_info(text, self._file, redirect=self._qflag)
 
-            self._var__temp_pkgs = self._packages
+            self._var__temp_pkgs = self._packages  # pylint: disable=attribute-defined-outside-init
             if self._check_confirm():
                 self._proc_install(path)
             else:

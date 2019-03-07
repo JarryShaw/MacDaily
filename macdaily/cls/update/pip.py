@@ -16,21 +16,21 @@ from macdaily.util.tools.script import sudo
 class PipUpdate(PipCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._cpython = namespace.get('cpython', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
-        self._pre = namespace.get('pre', False)
-        self._pypy = namespace.get('pypy', False)
-        self._system = namespace.get('system', False)
-        self._user = namespace.get('user', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._cpython = namespace.get('cpython', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
+        self._pre = namespace.get('pre', False)  # pylint: disable=attribute-defined-outside-init
+        self._pypy = namespace.get('pypy', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
+        self._user = namespace.get('user', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._update_opts = namespace.get('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._update_opts = namespace.get('update', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         argv = [path, '-m', 'pip', 'list', '--outdated']
@@ -54,14 +54,14 @@ class PipUpdate(PipCommand, UpdateCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             # self._var__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
             text = proc.decode()
             start = text.rfind('[')
             stop = text.rfind(']') + 1
             context = json.loads(text[start:stop])
-            self._var__temp_pkgs = set(map(lambda item: item['name'], context))
+            self._var__temp_pkgs = set(map(lambda item: item['name'], context))  # pylint: disable=attribute-defined-outside-init
 
             prefix = text[:start]
             if prefix:
@@ -72,9 +72,9 @@ class PipUpdate(PipCommand, UpdateCommand):
                 latest_version_len = max(6, max(map(lambda item: len(item['latest_version']), context), default=6))
                 latest_filetype_len = max(4, max(map(lambda item: len(item['latest_filetype']), context), default=4))
 
-                def _pprint(package, version, latest, type):
+                def _pprint(package, version, latest, filetype):
                     text = [package.ljust(name_len), version.ljust(version_len),
-                            latest.ljust(latest_version_len), type.ljust(latest_filetype_len)]
+                            latest.ljust(latest_version_len), filetype.ljust(latest_filetype_len)]
                     return ' '.join(text)
 
                 print_text(_pprint('Package', 'Version', 'Latest', 'Type'), self._file, redirect=self._vflag)

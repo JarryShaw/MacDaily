@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import importlib
-import os
 import platform
 import sys
 
 import tbtrim
 
-from macdaily.util.const.term import red, reset
+from macdaily.util.const.macro import DEVMODE
+from macdaily.util.const.term import purple, red, reset
 from macdaily.util.error import Error, UnsupportedOS
 from macdaily.util.tools.misc import predicate
 
 # set up sys.excepthook
-tbtrim.set_trim_rule(predicate, strict=False,
-                     target=(Error, KeyboardInterrupt))
+if DEVMODE:
+    print('macdaily: {}info{}: devmode enabled'.format(purple, reset), file=sys.stderr)
+else:
+    tbtrim.set_trim_rule(predicate, strict=False,
+                         target=(Error, KeyboardInterrupt))
 
 # check platform
 if platform.system() != 'Darwin':

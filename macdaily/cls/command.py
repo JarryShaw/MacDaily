@@ -2,7 +2,6 @@
 
 import abc
 import copy
-import os
 import re
 import sys
 
@@ -164,7 +163,7 @@ class Command(metaclass=abc.ABCMeta):
             self._ilst = list()
 
         # remove temp vars
-        [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]
+        [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]  # pylint: disable=expression-not-assigned
 
     @abc.abstractmethod
     def _check_exec(self):
@@ -189,22 +188,22 @@ class Command(metaclass=abc.ABCMeta):
         args_pkg = namespace.get('packages', list())
         for pkgs in args_pkg:
             if isinstance(pkgs, str):
-                pkgs = filter(None, pkgs.split(','))
+                pkgs = filter(None, pkgs.split(','))  # pylint: disable=filter-builtin-not-iterating
             for item in map(lambda s: s.split(','), pkgs):
                 for package in item:
                     if package.startswith('!'):
                         ilst_pkg.append(package[1:])
                     else:
                         temp_pkg.append(package)
-        self._ignore = set(ilst_pkg)
-        self._packages = set(temp_pkg)
+        self._ignore = set(ilst_pkg)  # pylint: disable=attribute-defined-outside-init
+        self._packages = set(temp_pkg)  # pylint: disable=attribute-defined-outside-init
 
     @abc.abstractmethod
     def _parse_args(self, namespace):
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
     @abc.abstractmethod
     def _loc_exec(self):
@@ -229,7 +228,7 @@ class Command(metaclass=abc.ABCMeta):
             print_term(text, self._file, redirect=self._qflag)
             return True
 
-        job = self.job[1] if len(self._var__temp_pkgs) else self.job[0]
+        job = self.job[1] if self._var__temp_pkgs else self.job[0]
         bold_pkgs = '{}, {}'.format(reset, bold).join(self._var__temp_pkgs)
         text = ('macdaily-{}: {}{}{}: '
                 '{} {} available for {}{}{}'.format(self.cmd, green, self.mode, reset, self.desc[0], job, bold, bold_pkgs, reset))
@@ -242,18 +241,17 @@ class Command(metaclass=abc.ABCMeta):
                             suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
             if re.match(r'[yY]', ans):
                 return True
-            elif re.match(r'[nN]', ans):
+            if re.match(r'[nN]', ans):
                 text = ('macdaily-{}: {}{}{}: '
                         '{} {} postponed due to user cancellation'.format(self.cmd, yellow, self.mode, reset, self.desc[0], job))
                 print_term(text, self._file, redirect=self._qflag)
                 return False
-            else:
-                print('Invalid input.', file=sys.stderr)
+            print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):
         for package in self._var__lost_pkgs:
             pattern = r'.*{}.*'.format(package)
-            matches = '{}, {}'.format(reset, bold).join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),
+            matches = '{}, {}'.format(reset, bold).join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
                                                      self._var__real_pkgs))
             print('macdaily-{}: {}{}{}: '
                   'no available {} with the name {}{!r}{}'.format(self.cmd, red, self.mode, reset, self.desc[0], bold, package, reset), file=sys.stderr)

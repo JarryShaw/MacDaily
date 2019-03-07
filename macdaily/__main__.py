@@ -16,12 +16,10 @@ from macdaily.api.postinstall import postinstall
 from macdaily.api.reinstall import reinstall
 from macdaily.api.uninstall import uninstall
 from macdaily.api.update import update
-from macdaily.util.const.macro import (COMMANDS, MAP_ALL, MAP_ARCHIVE,
-                                       MAP_BUNDLE, MAP_CLEANUP, MAP_COMMANDS,
-                                       MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP,
-                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING,
-                                       MAP_POSTINSTALL, MAP_REINSTALL,
-                                       MAP_UNINSTALL, MAP_UPDATE)
+from macdaily.util.const.macro import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP,
+                                       MAP_COMMANDS, MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP,
+                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
+                                       MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE)
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 from macdaily.util.error import CommandNotImplemented

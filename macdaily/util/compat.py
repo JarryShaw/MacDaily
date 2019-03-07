@@ -4,11 +4,11 @@ import sys
 
 # pathlib & subprocess
 if sys.version_info[:2] <= (3, 4):
-    import pathlib2 as pathlib
-    import subprocess32 as subprocess
+    import pathlib2 as pathlib  # pylint: disable=unused-import
+    import subprocess32 as subprocess  # pylint: disable=unused-import
 else:
-    import pathlib
-    import subprocess
+    import pathlib  # pylint: disable=unused-import
+    import subprocess  # pylint: disable=unused-import
 
 # threading
 try:

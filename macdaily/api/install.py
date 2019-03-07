@@ -7,20 +7,19 @@ import traceback
 import uuid
 
 from macdaily.cli.install import parse_args
-from macdaily.cls.install.apm import ApmInstall
-from macdaily.cls.install.brew import BrewInstall
-from macdaily.cls.install.cask import CaskInstall
-from macdaily.cls.install.gem import GemInstall
-from macdaily.cls.install.mas import MasInstall
-from macdaily.cls.install.npm import NpmInstall
-from macdaily.cls.install.pip import PipInstall
-from macdaily.cls.install.system import SystemInstall
+from macdaily.cls.install.apm import ApmInstall  # pylint: disable=unused-import
+from macdaily.cls.install.brew import BrewInstall  # pylint: disable=unused-import
+from macdaily.cls.install.cask import CaskInstall  # pylint: disable=unused-import
+from macdaily.cls.install.gem import GemInstall  # pylint: disable=unused-import
+from macdaily.cls.install.mas import MasInstall  # pylint: disable=unused-import
+from macdaily.cls.install.npm import NpmInstall  # pylint: disable=unused-import
+from macdaily.cls.install.pip import PipInstall  # pylint: disable=unused-import
+from macdaily.cls.install.system import SystemInstall  # pylint: disable=unused-import
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, purple, red, reset, under,
-                                      yellow)
+from macdaily.util.const.term import bold, green, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.get import get_pass
 from macdaily.util.tools.make import make_description, make_namespace
@@ -69,7 +68,7 @@ def install(argv=None):
     cmd_list = list()
     for mode in {'apm', 'brew', 'cask', 'gem', 'mas', 'npm', 'pip', 'system'}:
         # skip disabled commands
-        if (not config['Mode'].get(mode, False)):
+        if not config['Mode'].get(mode, False):
             text = 'macdaily-install: {}{}{}: command disabled'.format(yellow, mode, reset)
             print_term(text, filename, redirect=verbose)
             continue
@@ -140,7 +139,7 @@ def install(argv=None):
         text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
-    if len(cmd_list) == 0:
+    if len(cmd_list) == 0:  # pylint: disable=len-as-condition
         text = 'macdaily: {}install{}: no packages installed'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 

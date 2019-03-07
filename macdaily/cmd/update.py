@@ -45,11 +45,11 @@ class UpdateCommand(Command):
 
     @abc.abstractmethod
     def _check_pkgs(self, path):
-        self._var__temp_pkgs = self._packages
+        self._var__temp_pkgs = self._packages  # pylint: disable=attribute-defined-outside-init
 
     @abc.abstractmethod
     def _check_list(self, path):
-        self._var__temp_pkgs = set()
+        self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
 
     @abc.abstractmethod
     def _proc_update(self, path):

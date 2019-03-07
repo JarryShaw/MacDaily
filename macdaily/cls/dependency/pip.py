@@ -15,25 +15,24 @@ from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, red, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 
 
 class PipDependency(PipCommand, DependencyCommand):
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._cpython = namespace.get('cpython', False)
-        self._depth = namespace.get('depth', -1)
-        self._pypy = namespace.get('pypy', False)
-        self._system = namespace.get('system', False)
-        self._topological = namespace.get('topological', False)
-        self._tree = namespace.get('tree', False)
-        self._user = namespace.get('user', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._cpython = namespace.get('cpython', False)  # pylint: disable=attribute-defined-outside-init
+        self._depth = namespace.get('depth', -1)  # pylint: disable=attribute-defined-outside-init
+        self._pypy = namespace.get('pypy', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
+        self._topological = namespace.get('topological', False)  # pylint: disable=attribute-defined-outside-init
+        self._tree = namespace.get('tree', False)  # pylint: disable=attribute-defined-outside-init
+        self._user = namespace.get('user', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         text = 'Checking installed {}'.format(self.desc[1])
@@ -51,14 +50,14 @@ class PipDependency(PipCommand, DependencyCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             # self._var__temp_pkgs = set(map(lambda pkg: pkg.split('==')[0], proc.decode().split()))
             text = proc.decode()
             start = text.rfind('[')
             stop = text.rfind(']') + 1
             context = json.loads(text[start:stop])
-            self._var__temp_pkgs = set(map(lambda item: item['name'], context))
+            self._var__temp_pkgs = set(map(lambda item: item['name'], context))  # pylint: disable=attribute-defined-outside-init
 
             prefix = text[:start]
             if prefix:

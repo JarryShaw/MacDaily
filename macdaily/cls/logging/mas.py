@@ -9,11 +9,9 @@ import traceback
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.core.mas import MasCommand
 from macdaily.util.compat import subprocess
-from macdaily.util.const.term import (bold, flash, purple_bg, red, red_bg,
-                                      reset, under)
+from macdaily.util.const.term import bold, flash, purple_bg, red, red_bg, reset, under
 from macdaily.util.tools.make import make_stderr
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 from macdaily.util.tools.script import script
 
 
@@ -44,8 +42,8 @@ class MasLogging(MasCommand, LoggingCommand):
         return True
 
     def _parse_args(self, namespace):
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
         text = 'Listing installed {}'.format(self.desc[1])
@@ -65,4 +63,4 @@ class MasLogging(MasCommand, LoggingCommand):
             print_text(context, os.devnull, redirect=self._vflag)
 
         with open(logfile, 'w') as file:
-            file.writelines(filter(lambda s: s.startswith('mas'), context.strip().splitlines(True)))
+            file.writelines(filter(lambda s: s.startswith('mas'), context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating

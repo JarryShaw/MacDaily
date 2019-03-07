@@ -14,7 +14,7 @@ from macdaily.util.const.term import reset, under
 from macdaily.util.tools.print import print_info, print_scpt, print_text
 
 
-def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, logfile=os.devnull):
+def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, logfile=os.devnull):  # pylint: disable=redefined-outer-name
     logdir = config['Path']['logdir']
     logdate = datetime.date.strftime(today, r'%y%m%d')
 
@@ -71,7 +71,7 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
                     print_text(absname, logfile, redirect=verbose)
         shutil.rmtree(arcpath)
 
-    if zipfile:
+    if zipfile:  # pylint:disable=redefined-outer-name
         filelist.extend(make_storage(config, today, quiet, verbose, logfile))
     return filelist
 

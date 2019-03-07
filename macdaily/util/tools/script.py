@@ -9,7 +9,7 @@ import traceback
 import tty
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import SCRIPT, SHELL, UNBUFFER, USER
+from macdaily.util.const.macro import ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
@@ -223,25 +223,35 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
 def _ansi2text(password):
     return ('{} -c "'
             'import re, sys\n'
-            'for line in sys.stdin:\n'
-            "    data = line.rstrip().replace('^D\x08\x08', '')\n"
-            "    temp = re.sub(r'\x1b\\[[0-9][0-9;]*m', r'', data, flags=re.IGNORECASE)\n"
-            "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
-            '    if text:\n'
-            "        print(text, end='\\r\\n')\n"
-            '"'.format(sys.executable, _replace(password)))
+            'context = str()\n'
+            'while True:\n'
+            '    data = sys.stdin.read(1)\n'
+            '    context += data\n'
+            "    if data in ['\\r', '\\n']:\n"
+            "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
+            "        text = re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'', temp, flags=re.IGNORECASE)\n"
+            "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
+            '        context = str()\n'
+            "    elif not data:\n"
+            '        break'
+            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, _replace(password)))
 
 
 def _text2dim(password):
     return ('{} -c "'
             'import re, sys\n'
-            'for line in sys.stdin:\n'
-            "    data = line.rstrip().replace('^D\x08\x08', '')\n"
-            "    temp = {!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{}', data, flags=re.IGNORECASE)\n"
-            "    text = temp.replace('Password:', 'Password:\\r\\n'){}\n"
-            '    if text:\n'
-            "        print(text, end='\\r\\n')\n"
-            '"'.format(sys.executable, dim, dim, _replace(password)))
+            'context = str()\n'
+            'while True:\n'
+            '    data = sys.stdin.read(1)\n'
+            '    context += data\n'
+            "    if data in ['\\r', '\\n']:\n"
+            "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
+            "        text = {!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{}', temp, flags=re.IGNORECASE)\n"
+            "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
+            '        context = str()\n'
+            "    elif not data:\n"
+            '        break'
+            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, dim, dim, _replace(password)))
 
 
 def _merge(argv):
@@ -253,4 +263,4 @@ def _merge(argv):
 def _replace(password):
     if password is None:
         return ''
-    return (".replace({!r}, '********')".format(password))
+    return ".replace({!r}, '********')".format(password)

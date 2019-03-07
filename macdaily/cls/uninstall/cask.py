@@ -14,22 +14,22 @@ from macdaily.util.tools.script import run
 class CaskUninstall(CaskCommand, UninstallCommand):
 
     def _parse_args(self, namespace):
-        self._dry_run = namespace.get('dry_run', False)
-        self._force = namespace.get('force', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._dry_run = namespace.get('dry_run', False)  # pylint: disable=attribute-defined-outside-init
+        self._force = namespace.get('force', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._uninstall_opts = namespace.get('uninstall', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._uninstall_opts = namespace.get('uninstall', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_pkgs(self, path):
         if self._force:
-            self._var__temp_pkgs = self._packages
-            self._var__lost_pkgs = set()
+            self._var__temp_pkgs = self._packages  # pylint: disable=attribute-defined-outside-init
+            self._var__lost_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             super()._check_pkgs(path)
 
@@ -50,10 +50,10 @@ class CaskUninstall(CaskCommand, UninstallCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.decode()
-            self._var__temp_pkgs = set(context.strip().split())
+            self._var__temp_pkgs = set(context.strip().split())  # pylint: disable=attribute-defined-outside-init
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:

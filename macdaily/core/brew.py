@@ -11,13 +11,12 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.compat import pathlib, subprocess
-from macdaily.util.const.term import (bold, flash, green, purple_bg, red,
-                                      red_bg, reset, under, yellow)
+from macdaily.util.const.term import (bold, flash, green, purple_bg, red, red_bg, reset, under,
+                                      yellow)
 from macdaily.util.tools.get import get_input
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 from macdaily.util.tools.script import run, sudo
 
 
@@ -50,10 +49,10 @@ class BrewCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._force = namespace.get('force', False)
-        self._merge = namespace.get('merge', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
-        self._verbose = namespace.get('verbose', False)
+        self._force = namespace.get('force', False)  # pylint: disable=attribute-defined-outside-init
+        self._merge = namespace.get('merge', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -95,9 +94,9 @@ class BrewCommand(Command):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_renew(self, path):
         text = 'Updating Homebrew database'
@@ -155,10 +154,9 @@ class BrewCommand(Command):
                                 suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
                 if re.match(r'[yY]', ans):
                     return True
-                elif re.match(r'[nN]', ans):
+                if re.match(r'[nN]', ans):
                     return False
-                else:
-                    print('Invalid input.', file=sys.stderr)
+                print('Invalid input.', file=sys.stderr)
 
         _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
@@ -274,7 +272,7 @@ class BrewCommand(Command):
                         if os.path.isdir(path):
                             if name != 'Cask':
                                 file_list.extend(_move(path, os.path.join(stem, name)))
-                        elif os.path.splitext(name)[1] != '.incomplete' and path not in cask_list:
+                        elif os.path.splitext(name)[1] != '.incomplete' and path not in cask_list:  # pylint: disable=cell-var-from-loop
                             try:
                                 shutil.move(path, os.path.join(arch, name))
                             except (shutil.Error, FileExistsError):

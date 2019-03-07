@@ -36,7 +36,7 @@ def config(argv=None):
         return
 
     # parse config & change environ
-    config = parse_config(quiet, verbose)
+    config = parse_config(quiet, verbose)  # pylint: disable=redefined-outer-name
     os.environ['SUDO_ASKPASS'] = config['Miscellaneous']['askpass']
     os.environ['TIMEOUT'] = str(config['Miscellaneous']['retry'])
 
@@ -61,7 +61,8 @@ def config(argv=None):
 
     # fetch value of a given key
     if args.get:
-        return pprint.pprint(config[section].get(option), indent=2, width=length)
+        pprint.pprint(config[section].get(option), indent=2, width=length)
+        return
 
     try:
         import configupdater

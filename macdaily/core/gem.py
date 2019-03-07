@@ -9,12 +9,10 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.compat import subprocess
-from macdaily.util.const.term import (flash, purple_bg, red, red_bg, reset,
-                                      under)
+from macdaily.util.const.term import flash, purple_bg, red, red_bg, reset, under
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 
 
 class GemCommand(Command):
@@ -44,8 +42,8 @@ class GemCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._brew = namespace.get('brew', False)
-        self._system = namespace.get('system', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         if not (self._brew and self._system):
@@ -83,7 +81,7 @@ class GemCommand(Command):
                 if os.path.exists('/usr/bin/gem'):
                     _exec_path.append('/usr/bin/gem')
                 else:
-                    _exec_path.extend(glob.glob('/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem'))  # noqa
+                    _exec_path.extend(glob.glob('/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/gem'))  # pylint: disable=line-too-long
             self._exec = set(_exec_path)
         del self._var__exec_path
 
@@ -129,6 +127,6 @@ class GemCommand(Command):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init

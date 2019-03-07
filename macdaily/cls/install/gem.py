@@ -9,14 +9,14 @@ from macdaily.util.tools.script import sudo
 class GemInstall(GemCommand, InstallCommand):
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._system = namespace.get('system', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._install_opts = namespace.get('install', str()).split()
+        self._install_opts = namespace.get('install', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _proc_install(self, path):
         text = 'Installing specified {}'.format(self.desc[1])

@@ -12,8 +12,7 @@ from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import PROGRAM, PYTHON, ROOT
 from macdaily.util.const.term import bold, red, reset
 from macdaily.util.tools.make import make_pipe, make_stderr
-from macdaily.util.tools.print import (print_misc, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_misc, print_scpt, print_term, print_text
 
 
 def date():
@@ -37,7 +36,7 @@ def kill(pid, signal):
 def predicate(filename):
     if os.path.basename(filename) == 'macdaily':
         return True
-    return (ROOT in os.path.realpath(filename))
+    return (ROOT in os.path.realpath(filename))  # pylint: disable=superfluous-parens
 
 
 def record(file, args, today, config=None, redirect=False):
@@ -66,7 +65,7 @@ def record(file, args, today, config=None, redirect=False):
                     log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
 
 
-def run_script(argv, quiet=False, verbose=False, sudo=False,
+def run_script(argv, quiet=False, verbose=False, sudo=False,  # pylint: disable=dangerous-default-value
                password=None, logfile=os.devnull, env=os.environ):
     args = ' '.join(argv)
     print_scpt(args, logfile, verbose)

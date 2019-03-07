@@ -22,10 +22,10 @@ class ApmLogging(ApmCommand, LoggingCommand):
         return '.txt'
 
     def _parse_args(self, namespace):
-        self._beta = namespace.get('beta', False)
+        self._beta = namespace.get('beta', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
         text = 'Listing installed {}'.format(self.desc[1])
@@ -51,7 +51,7 @@ class ApmLogging(ApmCommand, LoggingCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             with open(logfile, 'w') as file:
-                file.writelines(filter(None, context.strip().splitlines(True)))
+                file.writelines(filter(None, context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))

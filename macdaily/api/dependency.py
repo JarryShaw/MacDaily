@@ -8,14 +8,13 @@ import traceback
 import uuid
 
 from macdaily.cli.dependency import parse_args
-from macdaily.cls.dependency.brew import BrewDependency
-from macdaily.cls.dependency.pip import PipDependency
+from macdaily.cls.dependency.brew import BrewDependency  # pylint: disable=unused-import
+from macdaily.cls.dependency.pip import PipDependency  # pylint: disable=unused-import
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, pink, purple, red, reset,
-                                      under, yellow)
+from macdaily.util.const.term import bold, green, pink, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.make import make_description, make_namespace
 from macdaily.util.tools.misc import record
@@ -155,7 +154,7 @@ def dependency(argv=None):
         text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
-    if len(cmd_list) == 0:
+    if len(cmd_list) == 0:  # pylint: disable=len-as-condition
         text = 'macdaily: {}dependency{}: no dependency shown'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 

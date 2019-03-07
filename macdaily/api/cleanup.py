@@ -7,16 +7,15 @@ import traceback
 import uuid
 
 from macdaily.cli.cleanup import parse_args
-from macdaily.cls.cleanup.brew import BrewCleanup
-from macdaily.cls.cleanup.cask import CaskCleanup
-from macdaily.cls.cleanup.npm import NpmCleanup
-from macdaily.cls.cleanup.pip import PipCleanup
+from macdaily.cls.cleanup.brew import BrewCleanup  # pylint: disable=unused-import
+from macdaily.cls.cleanup.cask import CaskCleanup  # pylint: disable=unused-import
+from macdaily.cls.cleanup.npm import NpmCleanup  # pylint: disable=unused-import
+from macdaily.cls.cleanup.pip import PipCleanup  # pylint: disable=unused-import
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, purple, red, reset, under,
-                                      yellow)
+from macdaily.util.const.term import bold, green, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.get import get_pass
 from macdaily.util.tools.make import make_namespace
@@ -103,7 +102,7 @@ def cleanup(argv=None):
         text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
-    if len(cmd_list) == 0:
+    if len(cmd_list) == 0:  # pylint:disable=len-as-condition
         text = 'macdaily: {}cleanup{}: no caches cleanup'.format(purple, reset)
         print_term(text, os.devnull, redirect=quiet)
 

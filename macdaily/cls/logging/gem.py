@@ -11,7 +11,6 @@ from macdaily.util.compat import subprocess
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
-from macdaily.util.tools.script import run
 
 
 class GemLogging(GemCommand, LoggingCommand):
@@ -25,11 +24,11 @@ class GemLogging(GemCommand, LoggingCommand):
         return '.rb'
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._system = namespace.get('system', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
         text = 'Listing installed {}'.format(self.desc[1])
@@ -79,7 +78,7 @@ class GemLogging(GemCommand, LoggingCommand):
                 else:
                     context = proc.decode()
                     print_text(context, self._file, redirect=self._vflag)
-                    _temp_pkgs.extend(filter(lambda s: s.startswith('gem'), context.splitlines(True)))
+                    _temp_pkgs.extend(filter(lambda s: s.startswith('gem'), context.splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
                 finally:
                     with open(self._file, 'a') as file:
                         file.write('Script done on {}\n'.format(date()))

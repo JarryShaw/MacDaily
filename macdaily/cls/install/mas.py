@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import traceback
-
 from macdaily.cmd.install import InstallCommand
 from macdaily.core.mas import MasCommand
-from macdaily.util.compat import subprocess
-from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt
 from macdaily.util.tools.script import sudo
 
@@ -13,13 +9,13 @@ from macdaily.util.tools.script import sudo
 class MasInstall(MasCommand, InstallCommand):
 
     def _parse_args(self, namespace):
-        self._force = namespace.get('force', False)
+        self._force = namespace.get('force', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._install_opts = namespace.get('install', str()).split()
+        self._install_opts = namespace.get('install', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _proc_install(self, path):
         text = 'Installing specified {}'.format(self.desc[1])

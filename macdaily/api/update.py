@@ -7,20 +7,19 @@ import traceback
 import uuid
 
 from macdaily.cli.update import parse_args
-from macdaily.cls.update.apm import ApmUpdate
-from macdaily.cls.update.brew import BrewUpdate
-from macdaily.cls.update.cask import CaskUpdate
-from macdaily.cls.update.gem import GemUpdate
-from macdaily.cls.update.mas import MasUpdate
-from macdaily.cls.update.npm import NpmUpdate
-from macdaily.cls.update.pip import PipUpdate
-from macdaily.cls.update.system import SystemUpdate
+from macdaily.cls.update.apm import ApmUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.brew import BrewUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.cask import CaskUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.gem import GemUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.mas import MasUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.npm import NpmUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.pip import PipUpdate  # pylint: disable=unused-import
+from macdaily.cls.update.system import SystemUpdate  # pylint: disable=unused-import
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, pink, purple, red, reset,
-                                      under, yellow)
+from macdaily.util.const.term import bold, green, pink, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.get import get_pass
 from macdaily.util.tools.make import make_description, make_namespace
@@ -158,7 +157,7 @@ def update(argv=None):
         text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
-    if len(cmd_list) == 0:
+    if len(cmd_list) == 0:  # pylint: disable=len-as-condition
         text = 'macdaily: {}update{}: no packages upgraded'.format(purple, reset)
         print_term(text, filename, redirect=quiet)
 

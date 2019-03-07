@@ -13,25 +13,24 @@ from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, red, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 
 
 class BrewDependency(BrewCommand, DependencyCommand):
 
     def _parse_args(self, namespace):
-        self._depth = namespace.get('depth', -1)
-        self._include_build = namespace.get('include_build', False)
-        self._include_optional = namespace.get('include_optional', False)
-        self._include_requirements = namespace.get('include_requirements', False)
-        self._include_test = namespace.get('include_test', False)
-        self._skip_recommended = namespace.get('skip_recommended', False)
-        self._topological = namespace.get('topological', False)
-        self._tree = namespace.get('tree', False)
+        self._depth = namespace.get('depth', -1)  # pylint: disable=attribute-defined-outside-init
+        self._include_build = namespace.get('include_build', False)  # pylint: disable=attribute-defined-outside-init
+        self._include_optional = namespace.get('include_optional', False)  # pylint: disable=attribute-defined-outside-init
+        self._include_requirements = namespace.get('include_requirements', False)  # pylint: disable=attribute-defined-outside-init
+        self._include_test = namespace.get('include_test', False)  # pylint: disable=attribute-defined-outside-init
+        self._skip_recommended = namespace.get('skip_recommended', False)  # pylint: disable=attribute-defined-outside-init
+        self._topological = namespace.get('topological', False)  # pylint: disable=attribute-defined-outside-init
+        self._tree = namespace.get('tree', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         text = 'Checking installed {}'.format(self.desc[1])
@@ -48,10 +47,10 @@ class BrewDependency(BrewCommand, DependencyCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.decode()
-            self._var__temp_pkgs = set(context.strip().split())
+            self._var__temp_pkgs = set(context.strip().split())  # pylint: disable=attribute-defined-outside-init
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
@@ -123,7 +122,7 @@ class BrewDependency(BrewCommand, DependencyCommand):
             _deps_pkgs[package] = _fetch_dependency(package, self._depth)
         self._pkgs.extend(_list_pkgs)
 
-        def _print_dependency_tree(package, dependencies, flag=False):
+        def _print_dependency_tree(package, dependencies):
             with tempfile.NamedTemporaryFile() as dumpfile:
                 dumper = dictdumper.Tree(dumpfile.name, quiet=True)
                 dumper(dependencies, name=package)

@@ -15,22 +15,22 @@ from macdaily.util.tools.script import sudo
 class PipUninstall(PipCommand, UninstallCommand):
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._cpython = namespace.get('cpython', False)
-        self._dry_run = namespace.get('dry_run', False)
-        self._ignore_deps = namespace.get('ignore_dependencies', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
-        self._pre = namespace.get('pre', False)
-        self._pypy = namespace.get('pypy', False)
-        self._system = namespace.get('system', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._cpython = namespace.get('cpython', False)  # pylint: disable=attribute-defined-outside-init
+        self._dry_run = namespace.get('dry_run', False)  # pylint: disable=attribute-defined-outside-init
+        self._ignore_deps = namespace.get('ignore_dependencies', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
+        self._pre = namespace.get('pre', False)  # pylint: disable=attribute-defined-outside-init
+        self._pypy = namespace.get('pypy', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._uninstall_opts = namespace.get('uninstall', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._uninstall_opts = namespace.get('uninstall', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         argv = [path, '-m', 'pip', 'freeze']
@@ -43,7 +43,7 @@ class PipUninstall(PipCommand, UninstallCommand):
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.decode()
             print_text(context, self._file, redirect=self._qflag)
@@ -51,7 +51,7 @@ class PipUninstall(PipCommand, UninstallCommand):
             _temp_pkgs = list()
             for line in filter(None, context.strip().splitlines()):
                 _temp_pkgs.append(line.split('==')[0])
-            self._var__temp_pkgs = set(_temp_pkgs)
+            self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))
@@ -92,8 +92,8 @@ class PipUninstall(PipCommand, UninstallCommand):
                 with open(self._file, 'a') as file:
                     file.write('Script done on {}\n'.format(date()))
 
-            for package in _temp_pkgs:
-                _temp_pkgs = _proc_dependency(package, _know_pkgs)
+            for pkg in _temp_pkgs:
+                _temp_pkgs = _proc_dependency(pkg, _know_pkgs)
                 _deps_pkgs |= _temp_pkgs
                 _know_pkgs |= _temp_pkgs
             return _deps_pkgs
@@ -113,7 +113,7 @@ class PipUninstall(PipCommand, UninstallCommand):
         for item in self._var__temp_pkgs:
             _deps_pkgs = _proc_dependency(item, _know_pkgs)
             _know_pkgs |= _deps_pkgs
-            for package in (_deps_pkgs - _done_pkgs):
+            for package in (_deps_pkgs - _done_pkgs):  # pylint: disable=superfluous-parens
                 argv[-1] = package
                 print_scpt(' '.join(argv), self._file, redirect=self._qflag)
                 if self._dry_run:

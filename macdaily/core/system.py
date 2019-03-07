@@ -38,6 +38,11 @@ class SystemCommand(Command):
         self._exec = {self._var__exec_path}
         del self._var__exec_path
 
+    @abc.abstractmethod
+    def _check_list(self, path):
+        self._var__rcmd_pkgs = set()  # pylint: disable=attribute-defined-outside-init
+        self._var__norm_pkgs = set()  # pylint: disable=attribute-defined-outside-init
+
     def _check_pkgs(self, path):
         self._check_list(path)
         text = 'Checking existence of specified packages'
@@ -55,14 +60,8 @@ class SystemCommand(Command):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._var__real_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__rcmd_pkgs = set(_rcmd_pkgs)
-        self._var__norm_pkgs = set(_norm_pkgs)
-        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs
-
-    @abc.abstractmethod
-    def _check_list(self, path):
-        self._var__rcmd_pkgs = set()
-        self._var__norm_pkgs = set()
-        self._var__temp_pkgs = set()
+        self._var__real_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__rcmd_pkgs = set(_rcmd_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__norm_pkgs = set(_norm_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs  # pylint: disable=attribute-defined-outside-init
