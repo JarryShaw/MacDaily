@@ -6,7 +6,7 @@ macdaily-help
 MacDaily Usage Information Manual
 ---------------------------------
 
-:Version: v2019.3.7.post1
+:Version: v2019.3.7.post2
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
