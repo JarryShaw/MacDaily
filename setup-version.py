@@ -2,10 +2,14 @@
 
 import os
 import re
+import sys
 import time
 import pkg_resources
 
-__version__ = str(pkg_resources.parse_version(time.strftime('%Y.%m.%d')))
+try:
+    __version__ = str(pkg_resources.parse_version(sys.argv[1]))
+except IndexError:
+    __version__ = str(pkg_resources.parse_version(time.strftime('%Y.%m.%d')))
 
 context = list()
 with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const/macro.py')) as file:

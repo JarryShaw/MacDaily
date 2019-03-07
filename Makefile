@@ -1,7 +1,8 @@
 .PHONY: clean dist manpages release pipenv pypi setup
 
-SHELL := /usr/local/bin/bash
-DIR   ?= .
+VERSION ?=
+SHELL   := /usr/local/bin/bash
+DIR     ?= .
 
 # get version string
 version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
@@ -28,7 +29,7 @@ setup-pipenv: clean-pipenv
 
 # update version string
 setup-version:
-	pipenv run python setup-version.py
+	pipenv run python setup-version.py $(VERSION)
 
 # update Homebrew Formulae
 setup-formula: update-pipenv
