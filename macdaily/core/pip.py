@@ -120,9 +120,9 @@ class PipCommand(Command):
         _sort_glob(os.path.join(prefix, 'Cellar/python/*/bin/python3.?'), flag=True)
 
         def _append_path(exec_path):
-            exec_path[version[0]].append(exec_path)
-            exec_path[version].append(exec_path)
-            exec_path['main'].append(exec_path)
+            exec_path[version[0]].append(path)  # pylint: disable=undefined-loop-variable
+            exec_path[version].append(path)  # pylint: disable=undefined-loop-variable
+            exec_path['main'].append(path)  # pylint: disable=undefined-loop-variable
 
         for path in glob.glob('/Library/Frameworks/Python.framework/Versions/?.?/bin/python?.?'):
             version = path[-3:]
