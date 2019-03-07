@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2019.03.07](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07) (2019-03-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.e3b0c44298fc-devel...v2019.03.07)
+
+**Merged pull requests:**
+
+- New distribution \[2019.03.07\] [\#40](https://github.com/JarryShaw/MacDaily/pull/40) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2019.03.07.e3b0c44298fc-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07.e3b0c44298fc-devel) (2019-03-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.-devel...v2019.03.07.e3b0c44298fc-devel)
+
+## [v2019.03.07.-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07.-devel) (2019-03-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.03...v2019.03.07.-devel)
+
 ## [v2019.03.03](https://github.com/JarryShaw/MacDaily/tree/v2019.03.03) (2019-03-03)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.03.devel...v2019.03.03)
 
@@ -139,13 +152,13 @@
 - New distribution \[2018.01.08\] [\#22](https://github.com/JarryShaw/MacDaily/pull/22) ([JarryShaw](https://github.com/JarryShaw))
 
 ## [v2019.01.08.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.08.devel) (2019-01-08)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07...v2019.01.08.devel)
-
-## [v2019.01.07](https://github.com/JarryShaw/MacDaily/tree/v2019.01.07) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v...v2019.01.07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v...v2019.01.08.devel)
 
 ## [v](https://github.com/JarryShaw/MacDaily/tree/v) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07.devel...v)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07...v)
+
+## [v2019.01.07](https://github.com/JarryShaw/MacDaily/tree/v2019.01.07) (2019-01-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07.devel...v2019.01.07)
 
 **Merged pull requests:**
 
