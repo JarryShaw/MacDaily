@@ -3,16 +3,16 @@
 SHELL := /usr/local/bin/bash
 DIR   ?= .
 
+# get version string
+version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
+# commit message
+message  ?= ""
+
 # fetch platform spec
 platform       = $(shell pipenv run python -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))")
 python_version = $(shell pipenv run python -c "import sys; print('%s%s' % sys.version_info[:2])")
 implementation = $(shell pipenv run python -c "import sys; print(sys.implementation.name[:2])")
 archive        = "/tmp/macdaily-$(version)-$(implementation)$(version_info)-none-$(platform).whl"
-
-# get version string
-version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
-# commit message
-message  ?= ""
 
 clean: clean-pyc clean-misc clean-pypi
 dist: dist-all
@@ -184,7 +184,7 @@ release-master:
 
 # file new release on devel
 release-devel: release-download
-	suffix=$(shell shasum -a256 $(archive) | cut -c -12)
+	$(eval suffix := $(shell shasum -a256 $(realpath archive) | cut -c -6))
 	go run github.com/aktau/github-release release \
 	    --user JarryShaw \
 	    --repo MacDaily \

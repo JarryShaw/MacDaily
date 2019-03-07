@@ -3,8 +3,9 @@
 import os
 import re
 import time
+import pkg_resources
 
-__version__ = time.strftime('%Y.%m.%d')
+__version__ = str(pkg_resources.parse_version(time.strftime('%Y.%m.%d')))
 
 context = list()
 with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const/macro.py')) as file:

@@ -49,7 +49,7 @@ with tempfile.TemporaryDirectory() as tempdir:
     archive = f'{tempdir}/macdaily-{VERSION}-{implementation}{python_version}-none-{platform}.whl'
     with open(archive, 'rb') as file:
         content = file.read()
-    DEVEL_SUFFIX = hashlib.sha256(content).hexdigest()[12]
+    DEVEL_SUFFIX = hashlib.sha256(content).hexdigest()[:6]
 
 DEVEL_URL = f'https://github.com/JarryShaw/MacDaily/archive/v{VERSION}.{DEVEL_SUFFIX}-devel.tar.gz'
 DEVEL_SHA = hashlib.sha256(requests.get(DEVEL_URL).content).hexdigest()
