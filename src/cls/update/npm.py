@@ -14,15 +14,15 @@ from macdaily.util.tools.script import sudo
 class NpmUpdate(NpmCommand, UpdateCommand):
 
     def _parse_args(self, namespace):
-        self._no_cleanup = namespace.get('no_cleanup', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._all = namespace.get('all', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._all = namespace.get('all', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._logging_opts = namespace.get('logging', str()).split()
-        self._update_opts = namespace.get('update', str()).split()
+        self._logging_opts = namespace.get('logging', str()).split()  # pylint: disable=attribute-defined-outside-init
+        self._update_opts = namespace.get('update', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
         argv = [path, 'outdated']
@@ -44,7 +44,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=make_stderr(self._vflag))
         except subprocess.SubprocessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            self._var__temp_pkgs = set()
+            self._var__temp_pkgs = set()  # pylint: disable=attribute-defined-outside-init
         else:
             context = proc.stdout.decode()
             print_text(context, self._file, redirect=self._vflag)
@@ -53,7 +53,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             for line in context.strip().splitlines()[1:]:
                 name, _, want, _ = line.split(maxsplit=3)
                 _temp_pkgs.append(f'{name}@{want}')
-            self._var__temp_pkgs = set(_temp_pkgs)
+            self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')

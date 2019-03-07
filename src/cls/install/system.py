@@ -9,13 +9,13 @@ from macdaily.util.tools.script import sudo
 class SystemInstall(SystemCommand, InstallCommand):
 
     def _parse_args(self, namespace):
-        self._restart = namespace.get('restart', False)
+        self._restart = namespace.get('restart', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
-        self._yes = namespace.get('yes', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
+        self._yes = namespace.get('yes', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._install_opts = namespace.get('install', str()).split()
+        self._install_opts = namespace.get('install', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _proc_install(self, path):
         text = f'Installing specified {self.desc[1]}'

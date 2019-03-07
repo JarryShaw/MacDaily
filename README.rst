@@ -278,6 +278,12 @@ Last but no least, in section ``Miscellaneous``, you should **NEVER**
 modify any contents under this section in order to keep MacDaily
 working. However, you may set up this part with |config|_ command.
 
+NB
+    MacDaily currently supports two environment variables.
+
+    - ``SUDO_PASSWORD`` -- password of your current account
+    - ``MACDAILY_DEVMODE`` -- enabled development mode [only for testing]
+
 Usage Manual
 ------------
 
@@ -573,6 +579,20 @@ Troubleshooting
     But if you insist to do so, then make sure they are **VALID**, possibly
     with ``~`` user-home expansion and most importantly, they must be
     **available** with permission granted.
+
+4. What should I do if MacDaily is not working as expected?
+    Firstly, try to reinstall it. If installed through Homebrew, run
+    ``brew update && brew reinstall macdaily``. If installed through PyPI,
+    run ``pip install -I macdaily`` with appropriate privileges granted;
+    cause sometimes it can be a dependency issue.
+
+    If still not working, check your configuration file at ``~/.dailyrc``,
+    whether it's malformed or not. Run ``macdaily config --interactive`` as
+    you wish to reconfigure everything.
+
+    I hate to admit it but this can sometimes be from the program itself.
+    If so, please run MacDaily again with ``MACDAILY_DEVMODE=true`` set;
+    and report the issue along with the traceback stack it provides to me.
 
 TODO
 ----
