@@ -71,20 +71,34 @@ TBTRIM = subprocess.check_output(['poet', 'tbtrim']).decode().strip()
 # print(SUBPROCESS32)
 # print(TBTRIM)
 
+match = re.match(r'([0-9.]+)\.post([0-9])', VERSION)
+if match is None:
+    MACDAILY = (f'url "{MACDAILY_URL}"\n'
+                f'  sha256 "{MACDAILY_SHA}"')
+    DEVEL = (f'url "{DEVEL_URL}"\n'
+             f'    sha256 "{DEVEL_SHA}"')
+else:
+    version, revision = match.groups()
+    MACDAILY = (f'url "{MACDAILY_URL}"\n'
+                f'  version "{version}"\n'
+                f'  sha256 "{MACDAILY_SHA}"\n'
+                f'  revision {revision}')
+    DEVEL = (f'url "{DEVEL_URL}"\n'
+             f'    version "{version}_{revision}.{DEVEL_SUFFIX}-devel"\n'
+             f'    sha256 "{DEVEL_SHA}"')
+
 FORMULA = f'''\
 class Macdaily < Formula
   include Language::Python::Virtualenv
 
   desc "macOS Automated Package Manager"
   homepage "https://github.com/JarryShaw/MacDaily#macdaily"
-  url "{MACDAILY_URL}"
-  sha256 "{MACDAILY_SHA}"
+  {MACDAILY}
 
   head "https://github.com/JarryShaw/MacDaily.git", :branch => "master"
 
   devel do
-    url "{DEVEL_URL}"
-    sha256 "{DEVEL_SHA}"
+    {DEVEL}
   end
 
   bottle :unneeded
