@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import collections
-import contextlib
 import copy
 import getpass
 import os
@@ -9,16 +8,14 @@ import plistlib
 import pwd
 import shutil
 
-from macdaily.util.compat import pathlib, subprocess
+from macdaily.util.compat import pathlib
 from macdaily.util.const.macro import PYTHON, ROOT
-from macdaily.util.const.term import bold, red, reset, under
-from macdaily.util.tools.make import make_pipe, make_stderr
+from macdaily.util.const.term import bold, reset, under
 from macdaily.util.tools.misc import run_script
-from macdaily.util.tools.print import (print_info, print_misc, print_scpt,
-                                       print_term)
+from macdaily.util.tools.print import print_info, print_misc
 
 
-def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull, *args, **kwargs):
+def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull, *args, **kwargs):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     text = 'Launching MacDaily SSH-AskPass program'
     print_info(text, logfile, quiet)
 
@@ -32,7 +29,7 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
                '    if args starts with "--help" or args starts with "-h" then',
                '        return "macdaily-askpass [-h|--help] [prompt]"',
                '    end if',
-               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',  # noqa
+               f'    display dialog args with icon file ("{path}") default button "OK" default answer "" with hidden answer',  # pylint: disable=line-too-long
                "    return result's text returned",
                'end run',
                '']
@@ -69,7 +66,7 @@ def launch_askpass(password=None, quiet=False, verbose=False, logfile=os.devnull
     return askpass
 
 
-def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull, *args, **kwargs):
+def launch_confirm(password=None, quiet=False, verbose=False, logfile=os.devnull, *args, **kwargs):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     text = 'Launching MacDaily Confirmation program'
     print_info(text, logfile, quiet)
 
@@ -156,7 +153,7 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         path = os.path.join(ROOT, 'res', f'daemon-{mode}.applescript')
         pout = str(root / mode / 'stdout.log')
         perr = str(root / mode / 'stderr.log')
-        argv = ' '.join(config['Command'].get(mode)) or '--help'
+        argv = ' '.join(config['Command'].get(mode, ['--help']))
 
         text = f'Adding {under}{mode}{reset}{bold} command LaunchAgent {name!r}'
         print_misc(text, logfile, quiet)

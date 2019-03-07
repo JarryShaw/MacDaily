@@ -9,7 +9,6 @@ from macdaily.util.compat import subprocess
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
-from macdaily.util.tools.script import run
 
 
 class PipLogging(PipCommand, LoggingCommand):
@@ -23,14 +22,14 @@ class PipLogging(PipCommand, LoggingCommand):
         return '.txt'
 
     def _parse_args(self, namespace):
-        self._brew = namespace.get('brew', False)
-        self._cpython = namespace.get('cpython', False)
-        self._exclude_editable = namespace.get('exclude_editable', False)
-        self._pypy = namespace.get('pypy', False)
-        self._system = namespace.get('system', False)
+        self._brew = namespace.get('brew', False)  # pylint: disable=attribute-defined-outside-init
+        self._cpython = namespace.get('cpython', False)  # pylint: disable=attribute-defined-outside-init
+        self._exclude_editable = namespace.get('exclude_editable', False)  # pylint: disable=attribute-defined-outside-init
+        self._pypy = namespace.get('pypy', False)  # pylint: disable=attribute-defined-outside-init
+        self._system = namespace.get('system', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
         text = f'Listing installed {self.desc[1]}'
@@ -59,7 +58,7 @@ class PipLogging(PipCommand, LoggingCommand):
             print_text(context, self._file, redirect=self._vflag)
 
             with open(logfile, 'w') as file:
-                file.writelines(filter(None, context.strip().splitlines(True)))
+                file.writelines(filter(None, context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
         finally:
             with open(self._file, 'a') as file:
                 file.write(f'Script done on {date()}\n')

@@ -3,8 +3,7 @@
 import os
 import re
 
-from macdaily.util.const.term import (blue, bold, dim, grey, length, purple,
-                                      reset)
+from macdaily.util.const.term import blue, bold, dim, grey, length, purple, reset
 
 
 def print_info(text, file, redirect=False):
@@ -64,11 +63,11 @@ def print_text(text, file, redirect=False):
         fd.write(context)
 
 
-def print_wrap(text, length=length, **kwargs):
+def print_wrap(text, length=length, **kwargs):  # pylint: disable=redefined-outer-name
     print(wrap_text(text, length), **kwargs)
 
 
-def wrap_text(string, length=length):
+def wrap_text(string, length=length):  # pylint: disable=redefined-outer-name,unused-argument
     # text = '\n'.join(textwrap.wrap(string, length))
     # if string.endswith(os.linesep):
     #     return f'{text}{os.linesep}'

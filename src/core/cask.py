@@ -9,12 +9,10 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.compat import pathlib, subprocess
-from macdaily.util.const.term import (bold, flash, purple_bg, red, red_bg,
-                                      reset, under, yellow)
+from macdaily.util.const.term import bold, flash, purple_bg, red, red_bg, reset, under, yellow
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 from macdaily.util.tools.script import run
 
 
@@ -51,10 +49,10 @@ class CaskCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._force = namespace.get('force', False)
-        self._merge = namespace.get('merge', False)
-        self._no_cleanup = namespace.get('no_cleanup', False)
-        self._verbose = namespace.get('verbose', False)
+        self._force = namespace.get('force', False)  # pylint: disable=attribute-defined-outside-init
+        self._merge = namespace.get('merge', False)  # pylint: disable=attribute-defined-outside-init
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -96,9 +94,9 @@ class CaskCommand(Command):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_renew(self, path):
         text = 'Updating Homebrew database'
@@ -126,7 +124,8 @@ class CaskCommand(Command):
         if not os.path.isdir(self._disk_dir):
             text = (f'macdaily-{self.cmd}: {yellow}cask{reset}: '
                     f'archive directory {bold}{self._disk_dir}{reset} not found')
-            return print_term(text, self._file, redirect=self._vflag)
+            print_term(text, self._file, redirect=self._vflag)
+            return
 
         argv = ['brew', 'cask', 'cleanup']
         if self._verbose:

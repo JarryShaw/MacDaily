@@ -7,12 +7,10 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.compat import subprocess
-from macdaily.util.const.term import (flash, purple_bg, red, red_bg, reset,
-                                      under)
+from macdaily.util.const.term import flash, purple_bg, red, red_bg, reset, under
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 
 
 class ApmCommand(Command):
@@ -31,7 +29,7 @@ class ApmCommand(Command):
 
     def _check_exec(self):
         self._var__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
-        flag = not (self._var__exec_path == (None, None))
+        flag = self._var__exec_path != (None, None)
         if not flag:
             print(f'macdaily-{self.cmd}: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
             text = (f'macdaily-{self.cmd}: {red}apm{reset}: you may download Atom from '
@@ -50,7 +48,7 @@ class ApmCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._beta = namespace.get('beta', False)
+        self._beta = namespace.get('beta', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         if self._beta:
@@ -98,6 +96,6 @@ class ApmCommand(Command):
             else:
                 _lost_pkgs.append(package)
 
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init

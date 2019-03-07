@@ -14,7 +14,7 @@ def make_context(redirect=False, devnull=open(os.devnull, 'w')):
 
 def make_description(command):
     def desc(singular):
-        if singular:
+        if singular:  # pylint: disable=no-else-return
             return command.desc[0]
         else:
             return command.desc[1]

@@ -36,7 +36,7 @@ class CleanupCommand(Command):
     def notfound(self):
         return NotImplemented
 
-    def __init__(self, namespace, filename, timeout, confirm,
+    def __init__(self, namespace, filename, timeout, confirm,  # pylint: disable=super-init-not-called
                  askpass, password, disk_dir, brew_renew=None):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))
@@ -62,7 +62,7 @@ class CleanupCommand(Command):
             self._run_proc()
 
         # remove temp vars
-        [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]
+        [delattr(self, attr) for attr in filter(lambda s: s.startswith('_var_'), dir(self))]  # pylint: disable=expression-not-assigned
 
     def _pkg_args(self, namespace):
         return self._parse_args(namespace)

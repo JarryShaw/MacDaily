@@ -3,10 +3,13 @@
 
 import sys
 
+from macdaily.util.const.macro import DEVMODE
+
 
 class Error(Exception):
     def __init__(self, *args, **kwargs):
-        # sys.tracebacklimit = 0
+        if not DEVMODE:
+            sys.tracebacklimit = 0
         super().__init__(*args, **kwargs)
 
 

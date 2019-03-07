@@ -4,7 +4,11 @@ SHELL := /usr/local/bin/bash
 DIR   ?= .
 
 # fetch platform spec
-platform = $(shell python3 -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))")
+platform       = $(shell pipenv run python -c "import distutils.util; print(distutils.util.get_platform().replace('-', '_').replace('.', '_'))")
+python_version = $(shell pipenv run python -c "import sys; print('%s%s' % sys.version_info[:2])")
+implementation = $(shell pipenv run python -c "import sys; print(sys.implementation.name[:2])")
+archive        = "/tmp/macdaily-$(version)-$(implementation)$(version_info)-none-$(platform).whl"
+
 # get version string
 version  = $(shell cat macdaily/util/const/macro.py | grep "VERSION" | sed "s/VERSION = '\(.*\)'/\1/")
 # commit message
@@ -16,7 +20,7 @@ manpages: clean-manpages update-manpages
 release: release-master release-devel
 pipenv: update-pipenv
 pypi: dist-pypi dist-upload
-setup: setup-version setup-formula
+setup: setup-version setup-formula setup-emoji
 
 # setup pipenv
 setup-pipenv: clean-pipenv
@@ -24,11 +28,15 @@ setup-pipenv: clean-pipenv
 
 # update version string
 setup-version:
-	python3 setup-version.py
+	pipenv run python setup-version.py
 
 # update Homebrew Formulae
-setup-formula:
-	pipenv run python3 setup-formula.py
+setup-formula: update-pipenv
+	pipenv run python setup-formula.py
+
+# update emoji mappings
+setup-emoji:
+	pipenv run python setup-emoji.py
 
 # remove *.pyc
 clean-pyc:
@@ -74,8 +82,8 @@ update-manpages:
 	set -ex
 	cd contrib
 	for file in $$( ls *.rst ); do \
-		name=$${file%.rst*}; \
-		pipenv run rst2man.py $${file} > "../src/man/$${name}.1"; \
+	    name=$${file%.rst*}; \
+	    pipenv run rst2man.py $${file} > "../src/man/$${name}.1"; \
 	done
 
 # update maintenance information
@@ -107,7 +115,7 @@ dist-pypi-old: dist-f2format
 	python3.5 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp35'
 	python3.4 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp34'
 	pypy3 setup.py bdist_wheel --plat-name="$(platform)" --python-tag='pp35'
-	python3 setup.py sdist
+	pipenv run python setup.py sdist
 
 # upload PyPI distribution
 .ONESHELL:
@@ -122,15 +130,15 @@ dist-upload:
 dist-prep:
 	mkdir -p release
 	rm -rf release/src \
-		   release/macdaily
+	       release/macdaily
 	cp -r .gitattributes \
-		  .gitignore \
-		  LICENSE \
-		  MANIFEST.in \
-		  README.rst \
-		  src \
-		  setup.py \
-		  setup.cfg release/
+	      .gitignore \
+	      LICENSE \
+	      MANIFEST.in \
+	      README.rst \
+	      src \
+	      setup.py \
+	      setup.cfg release/
 	mv release/src release/macdaily
 
 # add tag
@@ -139,9 +147,9 @@ git-tag:
 	set -ex
 	cd $(DIR)
 	if [[ -z "$(message)" ]] ; then \
-		git tag --sign "v$(version)" ; \
+	    git tag --sign "v$(version)" ; \
 	else \
-		git tag --sign "v$(version)" --message "$(message)" ; \
+	    git tag --sign "v$(version)" --message "$(message)" ; \
 	fi
 
 # upload to GitHub
@@ -152,9 +160,9 @@ git-upload:
 	git pull
 	git add .
 	if [[ -z "$(message)" ]] ; then \
-		git commit --all --gpg-sign ; \
+	    git commit --all --gpg-sign ; \
 	else \
-		git commit --all --gpg-sign --message "$(message)" ; \
+	    git commit --all --gpg-sign --message "$(message)" ; \
 	fi
 	git push
 
@@ -168,22 +176,31 @@ git-aftermath:
 # file new release on master
 release-master:
 	go run github.com/aktau/github-release release \
-		--user JarryShaw \
-		--repo MacDaily \
-		--tag "v$(version)" \
-		--name "MacDaily v$(version)" \
-		--description "$(message)"
+	    --user JarryShaw \
+	    --repo MacDaily \
+	    --tag "v$(version)" \
+	    --name "MacDaily v$(version)" \
+	    --description "$(message)"
 
 # file new release on devel
-release-devel:
+release-devel: release-download
+	suffix=$(shell shasum -a256 $(archive) | cut -c -12)
 	go run github.com/aktau/github-release release \
-		--user JarryShaw \
-		--repo MacDaily \
-		--tag "v$(version).devel" \
-		--name "MacDaily v$(version).devel" \
-		--description "$(message)" \
-		--target "devel" \
-		--pre-release
+	    --user JarryShaw \
+	    --repo MacDaily \
+	    --tag "v$(version).$(suffix)-devel" \
+	    --name "MacDaily v$(version).$(suffix)-devel" \
+	    --description "$(message)" \
+	    --target "devel" \
+	    --pre-release
+
+release-download:
+	pipenv run python -m pip download macdaily \
+	    --platform=$(platform) \
+	    --python-version=$(python_version) \
+	    --implementation=$(implementation) \
+	    --dest=/tmp \
+	    --no-deps
 
 # run pre-distribution process
 dist-pre: setup-version manpages
@@ -191,13 +208,13 @@ dist-pre: setup-version manpages
 # run post-distribution process
 dist-post:
 	$(MAKE) message="$(message)" DIR=release \
-		clean pypi git-tag git-upload
+	    clean pypi git-tag git-upload
 	$(MAKE) message="$(message)" \
-		git-upload release setup-formula
+	    git-upload release setup-formula
 	$(MAKE) message="macdaily: $(version)" DIR=Tap \
-		git-upload
+	    git-upload
 	$(MAKE) message="$(message)" \
-		update-maintainer git-aftermath
+	    update-maintainer git-aftermath
 
 # run full distribution process
 dist-all: dist-pre dist-prep dist-post

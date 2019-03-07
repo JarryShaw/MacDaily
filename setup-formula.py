@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import distutils.util  # pylint: disable=no-name-in-module,import-error
 import hashlib
 import os
 import re
 import subprocess
+import sys
+import tempfile
 
 import bs4
 import requests
@@ -33,7 +36,22 @@ for line in filter(lambda item: isinstance(item, bs4.element.Tag), table.tbody):
 # print(MACDAILY_URL)
 # print(MACDAILY_SHA)
 
-DEVEL_URL = f'https://github.com/JarryShaw/MacDaily/archive/v{VERSION}.devel.tar.gz'
+with tempfile.TemporaryDirectory() as tempdir:
+    platform = distutils.util.get_platform().replace('-', '_').replace('.', '_')  # pylint: disable=no-member
+    python_version = '%s%s' % sys.version_info[:2]
+    implementation = sys.implementation.name[:2]
+    subprocess.check_call([sys.executable, '-m', 'pip', 'download', 'macdaily',
+                           f"--platform={platform}",
+                           f"--python-version={python_version}",
+                           f'--implementation={implementation}',
+                           f'--dest={tempdir}',
+                           '--no-deps'])
+    archive = f'{tempdir}/macdaily-{VERSION}-{implementation}{python_version}-none-{platform}.whl'
+    with open(archive, 'rb') as file:
+        content = file.read()
+    DEVEL_SUFFIX = hashlib.sha256(content).hexdigest()[12]
+
+DEVEL_URL = f'https://github.com/JarryShaw/MacDaily/archive/v{VERSION}.{DEVEL_SUFFIX}-devel.tar.gz'
 DEVEL_SHA = hashlib.sha256(requests.get(DEVEL_URL).content).hexdigest()
 # print(DEVEL_URL)
 # print(DEVEL_SHA)

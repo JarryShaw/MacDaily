@@ -8,13 +8,11 @@ import traceback
 
 from macdaily.cls.command import Command
 from macdaily.util.compat import subprocess
-from macdaily.util.const.term import (bold, flash, purple_bg, red, red_bg,
-                                      reset, under)
+from macdaily.util.const.term import flash, purple_bg, red, red_bg, reset, under
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
-from macdaily.util.tools.print import (print_info, print_scpt, print_term,
-                                       print_text)
-from macdaily.util.tools.script import run, sudo
+from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
+from macdaily.util.tools.script import sudo
 
 
 class NpmCommand(Command):
@@ -44,9 +42,9 @@ class NpmCommand(Command):
     @abc.abstractmethod
     def _parse_args(self, namespace):
         super()._parse_args(namespace)
-        self._no_cleanup = namespace.get('no_cleanup', False)
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._no_cleanup = namespace.get('no_cleanup', False)  # pylint: disable=attribute-defined-outside-init
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _loc_exec(self):
         self._exec = {self._var__exec_path}
@@ -93,9 +91,9 @@ class NpmCommand(Command):
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
-        self._var__real_pkgs = set(_real_pkgs)
-        self._var__lost_pkgs = set(_lost_pkgs)
-        self._var__temp_pkgs = set(_temp_pkgs)
+        self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
+        self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_cleanup(self):
         if self._no_cleanup:

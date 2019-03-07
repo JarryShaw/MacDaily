@@ -12,8 +12,7 @@ from macdaily.cmd.archive import make_archive, make_storage
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, pink, purple, red, reset,
-                                      under)
+from macdaily.util.const.term import bold, green, pink, purple, red, reset, under
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text
@@ -83,14 +82,14 @@ def archive(argv=None):
     print_term(text, filename, redirect=quiet)
 
     for mode, file_list in file_dict.items():
-        if len(file_list):
+        if file_list:
             formatted_list = f'{reset}{bold}, {under}'.join(file_list)
             text = f'Archived following ancient logs of {pink}{mode}{reset}{bold}: {under}{formatted_list}{reset}'
         else:
             text = f'No ancient logs of {under}{mode}{reset}{bold} archived'
         print_misc(text, filename, redirect=quiet)
 
-    if len(file_dict) == 0:
+    if len(file_dict) == 0:  # pylint: disable=len-as-condition
         text = f'macdaily: {purple}archive{reset}: no logs archived'
         print_term(text, filename, redirect=quiet)
 

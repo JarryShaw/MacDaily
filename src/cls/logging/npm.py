@@ -10,7 +10,6 @@ from macdaily.util.compat import subprocess
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_text
-from macdaily.util.tools.script import run
 
 
 class NpmLogging(NpmCommand, LoggingCommand):
@@ -24,10 +23,10 @@ class NpmLogging(NpmCommand, LoggingCommand):
         return '.json'
 
     def _parse_args(self, namespace):
-        self._long = namespace.get('long', False)
+        self._long = namespace.get('long', False)  # pylint: disable=attribute-defined-outside-init
 
-        self._quiet = namespace.get('quiet', False)
-        self._verbose = namespace.get('verbose', False)
+        self._quiet = namespace.get('quiet', False)  # pylint: disable=attribute-defined-outside-init
+        self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
         text = f'Listing installed {self.desc[1]}'

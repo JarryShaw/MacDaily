@@ -10,11 +10,24 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.03.03'
+VERSION = '2019.03.07'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
 PROGRAM = ' '.join(sys.argv)    # arguments
+
+###########################################################
+# Environment Variables
+###########################################################
+
+# boolean mappings
+BOOLEAN_STATES = {'1': True, '0': False,
+                  'yes': True, 'no': False,
+                  'true': True, 'false': False,
+                  'on': True, 'off': False}
+
+# DEVMODE flag
+DEVMODE = BOOLEAN_STATES.get(os.environ.get('MACDAILY_DEVMODE', '').lower(), False)
 
 ###########################################################
 # Miscellaneous Constants
@@ -33,6 +46,10 @@ NAME = getpass.getuser()
 PWD = pwd.getpwnam(NAME)
 USER = PWD.pw_gecos
 PASS = PWD.pw_passwd
+
+# emoji mappings
+ORIG_BEER = '🍺'
+RESP_BEER = 'ð\x9f\x8dº'
 
 ###########################################################
 # Command Mappings

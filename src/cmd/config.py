@@ -44,7 +44,7 @@ CONFIG = ['[Path]',
           '[Daemon]',
           '# In this section, scheduled tasks are set up.',
           '# You may append and/or remove the time intervals.',
-          'archive     = false                                         ; archive logs',
+          'archive     = true                                          ; archive logs',
           'bundle      = false                                         ; bundle packages',
           'cleanup     = false                                         ; cleanup caches',
           'config      = false                                         ; config MacDaily',
@@ -57,9 +57,9 @@ CONFIG = ['[Path]',
           'uninstall   = false                                         ; uninstall packages',
           'update      = true                                          ; update packages',
           'schedule    =                                               ; scheduled timing (in 24 hours)',
-          '    8:00                                                    ; update & logging at 8:00',
-          '    22:30-update                                            ; update at 22:30',
-          '    23:00-logging                                           ; logging at 23:00',
+          '    8:00-update                                             ; update at 8:00',
+          '    15:30-update                                            ; update at 15:30',
+          '    23:00                                                   ; update, logging & archive at 23:00',
           '',
           '[Command]',
           '# In this section, command options are picked.',
@@ -196,7 +196,7 @@ def make_config(quiet=False, verbose=False):
     rcpath = os.path.expanduser('~/.dailyrc')
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[:4]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[:4]))  # pylint: disable=map-builtin-not-iterating
             print()
             print_wrap(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
             print_wrap(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -204,7 +204,7 @@ def make_config(quiet=False, verbose=False):
             dskdir = input('Name of your external hard disk []: ').ljust(41)
             config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
 
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[5:38]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[5:38]))  # pylint: disable=map-builtin-not-iterating
             print()
             print_wrap(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
             print_wrap(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
@@ -214,9 +214,9 @@ def make_config(quiet=False, verbose=False):
             if timing:
                 config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
             else:
-                config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[38:41]))
+                config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[38:41]))  # pylint: disable=map-builtin-not-iterating
 
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[41:51]))
+            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[41:51]))  # pylint: disable=map-builtin-not-iterating
             print()
             print_wrap(f'For better stability, {bold}MacDaily{reset} depends on several helper programs.')
             print_wrap('Your password may be necessary during the launch process.')

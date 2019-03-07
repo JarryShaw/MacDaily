@@ -28,7 +28,7 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     finally:
         if queue is not None:
             queue.put(RETURN)
-        return RETURN
+    return RETURN
 
 
 @retry(PASS)

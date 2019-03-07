@@ -2,14 +2,21 @@
 
 import os
 import re
+import time
 
+__version__ = time.strftime('%Y.%m.%d')
+
+context = list()
 with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const/macro.py')) as file:
     for line in file:
         match = re.match(r"VERSION = '(.*)'", line)
         if match is None:
-            continue
-        __version__ = match.groups()[0]
-        break
+            context.append(line)
+        else:
+            context.append(f"VERSION = {__version__!r}\n")
+
+with open(os.path.join(os.path.dirname(__file__), 'macdaily/util/const/macro.py'), 'w') as file:
+    file.writelines(context)
 
 context = list()
 with open(os.path.join(os.path.dirname(__file__), 'setup.py')) as file:

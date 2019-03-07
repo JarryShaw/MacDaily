@@ -10,7 +10,7 @@ import uuid
 from macdaily.cli.launch import get_launch_parser, parse_args
 from macdaily.cmd.archive import make_archive
 from macdaily.cmd.config import parse_config
-from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
+from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons  # pylint: disable=unused-import
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, purple, red, reset, under

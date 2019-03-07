@@ -7,21 +7,20 @@ import traceback
 import uuid
 
 from macdaily.cli.logging import parse_args
-from macdaily.cls.logging.apm import ApmLogging
-from macdaily.cls.logging.app import AppLogging
-from macdaily.cls.logging.brew import BrewLogging
-from macdaily.cls.logging.cask import CaskLogging
-from macdaily.cls.logging.gem import GemLogging
-from macdaily.cls.logging.mas import MasLogging
-from macdaily.cls.logging.npm import NpmLogging
-from macdaily.cls.logging.pip import PipLogging
-from macdaily.cls.logging.tap import TapLogging
+from macdaily.cls.logging.apm import ApmLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.app import AppLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.brew import BrewLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.cask import CaskLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.gem import GemLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.mas import MasLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.npm import NpmLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.pip import PipLogging  # pylint: disable=unused-import
+from macdaily.cls.logging.tap import TapLogging  # pylint: disable=unused-import
 from macdaily.cmd.archive import make_archive, make_storage
 from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
-from macdaily.util.const.term import (bold, green, purple, red, reset, under,
-                                      yellow)
+from macdaily.util.const.term import bold, green, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
 from macdaily.util.tools.get import get_pass
 from macdaily.util.tools.make import make_namespace
@@ -137,7 +136,7 @@ def logging(argv=None):
         text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
         print_misc(text, filename, redirect=quiet)
 
-    if len(cmd_list) == 0:
+    if len(cmd_list) == 0:  # pylint: disable=len-as-condition
         text = f'macdaily: {purple}logging{reset}: no packages recorded'
         print_term(text, os.devnull, redirect=quiet)
         for file in log_list:
