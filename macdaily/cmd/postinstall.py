@@ -58,7 +58,7 @@ class PostinstallCommand(BrewCommand):
             self._did_you_mean()
         else:
             self._check_list(path)
-        return self._check_confirm()
+        return self._check_confirm(path)
 
     def _check_list(self, path):
         text = 'Checking installed {}'.format(self.desc[1])

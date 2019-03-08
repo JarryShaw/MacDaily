@@ -46,10 +46,10 @@ def get_archive_parser():
 
 def parse_args(argv=None):
     if argv is None:
-        argv = sys.argv[1:]
+        argv = sys.argv[1:] or ['--help']
 
     # main parser process
     main_parser = get_archive_parser()
-    main_args = main_parser.parse_args(argv)
+    main_args = main_parser.parse_args(argv or ['--help'])
 
     return main_args

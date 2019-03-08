@@ -41,7 +41,7 @@ class ReinstallCommand(Command):
             self._did_you_mean()
         else:
             self._check_list(path)
-        return self._check_confirm()
+        return self._check_confirm(path)
 
     @abc.abstractmethod
     def _check_pkgs(self, path):
