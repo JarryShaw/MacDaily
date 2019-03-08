@@ -63,14 +63,14 @@ def retry(default=None):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            if sys.stdin.isatty():
+            if sys.stdin.isatty():  # pylint: disable=no-else-return
                 return func(*args, **kwargs)
             else:
                 QUEUE = multiprocessing.Queue(1)
                 kwargs['queue'] = QUEUE
                 for _ in range(3):
                     proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
-                    timer = threading.Timer(TIMEOUT, function=lambda: proc.kill())
+                    timer = threading.Timer(TIMEOUT, function=proc.kill)
                     timer.start()
                     proc.start()
                     proc.join()

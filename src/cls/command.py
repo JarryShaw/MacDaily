@@ -2,12 +2,16 @@
 
 import abc
 import copy
+import os
 import re
 import sys
 
+from macdaily.util.compat import subprocess
+from macdaily.util.const.macro import NODE, PYTHON2, PYTHON3, USR
 from macdaily.util.const.term import bold, green, red, reset, yellow
 from macdaily.util.tools.get import get_input
 from macdaily.util.tools.print import print_info, print_term
+from macdaily.util.tools.script import sudo
 
 
 class Command(metaclass=abc.ABCMeta):
@@ -221,12 +225,38 @@ class Command(metaclass=abc.ABCMeta):
             self._proc_fixmissing(path)
         self._proc_cleanup()
 
-    def _check_confirm(self):
+    def _check_confirm(self, path):
+        def chown(flag=False):
+            if not flag or self.mode != 'brew':
+                return flag
+
+            def _cross_check(packages, aliases):
+                for formula in aliases:
+                    if formula in packages:
+                        return True
+                return False
+
+            if _cross_check(self._var__temp_pkgs, NODE):
+                sudo(['chown', '-R', USR, '/usr/local/lib/node_modules'], os.devnull, self._password,
+                     timeout=self._timeout, redirect=True, verbose=False)
+
+            if _cross_check(self._var__temp_pkgs, PYTHON2):
+                version = subprocess.check_output([path, 'info', 'python@2']).splitlines()[0].split()[2][:3].decode()
+                sudo(['chown', '-R', USR, f'/usr/local/lib/python{version}'], os.devnull, self._password,
+                     timeout=self._timeout, redirect=True, verbose=False)
+
+            if _cross_check(self._var__temp_pkgs, PYTHON3):
+                version = subprocess.check_output([path, 'info', 'python']).splitlines()[0].split()[2][:3].decode()
+                sudo(['chown', '-R', USR, f'/usr/local/lib/python{version}'], os.devnull, self._password,
+                     timeout=self._timeout, redirect=True, verbose=False)
+
+            return flag
+
         self._var__temp_pkgs -= self._ignore
         if not self._var__temp_pkgs:
             text = f'macdaily-{self.cmd}: {green}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
             print_term(text, self._file, redirect=self._qflag)
-            return True
+            return chown(flag=True)
 
         job = self.job[1] if self._var__temp_pkgs else self.job[0]
         bold_pkgs = f'{reset}, {bold}'.join(self._var__temp_pkgs)
@@ -234,18 +264,18 @@ class Command(metaclass=abc.ABCMeta):
                 f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
         print_term(text, self._file, redirect=self._qflag)
         if self._yes or self._quiet:
-            return True
+            return chown(flag=True)
         while True:
             ans = get_input(self._confirm, f'Would you like to {self.act[0]}?',
                             prefix=f'{self.desc[0]} {job} available for {", ".join(self._var__temp_pkgs)}.\n\n',
                             suffix=f' ({green}y{reset}/{red}N{reset}) ')
             if re.match(r'[yY]', ans):
-                return True
+                return chown(flag=True)
             if re.match(r'[nN]', ans):
                 text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
                         f'{self.desc[0]} {job} postponed due to user cancellation')
                 print_term(text, self._file, redirect=self._qflag)
-                return False
+                return chown(flag=False)
             print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):

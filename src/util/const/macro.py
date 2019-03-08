@@ -10,7 +10,7 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.3.7.post2'
+VERSION = '2019.3.8'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
@@ -42,14 +42,19 @@ ROOT = str(pathlib.Path(__file__).resolve().parents[2])
 SHELL = os.getenv('SHELL', shutil.which('sh'))
 
 # user information
-NAME = getpass.getuser()
-PWD = pwd.getpwnam(NAME)
+USR = getpass.getuser()
+PWD = pwd.getpwnam(USR)
 USER = PWD.pw_gecos
 PASS = PWD.pw_passwd
 
 # emoji mappings
 ORIG_BEER = '🍺'
 RESP_BEER = 'ð\x9f\x8dº'
+
+# homebrew aliases
+NODE = {'node', 'node.js', 'node@11', 'nodejs', 'npm'}
+PYTHON2 = {'python@2', 'python2'}
+PYTHON3 = {'python', 'python3', 'python@3'}
 
 ###########################################################
 # Command Mappings
@@ -85,6 +90,7 @@ MAP_HELP = {'help', 'doc', 'man'}
 MAP_INSTALL = {'install', 'i'}
 MAP_LAUNCH = {'launch', 'init'}
 MAP_LOGGING = {'logging', 'log'}
+MAP_MAGIC = {'magic', 'whoop-de-doo'}
 MAP_POSTINSTALL = {'postinstall', 'post', 'ps'}
 MAP_REINSTALL = {'reinstall', 're'}
 MAP_UNINSTALL = {'uninstall', 'un', 'unlink', 'remove', 'rm', 'r'}

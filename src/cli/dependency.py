@@ -165,7 +165,7 @@ def get_brew_parser():
 
 def parse_args(argv=None):
     if argv is None:
-        argv = sys.argv[1:]
+        argv = sys.argv[1:] or ['--help']
 
     # main parser process
     main_parser = get_dependency_parser()
@@ -198,7 +198,7 @@ def parse_args(argv=None):
 
             # parse mode arguments
             parser = get_parser()
-            args = parser.parse_args(more_opts[index:])
+            args = parser.parse_args(more_opts[index:] or ['--help'])
 
             # store/update parsed arguments
             opt_dict = getattr(main_args, option, dict())
