@@ -109,6 +109,9 @@ class Macdaily < Formula
 
   depends_on "python"
   depends_on "expect" => :recommended
+  depends_on "cowsay" => :optional
+  depends_on "fortune" => :optional
+  depends_on "lolcat" => :optional
 
   {CONFIGUPDATER}
 

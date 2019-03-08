@@ -6,7 +6,7 @@ macdaily-install-brew
 Homebrew Formula Automated Installer
 ------------------------------------
 
-:Version: v2019.3.7.post2
+:Version: v2019.3.8
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

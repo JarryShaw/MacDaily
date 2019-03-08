@@ -46,7 +46,7 @@ class InstallCommand(Command):
             print_info(text, self._file, redirect=self._qflag)
 
             self._var__temp_pkgs = self._packages  # pylint: disable=attribute-defined-outside-init
-            if self._check_confirm():
+            if self._check_confirm(path):
                 self._proc_install(path)
             else:
                 text = f'No {self.desc[1]} to install for executable {path!r}'

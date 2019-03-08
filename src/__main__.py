@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import re
 import sys
 
 from macdaily.api.archive import archive
@@ -16,10 +17,11 @@ from macdaily.api.postinstall import postinstall
 from macdaily.api.reinstall import reinstall
 from macdaily.api.uninstall import uninstall
 from macdaily.api.update import update
+from macdaily.res.magic import whoop_de_doo
 from macdaily.util.const.macro import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP,
                                        MAP_COMMANDS, MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP,
-                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
-                                       MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE)
+                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING, MAP_MAGIC,
+                                       MAP_POSTINSTALL, MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE)
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 from macdaily.util.error import CommandNotImplemented
@@ -45,13 +47,15 @@ def get_parser():
 def main():
     # parse args
     parser = get_parser()
-    args = parser.parse_args(sys.argv[1:2])
+    args = parser.parse_args(sys.argv[1:2] or ['--help'])
 
     # fetch command & paras
     command = args.command.lower()
-    options = sys.argv[2:]
+    options = sys.argv[2:] or ['--help']
 
-    if command in MAP_COMMANDS:
+    if command in MAP_MAGIC:
+        whoop_de_doo()
+    elif command in MAP_COMMANDS:
         print(COMMANDS, end='')
     elif command in MAP_ARCHIVE:
         archive(options)
@@ -81,8 +85,14 @@ def main():
     elif command in MAP_UPDATE:
         update(options)
     else:
-        parser.error(f"argument CMD: invalid choice: {command!r} "
-                     f"(choose from {', '.join(sorted(MAP_ALL))})")
+        pattern = rf'.*{command}.*'
+        matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))
+        if matches:
+            parser.error(f"argument CMD: invalid choice: {command!r} "
+                         f"(did you mean: '{matches}')")
+        else:
+            parser.error(f"argument CMD: invalid choice: {command!r} "
+                         f"(choose from {', '.join(sorted(MAP_ALL))})")
 
 
 if __name__ == '__main__':
