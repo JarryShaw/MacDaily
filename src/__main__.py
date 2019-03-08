@@ -31,7 +31,8 @@ from macdaily.util.tools.deco import beholder
 def get_parser():
     parser = argparse.ArgumentParser(prog='MacDaily',
                                      description='macOS Automated Package Manager',
-                                     usage='macdaily [options] <command> ...')
+                                     usage='macdaily [options] <command> ...',
+                                     epilog=f'{bold} This MacDaily has Super Cow Powers.{reset}')
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     group = parser.add_argument_group('command selection',
@@ -51,7 +52,7 @@ def main():
 
     # fetch command & paras
     command = args.command.lower()
-    options = sys.argv[2:] or ['--help']
+    options = sys.argv[2:]
 
     if command in MAP_MAGIC:
         whoop_de_doo()
@@ -86,13 +87,13 @@ def main():
         update(options)
     else:
         pattern = rf'.*{command}.*'
-        matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))
+        matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
         if matches:
             parser.error(f"argument CMD: invalid choice: {command!r} "
                          f"(did you mean: '{matches}')")
         else:
             parser.error(f"argument CMD: invalid choice: {command!r} "
-                         f"(choose from {', '.join(sorted(MAP_ALL))})")
+                         f"(choose from '{', '.join(sorted(MAP_ALL))}')")
 
 
 if __name__ == '__main__':

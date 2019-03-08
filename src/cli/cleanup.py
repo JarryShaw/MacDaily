@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import re
 import sys
 
+from macdaily.util.const.macro import CMD_CLEANUP
 from macdaily.util.const.macro import VERSION as __version__
 
 
@@ -164,11 +166,11 @@ def get_cask_parser():
 
 def parse_args(argv=None):
     if argv is None:
-        argv = sys.argv[1:] or ['--help']
+        argv = sys.argv[1:]
 
     # main parser process
     main_parser = get_cleanup_parser()
-    main_args = main_parser.parse_args(argv)
+    main_args = main_parser.parse_args(argv or ['--help'])
 
     def _update(d, e):
         for k, v in e.items():
@@ -193,7 +195,13 @@ def parse_args(argv=None):
             # check if legal mode
             get_parser = globals().get(f'get_{option}_parser')
             if get_parser is None:
-                main_parser.error(f'unrecognized arguments: {option}')
+                pattern = rf'.*{option}.*'
+                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_CLEANUP))  # pylint: disable=cell-var-from-loop
+                if matches:
+                    main_parser.error(f'unrecognized arguments: {option!r} '
+                                      f"(did you mean: '{matches}')")
+                else:
+                    main_parser.error(f'unrecognized arguments: {option!r}')
 
             # parse mode arguments
             parser = get_parser()
