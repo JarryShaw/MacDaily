@@ -6,7 +6,7 @@ macdaily-install-apm
 Atom Plug-In Automated Installer
 --------------------------------
 
-:Version: v2019.3.8
+:Version: v2019.3.8.post1
 :Date: November 24, 2018
 :Manual section: 1
 :Author:

@@ -57,7 +57,7 @@ def get_postinstall_parser():
 
 def parse_args(argv=None):
     if argv is None:
-        argv = sys.argv[1:] or ['--help']
+        argv = sys.argv[1:]
 
     # parser process
     parser = get_postinstall_parser()

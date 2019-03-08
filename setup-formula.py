@@ -45,7 +45,7 @@ with tempfile.TemporaryDirectory() as tempdir:
                            f"--python-version={python_version}",
                            f'--implementation={implementation}',
                            f'--dest={tempdir}',
-                           '--no-deps'])
+                           '--no-deps'], stdout=subprocess.DEVNULL)
     archive = f'{tempdir}/macdaily-{VERSION}-{implementation}{python_version}-none-{platform}.whl'
     with open(archive, 'rb') as file:
         content = file.read()
@@ -76,6 +76,7 @@ if match is None:
     MACDAILY = (f'url "{MACDAILY_URL}"\n'
                 f'  sha256 "{MACDAILY_SHA}"')
     DEVEL = (f'url "{DEVEL_URL}"\n'
+             f'    version "{VERSION}.{DEVEL_SUFFIX}"\n'
              f'    sha256 "{DEVEL_SHA}"')
 else:
     version, revision = match.groups()
@@ -84,7 +85,7 @@ else:
                 f'  sha256 "{MACDAILY_SHA}"\n'
                 f'  revision {revision}')
     DEVEL = (f'url "{DEVEL_URL}"\n'
-             f'    version "{version}_{revision}.{DEVEL_SUFFIX}-devel"\n'
+             f'    version "{version}_{revision}.{DEVEL_SUFFIX}"\n'
              f'    sha256 "{DEVEL_SHA}"')
 
 FORMULA = f'''\
@@ -103,9 +104,9 @@ class Macdaily < Formula
 
   bottle :unneeded
 
-  option "without-config", "build without config modification support"
-  option "without-tree", "build without tree format support"
-  option "without-ptyng", "build without alternative PTY support"
+  option "without-config", "Build without config modification support"
+  option "without-tree", "Build without tree format support"
+  option "without-ptyng", "Build without alternative PTY support"
 
   depends_on "python"
   depends_on "expect" => :recommended

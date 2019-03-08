@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 
 from macdaily.cli.help import get_help_parser, parse_args
-from macdaily.util.const.macro import (COMMANDS, MAN_ARCHIVE, MAN_BUNDLE, MAN_CLEANUP, MAN_CONFIG,  # pylint: disable=unused-import
-                                       MAN_DEPENDENCY, MAN_HELP, MAN_INSTALL, MAN_LAUNCH,
-                                       MAN_LOGGING, MAN_POSTINSTALL, MAN_REINSTALL, MAN_UNINSTALL,
-                                       MAN_UPDATE, MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP,
-                                       MAP_COMMANDS, MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP,
-                                       MAP_INSTALL, MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL,
-                                       MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE, ROOT)
+from macdaily.util.const.macro import (CMD_ARCHIVE, CMD_BUNDLE,  # pylint: disable=unused-import
+                                       CMD_CLEANUP, CMD_CONFIG, CMD_DEPENDENCY, CMD_HELP,
+                                       CMD_INSTALL, CMD_LAUNCH, CMD_LOGGING, CMD_POSTINSTALL,
+                                       CMD_REINSTALL, CMD_UNINSTALL, CMD_UPDATE, COMMANDS, MAP_ALL,
+                                       MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP, MAP_COMMANDS,
+                                       MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
+                                       MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL, MAP_REINSTALL,
+                                       MAP_UNINSTALL, MAP_UPDATE, ROOT)
 from macdaily.util.error import CommandNotImplemented
 
 
@@ -22,12 +24,13 @@ def help_(argv=None):
         pth = os.path.join(ROOT, 'man/macdaily.1')
         os.execlp('man', 'man', pth)
 
-    if args.command in MAP_COMMANDS:
+    command = args.command.lower()
+    if command in MAP_COMMANDS:
         print(COMMANDS, end='')
         return
 
     # split args, fetch cmd & sub
-    temp = args.command.split('-', maxsplit=1)
+    temp = command.split('-', maxsplit=1)
     if len(temp) == 2:
         cmd, sub = temp
     else:
@@ -41,41 +44,54 @@ def help_(argv=None):
             pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{sub}.1')
         if pth is None:
             parser = get_help_parser()
-            parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                         f"(choose from {', '.join(sorted(MAP_ALL))})")
+            pattern = rf'.*{command}.*'
+            matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
+                                                (r'%s-%s' % (cmd, sub) for sub in globals().get(f'CMD_{cmd.upper()}', set()))))
+            if matches:
+                parser.error(f"argument CMD: invalid choice: {args.command!r} "
+                             f"(did you mean: '{matches}')")
+            else:
+                parser.error(f"argument CMD: invalid choice: {args.command!r} "
+                             f"(choose from {cmd}-{(', %s-' % cmd).join(sorted(globals().get(f'CMD_{cmd.upper()}', set())))})")
         os.execlp('man', 'man', pth)
 
     if cmd in MAP_ARCHIVE:
-        _find_help('archive', sub, MAN_ARCHIVE)
+        _find_help('archive', sub, CMD_ARCHIVE)
     elif cmd in MAP_BUNDLE:
-        # _find_help('bundle', sub, MAN_BUNDLE)
+        # _find_help('bundle', sub, CMD_BUNDLE)
         raise CommandNotImplemented
     elif cmd in MAP_CLEANUP:
-        _find_help('cleanup', sub, MAN_CLEANUP)
+        _find_help('cleanup', sub, CMD_CLEANUP)
     elif cmd in MAP_CONFIG:
-        _find_help('config', sub, MAN_CONFIG)
+        _find_help('config', sub, CMD_CONFIG)
     elif cmd in MAP_DEPENDENCY:
-        _find_help('dependency', sub, MAN_DEPENDENCY)
+        _find_help('dependency', sub, CMD_DEPENDENCY)
     elif cmd in MAP_HELP:
-        _find_help('help', sub, MAN_HELP)
+        _find_help('help', sub, CMD_HELP)
     elif cmd in MAP_INSTALL:
-        _find_help('install', sub, MAN_INSTALL)
+        _find_help('install', sub, CMD_INSTALL)
     elif cmd in MAP_LAUNCH:
-        _find_help('launch', sub, MAN_LAUNCH)
+        _find_help('launch', sub, CMD_LAUNCH)
     elif cmd in MAP_LOGGING:
-        _find_help('logging', sub, MAN_LOGGING)
+        _find_help('logging', sub, CMD_LOGGING)
     elif cmd in MAP_POSTINSTALL:
-        _find_help('postinstall', sub, MAN_POSTINSTALL)
+        _find_help('postinstall', sub, CMD_POSTINSTALL)
     elif cmd in MAP_REINSTALL:
-        _find_help('reinstall', sub, MAN_REINSTALL)
+        _find_help('reinstall', sub, CMD_REINSTALL)
     elif cmd in MAP_UNINSTALL:
-        _find_help('uninstall', sub, MAN_UNINSTALL)
+        _find_help('uninstall', sub, CMD_UNINSTALL)
     elif cmd in MAP_UPDATE:
-        _find_help('update', sub, MAN_UPDATE)
+        _find_help('update', sub, CMD_UPDATE)
     else:
         parser = get_help_parser()
-        parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                     f"(choose from {', '.join(sorted(MAP_ALL))})")
+        pattern = rf'.*{command}.*'
+        matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
+        if matches:
+            parser.error(f'unrecognized arguments: {args.command!r} '
+                         f"(did you mean: '{matches}')")
+        else:
+            parser.error(f"argument CMD: invalid choice: {args.command!r} "
+                         f"(choose from {', '.join(sorted(MAP_ALL))})")
 
 
 if __name__ == '__main__':
