@@ -47,7 +47,7 @@ def get_launch_parser():
 
 def parse_args(argv=None):
     if argv is None:
-        argv = sys.argv[1:] or ['--help']
+        argv = sys.argv[1:]
 
     # main parser process
     main_parser = get_launch_parser()

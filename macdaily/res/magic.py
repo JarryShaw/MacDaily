@@ -7,7 +7,6 @@ import shutil
 from macdaily.util.compat import subprocess
 
 # useful programmes
-BREW = shutil.which('brew')
 FORTUNE = shutil.which('fortune')
 COWSAY = shutil.which('cowsay')
 LOLCAT = shutil.which('lolcat')
@@ -32,6 +31,18 @@ DB = {
 }
 
 
+def cowfile():
+    try:
+        proc = subprocess.check_output([COWSAY, '-l'], stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return list()
+
+    cows = list()
+    for line in proc.strip().splitlines()[1:]:
+        cows.extend(line.decode().split())
+    return cows
+
+
 def decode():
     d = {}
     for c in (65, 97):
@@ -41,6 +52,7 @@ def decode():
 
 
 def install(formula):
+    BREW = shutil.which('brew')
     if BREW is None:
         return False
     try:
@@ -63,19 +75,25 @@ def whoop_de_doo():
 
     if COWSAY is None:
         if install('cowsay'):
-            cowsay = '/usr/local/opt/cowsay/bin/cowsay'
+            exec_list = ['/usr/local/opt/cowsay/bin/cowsay', '/usr/local/opt/cowsay/bin/cowthink']
+            cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
         else:
             cowsay = 'cat'
     else:
-        cowsay = 'cowsay'
+        COWTHINK = shutil.which('cowthink')
+        if COWTHINK is None:
+            exec_list = [COWSAY]
+        else:
+            exec_list = [COWSAY, COWTHINK]
+        cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
 
     if LOLCAT is None:
         if install('lolcat'):
-            lolcat = '/usr/local/opt/lolcat/bin/lolcat'
+            lolcat = '/usr/local/opt/lolcat/bin/lolcat -p {}'.format(random.random()*10.0)
         else:
             lolcat = 'cat'
     else:
-        lolcat = 'lolcat'
+        lolcat = 'lolcat -p {}'.format(random.random()*10.0)
 
     os.system('{} | {} | {}'.format(fortune, cowsay, lolcat))
 

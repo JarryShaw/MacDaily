@@ -36,6 +36,6 @@ def parse_args(argv=None):
 
     # main parser process
     main_parser = get_help_parser()
-    main_args = main_parser.parse_args(argv or ['--help'])
+    main_args = main_parser.parse_args(argv)
 
     return main_args
