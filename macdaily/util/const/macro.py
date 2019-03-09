@@ -10,7 +10,7 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.3.8.post1'
+VERSION = '2019.3.9'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
@@ -90,7 +90,7 @@ MAP_HELP = {'help', 'doc', 'man'}
 MAP_INSTALL = {'install', 'i'}
 MAP_LAUNCH = {'launch', 'init'}
 MAP_LOGGING = {'logging', 'log'}
-MAP_MAGIC = {'magic', 'whoop-de-doo'}
+MAP_MAGIC = {'magic', 'moo', 'whoop-de-doo'}
 MAP_POSTINSTALL = {'postinstall', 'post', 'ps'}
 MAP_REINSTALL = {'reinstall', 're'}
 MAP_UNINSTALL = {'uninstall', 'un', 'unlink', 'remove', 'rm', 'r'}
