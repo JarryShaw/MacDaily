@@ -43,16 +43,17 @@ def help_(argv=None):
         if sub in man:
             pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{sub}.1')
         if pth is None:
+            CMD = globals().get(f'CMD_{cmd.upper()}', set())
             parser = get_help_parser()
             pattern = rf'.*{command}.*'
             matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
-                                                (r'%s-%s' % (cmd, sub) for sub in globals().get(f'CMD_{cmd.upper()}', set()))))
+                                          (r'%s-%s' % (cmd, sub) for sub in CMD)))
             if matches:
                 parser.error(f"argument CMD: invalid choice: {args.command!r} "
                              f"(did you mean: '{matches}')")
             else:
                 parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                             f"(choose from {cmd}-{(', %s-' % cmd).join(sorted(globals().get(f'CMD_{cmd.upper()}', set())))})")
+                             f"(choose from {cmd}-{(', %s-' % cmd).join(sorted(CMD))})")
         os.execlp('man', 'man', pth)
 
     if cmd in MAP_ARCHIVE:
@@ -84,7 +85,7 @@ def help_(argv=None):
         _find_help('update', sub, CMD_UPDATE)
     else:
         parser = get_help_parser()
-        pattern = rf'.*{command}.*'
+        pattern = rf'.*{cmd}.*'
         matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
         if matches:
             parser.error(f'unrecognized arguments: {args.command!r} '

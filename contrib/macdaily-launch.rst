@@ -6,9 +6,9 @@ macdaily-launch
 MacDaily Dependency Launch Helper
 ---------------------------------
 
-:Version: v2019.3.8.post2
-:Date: November 24, 2018
-:Manual section: 1
+:Version: v2019.3.9
+:Date: March 09, 2019
+:Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
     of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
@@ -47,9 +47,27 @@ specification arguments
 general arguments
 -----------------
 
--a, --all         launch all help programs, i.e. *askpass*,
-                   *confirm* and *daemons*
--q, --quiet       run in quiet mode, with no output information
--v, --verbose     run in verbose mode, with detailed output information
--n, --no-cleanup  do not run cleanup process
--l, --show-log    open log in *Console.app* upon completion of command
+-a, --all          launch all help programs, i.e. *askpass*,
+                    *confirm* and *daemons*
+-q, --quiet        run in quiet mode, with no output information
+-v, --verbose      run in verbose mode, with detailed output information
+-n, --no-cleanup   do not run cleanup process
+-l, --show-log     open log in *Console.app* upon completion of command
+
+SEE ALSO
+========
+
+* *askpass* helper programs
+
+  * ``sudo(8)``
+  * ``sudo.conf(5)``
+
+* *confirm* helper programs
+
+  * ``osascript(1)``
+  * ``osalang(1)``
+
+* *daemons* helper programs
+
+  * ``launchctl(1)``
+  * ``launchd.plist(5)``
