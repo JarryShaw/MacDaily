@@ -44,7 +44,11 @@ for rst in os.listdir(os.path.join(os.path.dirname(__file__), 'contrib')):
         for line in file:
             match = re.match(r":Version: (.*)", line)
             if match is None:
-                context.append(line)
+                match =re.match(r":Date: (.*)", line)
+                if match is None:
+                    context.append(line)
+                else:
+                    context.append(f":Date: {time.strftime('%B %d, %Y')}\n")
             else:
                 context.append(f':Version: v{__version__}\n')
 

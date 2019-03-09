@@ -6,9 +6,9 @@ macdaily-archive
 MacDaily Log Archive Utility
 ----------------------------
 
-:Version: v2019.3.8.post2
-:Date: November 23, 2018
-:Manual section: 1
+:Version: v2019.3.9
+:Date: March 09, 2019
+:Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
     of *MacDaily*. Please contact me at *jarryshaw@icloud.com*.
