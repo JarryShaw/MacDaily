@@ -1,5 +1,20 @@
 # Change Log
 
+## [v2019.3.9](https://github.com/JarryShaw/MacDaily/tree/v2019.3.9) (2019-03-09)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.9.76cbfe-devel...v2019.3.9)
+
+**Merged pull requests:**
+
+- New distribution \[2019.03.09\] [\#48](https://github.com/JarryShaw/MacDaily/pull/48) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2019.3.9.76cbfe-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.3.9.76cbfe-devel) (2019-03-09)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.8.post1...v2019.3.9.76cbfe-devel)
+
+**Merged pull requests:**
+
+- New distribution \[2019.03.08.post2\] [\#47](https://github.com/JarryShaw/MacDaily/pull/47) ([JarryShaw](https://github.com/JarryShaw))
+- New distribution \[2019.03.08.post1\] [\#46](https://github.com/JarryShaw/MacDaily/pull/46) ([JarryShaw](https://github.com/JarryShaw))
+
 ## [v2019.3.8.post1](https://github.com/JarryShaw/MacDaily/tree/v2019.3.8.post1) (2019-03-08)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.8.post1.ca00e0-devel...v2019.3.8.post1)
 
@@ -54,17 +69,17 @@
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07...v2019.3.7.-devel)
 
 ## [v2019.03.07](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07) (2019-03-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.e3b0c44298fc-devel...v2019.03.07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.-devel...v2019.03.07)
 
 **Merged pull requests:**
 
 - New distribution \[2019.03.07\] [\#40](https://github.com/JarryShaw/MacDaily/pull/40) ([JarryShaw](https://github.com/JarryShaw))
 
-## [v2019.03.07.e3b0c44298fc-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07.e3b0c44298fc-devel) (2019-03-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.-devel...v2019.03.07.e3b0c44298fc-devel)
-
 ## [v2019.03.07.-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07.-devel) (2019-03-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.03...v2019.03.07.-devel)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.07.e3b0c44298fc-devel...v2019.03.07.-devel)
+
+## [v2019.03.07.e3b0c44298fc-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.03.07.e3b0c44298fc-devel) (2019-03-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.03...v2019.03.07.e3b0c44298fc-devel)
 
 ## [v2019.03.03](https://github.com/JarryShaw/MacDaily/tree/v2019.03.03) (2019-03-03)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.03.03.devel...v2019.03.03)
@@ -205,23 +220,23 @@
 - New distribution \[2018.01.08\] [\#22](https://github.com/JarryShaw/MacDaily/pull/22) ([JarryShaw](https://github.com/JarryShaw))
 
 ## [v2019.01.08.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.08.devel) (2019-01-08)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v...v2019.01.08.devel)
-
-## [v](https://github.com/JarryShaw/MacDaily/tree/v) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07...v)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07...v2019.01.08.devel)
 
 ## [v2019.01.07](https://github.com/JarryShaw/MacDaily/tree/v2019.01.07) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07.devel...v2019.01.07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v...v2019.01.07)
+
+## [v](https://github.com/JarryShaw/MacDaily/tree/v) (2019-01-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v.devel...v)
 
 **Merged pull requests:**
 
 - New distribution \[2018.01.07\] [\#21](https://github.com/JarryShaw/MacDaily/pull/21) ([JarryShaw](https://github.com/JarryShaw))
 
-## [v2019.01.07.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.07.devel) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v.devel...v2019.01.07.devel)
-
 ## [v.devel](https://github.com/JarryShaw/MacDaily/tree/v.devel) (2019-01-07)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.17...v.devel)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.07.devel...v.devel)
+
+## [v2019.01.07.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.07.devel) (2019-01-07)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.17...v2019.01.07.devel)
 
 **Merged pull requests:**
 
@@ -263,17 +278,17 @@
 - Update devel branch based on master \[2018.12.15\] [\#14](https://github.com/JarryShaw/MacDaily/pull/14) ([JarryShaw](https://github.com/JarryShaw))
 
 ## [v2018.12.15](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15)
 
 **Merged pull requests:**
 
 - Merge devel branch on v2018.12.15 [\#13](https://github.com/JarryShaw/MacDaily/pull/13) ([JarryShaw](https://github.com/JarryShaw))
 
-## [v2018.12.15.dev](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.dev) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.devel...v2018.12.15.dev)
-
 ## [v2018.12.15.devel](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.devel) (2018-12-15)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.devel)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.15.dev...v2018.12.15.devel)
+
+## [v2018.12.15.dev](https://github.com/JarryShaw/MacDaily/tree/v2018.12.15.dev) (2018-12-15)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2018.12.12.post1...v2018.12.15.dev)
 
 **Merged pull requests:**
 
