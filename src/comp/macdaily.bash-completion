@@ -2736,7 +2736,7 @@ _macdaily() {
   then
     # Prefix newline to prevent not checking the first command.
     local cmds=$'\n'"$(macdaily commands | tail +2 | sed -e '$ d' | awk '{print $1}')"
-    __macdaily_comp "${cmds} magic"
+    __macdaily_comp "${cmds} magic moo whoop-dee-do"
     return
   fi
 
