@@ -6,7 +6,7 @@ macdaily-update-gem
 Ruby Gem Update Automator
 -------------------------
 
-:Version: v2019.3.8.post1
+:Version: v2019.3.8.post2
 :Date: November 24, 2018
 :Manual section: 1
 :Author:
