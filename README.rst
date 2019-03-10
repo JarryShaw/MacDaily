@@ -15,6 +15,10 @@ MacDaily - macOS Automated Package Manager
 - `About <#about>`__
 - `Installation <#installation>`__
 - `Configuration <#configuration>`__
+
+  - `Config File <#config-file>`__
+  - `Environment <#environment>`__
+
 - `Usage Manual <#usage-manual>`__
 
   - `Start-Up <#start-up>`__
@@ -182,6 +186,9 @@ NB
     MacDaily now supports configuration commands,
     see manual of |config|_ command for more information.
 
+Config File
+~~~~~~~~~~~
+
 The configuration file should lie under ``~/.dailyrc``, which is hidden
 from Finder by macOS. To review or edit it, you may use text editors
 like ``vim`` and/or ``nano``, or other graphic editors, such as Sublime
@@ -278,11 +285,120 @@ Last but no least, in section ``Miscellaneous``, you should **NEVER**
 modify any contents under this section in order to keep MacDaily
 working. However, you may set up this part with |config|_ command.
 
-NB
-    MacDaily currently supports two environment variables.
+Environment
+~~~~~~~~~~~
 
-    - ``SUDO_PASSWORD`` -- password of your current account
-    - ``MACDAILY_DEVMODE`` -- enabled development mode [only for testing]
+MacDaily currently supports two environment variables. For boolean
+values, MacDaily currently uses the same mapping as |getboolean|_
+function in Python.
+
++----------+----------+-----------+-----------+
+|  Value   | Boolean  |   Value   |  Boolean  |
++==========+==========+===========+===========+
+|  ``1``   | ``True`` |   ``0``   | ``False`` |
++----------+----------+-----------+-----------+
+| ``yes``  | ``True`` |  ``no``   | ``False`` |
++----------+----------+-----------+-----------+
+| ``true`` | ``True`` | ``false`` | ``False`` |
++----------+----------+-----------+-----------+
+|  ``on``  | ``True`` |  ``off``  | ``False`` |
++----------+----------+-----------+-----------+
+
+NB
+    Environment variables must have a value set  to  be  detected.
+    For  example, ``export MACDAILY_DEVMODE=1`` rather than just
+    ``export MACDAILY_DEVMODE``.
+
+.. |getboolean| replace:: ``configparser.ConfigParser.getboolean``
+.. _getboolean: https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.getboolean
+
+- ``SUDO_PASSWORD``
+    password of your current account (for ``sudo(8)`` command)
+
+- ``MACDAILY_LOGDIR``
+    path where logs will be stored
+
+    *default*: ``~/Library/Logs/MacDaily``
+
+- ``MACDAILY_DSKDIR``
+    path where your hard disk lies
+
+- ``MACDAILY_ARCDIR``
+    path where ancient logs archive; log archives will be named
+    as ``archive.zip``, while other archives (e.g. Homebrew
+    caches) will remain in directories as where they were from.
+
+    *default*: ``${MACDAILY_DSKDIR}/Developers``
+
+- ``MACDAILY_LIMIT``
+    timeout limit for shell commands in seconds
+
+    *default*: ``1,000``
+
+- ``MACDAILY_RETRY``
+    retry timeout for input prompts in seconds
+
+    *default*: ``60``
+
+- ``MACDAILY_CLEANUP``
+    run cleanup process after any operation (MacDaily command)
+
+    *default*: ``true``
+
+- ``MACDAILY_APM``
+    disable operations (MacDaily commands) on **Atom plug-ins**
+
+    *default*: ``true``
+
+- ``MACDAILY_APP``
+    disable operations (MacDaily commands) on **macOS applications**
+
+    *default*: ``true``
+
+- ``MACDAILY_BREW``
+    disable operations (MacDaily commands) on **Homebrew Formulae**
+
+    *default*: ``true``
+
+- ``MACDAILY_CASK``
+    disable operations (MacDaily commands) on **Homebrew Casks**
+
+    *default*: ``true``
+
+- ``MACDAILY_GEM``
+    disable operations (MacDaily commands) on **Ruby gems**
+
+    *default*: ``true``
+
+- ``MACDAILY_MAS``
+    disable operations (MacDaily commands) on **Mac App Store applications**
+
+    *default*: ``true``
+
+- ``MACDAILY_NPM``
+    disable operations (MacDaily commands) on **Node.js modules**
+
+    *default*: ``true``
+
+- ``MACDAILY_PIP``
+    disable operations (MacDaily commands) on **Python packages**
+
+    *default*: ``true``
+
+- ``MACDAILY_system``
+    disable operations (MacDaily commands) on **macOS software**
+
+    *default*: ``true``
+
+- ``MACDAILY_TAP``
+    disable operations (MacDaily commands) on **Homebrew Taps**
+
+    *default*: ``true``
+
+- ``MACDAILY_DEVMODE``
+    enabled development mode (*only for debugging*)
+
+    *default*: ``false``
 
 Usage Manual
 ------------

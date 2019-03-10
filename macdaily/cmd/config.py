@@ -12,12 +12,12 @@ import shlex
 import sys
 
 from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
-from macdaily.util.const.macro import ROOT
+from macdaily.util.const.macro import ROOT, USER
 from macdaily.util.const.term import bold, purple, reset, under
 from macdaily.util.error import ConfigNotFoundError
-from macdaily.util.tools.get import get_pass
+from macdaily.util.tools.get import get_boolean, get_int, get_pass, get_path
 from macdaily.util.tools.misc import run_script
-from macdaily.util.tools.print import print_misc, print_term, print_wrap
+from macdaily.util.tools.print import print_info, print_misc, print_term, print_wrap
 
 CONFIG = ['[Path]',
           '# In this section, paths for log files are specified.',
@@ -57,13 +57,14 @@ CONFIG = ['[Path]',
           'uninstall   = false                                         ; uninstall packages',
           'update      = true                                          ; update packages',
           'schedule    =                                               ; scheduled timing (in 24 hours)',
-          '    8:00-update                                             ; update at 8:00',
-          '    15:30-update                                            ; update at 15:30',
-          '    23:00                                                   ; update, logging & archive at 23:00',
+          '    10:00-update                                            ; update at 10:00',
+          '    22:00-logging                                           ; logging at 22:00',
+          '    23:00-archive                                           ; archive at 23:00',
           '',
           '[Command]',
           '# In this section, command options are picked.',
           '# Do make sure these options are available for commands.',
+          'archive = --all --quiet',
           'update  = --all --quiet --show-log',
           'logging = --all --quiet --show-log',
           '',
@@ -89,12 +90,16 @@ def get_config():
 def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
+    print_info('Creating a config file (.dailyrc) for {}...'.format(USER), os.devnull, redirect=quiet)
+
+    dskdir = input('Name of your external hard disk []: ')
+    CONFIG[4] = 'dskdir = /Volumes/{} ; path where your hard disk lies'.format(dskdir.ljust(41))
 
     askpass = launch_askpass(quiet=quiet, verbose=verbose)
     confirm = launch_confirm(quiet=quiet, verbose=verbose)
 
-    CONFIG[51] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
-    CONFIG[52] = 'confirm = {} ; confirm utility for MacDaily'.format(confirm.ljust(49))
+    CONFIG[52] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
+    CONFIG[53] = 'confirm = {} ; confirm utility for MacDaily'.format(confirm.ljust(49))
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
@@ -118,19 +123,19 @@ def parse_config(quiet=False, verbose=False):
 
     # Path section
     for name, path in config['Path'].items():
-        cfg_dict['Path'][name] = os.environ.get('MACDAILY_{}'.format(name.upper()),
-                                                os.path.realpath(os.path.expanduser(path)))
+        cfg_dict['Path'][name] = get_path('MACDAILY_{}'.format(name.upper()), path)
 
     # Mode section
     for mode in config['Mode'].keys():
-        cfg_dict['Mode'][mode] = config['Mode'].getboolean(mode, False)
+        cfg_dict['Mode'][mode] = get_boolean('MACDAILY_{}'.format(mode.upper()),
+                                             config['Mode'].getboolean(mode, False))
 
     # Daemon section
     daemon_list = list()
-    for mode in {'archive', 'bundle', 'cleanup', 'config', 'dependency', 'launch',
-                 'logging', 'postinstall', 'reinstall', 'uninstall', 'update'}:
-        if config['Daemon'].getboolean(mode, False):
-            daemon_list.append(mode)
+    for command in {'archive', 'bundle', 'cleanup', 'config', 'dependency', 'launch',
+                    'logging', 'postinstall', 'reinstall', 'uninstall', 'update'}:
+        if config['Daemon'].getboolean(command, False):
+            daemon_list.append(command)
 
     daemon_dict = collections.defaultdict(list)
     for daemon in config['Daemon']['schedule'].strip().splitlines():
@@ -140,9 +145,9 @@ def parse_config(quiet=False, verbose=False):
             if len(union) == 2:
                 daemon_dict[union[1]].append(dict(Hour=time.hour, Minute=time.minute))
             else:
-                for mode in daemon_list:
-                    daemon_dict[mode].append(dict(Hour=time.hour, Minute=time.minute))
-    cfg_dict['Daemon'].update(daemon_dict)
+                for command in daemon_list:
+                    daemon_dict[command].append(dict(Hour=time.hour, Minute=time.minute))
+    cfg_dict['Daemon'].update(dict(daemon_dict))
 
     # Command section
     for mode, argv in config['Command'].items():
@@ -169,8 +174,10 @@ def parse_config(quiet=False, verbose=False):
         else:
             run_script(['sudo', 'chmod', '+x', confirm], quiet, verbose)
 
-    limit = config['Miscellaneous'].getint('limit', 1000)
-    retry = config['Miscellaneous'].getint('retry', 60)
+    limit = get_int('MACDAILY_LIMIT',
+                    config['Miscellaneous'].getint('limit', 1000))
+    retry = get_int('MACDAILY_RETRY',
+                    config['Miscellaneous'].getint('retry', 60))
 
     cfg_dict['Miscellaneous']['askpass'] = askpass
     cfg_dict['Miscellaneous']['confirm'] = confirm
@@ -208,15 +215,15 @@ def make_config(quiet=False, verbose=False):
             print()
             print_wrap('In default, we will run {}update{} and {}logging{} commands twice a day.'.format(bold, reset, bold, reset))
             print_wrap('You may change daily commands preferences in configuration `{}~/.dailyrc{}` later.'.format(under, reset))
-            print_wrap('Please enter schedule as {}{}HH:MM-CMD{} format, '
+            print_wrap('Please enter schedule as {}{}HH:MM[-CMD]{} format, '
                        'and each separates with {}comma{}.'.format(bold, under, reset, under, reset))
-            timing = input('Time for daily scripts [8:00,22:30-update,23:00-logging]: ')
+            timing = input('Time for daily scripts [10:00-update,22:30-logging,23:00-archive]: ')
             if timing:
                 config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
             else:
                 config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[38:41]))  # pylint: disable=map-builtin-not-iterating
 
-            config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[41:51]))  # pylint: disable=map-builtin-not-iterating
+            config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[41:52]))  # pylint: disable=map-builtin-not-iterating
             print()
             print_wrap('For better stability, {}MacDaily{} depends on several helper programs.'.format(bold, reset))
             print_wrap('Your password may be necessary during the launch process.')

@@ -4,7 +4,7 @@ import argparse
 import re
 import sys
 
-from macdaily.util.const.macro import CMD_CLEANUP
+from macdaily.util.const.macro import CMD_CLEANUP, MAP_DICT, STR_CLEANUP, STR_NPM, STR_PIP, STR_BREW, STR_CASK
 from macdaily.util.const.macro import VERSION as __version__
 
 
@@ -22,7 +22,7 @@ def get_cleanup_parser():
     parser = argparse.ArgumentParser(prog='macdaily-cleanup',
                                      description='macOS Package Cache Cleanup',
                                      usage='macdaily cleanup [options] <mode-selection> ...',
-                                     epilog='aliases: clean')
+                                     epilog=STR_CLEANUP)
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -63,7 +63,8 @@ def get_npm_parser():
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-cleanup-npm',
                                          description='Node.js Module Cache Cleanup',
-                                         usage='macdaily cleanup npm [options] ...')
+                                         usage='macdaily cleanup npm [options] ...',
+                                         epilog=STR_NPM)
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -88,7 +89,8 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-cleanup-pip',
                                          description='Python Package Cache Cleanup',
-                                         usage='macdaily cleanup pip [options] ...')
+                                         usage='macdaily cleanup pip [options] ...',
+                                         epilog=STR_PIP)
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -126,7 +128,8 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-cleanup-brew',
                                           description='Homebrew Formula Cache Cleanup',
-                                          usage='macdaily cleanup brew [options] ...')
+                                          usage='macdaily cleanup brew [options] ...',
+                                          epilog=STR_BREW)
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -151,7 +154,8 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-cleanup-cask',
                                           description='Homebrew Cask Cache Cleanup',
-                                          usage='macdaily cleanup cask [options] ...')
+                                          usage='macdaily cleanup cask [options] ...',
+                                          epilog=STR_CASK)
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -193,7 +197,8 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get('get_{}_parser'.format(option))
+            parser_name = MAP_DICT.get(option.lower(), 'null')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
                 pattern = r'.*{}.*'.format(option)
                 matches = "', '".format().join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_CLEANUP))  # pylint: disable=cell-var-from-loop

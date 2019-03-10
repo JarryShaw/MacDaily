@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from macdaily.util.const.macro import STR_CONFIG
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset, under
 
@@ -21,7 +22,7 @@ def get_config_parser():
     parser = argparse.ArgumentParser(prog='macdaily-config',
                                      description='MacDaily Runtime Configuration Helper',
                                      usage='macdaily config [options] <key> <value> ...',
-                                     epilog='aliases: cfg')
+                                     epilog=STR_CONFIG)
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')

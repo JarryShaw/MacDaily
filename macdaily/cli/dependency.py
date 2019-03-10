@@ -4,7 +4,7 @@ import argparse
 import re
 import sys
 
-from macdaily.util.const.macro import CMD_DEPENDENCY
+from macdaily.util.const.macro import CMD_DEPENDENCY, MAP_DICT, STR_BREW, STR_DEPENDENCY, STR_PIP
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset, under
 
@@ -23,7 +23,7 @@ def get_dependency_parser():
     parser = argparse.ArgumentParser(prog='macdaily-dependency',
                                      description='macOS Package Dependency Query',
                                      usage='macdaily dependency [options] <mode-selection> ...',
-                                     epilog='aliases: deps, dp')
+                                     epilog=STR_DEPENDENCY)
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -77,7 +77,8 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-dependency-pip',
                                          description='Python Package Dependency Query',
-                                         usage='macdaily dependency pip [options] <packages> ...')
+                                         usage='macdaily dependency pip [options] <packages> ...',
+                                         epilog=STR_PIP)
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -128,7 +129,8 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-dependency-brew',
                                           description='Homebrew Formula Dependency Query',
-                                          usage='macdaily dependency brew [options] <formulae> ...')
+                                          usage='macdaily dependency brew [options] <formulae> ...',
+                                          epilog=STR_BREW)
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -194,7 +196,8 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get('get_{}_parser'.format(option))
+            parser_name = MAP_DICT.get(option.lower(), 'null')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
                 pattern = r'.*{}.*'.format(option)
                 matches = "', '".format().join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_DEPENDENCY))  # pylint: disable=cell-var-from-loop
