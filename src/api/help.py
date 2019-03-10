@@ -8,8 +8,8 @@ from macdaily.cli.help import get_help_parser, parse_args
 from macdaily.util.const.macro import (CMD_ARCHIVE, CMD_BUNDLE,  # pylint: disable=unused-import
                                        CMD_CLEANUP, CMD_CONFIG, CMD_DEPENDENCY, CMD_HELP,
                                        CMD_INSTALL, CMD_LAUNCH, CMD_LOGGING, CMD_POSTINSTALL,
-                                       CMD_REINSTALL, CMD_UNINSTALL, CMD_UPDATE, COMMANDS, MAP_ALL,
-                                       MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP, MAP_COMMANDS,
+                                       CMD_REINSTALL, CMD_UNINSTALL, CMD_UPDATE, COMMANDS, MAP_DICT,
+                                       MAP_ALL, MAP_ARCHIVE, MAP_BUNDLE, MAP_CLEANUP, MAP_COMMANDS,
                                        MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
                                        MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL, MAP_REINSTALL,
                                        MAP_UNINSTALL, MAP_UPDATE, ROOT)
@@ -24,7 +24,7 @@ def help_(argv=None):
         pth = os.path.join(ROOT, 'man/macdaily.1')
         os.execlp('man', 'man', pth)
 
-    command = args.command.lower()
+    command = args.command.strip().lower()
     if command in MAP_COMMANDS:
         print(COMMANDS, end='')
         return
@@ -41,7 +41,7 @@ def help_(argv=None):
         if sub is None:
             pth = os.path.join(ROOT, f'man/macdaily-{cmd}.1')
         if sub in man:
-            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{sub}.1')
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{MAP_DICT[sub]}.1')
         if pth is None:
             CMD = globals().get(f'CMD_{cmd.upper()}', set())
             parser = get_help_parser()

@@ -6,8 +6,8 @@ macdaily-update-cask
 Homebrew Cask Update Automator
 ------------------------------
 
-:Version: v2019.3.9
-:Date: March 09, 2019
+:Version: v2019.3.10
+:Date: March 10, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
@@ -19,6 +19,8 @@ SYNOPSIS
 ========
 
 macdaily **update** *cask* [*options*] <*casks*> ...
+
+aliases: **brew-cask**, **caskroom**
 
 OPTIONS
 =======

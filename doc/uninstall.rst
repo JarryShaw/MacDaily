@@ -165,6 +165,8 @@ Commands
       -U ARG, --uninstall ARG
                             options for 'brew uninstall <formula>' command
 
+    aliases: homebrew
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -217,6 +219,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'brew cask list' command
       -U ARG, --uninstall ARG
                             options for 'brew cask uninstall <cask>' command
+
+    aliases: brew-cask, caskroom
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -279,6 +283,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'pip freeze' command
       -U ARG, --uninstall ARG
                             options for 'pip uninstall <package>' command
+
+    aliases: cpython, pypy, python
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.

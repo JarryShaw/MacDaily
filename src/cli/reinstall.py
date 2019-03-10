@@ -4,7 +4,7 @@ import argparse
 import re
 import sys
 
-from macdaily.util.const.macro import CMD_REINSTALL
+from macdaily.util.const.macro import CMD_REINSTALL, MAP_DICT, STR_BREW, STR_CASK, STR_REINSTALL
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 
@@ -23,7 +23,7 @@ def get_reinstall_parser():
     parser = argparse.ArgumentParser(prog='macdaily-reinstall',
                                      description='Automated macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
-                                     epilog='aliases: re')
+                                     epilog=STR_REINSTALL)
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -75,7 +75,8 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-reinstall-brew',
                                           description='Automated Homebrew Formula Reinstaller',
-                                          usage='macdaily reinstall brew [options] <formulae> ...')
+                                          usage='macdaily reinstall brew [options] <formulae> ...',
+                                          epilog=STR_BREW)
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -121,7 +122,8 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-reinstall-cask',
                                           description='Automated Homebrew Cask Reinstaller',
-                                          usage='macdaily reinstall cask [options] <casks> ...')
+                                          usage='macdaily reinstall cask [options] <casks> ...',
+                                          epilog=STR_CASK)
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -187,7 +189,8 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get(f'get_{option}_parser')
+            parser_name = MAP_DICT.get(option.lower(), 'null')
+            get_parser = globals().get(f'get_{parser_name}_parser')
             if get_parser is None:
                 pattern = rf'.*{option}.*'
                 matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_REINSTALL))  # pylint: disable=cell-var-from-loop

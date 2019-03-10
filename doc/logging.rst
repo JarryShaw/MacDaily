@@ -152,6 +152,8 @@ Commands
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
 
+    aliases: atom
+
 MacDaily ``logging-apm`` command uses ``apm list --installed --bare``
 to record installed Atom plug-ins. The corresponding log file will be
 named as ``packages.txt``.
@@ -184,6 +186,8 @@ NB
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
 
+    aliases: application, macos
+
 MacDaily ``logging-app`` command uses ``sudo python macdaily/res/find.py /`` to
 record installed Mac applications. The corresponding log file will be named as
 ``macOS.log``.
@@ -212,6 +216,8 @@ record installed Mac applications. The corresponding log file will be named as
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
 
+    aliases: homebrew
+
 MacDaily ``logging-brew`` command uses ``brew bundle dump`` to record
 installed Homebrew formulae. The corresponding log file will be named
 as ``Brewfile``.
@@ -239,6 +245,8 @@ as ``Brewfile``.
       -v, --verbose     run in verbose mode, with detailed output information
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
+
+    aliases: brew-cask, caskroom
 
 MacDaily ``logging-cask`` command uses ``brew bundle dump`` to record
 installed Homebrew Casks. The corresponding log file will be named
@@ -272,6 +280,8 @@ as ``Brewfile``.
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
 
+    aliases: ruby, rubygems
+
 MacDaily ``logging-gem`` command uses ``gem lock <gem-version>`` to record
 installed Ruby gems. The corresponding log file will be named as ``lockdown.rb``.
 
@@ -298,6 +308,8 @@ installed Ruby gems. The corresponding log file will be named as ``lockdown.rb``
       -v, --verbose     run in verbose mode, with detailed output information
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
+
+    aliases: app-store, appstore, mac, mac-app-store
 
 MacDaily ``logging-mas`` command uses ``brew bundle dump`` to record
 installed macOS applications. The corresponding log file will be named
@@ -329,6 +341,8 @@ as ``Brewfile``.
       -v, --verbose     run in verbose mode, with detailed output information
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
+
+    aliases: node, node.js
 
 MacDaily ``logging-npm`` command uses ``npm list --json --global`` to
 record installed Node.js modules. The corresponding log file will be named
@@ -369,6 +383,8 @@ as ``package.json``.
       -n, --no-cleanup      do not run cleanup process
       -l, --show-log        open log in Console.app upon completion of command
 
+    aliases: cpython, pypy, python
+
 MacDaily ``logging-pip`` command uses ``python -m pip freeze`` to record
 installed Python packages. The corresponding log file will be named as
 ``requirements.txt``.
@@ -406,6 +422,8 @@ NB
       -v, --verbose     run in verbose mode, with detailed output information
       -n, --no-cleanup  do not run cleanup process
       -l, --show-log    open log in Console.app upon completion of command
+
+    aliases: brew-tap
 
 MacDaily ``logging-tap`` command uses ``brew bundle dump`` to record
 installed Homebrew Taps. The corresponding log file will be named

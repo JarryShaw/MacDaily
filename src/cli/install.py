@@ -4,7 +4,8 @@ import argparse
 import re
 import sys
 
-from macdaily.util.const.macro import CMD_INSTALL
+from macdaily.util.const.macro import (CMD_INSTALL, MAP_DICT, STR_APM, STR_BREW, STR_CASK, STR_GEM,
+                                       STR_INSTALL, STR_MAS, STR_NPM, STR_PIP, STR_SYSTEM)
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 
@@ -23,7 +24,7 @@ def get_install_parser():
     parser = argparse.ArgumentParser(prog='macdaily-install',
                                      description='macOS Package Automated Installer',
                                      usage='macdaily install [options] <mode-selection> ...',
-                                     epilog='aliases: i')
+                                     epilog=STR_INSTALL)
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -78,7 +79,8 @@ def get_apm_parser():
 
     apm_parser = argparse.ArgumentParser(prog='macdaily-install-apm',
                                          description='Atom Plug-In Automated Installer',
-                                         usage='macdaily install apm [options] <plug-ins> ...')
+                                         usage='macdaily install apm [options] <plug-ins> ...',
+                                         epilog=STR_APM)
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -116,7 +118,8 @@ def get_gem_parser():
 
     gem_parser = argparse.ArgumentParser(prog='macdaily-install-gem',
                                          description='Ruby Gem Automated Installer',
-                                         usage='macdaily install gem [options] <gems> ...')
+                                         usage='macdaily install gem [options] <gems> ...',
+                                         epilog=STR_GEM)
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -155,7 +158,8 @@ def get_mas_parser():
 
     mas_parser = argparse.ArgumentParser(prog='macdaily-install-mas',
                                          description='macOS Application Automated Installer',
-                                         usage='macdaily install mas [options] <applications> ...')
+                                         usage='macdaily install mas [options] <applications> ...',
+                                         epilog=STR_MAS)
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -192,7 +196,8 @@ def get_npm_parser():
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-install-npm',
                                          description='Node.js Module Automated Installer',
-                                         usage='macdaily install npm [options] <modules> ...')
+                                         usage='macdaily install npm [options] <modules> ...',
+                                         epilog=STR_NPM)
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -230,7 +235,8 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-install-pip',
                                          description='Python Package Automated Installer',
-                                         usage='macdaily install pip [options] <packages> ...')
+                                         usage='macdaily install pip [options] <packages> ...',
+                                         epilog=STR_PIP)
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -283,7 +289,8 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-install-brew',
                                           description='Homebrew Formula Automated Installer',
-                                          usage='macdaily install brew [options] <formulae> ...')
+                                          usage='macdaily install brew [options] <formulae> ...',
+                                          epilog=STR_BREW)
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -321,7 +328,8 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-install-cask',
                                           description='Homebrew Cask Automated Installer',
-                                          usage='macdaily install cask [options] <casks> ...')
+                                          usage='macdaily install cask [options] <casks> ...',
+                                          epilog=STR_CASK)
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -359,7 +367,8 @@ def get_system_parser():
 
     system_parser = argparse.ArgumentParser(prog='macdaily-install-system',
                                             description='System Software Automated Installer',
-                                            usage='macdaily install system [options] <software> ...')
+                                            usage='macdaily install system [options] <software> ...',
+                                            epilog=STR_SYSTEM)
     system_parser.add_argument('-V', '--version', action='version', version=__version__)
     system_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -413,7 +422,8 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get(f'get_{option}_parser')
+            parser_name = MAP_DICT.get(option.lower(), 'null')
+            get_parser = globals().get(f'get_{parser_name}_parser')
             if get_parser is None:
                 pattern = rf'.*{option}.*'
                 matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_INSTALL))  # pylint: disable=cell-var-from-loop

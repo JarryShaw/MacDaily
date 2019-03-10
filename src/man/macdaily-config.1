@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH MACDAILY-CONFIG 8 "March 09, 2019" "v2019.3.9" ""
+.TH MACDAILY-CONFIG 8 "March 10, 2019" "v2019.3.10" ""
 .SH NAME
 macdaily-config \- MacDaily Runtime Configuration Helper
 .
@@ -34,7 +34,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .sp
 macdaily \fBconfig\fP [\fIoptions\fP] <\fIkey\fP> <\fIvalue\fP> ...
 .sp
-aliases: \fBinit\fP
+aliases: \fBcfg\fP
 .SH DESCRIPTION
 .sp
 \fIMacDaily\fP supports customise runtime configuration through a \fI~/.dailyrc\fP
@@ -67,7 +67,7 @@ Name of your external hard disk []:
 In default, we will run update and logging commands twice a day.
 You may change daily commands preferences in configuration \(ga~/.dailyrc\(ga later.
 Please enter schedule as HH:MM\-CMD format, and each separates with comma.
-Time for daily scripts [8:00,22:30\-update,23:00\-logging]:
+Time for daily scripts [10:00\-update,22:30\-logging,23:00\-archive]:
 
 For better stability, MacDaily depends on several helper programs.
 Your password may be necessary during the launch process.

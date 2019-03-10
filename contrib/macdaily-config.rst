@@ -6,8 +6,8 @@ macdaily-config
 MacDaily Runtime Configuration Helper
 -------------------------------------
 
-:Version: v2019.3.9
-:Date: March 09, 2019
+:Version: v2019.3.10
+:Date: March 10, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
@@ -20,7 +20,7 @@ SYNOPSIS
 
 macdaily **config** [*options*] <*key*> <*value*> ...
 
-aliases: **init**
+aliases: **cfg**
 
 DESCRIPTION
 ===========
@@ -55,7 +55,7 @@ shows as below.
     In default, we will run update and logging commands twice a day.
     You may change daily commands preferences in configuration `~/.dailyrc` later.
     Please enter schedule as HH:MM-CMD format, and each separates with comma.
-    Time for daily scripts [8:00,22:30-update,23:00-logging]:
+    Time for daily scripts [10:00-update,22:30-logging,23:00-archive]:
 
     For better stability, MacDaily depends on several helper programs.
     Your password may be necessary during the launch process.

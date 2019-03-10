@@ -102,6 +102,8 @@ Commands
       -q, --quiet    run in quiet mode, with no output information
       -v, --verbose  run in verbose mode, with detailed output information
 
+    aliases: homebrew
+
 MacDaily ``cleanup-brew`` command will remove logs under
 ``~/Library/Logs/Homebrew``. And if your external hard drive for archives
 available at ``diskdir``, then MacDaily will try and archive caches of Homebrew
@@ -129,6 +131,8 @@ Formulae, which lies under ``~/Library/Caches/Homebrew``.
       -q, --quiet    run in quiet mode, with no output information
       -v, --verbose  run in verbose mode, with detailed output information
 
+    aliases: brew-cask, caskroom
+
 If your external hard drive for archives available at ``diskdir``, then
 MacDaily ``cleanup-cask`` command will try and archive caches of Homebrew
 Formulae, which lies under ``~/Library/Caches/Homebrew/Cask``.
@@ -154,6 +158,8 @@ Formulae, which lies under ``~/Library/Caches/Homebrew/Cask``.
     general arguments:
       -q, --quiet    run in quiet mode, with no output information
       -v, --verbose  run in verbose mode, with detailed output information
+
+    aliases: node, node.js
 
 MacDaily ``cleanup-npm`` command will directly run ``npm dedupe --global``
 and ``npm cache clean --force`` commands.
@@ -188,6 +194,8 @@ and ``npm cache clean --force`` commands.
     general arguments:
       -q, --quiet           run in quiet mode, with no output information
       -v, --verbose         run in verbose mode, with detailed output information
+
+    aliases: cpython, pypy, python
 
 MacDaily ``cleanup-pip`` command will directly remove all caches and logs under
 ``/var/root/Library/Caches/pip/http``, ``/var/root/Library/Caches/pip/wheels``,

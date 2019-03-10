@@ -149,6 +149,8 @@ Commands
       -I ARG, --install ARG
                             options for 'apm install <plug-in>' command
 
+    aliases: atom
+
 For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+--------------------------------------------+
@@ -193,6 +195,8 @@ NB
       -I ARG, --install ARG
                             options for 'brew install <formula>' command
 
+    aliases: homebrew
+
 For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+----------------------------------------------+
@@ -232,6 +236,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
     miscellaneous arguments:
       -I ARG, --install ARG
                             options for 'brew cask install <cask>' command
+
+    aliases: brew-cask, caskroom
 
 For *miscellaneous arguments*, the runtime commands are as below.
 
@@ -273,6 +279,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
     miscellaneous arguments:
       -I ARG, --install ARG
                             options for 'gem install <gem>' command
+
+    aliases: ruby, rubygems
 
 For *miscellaneous arguments*, the runtime commands are as below.
 
@@ -319,6 +327,8 @@ NB
       -I ARG, --install ARG
                             options for 'mas install|lucky <application>'
                             command
+
+    aliases: app-store, appstore, mac, mac-app-store
 
 Since `Mac App Store CLI <https://github.com/mas-cli/mas#mas-cli>`__ (``mas``)
 uses *integral IDs* as application token, when packages specified in
@@ -368,6 +378,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'npm install --global <module>'
                             command
 
+    aliases: node, node.js
+
 For *miscellaneous arguments*, the runtime commands are as below.
 
 +-------------------+----------------------------------------------------+
@@ -416,6 +428,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
     miscellaneous arguments:
       -I ARG, --install ARG
                             options for 'pip install <package>' command
+
+    aliases: cpython, pypy, python
 
 For *miscellaneous arguments*, the runtime commands are as below.
 
@@ -468,6 +482,8 @@ NB
       -I ARG, --install ARG
                             options for 'softwareupdate --install
                             <software>' command
+
+    aliases: software, softwareupdate
 
 For *miscellaneous arguments*, the runtime commands are as below.
 

@@ -165,6 +165,8 @@ Commands
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
 
+    aliases: homebrew
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -207,6 +209,8 @@ might give a trivial *did-you-mean* correction.
       -g, --topological     show dependencies in topological order
       -d LEVEL, --depth LEVEL
                             max display depth of the dependency tree
+
+    aliases: cpython, pypy, python
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.

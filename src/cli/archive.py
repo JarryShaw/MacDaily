@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from macdaily.util.const.macro import STR_ARCHIVE
 from macdaily.util.const.macro import VERSION as __version__
 
 
@@ -19,7 +20,8 @@ def get_archive_parser():
 
     parser = argparse.ArgumentParser(prog='macdaily-archive',
                                      description='MacDaily Log Archive Utility',
-                                     usage='macdaily archive [options] <path-selection> ...')
+                                     usage='macdaily archive [options] <path-selection> ...',
+                                     epilog=STR_ARCHIVE)
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')

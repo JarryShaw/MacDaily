@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from macdaily.util.const.macro import STR_HELP
 from macdaily.util.const.macro import VERSION as __version__
 
 
@@ -20,7 +21,7 @@ def get_help_parser():
     parser = argparse.ArgumentParser(prog='macdaily-help',
                                      description='MacDaily Usage Information Manual',
                                      usage='macdaily help [options] <cmd-selection> ...',
-                                     epilog='aliases: doc, man')
+                                     epilog=STR_HELP)
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')

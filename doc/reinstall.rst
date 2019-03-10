@@ -149,6 +149,8 @@ Commands
       -R ARG, --reinstall ARG
                           options for 'brew reinstall <formula>' command
 
+    aliases: homebrew
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -207,6 +209,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                           options for 'brew cask list' command
       -R ARG, --reinstall ARG
                           options for 'brew cask reinstall <cask>' command
+
+    aliases: brew-cask, caskroom
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.

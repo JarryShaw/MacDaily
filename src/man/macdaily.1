@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH MACDAILY 8 "March 09, 2019" "v2019.3.9" ""
+.TH MACDAILY 8 "March 10, 2019" "v2019.3.10" ""
 .SH NAME
 macdaily \- macOS Automated Package Manager
 .
@@ -302,6 +302,162 @@ recursively uninstall packages
 .TP
 .B update
 update packages
+.UNINDENT
+.SH ENVIRONMENT
+.sp
+MacDaily currently supports two environment variables.
+For boolean values, MacDaily currently uses the same
+mapping as \fBconfigparser.ConfigParser.getboolean\fP
+function in Python.
+.TS
+center;
+|l|l|l|l|.
+_
+T{
+Value
+T}	T{
+Boolean
+T}	T{
+Value
+T}	T{
+Boolean
+T}
+_
+T{
+\fB1\fP
+T}	T{
+\fBTrue\fP
+T}	T{
+\fB0\fP
+T}	T{
+\fBFalse\fP
+T}
+_
+T{
+\fByes\fP
+T}	T{
+\fBTrue\fP
+T}	T{
+\fBno\fP
+T}	T{
+\fBFalse\fP
+T}
+_
+T{
+\fBtrue\fP
+T}	T{
+\fBTrue\fP
+T}	T{
+\fBfalse\fP
+T}	T{
+\fBFalse\fP
+T}
+_
+T{
+\fBon\fP
+T}	T{
+\fBTrue\fP
+T}	T{
+\fBoff\fP
+T}	T{
+\fBFalse\fP
+T}
+_
+.TE
+.INDENT 0.0
+.TP
+.B NOTE
+environment variables must have a value set  to  be  detected.
+For  example, \fBexport MACDAILY_DEVMODE=1\fP rather than just
+\fBexport MACDAILY_DEVMODE\fP\&.
+.TP
+.B SUDO_PASSWORD
+password of your current account (for \fBsudo(8)\fP command)
+.TP
+.B MACDAILY_LOGDIR
+path where logs will be stored
+.sp
+\fIdefault\fP: \fB~/Library/Logs/MacDaily\fP
+.TP
+.B MACDAILY_DSKDIR
+path where your hard disk lies
+.TP
+.B MACDAILY_ARCDIR
+path where ancient logs archive; log archives will be named
+as \fBarchive.zip\fP, while other archives (e.g. Homebrew
+caches) will remain in directories as where they were from.
+.sp
+\fIdefault\fP: \fB${MACDAILY_DSKDIR}/Developers\fP
+.TP
+.B MACDAILY_LIMIT
+timeout limit for shell commands in seconds
+.sp
+\fIdefault\fP: \fB1,000\fP
+.TP
+.B MACDAILY_RETRY
+retry timeout for input prompts in seconds
+.sp
+\fIdefault\fP: \fB60\fP
+.TP
+.B MACDAILY_CLEANUP
+run cleanup process after any operation (MacDaily command)
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_APM
+disable operations (MacDaily commands) on \fBAtom plug\-ins\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_APP
+disable operations (MacDaily commands) on \fBmacOS applications\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_BREW
+disable operations (MacDaily commands) on \fBHomebrew Formulae\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_CASK
+disable operations (MacDaily commands) on \fBHomebrew Casks\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_GEM
+disable operations (MacDaily commands) on \fBRuby gems\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_MAS
+disable operations (MacDaily commands) on \fBMac App Store applications\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_NPM
+disable operations (MacDaily commands) on \fBNode.js modules\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_PIP
+disable operations (MacDaily commands) on \fBPython packages\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_system
+disable operations (MacDaily commands) on \fBmacOS software\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_TAP
+disable operations (MacDaily commands) on \fBHomebrew Taps\fP
+.sp
+\fIdefault\fP: \fBtrue\fP
+.TP
+.B MACDAILY_DEVMODE
+enabled development mode (\fIonly for debugging\fP)
+.sp
+\fIdefault\fP: \fBfalse\fP
 .UNINDENT
 .SH SEE ALSO
 .INDENT 0.0
