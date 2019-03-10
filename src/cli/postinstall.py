@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from macdaily.util.const.macro import STR_POSTINSTALL
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 
@@ -21,7 +22,7 @@ def get_postinstall_parser():
     parser = argparse.ArgumentParser(prog='macdaily-postinstall',
                                      description='Homebrew Cask Postinstall Automator',
                                      usage='macdaily postinstall [options] ...',
-                                     epilog='aliases: post, ps')
+                                     epilog=STR_POSTINSTALL)
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')

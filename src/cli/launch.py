@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from macdaily.util.const.macro import STR_LAUNCH
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 
@@ -21,7 +22,7 @@ def get_launch_parser():
     parser = argparse.ArgumentParser(prog='macdaily-launch',
                                      description='MacDaily Dependency Launch Helper',
                                      usage='macdaily launch [options] <prog-selection> ...',
-                                     epilog='aliases: init')
+                                     epilog=STR_LAUNCH)
     parser.add_argument('-V', '--version', action='version', version=__version__)
 
     spec_group = parser.add_argument_group(title='specification arguments')

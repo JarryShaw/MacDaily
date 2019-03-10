@@ -4,7 +4,8 @@ import argparse
 import re
 import sys
 
-from macdaily.util.const.macro import CMD_UPDATE
+from macdaily.util.const.macro import (CMD_UPDATE, MAP_DICT, STR_APM, STR_BREW, STR_GEM, STR_MAS,
+                                       STR_NPM, STR_PIP, STR_UPDATE, STR_CASK, STR_SYSTEM)
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 
@@ -23,7 +24,7 @@ def get_update_parser():
     parser = argparse.ArgumentParser(prog='macdaily-update',
                                      description='macOS Package Update Automator',
                                      usage='macdaily update [options] <mode-selection> ...',
-                                     epilog='aliases: up, upgrade')
+                                     epilog=STR_UPDATE)
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -92,7 +93,8 @@ def get_apm_parser():
 
     apm_parser = argparse.ArgumentParser(prog='macdaily-update-apm',
                                          description='Atom Plug-In Update Automator',
-                                         usage='macdaily update apm [options] <plug-ins> ...')
+                                         usage='macdaily update apm [options] <plug-ins> ...',
+                                         epilog=STR_APM)
     apm_parser.add_argument('-V', '--version', action='version', version=__version__)
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -134,7 +136,8 @@ def get_gem_parser():
 
     gem_parser = argparse.ArgumentParser(prog='macdaily-update-gem',
                                          description='Ruby Gem Update Automator',
-                                         usage='macdaily update gem [options] <gems> ...')
+                                         usage='macdaily update gem [options] <gems> ...',
+                                         epilog=STR_GEM)
     gem_parser.add_argument('-V', '--version', action='version', version=__version__)
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -177,7 +180,8 @@ def get_mas_parser():
 
     mas_parser = argparse.ArgumentParser(prog='macdaily-update-mas',
                                          description='macOS Application Update Automator',
-                                         usage='macdaily update mas [options] <applications> ...')
+                                         usage='macdaily update mas [options] <applications> ...',
+                                         epilog=STR_MAS)
     mas_parser.add_argument('-V', '--version', action='version', version=__version__)
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -216,7 +220,8 @@ def get_npm_parser():
 
     npm_parser = argparse.ArgumentParser(prog='macdaily-update-npm',
                                          description='Node.js Module Update Automator',
-                                         usage='macdaily update npm [options] <modules> ...')
+                                         usage='macdaily update npm [options] <modules> ...',
+                                         epilog=STR_NPM)
     npm_parser.add_argument('-V', '--version', action='version', version=__version__)
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -258,7 +263,8 @@ def get_pip_parser():
 
     pip_parser = argparse.ArgumentParser(prog='macdaily-update-pip',
                                          description='Python Package Update Automator',
-                                         usage='macdaily update pip [options] <packages> ...')
+                                         usage='macdaily update pip [options] <packages> ...',
+                                         epilog=STR_PIP)
     pip_parser.add_argument('-V', '--version', action='version', version=__version__)
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -315,7 +321,8 @@ def get_brew_parser():
 
     brew_parser = argparse.ArgumentParser(prog='macdaily-update-brew',
                                           description='Homebrew Formula Update Automator',
-                                          usage='macdaily update brew [options] <formulae> ...')
+                                          usage='macdaily update brew [options] <formulae> ...',
+                                          epilog=STR_BREW)
     brew_parser.add_argument('-V', '--version', action='version', version=__version__)
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -362,7 +369,8 @@ def get_cask_parser():
 
     cask_parser = argparse.ArgumentParser(prog='macdaily-update-cask',
                                           description='Homebrew Cask Update Automator',
-                                          usage='macdaily update cask [options] <casks> ...')
+                                          usage='macdaily update cask [options] <casks> ...',
+                                          epilog=STR_CASK)
     cask_parser.add_argument('-V', '--version', action='version', version=__version__)
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -415,7 +423,8 @@ def get_system_parser():
 
     system_parser = argparse.ArgumentParser(prog='macdaily-update-system',
                                             description='System Software Update Automator',
-                                            usage='macdaily update system [options] <software> ...')
+                                            usage='macdaily update system [options] <software> ...',
+                                            epilog=STR_SYSTEM)
     system_parser.add_argument('-V', '--version', action='version', version=__version__)
     system_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
@@ -475,7 +484,8 @@ def parse_args(argv=None):
                 continue
 
             # check if legal mode
-            get_parser = globals().get(f'get_{option}_parser')
+            parser_name = MAP_DICT.get(option.lower(), 'null')
+            get_parser = globals().get(f'get_{parser_name}_parser')
             if get_parser is None:
                 pattern = rf'.*{option}.*'
                 matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_UPDATE))  # pylint: disable=cell-var-from-loop

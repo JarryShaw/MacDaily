@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args(sys.argv[1:2] or ['--help'])
 
     # fetch command & paras
-    command = args.command.lower()
+    command = args.command.strip().lower()
     options = sys.argv[2:]
 
     if command in MAP_MAGIC:

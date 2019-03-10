@@ -166,6 +166,8 @@ Commands
                             options for 'apm upgrade --list' command
       -U ARG, --update ARG  options for 'apm upgrade <plug-in>' command
 
+    aliases: atom
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -221,6 +223,8 @@ NB
       -L ARG, --logging ARG
                             options for 'brew outdated' command
       -U ARG, --update ARG  options for 'brew upgrade <formula>' command
+
+    aliases: homebrew
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -278,6 +282,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'brew cask outdated' command
       -U ARG, --update ARG  options for 'brew cask upgrade <cask>' command
 
+    aliases: brew-cask, caskroom
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -325,6 +331,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
       -L ARG, --logging ARG
                             options for 'gem outdated' command
       -U ARG, --update ARG  options for 'gem update <gem>' command
+
+    aliases: ruby, rubygems
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -379,6 +387,8 @@ NB
       -U ARG, --update ARG  options for 'mas upgrade <application>'
                             command
 
+    aliases: app-store, appstore, mac, mac-app-store
+
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
 
@@ -427,6 +437,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'npm outdated --global' command
       -U ARG, --update ARG  options for 'npm upgrade --global <module>'
                             command
+
+    aliases: node, node.js
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -486,6 +498,8 @@ For *miscellaneous arguments*, the runtime commands are as below.
                             options for 'pip list --outdated' command
       -U ARG, --update ARG  options for 'pip install --upgrade <package>'
                             command
+
+    aliases: cpython, pypy, python
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
@@ -548,6 +562,8 @@ NB
                             options for 'softwareupdate --list' command
       -U ARG, --update ARG  options for 'softwareupdate --install
                             <software>' command
+
+    aliases: software, softwareupdate
 
 When using ``--packages`` option, if given wrong package name, MacDaily
 might give a trivial *did-you-mean* correction.
