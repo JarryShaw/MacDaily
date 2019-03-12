@@ -40,6 +40,8 @@ def archive(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    os.environ['MACDAILY_LOGFILE'] = filename
+
     disk_dir = config['Path']['arcdir']
 
     # record program status

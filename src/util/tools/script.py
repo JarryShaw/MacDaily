@@ -9,8 +9,9 @@ import traceback
 import tty
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
+from macdaily.util.const.macro import ANSI, ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
+from macdaily.util.tools.get import get_logfile
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_term, print_text
@@ -162,7 +163,7 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
     except ImportError:
         print_term(f"macdaily: {yellow}misc{reset}: `{bold}unbuffer{reset}' and `{bold}script{reset}'"
                    f'not found in your {under}PATH{reset}, {bold}PTYng{reset} not installed',
-                   os.devnull, redirect=redirect)
+                   get_logfile(), redirect=redirect)
         print(f'macdaily: {red}misc{reset}: broken dependency', file=sys.stderr)
         raise
 
@@ -229,7 +230,7 @@ def _ansi2text(password):
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
             f"        temp = context.replace('^D\x08\x08', '').replace({RESP_BEER!r}, {ORIG_BEER!r})\n"
-            f"        text = re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'', temp, flags=re.IGNORECASE)\n"
+            f"        text = re.sub(r{ANSI!r}, r'', temp, flags=re.IGNORECASE)\n"
             f"        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){_replace(password)})\n"
             '        context = str()\n'
             "    elif not data:\n"
@@ -246,7 +247,7 @@ def _text2dim(password):
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
             f"        temp = context.replace('^D\x08\x08', '').replace({RESP_BEER!r}, {ORIG_BEER!r})\n"
-            f"        text = {dim!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{dim}', temp, flags=re.IGNORECASE)\n"
+            f"        text = {dim!r} + re.sub(r{ANSI!r}, r'\\1{dim}', temp, flags=re.IGNORECASE)\n"
             f"        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){_replace(password)})\n"
             '        context = str()\n'
             "    elif not data:\n"

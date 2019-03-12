@@ -2,6 +2,7 @@
 
 import calendar
 import datetime
+import distutils.version  # pylint: disable=no-name-in-module,import-error
 import glob
 import os
 import shutil
@@ -10,7 +11,9 @@ import tempfile
 import zipfile
 
 from macdaily.util.compat import pathlib
+from macdaily.util.const.macro import VERSION
 from macdaily.util.const.term import reset, under
+from macdaily.util.tools.get import get_logdir
 from macdaily.util.tools.print import print_info, print_scpt, print_text
 
 
@@ -30,8 +33,7 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
     print_info(text, logfile, redirect=quiet)
 
     filelist = list()
-    for subdir in filter(lambda subdir: os.path.isdir(
-            os.path.join(logpath, subdir)), os.listdir(logpath)):
+    for subdir in filter(lambda subdir: os.path.isdir(os.path.join(logpath, subdir)), os.listdir(logpath)):
         if subdir == logdate:
             continue
         absdir = os.path.abspath(os.path.join(logpath, subdir))
@@ -49,6 +51,25 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
                     filelist.append(absname)
                     print_text(absname, logfile, redirect=verbose)
         shutil.rmtree(absdir)
+
+    this_version = distutils.version.StrictVersion(VERSION)  # pylint: disable=no-member
+    for entry in os.scandir(os.path.join(get_logdir(), 'misc')):
+        if not entry.is_dir:
+            continue
+        try:
+            that_version = distutils.version.StrictVersion(entry.name)  # pylint: disable=no-member
+            if this_version <= that_version:
+                continue
+        except ValueError:
+            pass
+        glob_list = glob.glob(os.path.join(entry.path, '*.log'))
+        if glob_list:
+            tarname = os.path.join(arcpath, f'{entry.name}.tar.gz')
+            with tarfile.open(tarname, 'w:gz') as gz:
+                for absname in glob_list:
+                    arcname = os.path.split(absname)[1]
+                    gz.add(absname, arcname)
+        shutil.rmtree(entry.path)
 
     text = f'Moving ancient archives into {under}XZ Compressed Archives{reset}'
     print_info(text, logfile, redirect=quiet)

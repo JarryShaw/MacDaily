@@ -89,7 +89,7 @@ def run_script(argv, quiet=False, verbose=False, sudo=False,  # pylint: disable=
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose), env=env)
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
-        print_term(f"macdaily: {red}misc{reset}: "
+        print_term(f"macdaily: {red}error{reset}: "
                    f"command `{bold}{' '.join(error.cmd)!r}{reset}' failed", logfile, redirect=quiet)
         raise
     else:

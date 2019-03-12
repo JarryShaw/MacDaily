@@ -25,6 +25,10 @@ class ConfigNotFoundError(Error, FileNotFoundError):
     pass
 
 
+class IncorrectPassword(Error, PermissionError):
+    pass
+
+
 class TimeExpired(Error, TimeoutError):
     pass
 

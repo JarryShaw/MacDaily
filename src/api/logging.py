@@ -22,7 +22,7 @@ from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
-from macdaily.util.tools.get import get_pass
+from macdaily.util.tools.get import get_pass, get_logfile
 from macdaily.util.tools.make import make_namespace
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text
@@ -53,12 +53,12 @@ def logging(argv=None):
 
     # record program status
     text_record = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
-    print_term(text_record, os.devnull, redirect=quiet)
-    record(os.devnull, args, today, config, redirect=verbose)
+    print_term(text_record, get_logfile(), redirect=quiet)
+    record(get_logfile(), args, today, config, redirect=verbose)
 
     # ask for password
     text_askpass = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
-    print_term(text_askpass, os.devnull, redirect=quiet)
+    print_term(text_askpass, get_logfile(), redirect=quiet)
     password = get_pass(askpass)
 
     cmd_list = list()
@@ -69,6 +69,7 @@ def logging(argv=None):
         logpath = pathlib.Path(os.path.join(config['Path']['logdir'], 'logging', mode, logdate))
         logpath.mkdir(parents=True, exist_ok=True)
         filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+        os.environ['MACDAILY_LOGFILE'] = filename
 
         # redo program status records
         print_term(text_record, filename, redirect=True)
@@ -121,13 +122,13 @@ def logging(argv=None):
         file_list.extend(storage)
 
     text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of logging command{reset}'
-    print_term(text, os.devnull, redirect=quiet)
+    print_term(text, get_logfile(), redirect=quiet)
     for file in log_list:
         print_term(text, file, redirect=True)
 
     for command in cmd_list:
         text = f'Recorded existing {under}{command.desc[1]}{reset}{bold} at {under}{command.sample}{reset}'
-        print_misc(text, os.devnull, redirect=quiet)
+        print_misc(text, get_logfile(), redirect=quiet)
         for file in log_list:
             print_misc(text, file, redirect=True)
 
@@ -138,7 +139,7 @@ def logging(argv=None):
 
     if len(cmd_list) == 0:  # pylint: disable=len-as-condition
         text = f'macdaily: {purple}logging{reset}: no packages recorded'
-        print_term(text, os.devnull, redirect=quiet)
+        print_term(text, get_logfile(), redirect=quiet)
         for file in log_list:
             print_term(text, file, redirect=True)
 
@@ -146,7 +147,7 @@ def logging(argv=None):
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed logging process '
             f'for {mode_str} package managers{reset}')
-    print_term(text, os.devnull, redirect=quiet)
+    print_term(text, get_logfile(), redirect=quiet)
     for file in log_list:
         print_term(text, file, redirect=True)
 

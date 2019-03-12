@@ -13,6 +13,7 @@ from macdaily.cmd.dependency import DependencyCommand
 from macdaily.core.pip import PipCommand
 from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, red, reset, under, yellow
+from macdaily.util.tools.get import get_logfile
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
@@ -190,7 +191,7 @@ class PipDependency(PipCommand, DependencyCommand):
         argv.append('')
 
         if self._qflag:
-            print_scpt(path, os.devnull)
+            print_scpt(path, get_logfile())
 
         for package in sorted(self._var__temp_pkgs):
             argv[-1] = package
