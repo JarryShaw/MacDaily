@@ -42,6 +42,8 @@ def postinstall(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    os.environ['MACDAILY_LOGFILE'] = filename
+
     confirm = config['Miscellaneous']['confirm']
     askpass = config['Miscellaneous']['askpass']
     timeout = config['Miscellaneous']['limit']

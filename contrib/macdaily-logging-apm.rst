@@ -6,8 +6,8 @@ macdaily-logging-apm
 Atom Plug-In Logging Automator
 ------------------------------
 
-:Version: v2019.3.10
-:Date: March 10, 2019
+:Version: v2019.3.12
+:Date: March 12, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

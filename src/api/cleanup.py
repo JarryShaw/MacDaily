@@ -17,7 +17,7 @@ from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, purple, red, reset, under, yellow
 from macdaily.util.tools.deco import beholder
-from macdaily.util.tools.get import get_pass
+from macdaily.util.tools.get import get_logfile, get_pass
 from macdaily.util.tools.make import make_namespace
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text
@@ -45,6 +45,8 @@ def cleanup(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    os.environ['MACDAILY_LOGFILE'] = filename
+
     confirm = config['Miscellaneous']['confirm']
     askpass = config['Miscellaneous']['askpass']
     timeout = config['Miscellaneous']['limit']
@@ -95,7 +97,7 @@ def cleanup(argv=None):
 
     for command in cmd_list:
         text = f'Pruned caches of {under}{command.name}{reset}{bold}'
-        print_misc(text, os.devnull, redirect=quiet)
+        print_misc(text, get_logfile(), redirect=quiet)
 
     if archive:
         formatted_list = f'{reset}{bold}, {under}'.join(archive)
@@ -104,7 +106,7 @@ def cleanup(argv=None):
 
     if len(cmd_list) == 0:  # pylint:disable=len-as-condition
         text = f'macdaily: {purple}cleanup{reset}: no caches cleanup'
-        print_term(text, os.devnull, redirect=quiet)
+        print_term(text, get_logfile(), redirect=quiet)
 
     if args.show_log:
         try:
@@ -117,7 +119,7 @@ def cleanup(argv=None):
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
     text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed cleanup process '
             f'for {mode_str} package managers{reset}')
-    print_term(text, os.devnull, redirect=quiet)
+    print_term(text, get_logfile(), redirect=quiet)
 
 
 if __name__ == '__main__':

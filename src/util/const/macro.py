@@ -10,7 +10,7 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.3.10'
+VERSION = '2019.3.12'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
@@ -27,11 +27,15 @@ BOOLEAN_STATES = {'1': True, '0': False,
                   'on': True, 'off': False}
 
 # DEVMODE flag
-DEVMODE = BOOLEAN_STATES.get(os.environ.get('MACDAILY_DEVMODE', '').lower(), False)
+DEVMODE = BOOLEAN_STATES.get(os.getenv('MACDAILY_DEVMODE', 'false').strip().lower(), False)
 
 ###########################################################
 # Miscellaneous Constants
 ###########################################################
+
+# ansi escape pattern
+# from http://www.umich.edu/~archive/apple2/misc/programmers/vt100.codes.txt
+ANSI = r'([\x1B\x9B][\[\]\(\)#;?]*(?:(?:(?:[a-zA-Z0-9]*(?:;[-a-zA-Z0-9\\/#&.:=?%@~_]*)*)?\x07)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[0-9A-PR-TZcf-ntqry=><~])))'
 
 # script utilities
 SCRIPT = shutil.which('script')
@@ -45,7 +49,7 @@ SHELL = os.getenv('SHELL', shutil.which('sh'))
 USR = getpass.getuser()
 PWD = pwd.getpwnam(USR)
 USER = PWD.pw_gecos
-PASS = PWD.pw_passwd
+PASS = os.getenv('SUDO_PASSWORD', PWD.pw_passwd)
 
 # emoji mappings
 ORIG_BEER = '🍺'
