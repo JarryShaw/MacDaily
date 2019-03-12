@@ -15,7 +15,7 @@ from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
 from macdaily.util.const.macro import ROOT, USER
 from macdaily.util.const.term import bold, purple, reset, under
 from macdaily.util.error import ConfigNotFoundError
-from macdaily.util.tools.get import get_boolean, get_int, get_pass, get_path
+from macdaily.util.tools.get import get_boolean, get_int, get_logfile, get_pass, get_path
 from macdaily.util.tools.misc import run_script
 from macdaily.util.tools.print import print_info, print_misc, print_term, print_wrap
 
@@ -90,7 +90,7 @@ def get_config():
 def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
-    print_info('Creating a config file (.dailyrc) for {}...'.format(USER), os.devnull, redirect=quiet)
+    print_info('Creating a config file (.dailyrc) for {}...'.format(USER), get_logfile(), redirect=quiet)
 
     dskdir = input('Name of your external hard disk []: ')
     CONFIG[4] = 'dskdir = /Volumes/{} ; path where your hard disk lies'.format(dskdir.ljust(41))
@@ -254,10 +254,10 @@ def make_config(quiet=False, verbose=False):
 
     # ask for password
     text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
-    print_term(text, os.devnull, redirect=quiet)
+    print_term(text, get_logfile(), redirect=quiet)
     password = get_pass(askpass)
 
     # launch daemons
     path = launch_daemons(config, password, quiet, verbose)
     text = 'Launched helper program {}daemons{}{} at {}{}{}'.format(under, reset, bold, under, path, reset)
-    print_misc(text, os.devnull, redirect=quiet)
+    print_misc(text, get_logfile(), redirect=quiet)

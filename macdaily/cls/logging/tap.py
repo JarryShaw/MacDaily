@@ -9,6 +9,7 @@ import traceback
 from macdaily.cmd.logging import LoggingCommand
 from macdaily.util.compat import subprocess
 from macdaily.util.const.term import bold, flash, purple_bg, red, red_bg, reset, under
+from macdaily.util.tools.get import get_logfile
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.print import print_info, print_scpt, print_term, print_text
 from macdaily.util.tools.script import script
@@ -75,7 +76,7 @@ class TapLogging(LoggingCommand):
 
             with open(_temp_file.name, 'r') as file:
                 context = file.read()
-            print_text(context, os.devnull, redirect=self._vflag)
+            print_text(context, get_logfile(), redirect=self._vflag)
 
         with open(logfile, 'w') as file:
             file.writelines(filter(lambda s: s.startswith('tap'), context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating

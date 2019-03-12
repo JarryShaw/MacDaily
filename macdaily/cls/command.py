@@ -9,7 +9,7 @@ import sys
 from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import NODE, PYTHON2, PYTHON3, USR
 from macdaily.util.const.term import bold, green, red, reset, yellow
-from macdaily.util.tools.get import get_input
+from macdaily.util.tools.get import get_input, get_logfile
 from macdaily.util.tools.print import print_info, print_term
 from macdaily.util.tools.script import sudo
 
@@ -237,17 +237,17 @@ class Command(metaclass=abc.ABCMeta):
                 return False
 
             if _cross_check(self._var__temp_pkgs, NODE):
-                sudo(['chown', '-R', USR, '/usr/local/lib/node_modules'], os.devnull, self._password,
+                sudo(['chown', '-R', USR, '/usr/local/lib/node_modules'], get_logfile(), self._password,
                      timeout=self._timeout, redirect=True, verbose=False)
 
             if _cross_check(self._var__temp_pkgs, PYTHON2):
                 version = subprocess.check_output([path, 'info', 'python@2']).splitlines()[0].split()[2][:3].decode()
-                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], os.devnull, self._password,
+                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], get_logfile(), self._password,
                      timeout=self._timeout, redirect=True, verbose=False)
 
             if _cross_check(self._var__temp_pkgs, PYTHON3):
                 version = subprocess.check_output([path, 'info', 'python']).splitlines()[0].split()[2][:3].decode()
-                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], os.devnull, self._password,
+                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], get_logfile(), self._password,
                      timeout=self._timeout, redirect=True, verbose=False)
 
             return flag

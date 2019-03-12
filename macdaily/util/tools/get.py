@@ -4,18 +4,34 @@ import getpass
 import os
 import re
 import sys
+import time
+import uuid
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import BOOLEAN_STATES, PASS, USER
+from macdaily.util.const.macro import BOOLEAN_STATES, PASS, USER, VERSION
 from macdaily.util.const.term import reset
-from macdaily.util.tools.deco import retry
+from macdaily.util.tools.deco import check, retry
 
 
 def get_boolean(environ, default=False):
-    boolean = os.environ.get(environ)
+    boolean = os.getenv(environ)
     if boolean is None:
         return default
     return BOOLEAN_STATES.get(boolean.strip().lower(), default)
+
+
+def get_logfile():
+    logfile = os.getenv('MACDAILY_LOGFILE')
+    if logfile is None:
+        dirname = os.path.join(get_logdir(), 'misc', VERSION)
+        os.makedirs(dirname, exist_ok=True)
+        filename = os.path.join(dirname, '{}-{!s}.log'.format(time.strftime(r"%Y%m%d-%H%M%S"), uuid.uuid4()))
+        return filename
+    return logfile
+
+
+def get_logdir():
+    return os.path.expanduser(os.getenv('MACDAILY_LOGDIR', '~/Library/Logs/MacDaily'))
 
 
 @retry('N')
@@ -40,7 +56,7 @@ def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
 
 
 def get_int(environ, default=0):
-    integer = os.environ.get(environ)
+    integer = os.getenv(environ)
     if integer is None:
         return default
     integer = re.sub(r'[,_]', '', integer.strip(), flags=re.IGNORECASE)
@@ -58,9 +74,10 @@ def get_int(environ, default=0):
         return default
 
 
+@check
 @retry(PASS)
 def get_pass(askpass, queue=None):
-    SUDO_PASSWORD = os.environ.get('SUDO_PASSWORD')
+    SUDO_PASSWORD = os.getenv('SUDO_PASSWORD')
     if SUDO_PASSWORD is not None:
         if queue is not None:
             queue.put(SUDO_PASSWORD)
@@ -79,7 +96,7 @@ def get_pass(askpass, queue=None):
 
 
 def get_path(environ, default='.'):
-    path = os.environ.get(environ)
+    path = os.getenv(environ)
     if path is None:
         return os.path.realpath(os.path.expanduser(default))
     return os.path.realpath(os.path.expanduser(path.strip()))

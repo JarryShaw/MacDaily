@@ -42,6 +42,8 @@ def launch(argv=None):
 
     # prepare command paras
     filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
+    os.environ['MACDAILY_LOGFILE'] = filename
+
     askpass = config['Miscellaneous']['askpass']
 
     # record program status

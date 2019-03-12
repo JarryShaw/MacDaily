@@ -9,8 +9,9 @@ import traceback
 import tty
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
+from macdaily.util.const.macro import ANSI, ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
+from macdaily.util.tools.get import get_logfile
 from macdaily.util.tools.make import make_stderr
 from macdaily.util.tools.misc import date
 from macdaily.util.tools.print import print_term, print_text
@@ -162,7 +163,7 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
     except ImportError:
         print_term("macdaily: {}misc{}: `{}unbuffer{}' and `{}script{}'"
                    'not found in your {}PATH{}, {}PTYng{} not installed'.format(yellow, reset, bold, reset, bold, reset, under, reset, bold, reset),
-                   os.devnull, redirect=redirect)
+                   get_logfile(), redirect=redirect)
         print('macdaily: {}misc{}: broken dependency'.format(red, reset), file=sys.stderr)
         raise
 
@@ -229,12 +230,12 @@ def _ansi2text(password):
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
             "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
-            "        text = re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'', temp, flags=re.IGNORECASE)\n"
+            "        text = re.sub(r{!r}, r'', temp, flags=re.IGNORECASE)\n"
             "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
             '        context = str()\n'
             "    elif not data:\n"
             '        break'
-            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, _replace(password)))
+            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, ANSI, _replace(password)))
 
 
 def _text2dim(password):
@@ -246,12 +247,12 @@ def _text2dim(password):
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
             "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
-            "        text = {!r} + re.sub(r'(\x1b\\[[0-9][0-9;]*m)', r'\\1{}', temp, flags=re.IGNORECASE)\n"
+            "        text = {!r} + re.sub(r{!r}, r'\\1{}', temp, flags=re.IGNORECASE)\n"
             "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
             '        context = str()\n'
             "    elif not data:\n"
             '        break'
-            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, dim, dim, _replace(password)))
+            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, dim, ANSI, dim, _replace(password)))
 
 
 def _merge(argv):

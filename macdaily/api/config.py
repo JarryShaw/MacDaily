@@ -26,13 +26,13 @@ def config(argv=None):
     if args.interactive:
         # record program status
         text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
-        print_term(text, os.devnull, redirect=quiet)
-        record(os.devnull, args, datetime.datetime.today(), redirect=verbose)
+        print_term(text, get_logfile(), redirect=quiet)
+        record(get_logfile(), args, datetime.datetime.today(), redirect=verbose)
 
         # make config
         make_config(quiet, verbose)
         text = ('{}{}|🍺|{} {}MacDaily successfully performed config process'.format(bold, green, reset, bold))
-        print_term(text, os.devnull, redirect=quiet)
+        print_term(text, get_logfile(), redirect=quiet)
         return
 
     # parse config & change environ
@@ -69,7 +69,7 @@ def config(argv=None):
     except ImportError:
         print_term('macdaily-config: {}error{}: {}ConfigUpdater{} not installed, '
                    "which is mandatory for modification of configuration".format(yellow, reset, bold, reset),
-                   os.devnull, redirect=verbose)
+                   get_logfile(), redirect=verbose)
         print('macdaily-config: {}error{}: broken dependency'.format(red, reset), file=sys.stderr)
         raise
 
