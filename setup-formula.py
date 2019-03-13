@@ -180,10 +180,14 @@ class Macdaily < Formula
     f.write <<~EOS
       # -*- coding: utf-8 -*-
 
-      from macdaily.cmd.launch import launch_askpass, launch_confirm
+      from macdaily.cmd.config import parse_config
+      from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
 
-      launch_askpass(quiet=True, verbose=True)
-      launch_confirm(quiet=True, verbose=True)
+      launch_askpass(quiet=True, verbose=False)
+      launch_confirm(quiet=True, verbose=False)
+
+      config = parse_config(quiet=True, verbose=False)
+      launch_daemons(config, 'null', quiet=True, verbose=False)
     EOS
     f.close
 
