@@ -102,8 +102,6 @@ class Macdaily < Formula
     {DEVEL}
   end
 
-  bottle :unneeded
-
   option "without-config", "Build without config modification support"
   option "without-tree", "Build without tree format support"
   option "without-ptyng", "Build without alternative PTY support"
