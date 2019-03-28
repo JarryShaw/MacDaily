@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import traceback
 
 from macdaily.cmd.update import UpdateCommand
