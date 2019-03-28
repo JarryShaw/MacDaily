@@ -52,24 +52,26 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
                     print_text(absname, logfile, redirect=verbose)
         shutil.rmtree(absdir)
 
-    this_version = distutils.version.StrictVersion(VERSION)  # pylint: disable=no-member
-    for entry in os.scandir(os.path.join(get_logdir(), 'misc')):
-        if not entry.is_dir:
-            continue
-        try:
-            that_version = distutils.version.StrictVersion(entry.name)  # pylint: disable=no-member
-            if this_version <= that_version:
+    misc_path = os.path.join(get_logdir(), 'misc')
+    if os.path.isdir(misc_path):
+        this_version = distutils.version.StrictVersion(VERSION)  # pylint: disable=no-member
+        for entry in os.scandir(misc_path):
+            if not entry.is_dir:
                 continue
-        except ValueError:
-            pass
-        glob_list = glob.glob(os.path.join(entry.path, '*.log'))
-        if glob_list:
-            tarname = os.path.join(arcpath, '{}.tar.gz'.format(entry.name))
-            with tarfile.open(tarname, 'w:gz') as gz:
-                for absname in glob_list:
-                    arcname = os.path.split(absname)[1]
-                    gz.add(absname, arcname)
-        shutil.rmtree(entry.path)
+            try:
+                that_version = distutils.version.StrictVersion(entry.name)  # pylint: disable=no-member
+                if this_version <= that_version:
+                    continue
+            except ValueError:
+                pass
+            glob_list = glob.glob(os.path.join(entry.path, '*.log'))
+            if glob_list:
+                tarname = os.path.join(arcpath, '{}.tar.gz'.format(entry.name))
+                with tarfile.open(tarname, 'w:gz') as gz:
+                    for absname in glob_list:
+                        arcname = os.path.split(absname)[1]
+                        gz.add(absname, arcname)
+            shutil.rmtree(entry.path)
 
     text = 'Moving ancient archives into {}XZ Compressed Archives{}'.format(under, reset)
     print_info(text, logfile, redirect=quiet)
