@@ -6,7 +6,7 @@ macdaily-cleanup-npm
 Node.js Module Cache Cleanup
 ----------------------------
 
-:Version: v2019.3.28
+:Version: v2019.3.28.post1
 :Date: March 28, 2019
 :Manual section: 8
 :Author:
