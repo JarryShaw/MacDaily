@@ -44,8 +44,10 @@ class MasUpdate(MasCommand, UpdateCommand):
 
             _temp_pkgs = list()
             for line in filter(None, context.strip().splitlines()):
-                content = line.split()
-                _temp_pkgs.append((content[0], content[1:-1]))
+                text = line.split(maxsplit=1)
+                code = text[0]
+                name = re.sub(r'\(.*?\)', r'', text[1]).strip()
+                _temp_pkgs.append((code, name))
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:

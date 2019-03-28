@@ -6,8 +6,8 @@ macdaily-update-system
 System Software Update Automator
 --------------------------------
 
-:Version: v2019.3.12
-:Date: March 12, 2019
+:Version: v2019.3.28
+:Date: March 28, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

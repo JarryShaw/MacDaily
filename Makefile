@@ -1,5 +1,7 @@
 .PHONY: clean dist manpages release pipenv pypi setup
 
+export PIPENV_VENV_IN_PROJECT=1
+
 SHELL   := /usr/local/bin/bash
 DIR     ?= .
 
