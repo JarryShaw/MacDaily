@@ -102,8 +102,6 @@ class Macdaily < Formula
     {DEVEL}
   end
 
-  bottle :unneeded
-
   option "without-config", "Build without config modification support"
   option "without-tree", "Build without tree format support"
   option "without-ptyng", "Build without alternative PTY support"
@@ -149,7 +147,7 @@ class Macdaily < Formula
       end
     end
 
-    version = `#{{libexec}}/"bin/python" -c "print('%s.%s' % __import__('sys').version_info[:2])"`
+    version = Language::Python.major_minor_version "python3"
     if version =~ /3.4/
       %w[pathlib2 six subprocess32].each do |r|
         venv.pip_install resource(r)
@@ -164,7 +162,7 @@ class Macdaily < Formula
     cp comp_path, bash_comp
     bash_completion.install bash_comp
 
-    man_path = Pathname.glob(libexec/"lib/python?.?/site-packages/macdaily/man/*.1")
+    man_path = Pathname.glob(libexec/"lib/python#{{version}}/site-packages/macdaily/man/*.1")
     dir_name = File.dirname man_path[0]
     dest = File.join(dir_name, "temp.1")
 
@@ -180,10 +178,14 @@ class Macdaily < Formula
     f.write <<~EOS
       # -*- coding: utf-8 -*-
 
-      from macdaily.cmd.launch import launch_askpass, launch_confirm
+      from macdaily.cmd.config import parse_config
+      from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
 
-      launch_askpass(quiet=True, verbose=True)
-      launch_confirm(quiet=True, verbose=True)
+      launch_askpass(quiet=True, verbose=False)
+      launch_confirm(quiet=True, verbose=False)
+
+      config = parse_config(quiet=True, verbose=False)
+      launch_daemons(config, 'null', quiet=True, verbose=False)
     EOS
     f.close
 
