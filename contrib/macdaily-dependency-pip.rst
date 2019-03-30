@@ -6,8 +6,8 @@ macdaily-dependency-pip
 Python Package Dependency Query
 -------------------------------
 
-:Version: v2019.3.28.post1
-:Date: March 28, 2019
+:Version: v2019.3.30
+:Date: March 30, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

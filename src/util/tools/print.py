@@ -1,9 +1,60 @@
 # -*- coding: utf-8 -*-
 
+import contextlib
 import os
 import re
+import shlex
+import sys
 
-from macdaily.util.const.term import blue, bold, dim, grey, length, purple, reset
+from macdaily.util.const.term import blue, bold, dim, grey, length, purple, reset, under
+
+
+def print_environ(file=sys.stdout, value_only=False, no_term=False,
+                  prefix='  - ', suffix=f'{grey}({under}value{reset}{grey}: %s){reset}'):
+    if no_term:
+        bold = green = reset = ''  # pylint: disable=redefined-outer-name
+    else:
+        from macdaily.util.const.term import bold, green, reset  # pylint: disable=reimported
+
+    with contextlib.redirect_stdout(file):
+        if not value_only:
+            print('The following environment variables can be set, to do various things:')
+            print()
+
+        def print_value(environ, default=None):
+            env = os.getenv(environ, default)
+            if env is None:
+                value = 'null'
+            else:
+                value = shlex.quote(env)
+            print(f'{prefix}{bold}{environ}{reset}{suffix}' % value)
+
+        print_value('SUDO_PASSWORD')
+        print_value('NULL_PASSWORD', 'false')
+        print_value('MACDAILY_NO_CHECK', 'false')
+        print_value('MACDAILY_NO_CONFIG', 'false')
+        print_value('MACDAILY_LOGDIR', '~/Library/Logs/MacDaily')
+        print_value('MACDAILY_DSKDIR')
+        print_value('MACDAILY_ARCDIR', '${MACDAILY_DSKDIR}/Developers')
+        print_value('MACDAILY_LIMIT', '1,000')
+        print_value('MACDAILY_RETRY', '60')
+        print_value('MACDAILY_CLEANUP', 'true')
+        print_value('MACDAILY_APM', 'true')
+        print_value('MACDAILY_APP', 'true')
+        print_value('MACDAILY_BREW', 'true')
+        print_value('MACDAILY_CASK', 'true')
+        print_value('MACDAILY_GEM', 'true')
+        print_value('MACDAILY_MAS', 'true')
+        print_value('MACDAILY_NPM', 'true')
+        print_value('MACDAILY_PIP', 'true')
+        print_value('MACDAILY_SYSTEM', 'true')
+        print_value('MACDAILY_TAP', 'true')
+        print_value('MACDAILY_DEVMODE', 'false')
+
+        if not value_only:
+            print()
+            print('You can learn more at:')
+            print(f'  {green}{under}https://github.com/JarryShaw/MacDaily#environment{reset}')
 
 
 def print_info(text, file, redirect=False):

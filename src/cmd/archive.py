@@ -54,12 +54,12 @@ def make_archive(config, mode, today, zipfile=True, quiet=False, verbose=False, 
 
     misc_path = os.path.join(get_logdir(), 'misc')
     if os.path.isdir(misc_path):
-        this_version = distutils.version.StrictVersion(VERSION)  # pylint: disable=no-member
+        this_version = distutils.version.LooseVersion(VERSION)  # pylint: disable=no-member
         for entry in os.scandir(misc_path):
             if not entry.is_dir:
                 continue
             try:
-                that_version = distutils.version.StrictVersion(entry.name)  # pylint: disable=no-member
+                that_version = distutils.version.LooseVersion(entry.name)  # pylint: disable=no-member
                 if this_version <= that_version:
                     continue
             except ValueError:

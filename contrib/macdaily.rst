@@ -6,8 +6,8 @@ macdaily
 macOS Automated Package Manager
 -------------------------------
 
-:Version: v2019.3.28.post1
-:Date: March 28, 2019
+:Version: v2019.3.30
+:Date: March 30, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer
@@ -138,6 +138,7 @@ optional arguments
 
 -h, --help     show this help message and exit
 -V, --version  show program's version number and exit
+-E, --environ  show all available environment variables
 
 command selection
 -----------------
@@ -187,6 +188,21 @@ function in Python.
 
 :SUDO_PASSWORD:
     password of your current account (for ``sudo(8)`` command)
+
+:NULL_PASSWORD:
+    implies ``SUDO_PASSWORD=''`` and ``MACDAILY_NO_CHECK=true``
+
+    *default*: ``false``
+
+:MACDAILY_NO_CHECK:
+    do not validate your password (for ``sudo(8)`` command)
+
+    *default*: ``false``
+
+:MACDAILY_NO_CONFIG:
+    do not load configuration from ``~/.dailyrc``
+
+    *default*: ``false``
 
 :MACDAILY_LOGDIR:
     path where logs will be stored
