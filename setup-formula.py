@@ -175,8 +175,9 @@ class Macdaily < Formula
 
   def post_install
     # set environment variables
-    ENV["NULL_PASSWORD"] = 1
-    ENV["MACDAILY_NO_CONFIG"] = 1
+    ENV["NULL_PASSWORD"] = "true"
+    ENV["MACDAILY_LOGDIR"] = "/tmp"
+    ENV["MACDAILY_NO_CONFIG"] = "true"
 
     # relaunch askpass & confirm utilities
     system bin/"macdaily", "launch", "askpass", "confirm"
@@ -194,6 +195,10 @@ class Macdaily < Formula
       Configuration file locates at ~/.dailyrc, please directly run
       `macdaily config --interactive` command to set up your runtime
       specifications.
+
+      Due to restrictions of Homebrew, please manually run
+      `macdaily launch daemons` command to relaunch your scheduled
+      tasks of MacDaily.
 
       For more information, check out `macdaily help` command. Online
       documentations available at GitHub repository.
