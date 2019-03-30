@@ -195,6 +195,10 @@ class Macdaily < Formula
       `macdaily config --interactive` command to set up your runtime
       specifications.
 
+      Due to restrictions of Homebrew, please manually run
+      `macdaily launch daemons` command to relaunch your scheduled
+      tasks of MacDaily.
+
       For more information, check out `macdaily help` command. Online
       documentations available at GitHub repository.
 
