@@ -10,7 +10,7 @@ from macdaily.util.const.term import blue, bold, dim, grey, length, purple, rese
 
 
 def print_environ(file=sys.stdout, value_only=False, no_term=False,
-                  prefix='  - ', suffix='{}({}value{}{}: %s){}'.format(grey, under, reset, grey, reset)):
+                  prefix='  - ', suffix=' {}({}value{}{}: %s){}'.format(grey, under, reset, grey, reset)):
     if no_term:
         bold = green = reset = ''  # pylint: disable=redefined-outer-name
     else:
