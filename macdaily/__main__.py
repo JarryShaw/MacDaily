@@ -26,6 +26,7 @@ from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
 from macdaily.util.error import CommandNotImplemented
 from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.print import print_environ
 
 
 def get_parser():
@@ -34,12 +35,14 @@ def get_parser():
                                      usage='macdaily [options] <command> ...',
                                      epilog='{} This MacDaily has Super Cow Powers.{}'.format(bold, reset))
     parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-E', '--environ', action='store_true',
+                        help='show all available environment variables')
 
     group = parser.add_argument_group('command selection',
                                       'MacDaily provides a friendly CLI workflow for the '
                                       'administrator of macOS to manipulate packages, see '
                                       "`{}macdaily commands{}' for more information".format(bold, reset))
-    group.add_argument('command', metavar='CMD', help=argparse.SUPPRESS)
+    group.add_argument('command', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     return parser
 
@@ -50,8 +53,12 @@ def main():
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:2] or ['--help'])
 
+    # list environs
+    if args.environ:
+        return print_environ()
+
     # fetch command & paras
-    command = args.command.strip().lower()
+    command = args.command[0].strip().lower()
     options = sys.argv[2:]
 
     if command in MAP_MAGIC:

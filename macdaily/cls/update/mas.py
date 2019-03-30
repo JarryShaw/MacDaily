@@ -43,13 +43,14 @@ class MasUpdate(MasCommand, UpdateCommand):
             context = proc.decode()
             print_text(context, self._file, redirect=self._vflag)
 
-            _temp_pkgs = list()
+            _temp_pkgs = dict()
             for line in filter(None, context.strip().splitlines()):
-                text = line.split(maxsplit=1)
-                code = text[0]
-                name = re.sub(r'\(.*?\)', r'', text[1]).strip()
-                _temp_pkgs.append((code, name))
-            self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
+                match = re.match(r'(?P<code>\d{10}) (?P<name>.*?) \(.+?\)', line)
+                if match is None:
+                    continue
+                _temp_pkgs[match.group('name')] = match.group('code')
+            self._var__temp_pkgs = set(_temp_pkgs.keys())  # pylint: disable=attribute-defined-outside-init
+            self._ver__dict_pkgs = _temp_pkgs  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
                 file.write('Script done on {}\n'.format(date()))
@@ -62,7 +63,8 @@ class MasUpdate(MasCommand, UpdateCommand):
         argv.extend(self._update_opts)
 
         argc = ' '.join(argv)
-        for (code, package) in self._var__temp_pkgs:
+        for package in self._var__temp_pkgs:
+            code = self._var__dict_pkgs[package]
             print_scpt('{} {} [{}]'.format(argc, package, code), self._file, redirect=self._qflag)
             if sudo('{} {}'.format(argc, code), self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):

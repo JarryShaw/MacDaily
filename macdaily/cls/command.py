@@ -194,7 +194,7 @@ class Command(metaclass=abc.ABCMeta):
             if isinstance(pkgs, str):
                 pkgs = filter(None, pkgs.split(','))  # pylint: disable=filter-builtin-not-iterating
             for item in map(lambda s: s.split(','), pkgs):
-                for package in item:
+                for package in map(lambda s: s.strip(), item):
                     if package.startswith('!'):
                         ilst_pkg.append(package[1:])
                     else:

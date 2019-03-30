@@ -12,7 +12,7 @@ from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import PROGRAM, PYTHON, ROOT
 from macdaily.util.const.term import bold, red, reset
 from macdaily.util.tools.make import make_pipe, make_stderr
-from macdaily.util.tools.print import print_misc, print_scpt, print_term, print_text
+from macdaily.util.tools.print import print_environ, print_misc, print_scpt, print_term, print_text
 
 
 def date():
@@ -46,23 +46,35 @@ def record(file, args, today, config=None, redirect=False):
         log.writelines(['TIME: {!s}\n'.format(today), 'FILE: {}\n'.format(file)])
 
     # record parsed arguments
-    print_misc('Parsing command line arguments'.format(), file, redirect)
+    print_misc('Parsing command line arguments', file, redirect)
     with open(file, 'a') as log:
         for key, value in vars(args).items():
             if isinstance(value, dict):
                 for k, v, in value.items():
+                    if v is None:
+                        v = 'null'
                     log.write('ARG: {} -> {} = {}\n'.format(key, k, v))
             else:
+                if value is None:
+                    value = 'null'
                 log.write('ARG: {} = {}\n'.format(key, value))
 
-    # record parsed configuration
+    # record parsed configuration file
     if config is not None:
         print_misc('Parsing configuration file '
                    '{!r}'.format(os.path.expanduser("~/.dailyrc")), file, redirect)
         with open(file, 'a') as log:
             for key, value in config.items():
                 for k, v, in value.items():
+                    if v is None:
+                        v = 'null'
                     log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
+
+    # record parsed environment variables
+    print_misc('Parsing environment variables', file, redirect)
+    with open(file, 'a') as log:
+        print_environ(log, value_only=True, no_term=True,
+                      prefix='ENV: ', suffix=' = %s')
 
 
 def run_script(argv, quiet=False, verbose=False, sudo=False,  # pylint: disable=dangerous-default-value

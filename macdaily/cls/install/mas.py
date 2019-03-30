@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 from macdaily.cmd.install import InstallCommand
 from macdaily.core.mas import MasCommand
 from macdaily.util.tools.print import print_info, print_scpt
@@ -28,9 +30,7 @@ class MasInstall(MasCommand, InstallCommand):
         argv.append('')
 
         for package in self._var__temp_pkgs:
-            try:
-                int(package)
-            except ValueError:
+            if re.match(r'\d{10}', package) is None:
                 argv[1] = 'lucky'
             argv[-1] = package
             print_scpt(' '.join(argv), self._file, redirect=self._qflag)

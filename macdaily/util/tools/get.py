@@ -31,7 +31,7 @@ def get_logfile():
 
 
 def get_logdir():
-    return os.path.expanduser(os.getenv('MACDAILY_LOGDIR', '~/Library/Logs/MacDaily'))
+    return get_path('MACDAILY_LOGDIR', '~/Library/Logs/MacDaily')
 
 
 @retry('N')
@@ -77,11 +77,6 @@ def get_int(environ, default=0):
 @check
 @retry(PASS)
 def get_pass(askpass, queue=None):
-    SUDO_PASSWORD = os.getenv('SUDO_PASSWORD')
-    if SUDO_PASSWORD is not None:
-        if queue is not None:
-            queue.put(SUDO_PASSWORD)
-        return SUDO_PASSWORD
     if sys.stdin.isatty():
         try:
             return getpass.getpass(prompt='Password:')

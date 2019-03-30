@@ -64,20 +64,29 @@ def beholder(func):
 def check(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        from macdaily.util.tools.get import get_logfile
+        from macdaily.util.tools.get import get_logfile, get_boolean
 
-        password = func(*args, **kwargs)
-        try:
-            subprocess.run(['sudo', '--reset-timestamp'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            with make_pipe(password, redirect=True) as pipe:
-                subprocess.check_call(['sudo', '--stdin', '--prompt=""', "true"],
-                                      stdin=pipe.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        except subprocess.CalledProcessError:
-            global ERR_FLAG
-            ERR_FLAG = False
-            print_term('macdaily: {}error{}: incorrect password {}{!r}{} for '
-                       '{}{}{} ({}{}{})'.format(red, reset, dim, password, reset, bold, USER, reset, under, USR, reset), get_logfile())
-            raise IncorrectPassword from None
+        if get_boolean('NULL_PASSWORD'):
+            return ''
+
+        SUDO_PASSWORD = os.getenv('SUDO_PASSWORD')
+        if SUDO_PASSWORD is None:
+            password = func(*args, **kwargs)
+        else:
+            password = SUDO_PASSWORD
+
+        if not get_boolean('MACDAILY_NO_CHECK'):
+            try:
+                subprocess.run(['sudo', '--reset-timestamp'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                with make_pipe(password, redirect=True) as pipe:
+                    subprocess.check_call(['sudo', '--stdin', '--prompt=""', "true"],
+                                          stdin=pipe.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except subprocess.CalledProcessError:
+                global ERR_FLAG
+                ERR_FLAG = False
+                print_term('macdaily: {}error{}: incorrect password {}{!r}{} for '
+                           '{}{}{} ({}{}{})'.format(red, reset, dim, password, reset, bold, USER, reset, under, USR, reset), get_logfile())
+                raise IncorrectPassword from None
         return password
     return wrapper
 

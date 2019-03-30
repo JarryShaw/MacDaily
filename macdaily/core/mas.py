@@ -62,8 +62,10 @@ class MasCommand(Command):  # pylint: disable=abstract-method
 
             _list_pkgs = dict()
             for line in context.strip().splitlines():
-                content = line.split()
-                _list_pkgs[content[1:-1]] = content[0]
+                match = re.match(r'(?P<code>\d{10}) (?P<name>.*?) \(.+?\)', line)
+                if match is None:
+                    continue
+                _list_pkgs[match.group('name')] = match.group('code')
             _real_pkgs = set(_list_pkgs.keys())
         finally:
             with open(self._file, 'a') as file:
@@ -76,11 +78,12 @@ class MasCommand(Command):  # pylint: disable=abstract-method
         _lost_pkgs = list()
         for package in self._packages:
             if package in _real_pkgs:
-                _temp_pkgs.append((_list_pkgs[package], package))
+                _temp_pkgs.append(package)
             else:
                 _lost_pkgs.append(package)
         self._lost.extend(_lost_pkgs)
 
+        self._var__dict_pkgs = _list_pkgs  # pylint: disable=attribute-defined-outside-init
         self._var__real_pkgs = set(_real_pkgs)  # pylint: disable=attribute-defined-outside-init
         self._var__lost_pkgs = set(_lost_pkgs)  # pylint: disable=attribute-defined-outside-init
         self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
