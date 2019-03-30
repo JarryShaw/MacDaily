@@ -8,7 +8,7 @@ import signal
 import sys
 
 from macdaily.util.compat import multiprocessing, subprocess, threading
-from macdaily.util.const.macro import USER, USR
+from macdaily.util.const.macro import PASS, USER, USR
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
 from macdaily.util.error import ChildExit, IncorrectPassword, TimeExpired, UnsupportedOS
 from macdaily.util.tools.make import make_pipe
@@ -67,7 +67,7 @@ def check(func):
         from macdaily.util.tools.get import get_logfile, get_boolean
 
         if get_boolean('NULL_PASSWORD'):
-            return ''
+            return PASS
 
         SUDO_PASSWORD = os.getenv('SUDO_PASSWORD')
         if SUDO_PASSWORD is None:
