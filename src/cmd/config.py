@@ -114,11 +114,14 @@ def load_config(rcpath):
 
 
 def parse_config(quiet=False, verbose=False):
-    rcpath = os.path.expanduser('~/.dailyrc')
-    if os.path.isfile(rcpath):
-        config = load_config(rcpath)
+    if get_boolean('MACDAILY_NO_CONFIG'):
+        config = get_config()
     else:
-        config = dump_config(rcpath, quiet, verbose)
+        rcpath = os.path.expanduser('~/.dailyrc')
+        if os.path.isfile(rcpath):
+            config = load_config(rcpath)
+        else:
+            config = dump_config(rcpath, quiet, verbose)
     cfg_dict = collections.defaultdict(dict)
 
     # Path section

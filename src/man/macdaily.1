@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH MACDAILY 8 "March 28, 2019" "v2019.3.28.post1" ""
+.TH MACDAILY 8 "March 30, 2019" "v2019.3.30" ""
 .SH NAME
 macdaily \- macOS Automated Package Manager
 .
@@ -254,6 +254,9 @@ show this help message and exit
 .TP
 .B \-V\fP,\fB  \-\-version
 show program\(aqs version number and exit
+.TP
+.B \-E\fP,\fB  \-\-environ
+show all available environment variables
 .UNINDENT
 .SS command selection
 .sp
@@ -373,6 +376,21 @@ For  example, \fBexport MACDAILY_DEVMODE=1\fP rather than just
 .TP
 .B SUDO_PASSWORD
 password of your current account (for \fBsudo(8)\fP command)
+.TP
+.B NULL_PASSWORD
+implies \fBSUDO_PASSWORD=\(aq\(aq\fP and \fBMACDAILY_NO_CHECK=true\fP
+.sp
+\fIdefault\fP: \fBfalse\fP
+.TP
+.B MACDAILY_NO_CHECK
+do not validate your password (for \fBsudo(8)\fP command)
+.sp
+\fIdefault\fP: \fBfalse\fP
+.TP
+.B MACDAILY_NO_CONFIG
+do not load configuration from \fB~/.dailyrc\fP
+.sp
+\fIdefault\fP: \fBfalse\fP
 .TP
 .B MACDAILY_LOGDIR
 path where logs will be stored

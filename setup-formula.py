@@ -174,22 +174,12 @@ class Macdaily < Formula
   end
 
   def post_install
-    f = File.new("/private/tmp/macdaily-launch.py", "w")
-    f.write <<~EOS
-      # -*- coding: utf-8 -*-
+    # set environment variables
+    ENV["NULL_PASSWORD"] = 1
+    ENV["MACDAILY_NO_CONFIG"] = 1
 
-      from macdaily.cmd.config import parse_config
-      from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
-
-      launch_askpass(quiet=True, verbose=False)
-      launch_confirm(quiet=True, verbose=False)
-
-      config = parse_config(quiet=True, verbose=False)
-      launch_daemons(config, 'null', quiet=True, verbose=False)
-    EOS
-    f.close
-
-    system libexec/"bin/python", "/private/tmp/macdaily-launch.py"
+    # relaunch askpass & confirm utilities
+    system bin/"macdaily", "launch", "askpass", "confirm"
   end
 
   def caveats

@@ -288,7 +288,7 @@ working. However, you may set up this part with |config|_ command.
 Environment
 ~~~~~~~~~~~
 
-MacDaily currently supports two environment variables. For boolean
+MacDaily currently supports several environment variables. For boolean
 values, MacDaily currently uses the same mapping as |getboolean|_
 function in Python.
 
@@ -314,6 +314,21 @@ NB
 
 - ``SUDO_PASSWORD``
     password of your current account (for ``sudo(8)`` command)
+
+- ``NULL_PASSWORD``
+    implies ``SUDO_PASSWORD=''`` and ``MACDAILY_NO_CHECK=true``
+
+    *default*: ``false``
+
+- ``MACDAILY_NO_CHECK``
+    do not validate your password (for ``sudo(8)`` command)
+
+    *default*: ``false``
+
+- ``MACDAILY_NO_CONFIG``
+    do not load configuration from ``~/.dailyrc``
+
+    *default*: ``false``
 
 - ``MACDAILY_LOGDIR``
     path where logs will be stored
@@ -570,6 +585,7 @@ Generals
     optional arguments:
       -h, --help     show this help message and exit
       -V, --version  show program's version number and exit
+      -E, --environ  show all available environment variables
 
     command selection:
       MacDaily provides a friendly CLI workflow for the administrator of macOS
