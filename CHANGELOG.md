@@ -1,11 +1,22 @@
 # Change Log
 
+## [Unreleased](https://github.com/JarryShaw/MacDaily/tree/HEAD)
+
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.31...HEAD)
+
+**Merged pull requests:**
+
+- New distribution \[2019.03.31\] [\#54](https://github.com/JarryShaw/MacDaily/pull/54) ([JarryShaw](https://github.com/JarryShaw))
+
 ## [v2019.3.31](https://github.com/JarryShaw/MacDaily/tree/v2019.3.31) (2019-03-30)
-[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.31.-devel...v2019.3.31)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.31.e89c90-devel...v2019.3.31)
 
 **Merged pull requests:**
 
 - New distribution \[2019.03.30\] [\#53](https://github.com/JarryShaw/MacDaily/pull/53) ([JarryShaw](https://github.com/JarryShaw))
+
+## [v2019.3.31.e89c90-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.3.31.e89c90-devel) (2019-03-30)
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.31.-devel...v2019.3.31.e89c90-devel)
 
 ## [v2019.3.31.-devel](https://github.com/JarryShaw/MacDaily/tree/v2019.3.31.-devel) (2019-03-30)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.3.28.post1...v2019.3.31.-devel)
