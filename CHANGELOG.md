@@ -1,5 +1,13 @@
 # Change Log
 
+## [Unreleased](https://github.com/JarryShaw/MacDaily/tree/HEAD)
+
+[Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.4.7...HEAD)
+
+**Merged pull requests:**
+
+- New distribution \[2019.04.07.post1\] [\#57](https://github.com/JarryShaw/MacDaily/pull/57) ([JarryShaw](https://github.com/JarryShaw))
+
 ## [v2019.4.7](https://github.com/JarryShaw/MacDaily/tree/v2019.4.7) (2019-04-07)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.4.7.a0ca50-devel...v2019.4.7)
 
