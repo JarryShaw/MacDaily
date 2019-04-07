@@ -6,8 +6,8 @@ macdaily-install-brew
 Homebrew Formula Automated Installer
 ------------------------------------
 
-:Version: v2019.3.31.post1
-:Date: March 31, 2019
+:Version: v2019.4.7
+:Date: April 07, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

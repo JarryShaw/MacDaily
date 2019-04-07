@@ -39,9 +39,9 @@ def help_(argv=None):
     def _find_help(cmd, sub, man):
         pth = None
         if sub is None:
-            pth = os.path.join(ROOT, f'man/macdaily-{cmd}.1')
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}.8')
         if sub in man:
-            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{MAP_DICT[sub]}.1')
+            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{MAP_DICT[sub]}.8')
         if pth is None:
             CMD = globals().get(f'CMD_{cmd.upper()}', set())
             parser = get_help_parser()
