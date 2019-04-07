@@ -59,7 +59,7 @@ can easily work around and manage packages out of no pain using **MacDaily**.
 """
 
 # version string
-__version__ = '2019.4.7'
+__version__ = '2019.4.7.post1'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)
@@ -144,7 +144,7 @@ setup(
             'README.rst',
         ],
         'macdaily.comp': ['macdaily.bash-completion'],
-        'macdaily.man': ['*.1'],
+        'macdaily.man': ['*.8'],
         'macdaily.img': ['*.icns'],
         'macdaily.res': ['*.py', '*.applescript'],
     },
