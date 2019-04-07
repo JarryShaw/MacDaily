@@ -21,7 +21,7 @@ def help_(argv=None):
     args = parse_args(argv)
 
     if args.command is None:
-        pth = os.path.join(ROOT, 'man/macdaily.1')
+        pth = os.path.join(ROOT, 'man/macdaily.8')
         os.execlp('man', 'man', pth)
 
     command = args.command.strip().lower()
