@@ -180,7 +180,7 @@ class Macdaily < Formula
     ENV["MACDAILY_NO_CONFIG"] = "true"
 
     # relaunch askpass & confirm utilities
-    system bin/"macdaily", "launch", "askpass", "confirm"
+    system bin/"macdaily", "launch", "askpass", "confirm", "--quiet", "--no-cleanup"
   end
 
   def caveats

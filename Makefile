@@ -86,7 +86,7 @@ update-manpages:
 	cd contrib
 	for file in $$( ls *.rst ); do \
 	    name=$${file%.rst*}; \
-	    pipenv run rst2man.py $${file} > "../src/man/$${name}.1"; \
+	    pipenv run rst2man.py $${file} > "../src/man/$${name}.8"; \
 	done
 
 # update maintenance information
