@@ -162,13 +162,13 @@ class Macdaily < Formula
     cp comp_path, bash_comp
     bash_completion.install bash_comp
 
-    man_path = Pathname.glob(libexec/"lib/python#{{version}}/site-packages/macdaily/man/*.1")
+    man_path = Pathname.glob(libexec/"lib/python#{{version}}/site-packages/macdaily/man/*.8")
     dir_name = File.dirname man_path[0]
-    dest = File.join(dir_name, "temp.1")
+    dest = File.join(dir_name, "temp.8")
 
     man_path.each do |f|
       cp f, dest
-      man1.install f
+      man8.install f
       mv dest, f
     end
   end
