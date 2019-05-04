@@ -22,7 +22,7 @@ def get_help_parser():
                                      description='MacDaily Usage Information Manual',
                                      usage='macdaily help [options] <cmd-selection> ...',
                                      epilog=STR_HELP)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('command', action='store', nargs='?', metavar='CMD',

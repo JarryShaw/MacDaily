@@ -24,7 +24,7 @@ def get_logging_parser():
                                      description='macOS Package Logging Automator',
                                      usage='macdaily logging [options] <mode-selection> ...',
                                      epilog=STR_LOGGING)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -33,7 +33,7 @@ def get_logging_parser():
                                   'Homebrew, Caskroom, Mac App Store, and etc'))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                             help='do not run cleanup process')
@@ -74,7 +74,7 @@ def get_apm_parser():
                                          description='Atom Plug-In Logging Automator',
                                          usage='macdaily logging apm [options] ...',
                                          epilog=STR_APM)
-    apm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    apm_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     apm_spec_group = apm_parser.add_argument_group(title='specification arguments')
@@ -84,7 +84,7 @@ def get_apm_parser():
     apm_genl_group = apm_parser.add_argument_group(title='general arguments')
     apm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    apm_genl_group.add_argument('-v', '--verbose', action='store_true',
+    apm_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     apm_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -109,13 +109,13 @@ def get_app_parser():
                                          description='Mac Application Logging Automator',
                                          usage='macdaily logging app [options] ...',
                                          epilog=STR_APP)
-    app_parser.add_argument('-V', '--version', action='version', version=__version__)
+    app_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     app_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     app_genl_group = app_parser.add_argument_group(title='general arguments')
     app_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    app_genl_group.add_argument('-v', '--verbose', action='store_true',
+    app_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     app_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -140,7 +140,7 @@ def get_gem_parser():
                                          description='Ruby Gem Logging Automator',
                                          usage='macdaily logging gem [options] ...',
                                          epilog=STR_GEM)
-    gem_parser.add_argument('-V', '--version', action='version', version=__version__)
+    gem_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     gem_spec_group = gem_parser.add_argument_group(title='specification arguments')
@@ -152,7 +152,7 @@ def get_gem_parser():
     gem_genl_group = gem_parser.add_argument_group(title='general arguments')
     gem_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    gem_genl_group.add_argument('-v', '--verbose', action='store_true',
+    gem_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     gem_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -176,13 +176,13 @@ def get_mas_parser():
                                          description='macOS Application Logging Automator',
                                          usage='macdaily logging mas [options] ...',
                                          epilog=STR_MAS)
-    mas_parser.add_argument('-V', '--version', action='version', version=__version__)
+    mas_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     mas_genl_group = mas_parser.add_argument_group(title='general arguments')
     mas_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    mas_genl_group.add_argument('-v', '--verbose', action='store_true',
+    mas_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     mas_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -206,7 +206,7 @@ def get_npm_parser():
                                          description='Node.js Module Logging Automator',
                                          usage='macdaily logging npm [options] ...',
                                          epilog=STR_NPM)
-    npm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    npm_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     npm_spec_group = npm_parser.add_argument_group(title='specification arguments')
@@ -216,7 +216,7 @@ def get_npm_parser():
     npm_genl_group = npm_parser.add_argument_group(title='general arguments')
     npm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    npm_genl_group.add_argument('-v', '--verbose', action='store_true',
+    npm_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     npm_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -241,7 +241,7 @@ def get_pip_parser():
                                          description='Python Package Logging Automator',
                                          usage='macdaily logging pip [options] ...',
                                          epilog=STR_PIP)
-    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
@@ -262,7 +262,7 @@ def get_pip_parser():
     pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    pip_genl_group.add_argument('-v', '--verbose', action='store_true',
+    pip_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -287,13 +287,13 @@ def get_tap_parser():
                                          description='Homebrew Tap Logging Automator',
                                          usage='macdaily logging tap [options] ...',
                                          epilog=STR_TAP)
-    tap_parser.add_argument('-V', '--version', action='version', version=__version__)
+    tap_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     tap_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     tap_genl_group = tap_parser.add_argument_group(title='general arguments')
     tap_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    tap_genl_group.add_argument('-v', '--verbose', action='store_true',
+    tap_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     tap_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -318,13 +318,13 @@ def get_brew_parser():
                                           description='Homebrew Formula Logging Automator',
                                           usage='macdaily logging brew [options] ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')
@@ -349,13 +349,13 @@ def get_cask_parser():
                                           description='Homebrew Cask Logging Automator',
                                           usage='macdaily logging cask [options] ...',
                                           epilog=STR_CASK)
-    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    cask_genl_group.add_argument('-v', '--verbose', action='store_true',
+    cask_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     cask_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')

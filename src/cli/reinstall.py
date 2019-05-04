@@ -24,7 +24,7 @@ def get_reinstall_parser():
                                      description='Automated macOS Package Reinstaller',
                                      usage='macdaily reinstall [options] <mode-selection> ...',
                                      epilog=STR_REINSTALL)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -32,7 +32,7 @@ def get_reinstall_parser():
                             help='reinstall all packages installed through Homebrew, Caskroom, and etc')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
@@ -77,7 +77,7 @@ def get_brew_parser():
                                           description='Automated Homebrew Formula Reinstaller',
                                           usage='macdaily reinstall brew [options] <formulae> ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
@@ -93,7 +93,7 @@ def get_brew_parser():
                                  help='reinstall all Homebrew formulae installed through Homebrew')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
@@ -124,7 +124,7 @@ def get_cask_parser():
                                           description='Automated Homebrew Cask Reinstaller',
                                           usage='macdaily reinstall cask [options] <casks> ...',
                                           epilog=STR_CASK)
-    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
@@ -144,7 +144,7 @@ def get_cask_parser():
                                  help='reinstall all Caskroom binaries installed through Homebrew')
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    cask_genl_group.add_argument('-v', '--verbose', action='store_true',
+    cask_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     cask_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')

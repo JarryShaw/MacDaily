@@ -24,7 +24,7 @@ def get_dependency_parser():
                                      description='macOS Package Dependency Query',
                                      usage='macdaily dependency [options] <mode-selection> ...',
                                      epilog=STR_DEPENDENCY)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -32,7 +32,7 @@ def get_dependency_parser():
                             help=('query all packages installed through Python and Homebrew'))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                             help='do not run cleanup process')
@@ -79,7 +79,7 @@ def get_pip_parser():
                                          description='Python Package Dependency Query',
                                          usage='macdaily dependency pip [options] <packages> ...',
                                          epilog=STR_PIP)
-    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
@@ -102,7 +102,7 @@ def get_pip_parser():
                                 help='query all Python packages installed through Python Package Index')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    pip_genl_group.add_argument('-v', '--verbose', action='store_true',
+    pip_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
@@ -131,7 +131,7 @@ def get_brew_parser():
                                           description='Homebrew Formula Dependency Query',
                                           usage='macdaily dependency brew [options] <formulae> ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
@@ -153,7 +153,7 @@ def get_brew_parser():
                                  help='query all Homebrew formulae installed through Homebrew')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')

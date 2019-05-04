@@ -23,7 +23,7 @@ def get_postinstall_parser():
                                      description='Homebrew Cask Postinstall Automator',
                                      usage='macdaily postinstall [options] ...',
                                      epilog=STR_POSTINSTALL)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('-s', '--startswith', action='store', metavar='PREFIX',
@@ -38,7 +38,7 @@ def get_postinstall_parser():
                             help='postinstall all Homebrew formulae installed through Homebrew')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')

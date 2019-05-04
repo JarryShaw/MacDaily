@@ -34,7 +34,7 @@ def get_parser():
                                      description='macOS Automated Package Manager',
                                      usage='macdaily [options] <command> ...',
                                      epilog=f'{bold} This MacDaily has Super Cow Powers.{reset}')
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('-E', '--environ', action='store_true',
                         help='show all available environment variables')
 

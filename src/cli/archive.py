@@ -22,7 +22,7 @@ def get_archive_parser():
                                      description='MacDaily Log Archive Utility',
                                      usage='macdaily archive [options] <path-selection> ...',
                                      epilog=STR_ARCHIVE)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('path', nargs='*', metavar='CMD',
@@ -38,7 +38,7 @@ def get_archive_parser():
                             help='do not move ancient logs into external hard disk')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')

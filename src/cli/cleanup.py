@@ -23,7 +23,7 @@ def get_cleanup_parser():
                                      description='macOS Package Cache Cleanup',
                                      usage='macdaily cleanup [options] <mode-selection> ...',
                                      epilog=STR_CLEANUP)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -32,7 +32,7 @@ def get_cleanup_parser():
                                   'Homebrew, Caskroom and Python'))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
@@ -65,13 +65,13 @@ def get_npm_parser():
                                          description='Node.js Module Cache Cleanup',
                                          usage='macdaily cleanup npm [options] ...',
                                          epilog=STR_NPM)
-    npm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    npm_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     npm_genl_group = npm_parser.add_argument_group(title='general arguments')
     npm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    npm_genl_group.add_argument('-v', '--verbose', action='store_true',
+    npm_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
 
     return npm_parser
@@ -91,7 +91,7 @@ def get_pip_parser():
                                          description='Python Package Cache Cleanup',
                                          usage='macdaily cleanup pip [options] ...',
                                          epilog=STR_PIP)
-    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
@@ -110,7 +110,7 @@ def get_pip_parser():
     pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    pip_genl_group.add_argument('-v', '--verbose', action='store_true',
+    pip_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
 
     return pip_parser
@@ -130,13 +130,13 @@ def get_brew_parser():
                                           description='Homebrew Formula Cache Cleanup',
                                           usage='macdaily cleanup brew [options] ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
 
     return brew_parser
@@ -156,13 +156,13 @@ def get_cask_parser():
                                           description='Homebrew Cask Cache Cleanup',
                                           usage='macdaily cleanup cask [options] ...',
                                           epilog=STR_CASK)
-    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    cask_genl_group.add_argument('-v', '--verbose', action='store_true',
+    cask_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
 
     return cask_parser

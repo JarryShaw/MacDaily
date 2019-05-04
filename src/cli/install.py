@@ -25,13 +25,13 @@ def get_install_parser():
                                      description='macOS Package Automated Installer',
                                      usage='macdaily install [options] <mode-selection> ...',
                                      epilog=STR_INSTALL)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
@@ -81,7 +81,7 @@ def get_apm_parser():
                                          description='Atom Plug-In Automated Installer',
                                          usage='macdaily install apm [options] <plug-ins> ...',
                                          epilog=STR_APM)
-    apm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    apm_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     apm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     apm_spec_group = apm_parser.add_argument_group(title='specification arguments')
@@ -93,7 +93,7 @@ def get_apm_parser():
     apm_genl_group = apm_parser.add_argument_group(title='general arguments')
     apm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    apm_genl_group.add_argument('-v', '--verbose', action='store_true',
+    apm_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     apm_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -120,7 +120,7 @@ def get_gem_parser():
                                          description='Ruby Gem Automated Installer',
                                          usage='macdaily install gem [options] <gems> ...',
                                          epilog=STR_GEM)
-    gem_parser.add_argument('-V', '--version', action='version', version=__version__)
+    gem_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     gem_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     gem_spec_group = gem_parser.add_argument_group(title='specification arguments')
@@ -134,7 +134,7 @@ def get_gem_parser():
     gem_genl_group = gem_parser.add_argument_group(title='general arguments')
     gem_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    gem_genl_group.add_argument('-v', '--verbose', action='store_true',
+    gem_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     gem_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -160,7 +160,7 @@ def get_mas_parser():
                                          description='macOS Application Automated Installer',
                                          usage='macdaily install mas [options] <applications> ...',
                                          epilog=STR_MAS)
-    mas_parser.add_argument('-V', '--version', action='version', version=__version__)
+    mas_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     mas_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     mas_spec_group = mas_parser.add_argument_group(title='specification arguments')
@@ -172,7 +172,7 @@ def get_mas_parser():
     mas_genl_group = mas_parser.add_argument_group(title='general arguments')
     mas_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    mas_genl_group.add_argument('-v', '--verbose', action='store_true',
+    mas_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     mas_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -198,7 +198,7 @@ def get_npm_parser():
                                          description='Node.js Module Automated Installer',
                                          usage='macdaily install npm [options] <modules> ...',
                                          epilog=STR_NPM)
-    npm_parser.add_argument('-V', '--version', action='version', version=__version__)
+    npm_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     npm_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     npm_spec_group = npm_parser.add_argument_group(title='specification arguments')
@@ -208,7 +208,7 @@ def get_npm_parser():
     npm_genl_group = npm_parser.add_argument_group(title='general arguments')
     npm_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    npm_genl_group.add_argument('-v', '--verbose', action='store_true',
+    npm_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     npm_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -237,7 +237,7 @@ def get_pip_parser():
                                          description='Python Package Automated Installer',
                                          usage='macdaily install pip [options] <packages> ...',
                                          epilog=STR_PIP)
-    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
@@ -262,7 +262,7 @@ def get_pip_parser():
     pip_genl_group = pip_parser.add_argument_group(title='general arguments')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    pip_genl_group.add_argument('-v', '--verbose', action='store_true',
+    pip_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     pip_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -291,7 +291,7 @@ def get_brew_parser():
                                           description='Homebrew Formula Automated Installer',
                                           usage='macdaily install brew [options] <formulae> ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
@@ -301,7 +301,7 @@ def get_brew_parser():
     brew_genl_group = brew_parser.add_argument_group(title='general arguments')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
@@ -330,7 +330,7 @@ def get_cask_parser():
                                           description='Homebrew Cask Automated Installer',
                                           usage='macdaily install cask [options] <casks> ...',
                                           epilog=STR_CASK)
-    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
@@ -340,7 +340,7 @@ def get_cask_parser():
     cask_genl_group = cask_parser.add_argument_group(title='general arguments')
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    cask_genl_group.add_argument('-v', '--verbose', action='store_true',
+    cask_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     cask_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
@@ -369,7 +369,7 @@ def get_system_parser():
                                             description='System Software Automated Installer',
                                             usage='macdaily install system [options] <software> ...',
                                             epilog=STR_SYSTEM)
-    system_parser.add_argument('-V', '--version', action='version', version=__version__)
+    system_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     system_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     system_spec_group = system_parser.add_argument_group(title='specification arguments')
@@ -381,7 +381,7 @@ def get_system_parser():
     system_genl_group = system_parser.add_argument_group(title='general arguments')
     system_genl_group.add_argument('-q', '--quiet', action='store_true',
                                    help='run in quiet mode, with no output information')
-    system_genl_group.add_argument('-v', '--verbose', action='store_true',
+    system_genl_group.add_argument('-v', '--verbose', action='count',
                                    help='run in verbose mode, with detailed output information')
     system_genl_group.add_argument('-y', '--yes', action='store_true',
                                    help='yes for all selections')

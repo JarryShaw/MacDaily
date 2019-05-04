@@ -23,7 +23,7 @@ def get_launch_parser():
                                      description='MacDaily Dependency Launch Helper',
                                      usage='macdaily launch [options] <prog-selection> ...',
                                      epilog=STR_LAUNCH)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('program', nargs='*', metavar='PROG',
@@ -36,7 +36,7 @@ def get_launch_parser():
                                   f"`{bold}confirm{reset}' and `{bold}daemons{reset}'"))
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                             help='do not run cleanup process')

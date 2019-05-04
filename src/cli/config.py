@@ -23,7 +23,7 @@ def get_config_parser():
                                      description='MacDaily Runtime Configuration Helper',
                                      usage='macdaily config [options] <key> <value> ...',
                                      epilog=STR_CONFIG)
-    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
 
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('-a', '--add', action='store_true',
@@ -44,7 +44,7 @@ def get_config_parser():
     genl_group.add_argument('value', action='store', nargs='?', help='the value for a given key')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
 
     ctrl_group = parser.add_argument_group(title='control arguments',

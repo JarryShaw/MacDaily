@@ -26,7 +26,7 @@ def get_uninstall_parser():
                                      usage='macdaily uninstall [options] <mode-selection> ...',
                                      epilog=STR_UNINSTALL)
     parser.add_argument('-V', '--version',
-                        action='version', version=__version__)
+                        action='version', version=f'MacDaily {__version__}')
     parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     genl_group = parser.add_argument_group(title='general arguments')
@@ -39,7 +39,7 @@ def get_uninstall_parser():
                             help='run in non-recursive mode, i.e. ignore dependencies packages')
     genl_group.add_argument('-q', '--quiet', action='store_true',
                             help='run in quiet mode, with no output information')
-    genl_group.add_argument('-v', '--verbose', action='store_true',
+    genl_group.add_argument('-v', '--verbose', action='count',
                             help='run in verbose mode, with detailed output information')
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
@@ -88,7 +88,7 @@ def get_pip_parser():
                                          description='Automated Python Package Uninstaller',
                                          usage='macdaily uninstall pip [options] <packages> ...',
                                          epilog=STR_PIP)
-    pip_parser.add_argument('-V', '--version', action='version', version=__version__)
+    pip_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     pip_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     pip_spec_group = pip_parser.add_argument_group(title='specification arguments')
@@ -118,7 +118,7 @@ def get_pip_parser():
                                 help='run in non-recursive mode, i.e. ignore dependencies packages')
     pip_genl_group.add_argument('-q', '--quiet', action='store_true',
                                 help='run in quiet mode, with no output information')
-    pip_genl_group.add_argument('-v', '--verbose', action='store_true',
+    pip_genl_group.add_argument('-v', '--verbose', action='count',
                                 help='run in verbose mode, with detailed output information')
     pip_genl_group.add_argument('-y', '--yes', action='store_true',
                                 help='yes for all selections')
@@ -149,7 +149,7 @@ def get_brew_parser():
                                           description='Automated Homebrew Formula Uninstaller',
                                           usage='macdaily uninstall brew [options] <formulae> ...',
                                           epilog=STR_BREW)
-    brew_parser.add_argument('-V', '--version', action='version', version=__version__)
+    brew_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     brew_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
@@ -178,7 +178,7 @@ def get_brew_parser():
                                  help='run in non-recursive mode, i.e. ignore dependencies packages')
     brew_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    brew_genl_group.add_argument('-v', '--verbose', action='store_true',
+    brew_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     brew_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
@@ -209,7 +209,7 @@ def get_cask_parser():
                                           description='Automated Homebrew Cask Uninstaller',
                                           usage='macdaily uninstall cask [options] <casks>',
                                           epilog=STR_CASK)
-    cask_parser.add_argument('-V', '--version', action='version', version=__version__)
+    cask_parser.add_argument('-V', '--version', action='version', version=f'MacDaily {__version__}')
     cask_parser.add_argument('more_opts', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
@@ -226,7 +226,7 @@ def get_cask_parser():
                                        'but will not actually delete any Caskroom binaries'))
     cask_genl_group.add_argument('-q', '--quiet', action='store_true',
                                  help='run in quiet mode, with no output information')
-    cask_genl_group.add_argument('-v', '--verbose', action='store_true',
+    cask_genl_group.add_argument('-v', '--verbose', action='count',
                                  help='run in verbose mode, with detailed output information')
     cask_genl_group.add_argument('-y', '--yes', action='store_true',
                                  help='yes for all selections')
