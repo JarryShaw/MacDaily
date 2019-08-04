@@ -6,8 +6,8 @@ macdaily-uninstall
 Automated macOS Package Uninstaller
 -----------------------------------
 
-:Version: v2019.4.7.post1
-:Date: April 07, 2019
+:Version: v2019.8.4
+:Date: August 04, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

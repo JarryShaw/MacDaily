@@ -9,8 +9,9 @@ except ImportError:
     from distutils.core import setup
 
 # check platform
-if platform.system() != 'Darwin':
-    sys.exit('macdaily: error: script runs only on macOS')
+system = platform.system()
+if system != 'Darwin':
+    sys.exit('macdaily: error: script runs only on macOS [currently: %s]' % system)
 
 # README
 # with open('./README.rst', encoding='utf-8') as file:
@@ -59,7 +60,7 @@ can easily work around and manage packages out of no pain using **MacDaily**.
 """
 
 # version string
-__version__ = '2019.4.7.post1'
+__version__ = '2019.8.4'
 # context = pkg_resources.resource_string(__name__, 'macdaily/util/const/macro.py')
 # for line in context.splitlines():
 #     match = re.match(rb"VERSION = '(.*)'", line)
@@ -169,6 +170,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',

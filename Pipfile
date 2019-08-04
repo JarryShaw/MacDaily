@@ -14,20 +14,16 @@ macdaily = {path = ".",editable = true}
 subprocess32 = ">=3.5.3"
 pathlib2 = ">=2.3.2"
 psutil = "*"
+f2format = "*"
 requests = "*"
 "bs4" = "*"
 "html5lib" = "*"
 homebrew-pypi-poet = "*"
 docutils = "*"
 pygments = "*"
-"doc8" = "*"
-sphinx = "*"
-sphinx-autobuild = "*"
 ipython = "*"
-rope = "*"
 "autopep8" = "*"
 pylint = "*"
-pycodestyle = "*"
 isort = {extras = ["pipfile", "requirements"],version = "*"}
 
 [requires]

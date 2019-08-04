@@ -67,7 +67,7 @@ clean-manpages:
 clean-pypi:
 	set -ex
 	cd $(DIR)
-	mkdir -p sdist eggs wheels
+	mkdir -p dist sdist eggs wheels
 	find dist -iname '*.egg' -exec mv {} eggs \;
 	find dist -iname '*.whl' -exec mv {} wheels \;
 	find dist -iname '*.tar.gz' -exec mv {} sdist \;
@@ -103,21 +103,29 @@ dist-pypi: clean-pypi dist-pypi-new dist-pypi-old
 dist-pypi-new:
 	set -ex
 	cd $(DIR)
-	python3.7 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp37'
-	python3.6 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp36'
+	~/.pyenv/versions/3.8-dev/bin/python3.8 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp38'
+	~/.pyenv/versions/3.7.4/bin/python3.7 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp37'
+	~/.pyenv/versions/3.6.9/bin/python3.6 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp36'
+	~/.pyenv/versions/pypy3.6-7.1.1/bin/pypy3 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='pp36'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="python3.7" -eFAKE_ENV=true python:3.7 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp37'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="python3.6" -eFAKE_ENV=true python:3.6 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp36'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="pypy3" -eFAKE_ENV=true pypy:3.6 setup.py bdist_wheel --plat-name="$(platform)" --python-tag='pp36'
 
 # perform f2format
 dist-f2format:
-	f2format -n $(DIR)/macdaily
+	pipenv run f2format -n $(DIR)/macdaily
 
 # make Python <3.6 distribution
 .ONESHELL:
 dist-pypi-old: dist-f2format
 	set -ex
 	cd $(DIR)
-	python3.5 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp35'
-	python3.4 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp34'
-	pypy3 setup.py bdist_wheel --plat-name="$(platform)" --python-tag='pp35'
+	~/.pyenv/versions/3.5.7/bin/python3.5 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp35'
+	~/.pyenv/versions/3.4.10/bin/python3.4 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp34'
+	~/.pyenv/versions/pypy3.5-7.0.0/bin/pypy3 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='pp35'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="python3.5" -eFAKE_ENV=true python:3.5 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp35'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="python3.4" -eFAKE_ENV=true python:3.4 setup.py bdist_egg bdist_wheel --plat-name="$(platform)" --python-tag='cp34'
+	# docker run -v$(shell pwd):/wd -w/wd --entrypoint="pypy3" -eFAKE_ENV=true pypy:3.5 setup.py bdist_wheel --plat-name="$(platform)" --python-tag='pp35'
 	pipenv run python setup.py sdist
 
 # upload PyPI distribution

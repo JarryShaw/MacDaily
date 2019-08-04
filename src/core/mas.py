@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import shutil
 import sys
 import traceback
@@ -62,7 +63,7 @@ class MasCommand(Command):  # pylint: disable=abstract-method
 
             _list_pkgs = dict()
             for line in context.strip().splitlines():
-                match = re.match(r'(?P<code>\d{10}) (?P<name>.*?) \(.+?\)', line)
+                match = re.match(r'(?P<code>\d{9}) (?P<name>.*?) \(.+?\)', line)
                 if match is None:
                     continue
                 _list_pkgs[match.group('name')] = match.group('code')

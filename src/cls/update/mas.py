@@ -45,7 +45,7 @@ class MasUpdate(MasCommand, UpdateCommand):
 
             _temp_pkgs = dict()
             for line in filter(None, context.strip().splitlines()):
-                match = re.match(r'(?P<code>\d{10}) (?P<name>.*?) \(.+?\)', line)
+                match = re.match(r'(?P<code>\d{9}) (?P<name>.*?) \(.+?\)', line)
                 if match is None:
                     continue
                 _temp_pkgs[match.group('name')] = match.group('code')

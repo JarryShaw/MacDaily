@@ -145,6 +145,9 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         StandardErrorPath=str(),
     )
 
+    library = os.path.expanduser('~/Library/LaunchAgents/')
+    os.makedirs(library, exist_ok=True)
+
     root = pathlib.Path(config['Path']['logdir'])
     for mode, time in config['Daemon'].items():
         (root / mode).mkdir(parents=True, exist_ok=True)
@@ -189,7 +192,7 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
         PLIST['StandardOutPath'] = pout
         PLIST['StandardErrorPath'] = perr
 
-        plist = os.path.expanduser(f'~/Library/LaunchAgents/{name}.plist')
+        plist = os.path.join(library, f'{name}.plist')
         text = f'Adding Launch Agent {name!r}'
         print_misc(text, logfile, verbose)
         if os.path.exists(plist):
@@ -198,4 +201,4 @@ def launch_daemons(config, password, quiet=False, verbose=False, logfile=os.devn
             plistlib.dump(PLIST, file, sort_keys=False)
         run_script(['launchctl', 'load', '-w', plist], quiet, verbose, logfile=logfile)
 
-    return os.path.expanduser('~/Library/LaunchAgents/')
+    return library

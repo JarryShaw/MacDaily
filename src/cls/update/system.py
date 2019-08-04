@@ -51,7 +51,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             _rcmd_pkgs = list()
             _norm_pkgs = list()
             for package in filter(lambda s: re.match(r'^\W*[-*]', s), context.strip().splitlines()):
-                flag, name = package.split(maxsplit=1)
+                flag, name = package.strip().split(maxsplit=1)
                 if flag == '*':
                     _rcmd_pkgs.append(name)
                 if flag == '-':
