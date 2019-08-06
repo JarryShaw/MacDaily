@@ -299,10 +299,6 @@
 ## [v2019.01.23](https://github.com/JarryShaw/MacDaily/tree/v2019.01.23) (2019-01-23)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.23.devel...v2019.01.23)
 
-**Merged pull requests:**
-
-- Devel [\#25](https://github.com/JarryShaw/MacDaily/pull/25) ([JarryShaw](https://github.com/JarryShaw))
-
 ## [v2019.01.23.devel](https://github.com/JarryShaw/MacDaily/tree/v2019.01.23.devel) (2019-01-23)
 [Full Changelog](https://github.com/JarryShaw/MacDaily/compare/v2019.01.22...v2019.01.23.devel)
 
@@ -397,6 +393,7 @@
 
 **Merged pull requests:**
 
+- Devel [\#25](https://github.com/JarryShaw/MacDaily/pull/25) ([JarryShaw](https://github.com/JarryShaw))
 - Update .gitmodules [\#12](https://github.com/JarryShaw/MacDaily/pull/12) ([JarryShaw](https://github.com/JarryShaw))
 - Updated devel branch w/ master [\#11](https://github.com/JarryShaw/MacDaily/pull/11) ([JarryShaw](https://github.com/JarryShaw))
 

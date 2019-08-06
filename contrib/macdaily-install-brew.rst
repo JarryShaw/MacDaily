@@ -7,7 +7,7 @@ Homebrew Formula Automated Installer
 ------------------------------------
 
 :Version: v2019.8.4
-:Date: August 04, 2019
+:Date: August 06, 2019
 :Manual section: 8
 :Author:
     Jarry Shaw, a newbie programmer, is the author, owner and maintainer

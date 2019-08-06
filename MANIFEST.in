@@ -2,6 +2,9 @@ global-exclude .DS_Store
 
 global-include *.py
 
+prune .venv
+prune Cellar
+
 include macdaily/comp/macdaily.bash-completion
 include macdaily/res/*.applescript
 include macdaily/img/*.icns

@@ -7,9 +7,11 @@
         "Ornyvfu",
         "Oyrffrq",
         "Punbf",
+        "Virtualenv",
         "Wneel",
         "aktau",
         "avpur",
+        "dailyrc",
         "deps",
         "distro",
         "docutils",
@@ -30,6 +32,7 @@
         "qflag",
         "scpt",
         "snepr",
+        "tbody",
         "tenivgnf",
         "vfa'g",
         "vflag",
@@ -38,5 +41,6 @@
         "ynzo",
         "zrrx"
     ],
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "restructuredtext.confPath": "${workspaceFolder}/docs/conf.py"
 }

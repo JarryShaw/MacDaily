@@ -1,9 +1,10 @@
 [submodule "release"]
 	path = release
-	url = https://github.com/JarryShaw/MacDaily/tree/release
+	url = https://github.com/JarryShaw/MacDaily.git
+	branch = release
 [submodule "util/askpass"]
 	path = util/askpass
-	url = https://github.com/JarryShaw/askpass
+	url = https://github.com/JarryShaw/askpass.git
 [submodule "util/confirm"]
 	path = util/confirm
-	url = https://github.com/JarryShaw/confirm
+	url = https://github.com/JarryShaw/confirm.git
