@@ -15,9 +15,9 @@ from macdaily.util.tools.misc import predicate
 
 # set up sys.excepthook
 if DEVMODE:
-    warnings.showwarning('development mode enabled'.format(), RuntimeWarning,
+    warnings.showwarning(f'development mode enabled', RuntimeWarning,
                          filename=__file__, lineno=0,
-                         line="MACDAILY_DEVMODE={}".format(os.environ['MACDAILY_DEVMODE']))
+                         line=f"MACDAILY_DEVMODE={os.environ['MACDAILY_DEVMODE']}")
 else:
     tbtrim.set_trim_rule(predicate, strict=False,
                          target=(Error, KeyboardInterrupt))
@@ -32,7 +32,7 @@ if sys.version_info[:2] <= (3, 4):
         try:
             importlib.import_module(module)
         except ImportError:
-            print('macdaily: {}error{}: broken dependency'.format(red, reset), file=sys.stderr)
+            print(f'macdaily: {red}error{reset}: broken dependency', file=sys.stderr)
             raise
     test_import('pathlib2')
     test_import('subprocess32')

@@ -34,7 +34,7 @@ class LoggingCommand(Command):
 
     @property
     def sample(self):
-        return os.path.join(self._logroot, '{}{}'.format(self.log, self.ext))
+        return os.path.join(self._logroot, f'{self.log}{self.ext}')
 
     @property
     def packages(self):
@@ -57,7 +57,7 @@ class LoggingCommand(Command):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))
 
-        text = 'Running {} command for {}'.format(self.cmd, self.mode)
+        text = f'Running {self.cmd} command for {self.mode}'
         print_info(text, filename, redirect=self._qflag)
 
         # assign members
@@ -85,7 +85,7 @@ class LoggingCommand(Command):
 
     def _run_proc(self):
         for path in self._exec:
-            text = 'Using {} executable {!r}'.format(self.name, path)
+            text = f'Using {self.name} executable {path!r}'
             print_info(text, self._file, redirect=self._qflag)
             self._proc_logging(path)
 

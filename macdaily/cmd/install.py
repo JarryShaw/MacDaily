@@ -42,14 +42,14 @@ class InstallCommand(Command):
         self._pkgs = list()
         self._fail = list()
         for path in self._exec:
-            text = 'Using {} executable {!r}'.format(self.name, path)
+            text = f'Using {self.name} executable {path!r}'
             print_info(text, self._file, redirect=self._qflag)
 
             self._var__temp_pkgs = self._packages  # pylint: disable=attribute-defined-outside-init
             if self._check_confirm(path):
                 self._proc_install(path)
             else:
-                text = 'No {} to install for executable {!r}'.format(self.desc[1], path)
+                text = f'No {self.desc[1]} to install for executable {path!r}'
                 print_info(text, self._file, redirect=self._qflag)
             self._proc_fixmissing(path)
         self._proc_cleanup()

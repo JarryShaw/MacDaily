@@ -25,12 +25,12 @@ class DependencyCommand(Command):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            text = 'Using {} executable {!r}'.format(self.name, path)
+            text = f'Using {self.name} executable {path!r}'
             print_info(text, self._file, redirect=self._qflag)
             if self._proc_logging(path):
                 self._proc_dependency(path)
             else:
-                text = 'No {} to query for executable {!r}'.format(self.desc[1], path)
+                text = f'No {self.desc[1]} to query for executable {path!r}'
                 print_info(text, self._file, redirect=self._qflag)
 
     def _proc_logging(self, path):

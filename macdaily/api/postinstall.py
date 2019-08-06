@@ -41,7 +41,7 @@ def postinstall(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
+    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
     os.environ['MACDAILY_LOGFILE'] = filename
 
     confirm = config['Miscellaneous']['confirm']
@@ -51,12 +51,12 @@ def postinstall(argv=None):
     brew_renew = None
 
     # record program status
-    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
+    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     # ask for password
-    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
+    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
     print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
@@ -68,63 +68,63 @@ def postinstall(argv=None):
         command = PostinstallCommand(make_namespace(args), filename, timeout,
                                      confirm, askpass, password, disk_dir, brew_renew)
     else:
-        text = 'macdaily-postinstall: {}brew{}: command disabled'.format(yellow, reset)
+        text = f'macdaily-postinstall: {yellow}brew{reset}: command disabled'
         print_term(text, filename, redirect=verbose)
 
     archive = None
     if not args.no_cleanup:
         archive = make_archive(config, 'postinstall', today, quiet=quiet, verbose=verbose, logfile=filename)
 
-    text = '{}{}|📖|{} {}MacDaily report of postinstall command{}'.format(bold, green, reset, bold, reset)
+    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of postinstall command{reset}'
     print_term(text, filename, redirect=quiet)
 
     if enabled:
         desc = make_description(command)
-        pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
-        miss = '{}{}, {}'.format(reset, bold, yellow).join(command.notfound)
-        ilst = '{}{}, {}'.format(reset, bold, pink).join(command.ignored)
-        fail = '{}{}, {}'.format(reset, bold, red).join(command.failed)
+        pkgs = f'{reset}{bold}, {green}'.join(command.packages)
+        miss = f'{reset}{bold}, {yellow}'.join(command.notfound)
+        ilst = f'{reset}{bold}, {pink}'.join(command.ignored)
+        fail = f'{reset}{bold}, {red}'.join(command.failed)
 
         if pkgs:
             flag = (len(pkgs) == 1)
-            text = 'Postinstalled following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, green, pkgs, reset)
+            text = f'Postinstalled following {under}{desc(flag)}{reset}{bold}: {green}{pkgs}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'No {}{}{}{} postinstalled'.format(under, desc(False), reset, bold)
+            text = f'No {under}{desc(False)}{reset}{bold} postinstalled'
             print_misc(text, filename, redirect=quiet)
 
         if fail:
             flag = (len(fail) == 1)
-            text = 'Postinstallation of following {}{}{}{} failed: {}{}{}'.format(under, desc(flag), reset, bold, red, fail, reset)
+            text = f'Postinstallation of following {under}{desc(flag)}{reset}{bold} failed: {red}{fail}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
             verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
-            text = 'All {}{}{}{} postinstallation{} succeed{}'.format(under, desc(False), reset, bold, noun, verb)
+            text = f'All {under}{desc(False)}{reset}{bold} postinstallation{noun} succeed{verb}'
             print_misc(text, filename, redirect=verbose)
 
         if ilst:
             flag = (len(ilst) == 1)
-            text = 'Ignored postinstallation of following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, pink, ilst, reset)
+            text = f'Ignored postinstallation of following {under}{desc(flag)}{reset}{bold}: {pink}{ilst}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'No {}{}{}{} ignored'.format(under, desc(False), reset, bold)
+            text = f'No {under}{desc(False)}{reset}{bold} ignored'
             print_misc(text, filename, redirect=verbose)
 
         if miss:
             flag = (len(miss) == 1)
-            text = 'Following {}{}{}{} not found: {}{}{}'.format(under, desc(flag), reset, bold, yellow, miss, reset)
+            text = f'Following {under}{desc(flag)}{reset}{bold} not found: {yellow}{miss}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
+            text = f'Hit all {under}{desc(False)}{reset}{bold} specifications'
             print_misc(text, filename, redirect=verbose)
 
     if archive:
-        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
-        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        formatted_list = f'{reset}{bold}, {under}'.join(archive)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
         print_misc(text, filename, redirect=quiet)
 
     if not enabled:
-        text = 'macdaily: {}postinstall{}: no Homebrew formulae postinstalled'.format(purple, reset)
+        text = f'macdaily: {purple}postinstall{reset}: no Homebrew formulae postinstalled'
         print_term(text, filename, redirect=quiet)
 
     if args.show_log:
@@ -132,9 +132,9 @@ def postinstall(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print('macdaily: {}postinstall{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
+            print(f'macdaily: {red}postinstall{reset}: cannot show log file {filename!r}', file=sys.stderr)
 
-    text = ('{}{}|🍺|{} {}MacDaily successfully performed postinstall process{}'.format(bold, green, reset, bold, reset))
+    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed postinstall process{reset}')
     print_term(text, filename, redirect=quiet)
 
 

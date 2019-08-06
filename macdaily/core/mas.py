@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import shutil
 import sys
 import traceback
@@ -30,9 +31,9 @@ class MasCommand(Command):  # pylint: disable=abstract-method
         self._var__exec_path = shutil.which('mas')
         flag = (self._var__exec_path is not None)
         if not flag:
-            print('macdaily-{}: {}{}mas{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
-            text = ('macdaily-{}: {}mas{}: you may download MAS through following command -- '
-                    "`{}brew install mas{}'".format(self.cmd, red, reset, bold, reset))
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}mas{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}mas{reset}: you may download MAS through following command -- '
+                    f"`{bold}brew install mas{reset}'")
             print_term(text, self._file, redirect=self._qflag)
         return flag
 
@@ -41,15 +42,15 @@ class MasCommand(Command):  # pylint: disable=abstract-method
         del self._var__exec_path
 
     def _check_pkgs(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -62,14 +63,14 @@ class MasCommand(Command):  # pylint: disable=abstract-method
 
             _list_pkgs = dict()
             for line in context.strip().splitlines():
-                match = re.match(r'(?P<code>\d{10}) (?P<name>.*?) \(.+?\)', line)
+                match = re.match(r'(?P<code>\d{9}) (?P<name>.*?) \(.+?\)', line)
                 if match is None:
                     continue
                 _list_pkgs[match.group('name')] = match.group('code')
             _real_pkgs = set(_list_pkgs.keys())
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
         text = 'Checking existence of specified packages'
         print_info(text, self._file, redirect=self._vflag)

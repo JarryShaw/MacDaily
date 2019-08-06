@@ -33,7 +33,7 @@ class BrewUpdate(BrewCommand, UpdateCommand):
             self._proc_renew(path)
             self._brew_renew = time.time()
 
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'outdated']
@@ -46,8 +46,8 @@ class BrewUpdate(BrewCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -64,10 +64,10 @@ class BrewUpdate(BrewCommand, UpdateCommand):
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'upgrade']

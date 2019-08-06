@@ -52,12 +52,12 @@ def logging(argv=None):
     brew_renew = None
 
     # record program status
-    text_record = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
+    text_record = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
     print_term(text_record, get_logfile(), redirect=quiet)
     record(get_logfile(), args, today, config, redirect=verbose)
 
     # ask for password
-    text_askpass = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
+    text_askpass = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
     print_term(text_askpass, get_logfile(), redirect=quiet)
     password = get_pass(askpass)
 
@@ -68,7 +68,7 @@ def logging(argv=None):
         # mkdir for logs
         logpath = pathlib.Path(os.path.join(config['Path']['logdir'], 'logging', mode, logdate))
         logpath.mkdir(parents=True, exist_ok=True)
-        filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
+        filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
         os.environ['MACDAILY_LOGFILE'] = filename
 
         # redo program status records
@@ -77,8 +77,8 @@ def logging(argv=None):
         print_term(text_askpass, filename, redirect=True)
 
         # skip disabled commands
-        if (not config['Mode'].get(mode, False)) or getattr(args, 'no_{}'.format(mode), False):
-            text = 'macdaily-logging: {}{}{}: command disabled'.format(yellow, mode, reset)
+        if (not config['Mode'].get(mode, False)) or getattr(args, f'no_{mode}', False):
+            text = f'macdaily-logging: {yellow}{mode}{reset}: command disabled'
             print_term(text, filename, redirect=verbose)
             continue
 
@@ -96,7 +96,7 @@ def logging(argv=None):
             namespace['no_cleanup'] = True
 
         # run command
-        cmd_cls = globals()['{}Logging'.format(mode.capitalize())]
+        cmd_cls = globals()[f'{mode.capitalize()}Logging']
         command = cmd_cls(make_namespace(namespace), filename, timeout,
                           confirm, askpass, password, disk_dir, brew_renew)
 
@@ -106,7 +106,7 @@ def logging(argv=None):
         brew_renew = command.time
 
         if not namespace['no_cleanup']:
-            archive = make_archive(config, 'logging/{}'.format(mode), today, zipfile=False,
+            archive = make_archive(config, f'logging/{mode}', today, zipfile=False,
                                    quiet=quiet, verbose=verbose, logfile=filename)
             file_list.extend(archive)
 
@@ -115,38 +115,38 @@ def logging(argv=None):
                 subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
             except subprocess.CalledProcessError:
                 print_text(traceback.format_exc(), filename, redirect=verbose)
-                print('macdaily: {}logging{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
+                print(f'macdaily: {red}logging{reset}: cannot show log file {filename!r}', file=sys.stderr)
 
     if not args.no_cleanup:
         storage = make_storage(config, today, quiet=quiet, verbose=verbose, logfile=filename)
         file_list.extend(storage)
 
-    text = '{}{}|📖|{} {}MacDaily report of logging command{}'.format(bold, green, reset, bold, reset)
+    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of logging command{reset}'
     print_term(text, get_logfile(), redirect=quiet)
     for file in log_list:
         print_term(text, file, redirect=True)
 
     for command in cmd_list:
-        text = 'Recorded existing {}{}{}{} at {}{}{}'.format(under, command.desc[1], reset, bold, under, command.sample, reset)
+        text = f'Recorded existing {under}{command.desc[1]}{reset}{bold} at {under}{command.sample}{reset}'
         print_misc(text, get_logfile(), redirect=quiet)
         for file in log_list:
             print_misc(text, file, redirect=True)
 
     if file_list:
-        formatted_list = '{}{}, {}'.format(reset, bold, under).join(file_list)
-        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        formatted_list = f'{reset}{bold}, {under}'.join(file_list)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
         print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:  # pylint: disable=len-as-condition
-        text = 'macdaily: {}logging{}: no packages recorded'.format(purple, reset)
+        text = f'macdaily: {purple}logging{reset}: no packages recorded'
         print_term(text, get_logfile(), redirect=quiet)
         for file in log_list:
             print_term(text, file, redirect=True)
 
     mode_lst = [command.mode for command in cmd_list]
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
-    text = ('{}{}|🍺|{} {}MacDaily successfully performed logging process '
-            'for {} package managers{}'.format(bold, green, reset, bold, mode_str, reset))
+    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed logging process '
+            f'for {mode_str} package managers{reset}')
     print_term(text, get_logfile(), redirect=quiet)
     for file in log_list:
         print_term(text, file, redirect=True)

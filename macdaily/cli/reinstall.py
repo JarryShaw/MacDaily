@@ -102,9 +102,9 @@ def get_brew_parser():
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew list{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew list{reset}' command")
     brew_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew reinstall <formula>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew reinstall <formula>{reset}' command")
 
     return brew_parser
 
@@ -153,9 +153,9 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew cask list{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew cask list{reset}' command")
     cask_misc_group.add_argument('-R', '--reinstall', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew cask reinstall <cask>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew cask reinstall <cask>{reset}' command")
 
     return cask_parser
 
@@ -190,15 +190,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get('get_{}_parser'.format(parser_name))
+            get_parser = globals().get(f'get_{parser_name}_parser')
             if get_parser is None:
-                pattern = r'.*{}.*'.format(option)
-                matches = "', '".format().join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_REINSTALL))  # pylint: disable=cell-var-from-loop
+                pattern = rf'.*{option}.*'
+                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_REINSTALL))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error('unrecognized arguments: {!r} '
-                                      "(did you mean: '{}')".format(option, matches))
+                    main_parser.error(f'unrecognized arguments: {option!r} '
+                                      f"(did you mean: '{matches}')")
                 else:
-                    main_parser.error('unrecognized arguments: {!r}'.format(option))
+                    main_parser.error(f'unrecognized arguments: {option!r}')
 
             # parse mode arguments
             parser = get_parser()

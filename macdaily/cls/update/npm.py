@@ -31,14 +31,14 @@ class NpmUpdate(NpmCommand, UpdateCommand):
         argv.append('--no-json')
         argv.append('--global')
 
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.run(argv, stdout=subprocess.PIPE, stderr=make_stderr(self._vflag))
@@ -52,14 +52,14 @@ class NpmUpdate(NpmCommand, UpdateCommand):
             _temp_pkgs = list()
             for line in context.strip().splitlines()[1:]:
                 name, _, want, _ = line.split(maxsplit=3)
-                _temp_pkgs.append('{}@{}'.format(name, want))
+                _temp_pkgs.append(f'{name}@{want}')
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'install']
@@ -72,7 +72,7 @@ class NpmUpdate(NpmCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
-            args = '{} {}'.format(argc, package)
+            args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):

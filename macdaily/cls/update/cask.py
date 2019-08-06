@@ -42,7 +42,7 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             self._exhaust_check(path)
             return
 
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'cask', 'outdated']
@@ -57,8 +57,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -75,10 +75,10 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _exhaust_check(self, path):
-        text = 'Checking outdated {} exclusively'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]} exclusively'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = ['brew', 'cask', 'outdated', '--exhaust']
@@ -89,15 +89,15 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         argv.extend(self._logging_opts)
         print_scpt(' '.join(argv), self._file, redirect=self._vflag)
 
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'cask', 'list']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -110,17 +110,17 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
-        text = 'Fetching Homebrew prefix'.format()
+        text = f'Fetching Homebrew prefix'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, '--prefix']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         fail = False
         try:
@@ -135,11 +135,11 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             prefix = context.strip()
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
         if fail:
             return
 
-        text = 'Checking versions of installed {}'.format(self.desc[1])
+        text = f'Checking versions of installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         _temp_pkgs = list()
@@ -148,8 +148,8 @@ class CaskUpdate(CaskCommand, UpdateCommand):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write('Script started on {}\n'.format(date()))
-                file.write('command: {!r}\n'.format(args))
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
 
             try:
                 proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -165,17 +165,17 @@ class CaskUpdate(CaskCommand, UpdateCommand):
                     _temp_pkgs.append(cask)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write('Script done on {}\n'.format(date()))
+                    file.write(f'Script done on {date()}\n')
 
         self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         max_len = len(max(_temp_pkgs, key=len))
         context = os.linesep.join(textwrap.wrap('    '.join(
             map(lambda s: s.ljust(max_len), self._var__temp_pkgs)), length))
-        print_scpt('{} cask outdated list'.format(path), self._file, redirect=self._vflag)
+        print_scpt(f'{path} cask outdated list', self._file, redirect=self._vflag)
         print_text(context, self._file, redirect=self._vflag)
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'cask', 'upgrade']
@@ -193,10 +193,10 @@ class CaskUpdate(CaskCommand, UpdateCommand):
         args = ' '.join(temp)
         argv.append('')
 
-        askpass = 'SUDO_ASKPASS={!r}'.format(self._askpass)
+        askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:
             argv[-1] = package
-            print_scpt('{} {}'.format(args, package), self._file, redirect=self._qflag)
+            print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
             if run(argv, self._file, shell=True, timeout=self._timeout,
                    redirect=self._qflag, verbose=self._vflag, prefix=askpass):
                 self._fail.append(package)

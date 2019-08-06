@@ -25,7 +25,7 @@ def get_logfile():
     if logfile is None:
         dirname = os.path.join(get_logdir(), 'misc', VERSION)
         os.makedirs(dirname, exist_ok=True)
-        filename = os.path.join(dirname, '{}-{!s}.log'.format(time.strftime(r"%Y%m%d-%H%M%S"), uuid.uuid4()))
+        filename = os.path.join(dirname, f'{time.strftime(r"%Y%m%d-%H%M%S")}-{uuid.uuid4()!s}.log')
         return filename
     return logfile
 
@@ -38,12 +38,12 @@ def get_logdir():
 def get_input(confirm, prompt='Input: ', *, prefix='', suffix='', queue=None):
     if sys.stdin.isatty():
         try:
-            return input('{}{}'.format(prompt, suffix))
+            return input(f'{prompt}{suffix}')
         except KeyboardInterrupt:
             print(reset)
             raise
     try:
-        subprocess.check_call(['osascript', confirm, '{}{}'.format(prefix, prompt)],
+        subprocess.check_call(['osascript', confirm, f'{prefix}{prompt}'],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         RETURN = 'N'
@@ -66,7 +66,7 @@ def get_int(environ, default=0):
         if re.match(r'0o[0-7]+', integer, re.IGNORECASE):
             return int(integer, base=8)
         if re.match(r'0[0-7]+', integer, re.IGNORECASE):
-            return int('0o{}'.format("".join(integer[2:])), base=8)
+            return int(f'0o{"".join(integer[2:])}', base=8)
         if re.match(r'0b[01]+', integer, re.IGNORECASE):
             return int(integer, base=2)
         return int(integer)
@@ -83,7 +83,7 @@ def get_pass(askpass, queue=None):
         except KeyboardInterrupt:
             print(reset)
             raise
-    RETURN = subprocess.check_output([askpass, '🔑 Enter your password for {}.'.format(USER)],  # pylint: disable=E1101
+    RETURN = subprocess.check_output([askpass, f'🔑 Enter your password for {USER}.'],  # pylint: disable=E1101
                                      stderr=subprocess.DEVNULL).strip().decode()
     if queue is not None:
         queue.put(RETURN)

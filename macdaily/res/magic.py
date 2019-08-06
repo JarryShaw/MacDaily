@@ -7,8 +7,10 @@ import shutil
 from macdaily.util.compat import subprocess
 
 # useful programmes
+BREW = shutil.which('brew')
 FORTUNE = shutil.which('fortune')
 COWSAY = shutil.which('cowsay')
+COWTHINK = shutil.which('cowthink')
 LOLCAT = shutil.which('lolcat')
 
 # my own quotes
@@ -48,11 +50,10 @@ def decode():
     for c in (65, 97):
         for i in range(26):
             d[chr(i+c)] = chr((i+13) % 26 + c)
-    return ['echo "{}"'.format("".join([d.get(c, c) for c in s])) for s in DB]
+    return [f'echo "{"".join([d.get(c, c) for c in s])}"' for s in DB]
 
 
 def install(formula):
-    BREW = shutil.which('brew')
     if BREW is None:
         return False
     try:
@@ -65,37 +66,42 @@ def install(formula):
 
 
 def whoop_de_doo():
+    global FORTUNE, COWSAY, COWTHINK, LOLCAT
+
     s = decode()
     if FORTUNE is None:
         if install('fortune'):
-            s.extend(['/usr/local/opt/fortune/bin/fortune' for _ in DB])
+            FORTUNE = shutil.which('fortune')
+            s.extend([FORTUNE for _ in DB])
     else:
         s.extend([FORTUNE for _ in DB])
     fortune = random.choice(s)
 
     if COWSAY is None:
         if install('cowsay'):
-            exec_list = ['/usr/local/opt/cowsay/bin/cowsay', '/usr/local/opt/cowsay/bin/cowthink']
-            cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
+            COWSAY = shutil.which('cowsay')
+            COWTHINK = shutil.which('cowthink')
+            exec_list = [COWSAY, COWTHINK]
+            cowsay = f'{random.choice(exec_list)} -f {random.choice(cowfile())}'
         else:
             cowsay = 'cat'
     else:
-        COWTHINK = shutil.which('cowthink')
         if COWTHINK is None:
             exec_list = [COWSAY]
         else:
             exec_list = [COWSAY, COWTHINK]
-        cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
+        cowsay = f'{random.choice(exec_list)} -f {random.choice(cowfile())}'
 
     if LOLCAT is None:
         if install('lolcat'):
-            lolcat = '/usr/local/opt/lolcat/bin/lolcat -p {}'.format(random.random()*10.0)
+            LOLCAT = shutil.which('lolcat')
+            lolcat = f'{LOLCAT} -p {random.random()*10.0}'
         else:
             lolcat = 'cat'
     else:
-        lolcat = 'lolcat -p {}'.format(random.random()*10.0)
+        lolcat = f'{LOLCAT} -p {random.random()*10.0}'
 
-    os.system('{} | {} | {}'.format(fortune, cowsay, lolcat))
+    os.system(f'{fortune} | {cowsay} | {lolcat}')
 
 
 if __name__ == '__main__':

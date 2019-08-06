@@ -31,9 +31,9 @@ class ApmCommand(Command):
         self._var__exec_path = (shutil.which('apm'), shutil.which('apm-beta'))
         flag = self._var__exec_path != (None, None)
         if not flag:
-            print('macdaily-{}: {}{}apm{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
-            text = ('macdaily-{}: {}apm{}: you may download Atom from '
-                    '{}{}https://atom.io{}'.format(self.cmd, red, reset, purple_bg, under, reset))
+            print(f'macdaily-{self.cmd}: {red_bg}{flash}apm{reset}: command not found', file=sys.stderr)
+            text = (f'macdaily-{self.cmd}: {red}apm{reset}: you may download Atom from '
+                    f'{purple_bg}{under}https://atom.io{reset}')
             print_term(text, self._file, redirect=self._qflag)
         return flag
 
@@ -58,15 +58,15 @@ class ApmCommand(Command):
         del self._var__exec_path
 
     def _check_pkgs(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list', '--bare', '--no-color']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -83,7 +83,7 @@ class ApmCommand(Command):
             _real_pkgs = set(_list_pkgs)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
         text = 'Checking existence of specified packages'
         print_info(text, self._file, redirect=self._vflag)

@@ -100,7 +100,7 @@ def get_apm_parser():
 
     apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
     apm_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                help="options for `{}apm install <plug-in>{}' command".format(bold, reset))
+                                help=f"options for `{bold}apm install <plug-in>{reset}' command")
 
     return apm_parser
 
@@ -141,7 +141,7 @@ def get_gem_parser():
 
     gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
     gem_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                help="options for `{}gem install <gem>{}' command".format(bold, reset))
+                                help=f"options for `{bold}gem install <gem>{reset}' command")
 
     return gem_parser
 
@@ -179,7 +179,7 @@ def get_mas_parser():
 
     mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
     mas_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                help="options for `{}mas install|lucky <application>' command{}".format(bold, reset))
+                                help=f"options for `{bold}mas install|lucky <application>' command{reset}")
 
     return mas_parser
 
@@ -217,7 +217,7 @@ def get_npm_parser():
 
     npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
     npm_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                help="options for `{}npm install --global <module>{}' command".format(bold, reset))
+                                help=f"options for `{bold}npm install --global <module>{reset}' command")
 
     return npm_parser
 
@@ -271,7 +271,7 @@ def get_pip_parser():
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                help="options for `{}pip install <package>{}' command".format(bold, reset))
+                                help=f"options for `{bold}pip install <package>{reset}' command")
 
     return pip_parser
 
@@ -310,7 +310,7 @@ def get_brew_parser():
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew install <formula>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew install <formula>{reset}' command")
 
     return brew_parser
 
@@ -349,7 +349,7 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                 help="options for `{}brew cask install <cask>{}' command".format(bold, reset))
+                                 help=f"options for `{bold}brew cask install <cask>{reset}' command")
 
     return cask_parser
 
@@ -388,7 +388,7 @@ def get_system_parser():
 
     system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
     system_misc_group.add_argument('-I', '--install', action='store', default=str(), metavar='ARG',
-                                   help="options for `{}softwareupdate --install <software>{}' command".format(bold, reset))
+                                   help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
 
     return system_parser
 
@@ -423,15 +423,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get('get_{}_parser'.format(parser_name))
+            get_parser = globals().get(f'get_{parser_name}_parser')
             if get_parser is None:
-                pattern = r'.*{}.*'.format(option)
-                matches = "', '".format().join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_INSTALL))  # pylint: disable=cell-var-from-loop
+                pattern = rf'.*{option}.*'
+                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_INSTALL))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error('unrecognized arguments: {!r} '
-                                      "(did you mean: '{}')".format(option, matches))
+                    main_parser.error(f'unrecognized arguments: {option!r} '
+                                      f"(did you mean: '{matches}')")
                 else:
-                    main_parser.error('unrecognized arguments: {!r}'.format(option))
+                    main_parser.error(f'unrecognized arguments: {option!r}')
 
             # parse mode arguments
             parser = get_parser()

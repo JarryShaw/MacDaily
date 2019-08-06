@@ -36,15 +36,15 @@ class PipDependency(PipCommand, DependencyCommand):
         self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
-        text = 'Checking installed {}'.format(self.desc[1])
+        text = f'Checking installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, '-m', 'pip', 'list', '--not-required', '--format=columns']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         argv[-1] = '--format=json'
         try:
@@ -78,10 +78,10 @@ class PipDependency(PipCommand, DependencyCommand):
                     print_text(_pprint(item['name'], item['version']), self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_dependency(self, path):
-        text = 'Querying dependencies of {}'.format(self.desc[1])
+        text = f'Querying dependencies of {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         def _fetch_dependency(package, depth):
@@ -93,15 +93,15 @@ class PipDependency(PipCommand, DependencyCommand):
             if dependencies is not None:
                 return dependencies
 
-            text = 'Searching dependencies of {} {}{}{}'.format(self.desc[0], under, package, reset)
+            text = f'Searching dependencies of {self.desc[0]} {under}{package}{reset}'
             print_info(text, self._file, redirect=self._vflag)
 
             argv = [path, '-m', 'pip', 'show', package]
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write('Script started on {}\n'.format(date()))
-                file.write('command: {!r}\n'.format(args))
+                file.write(f'Script started on {date()}\n')
+                file.write(f'command: {args!r}\n')
 
             _deps_pkgs = dict()
             try:
@@ -130,7 +130,7 @@ class PipDependency(PipCommand, DependencyCommand):
                 _data_pkgs.update(_deps_pkgs)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write('Script done on {}\n'.format(date()))
+                    file.write(f'Script done on {date()}\n')
             return _deps_pkgs
 
         _list_pkgs = list()
@@ -168,13 +168,13 @@ class PipDependency(PipCommand, DependencyCommand):
                 _list_pkgs.sort()
             if self._qflag:
                 if _list_pkgs:
-                    print_term("{}: {}".format(package, ' '.join(_list_pkgs)), self._file)
+                    print_term(f"{package}: {' '.join(_list_pkgs)}", self._file)
                 else:
-                    print_term("{} (independent)".format(package), self._file)
+                    print_term(f"{package} (independent)", self._file)
             else:
                 print_text(os.linesep.join(_list_pkgs), self._file)
 
-        text = 'Listing dependencies of {}'.format(self.desc[1])
+        text = f'Listing dependencies of {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'dependency']
@@ -187,7 +187,7 @@ class PipDependency(PipCommand, DependencyCommand):
         if self._topological:
             argv.append('--topological')
         if self._depth != -1:
-            argv.append('--depth={}'.format(self._depth))
+            argv.append(f'--depth={self._depth}')
         argv.append('')
 
         if self._qflag:
@@ -200,10 +200,10 @@ class PipDependency(PipCommand, DependencyCommand):
                 try:
                     import dictdumper
                 except ImportError:
-                    print_term('macdaily-dependency: {}pip{}: {}DictDumper{} not installed, '
-                               "which is mandatory for using `{}--tree{}' option".format(yellow, reset, bold, reset, bold, reset),
+                    print_term(f'macdaily-dependency: {yellow}pip{reset}: {bold}DictDumper{reset} not installed, '
+                               f"which is mandatory for using `{bold}--tree{reset}' option",
                                self._file, redirect=self._vflag)
-                    print('macdaily-dependency: {}pip{}: broken dependency'.format(red, reset), file=sys.stderr)
+                    print(f'macdaily-dependency: {red}pip{reset}: broken dependency', file=sys.stderr)
                     raise
                 _print_dependency_tree(package, _deps_pkgs[package])
             else:

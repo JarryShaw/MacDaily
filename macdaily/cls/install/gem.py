@@ -19,7 +19,7 @@ class GemInstall(GemCommand, InstallCommand):
         self._install_opts = namespace.get('install', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _proc_install(self, path):
-        text = 'Installing specified {}'.format(self.desc[1])
+        text = f'Installing specified {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'install']
@@ -31,7 +31,7 @@ class GemInstall(GemCommand, InstallCommand):
 
         argc = ' '.join(argv)
         for package in self._var__temp_pkgs:
-            args = '{} {}'.format(argc, package)
+            args = f'{argc} {package}'
             print_scpt(args, self._file, redirect=self._qflag)
             yes = 'y' if self._yes else None
             if sudo(argv, self._file, self._password, timeout=self._timeout,

@@ -32,11 +32,11 @@ class PipLogging(PipCommand, LoggingCommand):
         self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         suffix = path.replace('/', ':')
-        logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+        logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
 
         argv = [path, '-m', 'pip', 'freeze']
         if self._exclude_editable:
@@ -45,8 +45,8 @@ class PipLogging(PipCommand, LoggingCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -61,4 +61,4 @@ class PipLogging(PipCommand, LoggingCommand):
                 file.writelines(filter(None, context.strip().splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')

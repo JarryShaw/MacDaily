@@ -10,7 +10,7 @@ import sys
 from macdaily.util.compat import pathlib
 
 # version string
-VERSION = '2019.4.7.post1'
+VERSION = '2019.8.4'
 
 # terminal commands
 PYTHON = sys.executable         # Python version
@@ -102,17 +102,17 @@ LNK_UPDATE = {'up', 'upgrade'}
 # aliases strings
 STR_ARCHIVE = None
 STR_BUNDLE = None
-STR_CLEANUP = "aliases: {}".format(', '.join(sorted(LNK_CLEANUP)))
-STR_CONFIG = "aliases: {}".format(', '.join(sorted(LNK_CONFIG)))
-STR_DEPENDENCY = "aliases: {}".format(', '.join(sorted(LNK_DEPENDENCY)))
-STR_HELP = "aliases: {}".format(', '.join(sorted(LNK_HELP)))
-STR_INSTALL = "aliases: {}".format(', '.join(sorted(LNK_INSTALL)))
-STR_LAUNCH = "aliases: {}".format(', '.join(sorted(LNK_LAUNCH)))
-STR_LOGGING = "aliases: {}".format(', '.join(sorted(LNK_LOGGING)))
-STR_POSTINSTALL = "aliases: {}".format(', '.join(sorted(LNK_POSTINSTALL)))
-STR_REINSTALL = "aliases: {}".format(', '.join(sorted(LNK_REINSTALL)))
-STR_UNINSTALL = "aliases: {}".format(', '.join(sorted(LNK_UNINSTALL)))
-STR_UPDATE = "aliases: {}".format(', '.join(sorted(LNK_UPDATE)))
+STR_CLEANUP = f"aliases: {', '.join(sorted(LNK_CLEANUP))}"
+STR_CONFIG = f"aliases: {', '.join(sorted(LNK_CONFIG))}"
+STR_DEPENDENCY = f"aliases: {', '.join(sorted(LNK_DEPENDENCY))}"
+STR_HELP = f"aliases: {', '.join(sorted(LNK_HELP))}"
+STR_INSTALL = f"aliases: {', '.join(sorted(LNK_INSTALL))}"
+STR_LAUNCH = f"aliases: {', '.join(sorted(LNK_LAUNCH))}"
+STR_LOGGING = f"aliases: {', '.join(sorted(LNK_LOGGING))}"
+STR_POSTINSTALL = f"aliases: {', '.join(sorted(LNK_POSTINSTALL))}"
+STR_REINSTALL = f"aliases: {', '.join(sorted(LNK_REINSTALL))}"
+STR_UNINSTALL = f"aliases: {', '.join(sorted(LNK_UNINSTALL))}"
+STR_UPDATE = f"aliases: {', '.join(sorted(LNK_UPDATE))}"
 
 # command mappings
 MAP_ARCHIVE = {'archive'} | LNK_ARCHIVE
@@ -146,16 +146,16 @@ LNK_SYSTEM = {'software', 'softwareupdate'}
 LNK_TAP = {'brew-tap'}
 
 # aliases strings
-STR_APM = "aliases: {}".format(', '.join(sorted(LNK_APM)))
-STR_APP = "aliases: {}".format(', '.join(sorted(LNK_APP)))
-STR_BREW = "aliases: {}".format(', '.join(sorted(LNK_BREW)))
-STR_CASK = "aliases: {}".format(', '.join(sorted(LNK_CASK)))
-STR_GEM = "aliases: {}".format(', '.join(sorted(LNK_GEM)))
-STR_MAS = "aliases: {}".format(', '.join(sorted(LNK_MAS)))
-STR_NPM = "aliases: {}".format(', '.join(sorted(LNK_NPM)))
-STR_PIP = "aliases: {}".format(', '.join(sorted(LNK_PIP)))
-STR_SYSTEM = "aliases: {}".format(', '.join(sorted(LNK_SYSTEM)))
-STR_TAP = "aliases: {}".format(', '.join(sorted(LNK_TAP)))
+STR_APM = f"aliases: {', '.join(sorted(LNK_APM))}"
+STR_APP = f"aliases: {', '.join(sorted(LNK_APP))}"
+STR_BREW = f"aliases: {', '.join(sorted(LNK_BREW))}"
+STR_CASK = f"aliases: {', '.join(sorted(LNK_CASK))}"
+STR_GEM = f"aliases: {', '.join(sorted(LNK_GEM))}"
+STR_MAS = f"aliases: {', '.join(sorted(LNK_MAS))}"
+STR_NPM = f"aliases: {', '.join(sorted(LNK_NPM))}"
+STR_PIP = f"aliases: {', '.join(sorted(LNK_PIP))}"
+STR_SYSTEM = f"aliases: {', '.join(sorted(LNK_SYSTEM))}"
+STR_TAP = f"aliases: {', '.join(sorted(LNK_TAP))}"
 
 # mode mappings
 MAP_APM = {'apm'} | LNK_APM

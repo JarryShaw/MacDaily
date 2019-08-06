@@ -28,8 +28,8 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
         args = " ".join(argv)
         if password is not None:
             args = args.replace(password, '********')
-        typescript.write('Script started on {}\n'.format(date()))
-        typescript.write('command: {!r}\n'.format(args))
+        typescript.write(f'Script started on {date()}\n')
+        typescript.write(f'command: {args!r}\n')
 
     if UNBUFFER is not None:
         returncode = _unbuffer(argv, file, password, yes, redirect, executable, prefix, suffix, timeout)
@@ -40,7 +40,7 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
 
     with open(file, 'a') as typescript:
         # print('Before:', typescript.tell())
-        typescript.write('Script done on {}\n'.format(date()))
+        typescript.write(f'Script done on {date()}\n')
         # print('After:', typescript.tell())
     sys.stdout.write(reset)
     return returncode
@@ -66,19 +66,19 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
             return None
         nonlocal yes
 
-        sudo_argv = "echo {!r} | sudo --stdin --validate --prompt='Password:\n' &&".format(password)
+        sudo_argv = f"echo {password!r} | sudo --stdin --validate --prompt='Password:\n' &&"
         if yes is not None:
             if UNBUFFER is not None or SCRIPT is None:
-                sudo_argv = '{} yes {} |'.format(sudo_argv, yes)
+                sudo_argv = f'{sudo_argv} yes {yes} |'
                 yes = None
         if askpass is not None:
-            sudo_argv = '{} SUDO_ASKPASS={!r} '.format(sudo_argv, askpass)
+            sudo_argv = f'{sudo_argv} SUDO_ASKPASS={askpass!r} '
 
-        sudo_argv = '{} sudo'.format(sudo_argv)
+        sudo_argv = f'{sudo_argv} sudo'
         if sethome:
-            sudo_argv = '{} --set-home'.format(sudo_argv)
+            sudo_argv = f'{sudo_argv} --set-home'
         if askpass is not None:
-            sudo_argv = "{} --askpass --prompt='🔑 Enter your password for {}.'".format(sudo_argv, USER)
+            sudo_argv = f"{sudo_argv} --askpass --prompt='🔑 Enter your password for {USER}.'"
         return sudo_argv
     return run(argv, file, password=password, redirect=redirect, timeout=timeout, shell=True, yes=yes,
                prefix=make_prefix(argv, askpass, sethome), executable=executable, verbose=verbose, suffix=suffix)
@@ -87,13 +87,13 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
 def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
               executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
-    argv = 'unbuffer -p {} | tee -a >({} | col -b >> {}) | {}'.format(_merge(argv), _ansi2text(password), file, _text2dim(password))
+        argv = f'{_merge(argv)} {suffix}'
+    argv = f'unbuffer -p {_merge(argv)} | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     # argv = f'unbuffer -p {_merge(argv)} | {text2dim(password)} | tee -a >({ansi2text(password)} | col -b >> {file})'
     if yes is not None:
-        argv = 'yes {} | {}'.format(yes, argv)
+        argv = f'yes {yes} | {argv}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, argv)
+        argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
     mode = None
@@ -123,13 +123,13 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
 def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=False,
             executable=SHELL, prefix=None, suffix=None, timeout=None):
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
-    argc = 'script -q /dev/null {} -c "'.format(executable)
+        argv = f'{_merge(argv)} {suffix}'
+    argc = f'script -q /dev/null {executable} -c "'
     if yes is not None:
-        argc = '{} yes {} |'.format(argc, yes)
-    argv = '{} {}" | tee -a >({} | col -b >> {}) | {}'.format(argc, _merge(argv), _ansi2text(password), file, _text2dim(password))
+        argc = f'{argc} yes {yes} |'
+    argv = f'{argc} {_merge(argv)}" | tee -a >({_ansi2text(password)} | col -b >> {file}) | {_text2dim(password)}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, argv)
+        argv = f'{prefix} {argv}'
     # argv = f'set -x; {argv}'
 
     mode = None
@@ -161,16 +161,16 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
     try:
         import ptyng
     except ImportError:
-        print_term("macdaily: {}misc{}: `{}unbuffer{}' and `{}script{}'"
-                   'not found in your {}PATH{}, {}PTYng{} not installed'.format(yellow, reset, bold, reset, bold, reset, under, reset, bold, reset),
+        print_term(f"macdaily: {yellow}misc{reset}: `{bold}unbuffer{reset}' and `{bold}script{reset}'"
+                   f'not found in your {under}PATH{reset}, {bold}PTYng{reset} not installed',
                    get_logfile(), redirect=redirect)
-        print('macdaily: {}misc{}: broken dependency'.format(red, reset), file=sys.stderr)
+        print(f'macdaily: {red}misc{reset}: broken dependency', file=sys.stderr)
         raise
 
     if suffix is not None:
-        argv = '{} {}'.format(_merge(argv), suffix)
+        argv = f'{_merge(argv)} {suffix}'
     if prefix is not None:
-        argv = '{} {}'.format(prefix, _merge(argv))
+        argv = f'{prefix} {_merge(argv)}'
     if shell or isinstance(argv, str):
         argv = [executable, '-c', _merge(argv)]
 
@@ -222,37 +222,37 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
 
 
 def _ansi2text(password):
-    return ('{} -c "'
+    return (f'{sys.executable} -c "'
             'import re, sys\n'
             'context = str()\n'
             'while True:\n'
             '    data = sys.stdin.read(1)\n'
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
-            "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
-            "        text = re.sub(r{!r}, r'', temp, flags=re.IGNORECASE)\n"
-            "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
+            f"        temp = context.replace('^D\x08\x08', '').replace({RESP_BEER!r}, {ORIG_BEER!r})\n"
+            f"        text = re.sub(r{ANSI!r}, r'', temp, flags=re.IGNORECASE)\n"
+            f"        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){_replace(password)})\n"
             '        context = str()\n'
             "    elif not data:\n"
             '        break'
-            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, ANSI, _replace(password)))
+            '"')
 
 
 def _text2dim(password):
-    return ('{} -c "'
+    return (f'{sys.executable} -c "'
             'import re, sys\n'
             'context = str()\n'
             'while True:\n'
             '    data = sys.stdin.read(1)\n'
             '    context += data\n'
             "    if data in ['\\r', '\\n']:\n"
-            "        temp = context.replace('^D\x08\x08', '').replace({!r}, {!r})\n"
-            "        text = {!r} + re.sub(r{!r}, r'\\1{}', temp, flags=re.IGNORECASE)\n"
-            "        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){})\n"
+            f"        temp = context.replace('^D\x08\x08', '').replace({RESP_BEER!r}, {ORIG_BEER!r})\n"
+            f"        text = {dim!r} + re.sub(r{ANSI!r}, r'\\1{dim}', temp, flags=re.IGNORECASE)\n"
+            f"        sys.stdout.write(text.replace('Password:', 'Password:\\r\\n'){_replace(password)})\n"
             '        context = str()\n'
             "    elif not data:\n"
             '        break'
-            '"'.format(sys.executable, RESP_BEER, ORIG_BEER, dim, ANSI, dim, _replace(password)))
+            '"')
 
 
 def _merge(argv):
@@ -264,4 +264,4 @@ def _merge(argv):
 def _replace(password):
     if password is None:
         return ''
-    return ".replace({!r}, '********')".format(password)
+    return f".replace({password!r}, '********')"

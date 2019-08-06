@@ -42,7 +42,7 @@ def dependency(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
+    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
     os.environ['MACDAILY_LOGFILE'] = filename
 
     confirm = config['Miscellaneous']['confirm']
@@ -53,23 +53,23 @@ def dependency(argv=None):
     password = None
 
     # record program status
-    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
+    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     cmd_list = list()
     for mode in {'brew', 'pip'}:
         # skip disabled commands
-        if (not config['Mode'].get(mode, False)) or getattr(args, 'no_{}'.format(mode), False):
-            text = 'macdaily-dependency: {}{}{}: command disabled'.format(yellow, mode, reset)
+        if (not config['Mode'].get(mode, False)) or getattr(args, f'no_{mode}', False):
+            text = f'macdaily-dependency: {yellow}{mode}{reset}: command disabled'
             print_term(text, filename, redirect=verbose)
             continue
 
         # skip commands with no package spec
-        packages = getattr(args, '{}_pkgs'.format(mode), list())
+        packages = getattr(args, f'{mode}_pkgs', list())
         namespace = getattr(args, mode, None)
         if not (packages or namespace or args.all):
-            text = 'macdaily-dependency: {}{}{}: nothing to upgrade'.format(yellow, mode, reset)
+            text = f'macdaily-dependency: {yellow}{mode}{reset}: nothing to upgrade'
             print_term(text, filename, redirect=verbose)
             continue
 
@@ -92,11 +92,11 @@ def dependency(argv=None):
         depth = namespace.get('depth')
         if depth is not None and depth < 0:
             module = importlib.import_module('macdaily.cli.dependency')
-            parser = getattr(module, 'get_{}_parser'.format(mode))()
-            parser.error("argument LEVEL: invalid int value: {!r}".format(depth))
+            parser = getattr(module, f'get_{mode}_parser')()
+            parser.error(f"argument LEVEL: invalid int value: {depth!r}")
 
         # run command
-        cmd_cls = globals()['{}Dependency'.format(mode.capitalize())]
+        cmd_cls = globals()[f'{mode.capitalize()}Dependency']
         command = cmd_cls(make_namespace(namespace), filename, timeout,
                           confirm, askpass, password, disk_dir, brew_renew)
 
@@ -108,56 +108,56 @@ def dependency(argv=None):
     if not args.no_cleanup:
         archive = make_archive(config, 'update', today, quiet=quiet, verbose=verbose, logfile=filename)
 
-    text = '{}{}|📖|{} {}MacDaily report of dependency command{}'.format(bold, green, reset, bold, reset)
+    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of dependency command{reset}'
     print_term(text, filename, redirect=quiet)
 
     for command in cmd_list:
         desc = make_description(command)
-        pkgs = '{}{}, {}'.format(reset, bold, green).join(command.packages)
-        miss = '{}{}, {}'.format(reset, bold, yellow).join(command.notfound)
-        ilst = '{}{}, {}'.format(reset, bold, pink).join(command.ignored)
-        fail = '{}{}, {}'.format(reset, bold, red).join(command.failed)
+        pkgs = f'{reset}{bold}, {green}'.join(command.packages)
+        miss = f'{reset}{bold}, {yellow}'.join(command.notfound)
+        ilst = f'{reset}{bold}, {pink}'.join(command.ignored)
+        fail = f'{reset}{bold}, {red}'.join(command.failed)
 
         if pkgs:
             flag = (len(pkgs) == 1)
-            text = 'Queried following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, green, pkgs, reset)
+            text = f'Queried following {under}{desc(flag)}{reset}{bold}: {green}{pkgs}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'No {}{}{}{} queried'.format(under, desc(False), reset, bold)
+            text = f'No {under}{desc(False)}{reset}{bold} queried'
             print_misc(text, filename, redirect=quiet)
 
         if fail:
             flag = (len(fail) == 1)
-            text = 'Query of following {}{}{}{} failed: {}{}{}'.format(under, desc(flag), reset, bold, red, fail, reset)
+            text = f'Query of following {under}{desc(flag)}{reset}{bold} failed: {red}{fail}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
             verb, noun = ('s', '') if len(fail) == 1 else ('', 's')
-            text = 'All {}{}{}{} query{} succeed{}'.format(under, desc(False), reset, bold, noun, verb)
+            text = f'All {under}{desc(False)}{reset}{bold} query{noun} succeed{verb}'
             print_misc(text, filename, redirect=verbose)
 
         if ilst:
             flag = (len(ilst) == 1)
-            text = 'Ignored query of following {}{}{}{}: {}{}{}'.format(under, desc(flag), reset, bold, pink, ilst, reset)
+            text = f'Ignored query of following {under}{desc(flag)}{reset}{bold}: {pink}{ilst}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'No {}{}{}{} ignored'.format(under, desc(False), reset, bold)
+            text = f'No {under}{desc(False)}{reset}{bold} ignored'
             print_misc(text, filename, redirect=verbose)
 
         if miss:
             flag = (len(miss) == 1)
-            text = 'Following {}{}{}{} not found: {}{}{}'.format(under, desc(flag), reset, bold, yellow, miss, reset)
+            text = f'Following {under}{desc(flag)}{reset}{bold} not found: {yellow}{miss}{reset}'
             print_misc(text, filename, redirect=quiet)
         else:
-            text = 'Hit all {}{}{}{} specifications'.format(under, desc(False), reset, bold)
+            text = f'Hit all {under}{desc(False)}{reset}{bold} specifications'
             print_misc(text, filename, redirect=verbose)
 
     if archive:
-        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
-        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
+        formatted_list = f'{reset}{bold}, {under}'.join(archive)
+        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
         print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:  # pylint: disable=len-as-condition
-        text = 'macdaily: {}dependency{}: no dependency shown'.format(purple, reset)
+        text = f'macdaily: {purple}dependency{reset}: no dependency shown'
         print_term(text, filename, redirect=quiet)
 
     if args.show_log:
@@ -165,12 +165,12 @@ def dependency(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print('macdaily: {}dependency{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
+            print(f'macdaily: {red}dependency{reset}: cannot show log file {filename!r}', file=sys.stderr)
 
     mode_lst = [command.mode for command in cmd_list]
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
-    text = ('{}{}|🍺|{} {}MacDaily successfully performed dependency process '
-            'for {} package managers{}'.format(bold, green, reset, bold, mode_str, reset))
+    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed dependency process '
+            f'for {mode_str} package managers{reset}')
     print_term(text, filename, redirect=quiet)
 
 

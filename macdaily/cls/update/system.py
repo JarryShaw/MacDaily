@@ -27,7 +27,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         self._update_opts = namespace.get('update', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
-        text = 'Checking outdated {}'.format(self.desc[1])
+        text = f'Checking outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, '--list']
@@ -35,8 +35,8 @@ class SystemUpdate(SystemCommand, UpdateCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -51,7 +51,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             _rcmd_pkgs = list()
             _norm_pkgs = list()
             for package in filter(lambda s: re.match(r'^\W*[-*]', s), context.strip().splitlines()):
-                flag, name = package.split(maxsplit=1)
+                flag, name = package.strip().split(maxsplit=1)
                 if flag == '*':
                     _rcmd_pkgs.append(name)
                 if flag == '-':
@@ -61,11 +61,11 @@ class SystemUpdate(SystemCommand, UpdateCommand):
             self._var__norm_pkgs = set(_norm_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
         self._var__temp_pkgs = self._var__rcmd_pkgs | self._var__norm_pkgs  # pylint: disable=attribute-defined-outside-init
 
     def _proc_update(self, path):
-        text = 'Upgrading outdated {}'.format(self.desc[1])
+        text = f'Upgrading outdated {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         if self._recommend:
@@ -82,7 +82,7 @@ class SystemUpdate(SystemCommand, UpdateCommand):
 
         argc = ' '.join(argv)
         for package in _temp_pkgs:
-            args = '{} {!r}'.format(argc, package)
+            args = f'{argc} {package!r}'
             print_scpt(args, self._file, redirect=self._qflag)
             if sudo(args, self._file, self._password, timeout=self._timeout,
                     redirect=self._qflag, verbose=self._vflag):

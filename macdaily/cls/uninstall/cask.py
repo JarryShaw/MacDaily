@@ -34,7 +34,7 @@ class CaskUninstall(CaskCommand, UninstallCommand):
             super()._check_pkgs(path)
 
     def _check_list(self, path):
-        text = 'Checking installed {}'.format(self.desc[1])
+        text = f'Checking installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'cask', 'list']
@@ -43,8 +43,8 @@ class CaskUninstall(CaskCommand, UninstallCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -57,10 +57,10 @@ class CaskUninstall(CaskCommand, UninstallCommand):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
     def _proc_uninstall(self, path):
-        text = 'Uninstalling specified {}'.format(self.desc[1])
+        text = f'Uninstalling specified {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'cask', 'uninstall']
@@ -75,7 +75,7 @@ class CaskUninstall(CaskCommand, UninstallCommand):
         argv.extend(self._uninstall_opts)
 
         argv.append('')
-        askpass = 'SUDO_ASKPASS={!r}'.format(self._askpass)
+        askpass = f'SUDO_ASKPASS={self._askpass!r}'
         for package in self._var__temp_pkgs:
             argv[-1] = package
             print_scpt(' '.join(argv), self._file, redirect=self._qflag)

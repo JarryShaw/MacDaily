@@ -31,15 +31,15 @@ class GemLogging(GemCommand, LoggingCommand):
         self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_logging(self, path):
-        text = 'Listing installed {}'.format(self.desc[1])
+        text = f'Listing installed {self.desc[1]}'
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'list']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._qflag)
         with open(self._file, 'a') as file:
-            file.write('Script started on {}\n'.format(date()))
-            file.write('command: {!r}\n'.format(args))
+            file.write(f'Script started on {date()}\n')
+            file.write(f'command: {args!r}\n')
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -57,18 +57,18 @@ class GemLogging(GemCommand, LoggingCommand):
                 _real_pkgs[package].extend(re.findall(r'\d+\.\d+\.\d+', versions))
         finally:
             with open(self._file, 'a') as file:
-                file.write('Script done on {}\n'.format(date()))
+                file.write(f'Script done on {date()}\n')
 
         _temp_pkgs = list()
         argv = [path, 'lock', '']
         for package, versions in _real_pkgs.items():
             for version in versions:
-                argv[-1] = '{}-{}'.format(package, version)
+                argv[-1] = f'{package}-{version}'
                 args = ' '.join(argv)
                 print_scpt(args, self._file, redirect=self._vflag)
                 with open(self._file, 'a') as file:
-                    file.write('Script started on {}\n'.format(date()))
-                    file.write('command: {!r}\n'.format(args))
+                    file.write(f'Script started on {date()}\n')
+                    file.write(f'command: {args!r}\n')
 
                 try:
                     proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -81,10 +81,10 @@ class GemLogging(GemCommand, LoggingCommand):
                     _temp_pkgs.extend(filter(lambda s: s.startswith('gem'), context.splitlines(True)))  # pylint: disable=filter-builtin-not-iterating
                 finally:
                     with open(self._file, 'a') as file:
-                        file.write('Script done on {}\n'.format(date()))
+                        file.write(f'Script done on {date()}\n')
 
         suffix = path.replace('/', ':')
-        logfile = os.path.join(self._logroot, '{}-{}{}'.format(self.log, suffix, self.ext))
+        logfile = os.path.join(self._logroot, f'{self.log}-{suffix}{self.ext}')
         with open(logfile, 'w') as file:
-            file.write("require 'rubygems'{}".format(os.linesep))
+            file.write(f"require 'rubygems'{os.linesep}")
             file.writelines(sorted(set(_temp_pkgs)))

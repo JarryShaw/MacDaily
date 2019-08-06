@@ -28,12 +28,12 @@ def get_config_parser():
     spec_group = parser.add_argument_group(title='specification arguments')
     spec_group.add_argument('-a', '--add', action='store_true',
                             help=('adds a new line to the option without altering any '
-                                  'existing values [requires {}ConfigUpdater{}]'.format(under, reset)))
+                                  f'existing values [requires {under}ConfigUpdater{reset}]'))
     spec_group.add_argument('-g', '--get', action='store_true',
                             help='get the value for a given key')
     spec_group.add_argument('-u', '--unset', action='store_true',
                             help=('remove the line matching the key from config file '
-                                  '[requires {}ConfigUpdater{}]'.format(under, reset)))
+                                  f'[requires {under}ConfigUpdater{reset}]'))
     spec_group.add_argument('-i', '--interactive', action='store_true',
                             help='enter interactive configuration mode')
     spec_group.add_argument('-l', '--list', action='store_true',
@@ -50,9 +50,9 @@ def get_config_parser():
     ctrl_group = parser.add_argument_group(title='control arguments',
                                            description='options used to set true or false')
     ctrl_group.add_argument('-T', '--true', action='store_true',
-                            help="set the value for a given key to `{}true{}'".format(bold, reset))
+                            help=f"set the value for a given key to `{bold}true{reset}'")
     ctrl_group.add_argument('-F', '--false', action='store_true',
-                            help="set the value for a given key to `{}false{}'".format(bold, reset))
+                            help=f"set the value for a given key to `{bold}false{reset}'")
 
     return parser
 
