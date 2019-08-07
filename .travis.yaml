@@ -1,11 +1,24 @@
-# The macOS Build Environment
-os: osx
+language: python
+group: travis_latest
+
+python:
+  - 3.8-dev
+  - 3.7
+  - 3.6
+  - 3.5
+  - 3.4
+
+matrix:
+  include:
+    - os: osx
+      language: minimal
+      install: pipenv install --dev
 
 # Homebrew dependencies
 addons:
   homebrew:
     packages:
-    - pipenv
+      - pipenv
     update: true
 
 # command to install dependencies
