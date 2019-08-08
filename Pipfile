@@ -24,7 +24,6 @@ pygments = "*"
 ipython = "*"
 "autopep8" = "*"
 pylint = "*"
-isort = {extras = ["pipfile", "requirements"],version = "*"}
 
 [requires]
 python_version = "3.7"
