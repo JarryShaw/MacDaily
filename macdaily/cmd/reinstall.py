@@ -25,12 +25,12 @@ class ReinstallCommand(Command):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            text = f'Using {self.name} executable {path!r}'
+            text = 'Using {} executable {!r}'.format(self.name, path)
             print_info(text, self._file, redirect=self._qflag)
             if self._proc_logging(path):
                 self._proc_reinstall(path)
             else:
-                text = f'No {self.desc[1]} to reinstall for executable {path!r}'
+                text = 'No {} to reinstall for executable {!r}'.format(self.desc[1], path)
                 print_info(text, self._file, redirect=self._qflag)
             self._proc_fixmissing(path)
         self._proc_cleanup()

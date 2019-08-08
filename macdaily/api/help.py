@@ -39,21 +39,21 @@ def help_(argv=None):
     def _find_help(cmd, sub, man):
         pth = None
         if sub is None:
-            pth = os.path.join(ROOT, f'man/macdaily-{cmd}.8')
+            pth = os.path.join(ROOT, 'man/macdaily-{}.8'.format(cmd))
         if sub in man:
-            pth = os.path.join(ROOT, f'man/macdaily-{cmd}-{MAP_DICT[sub]}.8')
+            pth = os.path.join(ROOT, 'man/macdaily-{}-{}.8'.format(cmd, MAP_DICT[sub]))
         if pth is None:
-            CMD = globals().get(f'CMD_{cmd.upper()}', set())
+            CMD = globals().get('CMD_{}'.format(cmd.upper()), set())
             parser = get_help_parser()
-            pattern = rf'.*{command}.*'
-            matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
+            pattern = r'.*{}.*'.format(command)
+            matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
                                           (r'%s-%s' % (cmd, sub) for sub in CMD)))
             if matches:
-                parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                             f"(did you mean: '{matches}')")
+                parser.error("argument CMD: invalid choice: {!r} "
+                             "(did you mean: '{}')".format(args.command, matches))
             else:
-                parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                             f"(choose from {cmd}-{(', %s-' % cmd).join(sorted(CMD))})")
+                parser.error("argument CMD: invalid choice: {!r} "
+                             "(choose from {}-{})".format(args.command, cmd, (', %s-' % cmd).join(sorted(CMD))))
         os.execlp('man', 'man', pth)
 
     if cmd in MAP_ARCHIVE:
@@ -85,14 +85,14 @@ def help_(argv=None):
         _find_help('update', sub, CMD_UPDATE)
     else:
         parser = get_help_parser()
-        pattern = rf'.*{cmd}.*'
+        pattern = r'.*{}.*'.format(cmd)
         matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
         if matches:
-            parser.error(f'unrecognized arguments: {args.command!r} '
-                         f"(did you mean: '{matches}')")
+            parser.error('unrecognized arguments: {!r} '
+                         "(did you mean: '{}')".format(args.command, matches))
         else:
-            parser.error(f"argument CMD: invalid choice: {args.command!r} "
-                         f"(choose from {', '.join(sorted(MAP_ALL))})")
+            parser.error("argument CMD: invalid choice: {!r} "
+                         "(choose from {})".format(args.command, ', '.join(sorted(MAP_ALL))))
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='MacDaily',
                                      description='macOS Automated Package Manager',
                                      usage='macdaily [options] <command> ...',
-                                     epilog=f'{bold} This MacDaily has Super Cow Powers.{reset}')
+                                     epilog='{} This MacDaily has Super Cow Powers.{}'.format(bold, reset))
     parser.add_argument('-V', '--version', action='version', version=__version__)
     parser.add_argument('-E', '--environ', action='store_true',
                         help='show all available environment variables')
@@ -41,7 +41,7 @@ def get_parser():
     group = parser.add_argument_group('command selection',
                                       'MacDaily provides a friendly CLI workflow for the '
                                       'administrator of macOS to manipulate packages, see '
-                                      f"`{bold}macdaily commands{reset}' for more information")
+                                      "`{}macdaily commands{}' for more information".format(bold, reset))
     group.add_argument('command', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
     return parser
@@ -93,14 +93,14 @@ def main():
     elif command in MAP_UPDATE:
         update(options)
     else:
-        pattern = rf'.*{command}.*'
-        matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
+        pattern = r'.*{}.*'.format(command)
+        matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), MAP_ALL))  # pylint: disable=cell-var-from-loop
         if matches:
-            parser.error(f"argument CMD: invalid choice: {command!r} "
-                         f"(did you mean: '{matches}')")
+            parser.error("argument CMD: invalid choice: {!r} "
+                         "(did you mean: '{}')".format(command, matches))
         else:
-            parser.error(f"argument CMD: invalid choice: {command!r} "
-                         f"(choose from '{', '.join(sorted(MAP_ALL))}')")
+            parser.error("argument CMD: invalid choice: {!r} "
+                         "(choose from '{}')".format(command, ', '.join(sorted(MAP_ALL))))
 
 
 if __name__ == '__main__':

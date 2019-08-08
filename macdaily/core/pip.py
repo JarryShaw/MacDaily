@@ -174,8 +174,8 @@ class PipCommand(Command):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             try:
                 proc = subprocess.check_output(argv, stderr=subprocess.STDOUT)
@@ -187,10 +187,10 @@ class PipCommand(Command):
                 _temp_pkgs.append(package)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
 
         if _lost_pkgs:
-            text = f'Listing installed {self.desc[1]}'
+            text = 'Listing installed {}'.format(self.desc[1])
             print_info(text, self._file, redirect=self._vflag)
 
             self._lost.extend(_lost_pkgs)
@@ -199,8 +199,8 @@ class PipCommand(Command):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             try:
                 proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -213,7 +213,7 @@ class PipCommand(Command):
                 self._var__real_pkgs = set(map(lambda pkg: pkg.split('==')[0], filter(None, context.splitlines())))  # pylint: disable=attribute-defined-outside-init,filter-builtin-not-iterating
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
         else:
             self._var__real_pkgs = set()  # pylint: disable=attribute-defined-outside-init
 
@@ -221,7 +221,7 @@ class PipCommand(Command):
         self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
 
     def _proc_fixmissing(self, path):
-        text = f'Checking broken {self.desc[0]} dependencies'
+        text = 'Checking broken {} dependencies'.format(self.desc[0])
         print_info(text, self._file, redirect=self._qflag)
 
         def _proc_check():
@@ -229,8 +229,8 @@ class PipCommand(Command):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             _deps_pkgs = list()
             try:  # pip check exits with a non-zero status if any packages are missing dependencies
@@ -250,19 +250,19 @@ class PipCommand(Command):
                         _deps_pkgs.append(line.split()[4][:-1])
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
             return set(_deps_pkgs)
 
         def _proc_confirm():
-            pkgs = f'{reset}, {bold}'.join(_deps_pkgs)
-            text = f'macdaily-{self.cmd}: {yellow}pip{reset}: found broken dependencies: {bold}{pkgs}{reset}'
+            pkgs = '{}, {}'.format(reset, bold).join(_deps_pkgs)
+            text = 'macdaily-{}: {}pip{}: found broken dependencies: {}{}{}'.format(self.cmd, yellow, reset, bold, pkgs, reset)
             print_term(text, self._file, redirect=self._qflag)
             if self._yes or self._quiet:
                 return True
             while True:
                 ans = get_input(self._confirm, 'Would you like to reinstall?',
-                                prefix=f'Found broken dependencies: {", ".join(_deps_pkgs)}.\n\n',
-                                suffix=f' ({green}y{reset}/{red}N{reset}) ')
+                                prefix='Found broken dependencies: {}.\n\n'.format(", ".join(_deps_pkgs)),
+                                suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
                 if re.match(r'[yY]', ans):
                     return True
                 if re.match(r'[nN]', ans):
@@ -271,11 +271,11 @@ class PipCommand(Command):
 
         _deps_pkgs = _proc_check() - self._ignore
         if not _deps_pkgs:
-            text = f'macdaily-{self.cmd}: {green}pip{reset}: no broken dependencies'
+            text = 'macdaily-{}: {}pip{}: no broken dependencies'.format(self.cmd, green, reset)
             print_term(text, self._file, redirect=self._qflag)
             return
 
-        text = f'Fixing broken {self.desc[0]} dependencies'
+        text = 'Fixing broken {} dependencies'.format(self.desc[0])
         print_info(text, self._file, redirect=self._qflag)
 
         if _proc_confirm():
@@ -290,26 +290,26 @@ class PipCommand(Command):
             while _deps_pkgs:
                 for package in _deps_pkgs:
                     real_name = re.split(r'[<>=!]', package, maxsplit=1)[0]
-                    print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
+                    print_scpt('{} {}'.format(args, package), self._file, redirect=self._qflag)
 
                     temp = copy.copy(argv)
                     temp[3] = 'uninstall'
-                    print_scpt(f'{" ".join(temp)} {real_name}', self._file, redirect=self._qflag)
-                    sudo(f'{path} -m pip uninstall {real_name} --yes', self._file, self._password,
+                    print_scpt('{} {}'.format(" ".join(temp), real_name), self._file, redirect=self._qflag)
+                    sudo('{} -m pip uninstall {} --yes'.format(path, real_name), self._file, self._password,
                          redirect=self._qflag, verbose=self._vflag, sethome=True, timeout=self._timeout)
 
                     temp = copy.copy(argv)
                     temp[3] = 'install'
-                    print_scpt(f'{" ".join(temp)} {package}', self._file, redirect=self._qflag)
-                    if not sudo(f'{path} -m pip install {package}', self._file, self._password,
+                    print_scpt('{} {}'.format(" ".join(temp), package), self._file, redirect=self._qflag)
+                    if not sudo('{} -m pip install {}'.format(path, package), self._file, self._password,
                                 redirect=self._qflag, verbose=self._vflag, sethome=True, timeout=self._timeout):
                         with contextlib.suppress(ValueError):
                             self._pkgs.remove(real_name)
                 _done_pkgs |= _deps_pkgs
                 _deps_pkgs = _proc_check() - _done_pkgs - self._ignore
-            text = f'macdaily-{self.cmd}: {green}pip{reset}: all broken dependencies fixed'
+            text = 'macdaily-{}: {}pip{}: all broken dependencies fixed'.format(self.cmd, green, reset)
         else:
-            text = f'macdaily-{self.cmd}: {red}pip{reset}: all broken dependencies remain'
+            text = 'macdaily-{}: {}pip{}: all broken dependencies remain'.format(self.cmd, red, reset)
         print_term(text, self._file, redirect=self._qflag)
 
     def _proc_cleanup(self):

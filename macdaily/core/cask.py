@@ -36,11 +36,11 @@ class CaskCommand(Command):
                                   stdout=subprocess.DEVNULL, stderr=make_stderr(self._vflag))
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), self._file, redirect=self._vflag)
-            print(f'macdaily-{self.cmd}: {red_bg}{flash}cask{reset}: command not found', file=sys.stderr)
-            text = (f'macdaily-{self.cmd}: {red}cask{reset}: you may find Caskroom on '
-                    f'{purple_bg}{under}https://caskroom.github.io{reset}, '
-                    f'or install Caskroom through following command -- '
-                    f"`{bold}brew tap homebrew/cask{reset}'")
+            print('macdaily-{}: {}{}cask{}: command not found'.format(self.cmd, red_bg, flash, reset), file=sys.stderr)
+            text = ('macdaily-{}: {}cask{}: you may find Caskroom on '
+                    '{}{}https://caskroom.github.io{}, '
+                    'or install Caskroom through following command -- '
+                    "`{}brew tap homebrew/cask{}'".format(self.cmd, red, reset, purple_bg, under, reset, bold, reset))
             print_term(text, self._file, redirect=self._qflag)
             return False
         self._var__exec_path = shutil.which('brew')
@@ -59,15 +59,15 @@ class CaskCommand(Command):
         del self._var__exec_path
 
     def _check_pkgs(self, path):
-        text = f'Listing installed {self.desc[1]}'
+        text = 'Listing installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'cask', 'list']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -80,7 +80,7 @@ class CaskCommand(Command):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
         text = 'Checking existence of specified packages'
         print_info(text, self._file, redirect=self._vflag)
@@ -122,8 +122,8 @@ class CaskCommand(Command):
         print_info(text, self._file, redirect=self._qflag)
 
         if not os.path.isdir(self._disk_dir):
-            text = (f'macdaily-{self.cmd}: {yellow}cask{reset}: '
-                    f'archive directory {bold}{self._disk_dir}{reset} not found')
+            text = ('macdaily-{}: {}cask{}: '
+                    'archive directory {}{}{} not found'.format(self.cmd, yellow, reset, bold, self._disk_dir, reset))
             print_term(text, self._file, redirect=self._vflag)
             return
 
@@ -145,8 +145,8 @@ class CaskCommand(Command):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             fail = False
             try:
@@ -159,7 +159,7 @@ class CaskCommand(Command):
                 print_text(context, self._file, redirect=self._vflag)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
             if fail:
                 continue
 

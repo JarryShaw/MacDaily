@@ -90,16 +90,16 @@ def get_config():
 def dump_config(rcpath, quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise ConfigNotFoundError(2, 'No such file or directory', rcpath)
-    print_info(f'Creating a config file (.dailyrc) for {USER}...', get_logfile(), redirect=quiet)
+    print_info('Creating a config file (.dailyrc) for {}...'.format(USER), get_logfile(), redirect=quiet)
 
     dskdir = input('Name of your external hard disk []: ')
-    CONFIG[4] = f'dskdir = /Volumes/{dskdir.ljust(41)} ; path where your hard disk lies'
+    CONFIG[4] = 'dskdir = /Volumes/{} ; path where your hard disk lies'.format(dskdir.ljust(41))
 
     askpass = launch_askpass(quiet=quiet, verbose=verbose)
     confirm = launch_confirm(quiet=quiet, verbose=verbose)
 
-    CONFIG[52] = f'askpass = {askpass.ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks'
-    CONFIG[53] = f'confirm = {confirm.ljust(49)} ; confirm utility for MacDaily'
+    CONFIG[52] = 'askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks'.format(askpass.ljust(49))
+    CONFIG[53] = 'confirm = {} ; confirm utility for MacDaily'.format(confirm.ljust(49))
 
     with open(rcpath, 'w') as file:
         file.write(os.linesep.join(CONFIG))
@@ -126,11 +126,11 @@ def parse_config(quiet=False, verbose=False):
 
     # Path section
     for name, path in config['Path'].items():
-        cfg_dict['Path'][name] = get_path(f'MACDAILY_{name.upper()}', path)
+        cfg_dict['Path'][name] = get_path('MACDAILY_{}'.format(name.upper()), path)
 
     # Mode section
     for mode in config['Mode'].keys():
-        cfg_dict['Mode'][mode] = get_boolean(f'MACDAILY_{mode.upper()}',
+        cfg_dict['Mode'][mode] = get_boolean('MACDAILY_{}'.format(mode.upper()),
                                              config['Mode'].getboolean(mode, False))
 
     # Daemon section
@@ -199,53 +199,53 @@ def make_config(quiet=False, verbose=False):
     if not sys.stdin.isatty():
         raise OSError(5, 'Input/output error')
 
-    print_wrap(f'Entering interactive command line setup procedure...')
-    print_wrap(f'Default settings are shown as in the square brackets.')
-    print_wrap(f'Please directly {bold}{under}ENTER{reset} if you prefer the default settings.')
+    print_wrap('Entering interactive command line setup procedure...')
+    print_wrap('Default settings are shown as in the square brackets.')
+    print_wrap('Please directly {}{}ENTER{} if you prefer the default settings.'.format(bold, under, reset))
 
     rcpath = os.path.expanduser('~/.dailyrc')
     try:
         with open(rcpath, 'w') as config_file:
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[:4]))  # pylint: disable=map-builtin-not-iterating
+            config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[:4]))  # pylint: disable=map-builtin-not-iterating
             print()
-            print_wrap(f'For logging utilities, we recommend you to set up your {bold}hard disk{reset} path.')
-            print_wrap(f'You may change other path preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print_wrap(f'Please note that all paths must be valid under all circumstances.')
+            print_wrap('For logging utilities, we recommend you to set up your {}hard disk{} path.'.format(bold, reset))
+            print_wrap('You may change other path preferences in configuration `{}~/.dailyrc{}` later.'.format(under, reset))
+            print_wrap('Please note that all paths must be valid under all circumstances.')
             dskdir = input('Name of your external hard disk []: ').ljust(41)
-            config_file.write(f'dskdir = /Volumes/{dskdir} ; path where your hard disk lies\n')
+            config_file.write('dskdir = /Volumes/{} ; path where your hard disk lies\n'.format(dskdir))
 
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[5:38]))  # pylint: disable=map-builtin-not-iterating
+            config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[5:38]))  # pylint: disable=map-builtin-not-iterating
             print()
-            print_wrap(f'In default, we will run {bold}update{reset} and {bold}logging{reset} commands twice a day.')
-            print_wrap(f'You may change daily commands preferences in configuration `{under}~/.dailyrc{reset}` later.')
-            print_wrap(f'Please enter schedule as {bold}{under}HH:MM[-CMD]{reset} format, '
-                       f'and each separates with {under}comma{reset}.')
+            print_wrap('In default, we will run {}update{} and {}logging{} commands twice a day.'.format(bold, reset, bold, reset))
+            print_wrap('You may change daily commands preferences in configuration `{}~/.dailyrc{}` later.'.format(under, reset))
+            print_wrap('Please enter schedule as {}{}HH:MM[-CMD]{} format, '
+                       'and each separates with {}comma{}.'.format(bold, under, reset, under, reset))
             timing = input('Time for daily scripts [10:00-update,22:30-logging,23:00-archive]: ')
             if timing:
                 config_file.writelines(['\t', '\n\t'.join(map(lambda s: s.strip(), timing.split(','))), '\n'])
             else:
-                config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[38:41]))  # pylint: disable=map-builtin-not-iterating
+                config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[38:41]))  # pylint: disable=map-builtin-not-iterating
 
-            config_file.writelines(map(lambda s: f'{s}{os.linesep}', CONFIG[41:52]))  # pylint: disable=map-builtin-not-iterating
+            config_file.writelines(map(lambda s: '{}{}'.format(s, os.linesep), CONFIG[41:52]))  # pylint: disable=map-builtin-not-iterating
             print()
-            print_wrap(f'For better stability, {bold}MacDaily{reset} depends on several helper programs.')
+            print_wrap('For better stability, {}MacDaily{} depends on several helper programs.'.format(bold, reset))
             print_wrap('Your password may be necessary during the launch process.')
             askpass = launch_askpass(quiet=quiet, verbose=verbose)
             confirm = launch_confirm(quiet=quiet, verbose=verbose)
 
-            config_file.write(f'askpass = {askpass.ljust(49)} ; SUDO_ASKPASS utility for Homebrew Casks\n')
-            config_file.write(f'confirm = {confirm.ljust(49)} ; confirm utility for MacDaily\n')
+            config_file.write('askpass = {} ; SUDO_ASKPASS utility for Homebrew Casks\n'.format(askpass.ljust(49)))
+            config_file.write('confirm = {} ; confirm utility for MacDaily\n'.format(confirm.ljust(49)))
             print()
-            print_wrap(f'Also, {bold}MacDaily{reset} supports several different environment setups.')
+            print_wrap('Also, {}MacDaily{} supports several different environment setups.'.format(bold, reset))
             print_wrap('You may set up these variables here, '
-                       f'or later manually in configuration `{under}~/.dailyrc{reset}`.')
-            print_wrap(f'Please enter these specifications as instructed below.')
+                       'or later manually in configuration `{}~/.dailyrc{}`.'.format(under, reset))
+            print_wrap('Please enter these specifications as instructed below.')
             shtout = (input('Timeout limit for shell scripts in seconds [1,000]: ') or '1000').ljust(49)
-            config_file.write(f'limit = {shtout} ; timeout limit for shell scripts in seconds\n')
+            config_file.write('limit = {} ; timeout limit for shell scripts in seconds\n'.format(shtout))
             retout = (input('Retry timeout for input prompts in seconds [60]:') or '60').ljust(49)
-            config_file.write(f'retry = {retout} ; retry timeout for input prompts in seconds\n')
+            config_file.write('retry = {} ; retry timeout for input prompts in seconds\n'.format(retout))
             print()
-            print_wrap(f'Configuration for {bold}MacDaily{reset} finished. Now launching...\n')
+            print_wrap('Configuration for {}MacDaily{} finished. Now launching...\n'.format(bold, reset))
     except BaseException:
         os.remove(rcpath)
         print(reset)
@@ -256,11 +256,11 @@ def make_config(quiet=False, verbose=False):
     askpass = config['Miscellaneous']['askpass']
 
     # ask for password
-    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
+    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
     print_term(text, get_logfile(), redirect=quiet)
     password = get_pass(askpass)
 
     # launch daemons
     path = launch_daemons(config, password, quiet, verbose)
-    text = f'Launched helper program {under}daemons{reset}{bold} at {under}{path}{reset}'
+    text = 'Launched helper program {}daemons{}{} at {}{}{}'.format(under, reset, bold, under, path, reset)
     print_misc(text, get_logfile(), redirect=quiet)

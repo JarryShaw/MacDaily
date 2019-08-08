@@ -42,12 +42,12 @@ class PostinstallCommand(BrewCommand):
         self._fail = list()
         self._lost = list()
         for path in self._exec:
-            text = f'Using {self.name} executable {path!r}'
+            text = 'Using {} executable {!r}'.format(self.name, path)
             print_info(text, self._file, redirect=self._qflag)
             if self._proc_logging(path):
                 self._proc_postinstall(path)
             else:
-                text = f'No {self.desc[1]} to postinstall for executable {path!r}'
+                text = 'No {} to postinstall for executable {!r}'.format(self.desc[1], path)
                 print_info(text, self._file, redirect=self._qflag)
             self._proc_fixmissing(path)
         self._proc_cleanup()
@@ -61,7 +61,7 @@ class PostinstallCommand(BrewCommand):
         return self._check_confirm(path)
 
     def _check_list(self, path):
-        text = f'Checking installed {self.desc[1]}'
+        text = 'Checking installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list']
@@ -70,8 +70,8 @@ class PostinstallCommand(BrewCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=subprocess.DEVNULL)
@@ -89,10 +89,10 @@ class PostinstallCommand(BrewCommand):
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_postinstall(self, path):
-        text = f'Postinstalling specified {self.desc[1]}'
+        text = 'Postinstalling specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'postinstall']

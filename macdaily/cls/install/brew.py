@@ -18,7 +18,7 @@ class BrewInstall(BrewCommand, InstallCommand):
         self._install_opts = namespace.get('install', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _proc_install(self, path):
-        text = f'Installing specified {self.desc[1]}'
+        text = 'Installing specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'install']

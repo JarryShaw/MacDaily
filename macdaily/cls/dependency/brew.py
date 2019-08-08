@@ -34,15 +34,15 @@ class BrewDependency(BrewCommand, DependencyCommand):
         self._verbose = namespace.get('verbose', False)  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
-        text = f'Checking installed {self.desc[1]}'
+        text = 'Checking installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'leaves']
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -55,10 +55,10 @@ class BrewDependency(BrewCommand, DependencyCommand):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_dependency(self, path):
-        text = f'Querying dependencies of {self.desc[1]}'
+        text = 'Querying dependencies of {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         def _fetch_dependency(package, depth):
@@ -70,7 +70,7 @@ class BrewDependency(BrewCommand, DependencyCommand):
             if dependencies is not None:
                 return dependencies
 
-            text = f'Searching dependencies of {self.desc[0]} {under}{package}{reset}'
+            text = 'Searching dependencies of {} {}{}{}'.format(self.desc[0], under, package, reset)
             print_info(text, self._file, redirect=self._vflag)
 
             argv = [path, 'deps', '--installed', '-1']
@@ -89,8 +89,8 @@ class BrewDependency(BrewCommand, DependencyCommand):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             _deps_pkgs = dict()
             try:
@@ -112,7 +112,7 @@ class BrewDependency(BrewCommand, DependencyCommand):
                 _data_pkgs.update(_deps_pkgs)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
             return _deps_pkgs
 
         _list_pkgs = list()
@@ -150,13 +150,13 @@ class BrewDependency(BrewCommand, DependencyCommand):
                 _list_pkgs.sort()
             if self._qflag:
                 if _list_pkgs:
-                    print_term(f"{package}: {' '.join(_list_pkgs)}", self._file)
+                    print_term("{}: {}".format(package, ' '.join(_list_pkgs)), self._file)
                 else:
-                    print_term(f"{package} (independent)", self._file)
+                    print_term("{} (independent)".format(package), self._file)
             else:
                 print_text(os.linesep.join(_list_pkgs), self._file)
 
-        text = f'Listing dependencies of {self.desc[1]}'
+        text = 'Listing dependencies of {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'dependency']
@@ -169,7 +169,7 @@ class BrewDependency(BrewCommand, DependencyCommand):
         if self._topological:
             argv.append('--topological')
         if self._depth != -1:
-            argv.append(f'--depth={self._depth}')
+            argv.append('--depth={}'.format(self._depth))
         argv.append('')
 
         if self._qflag:
@@ -182,10 +182,10 @@ class BrewDependency(BrewCommand, DependencyCommand):
                 try:
                     import dictdumper
                 except ImportError:
-                    print_term(f'macdaily-dependency: {yellow}brew{reset}: {bold}DictDumper{reset} not installed, '
-                               f"which is mandatory for using `{bold}--tree{reset}' option",
+                    print_term('macdaily-dependency: {}brew{}: {}DictDumper{} not installed, '
+                               "which is mandatory for using `{}--tree{}' option".format(yellow, reset, bold, reset, bold, reset),
                                self._file, redirect=self._vflag)
-                    print(f'macdaily-dependency: {red}brew{reset}: broken dependency', file=sys.stderr)
+                    print('macdaily-dependency: {}brew{}: broken dependency'.format(red, reset), file=sys.stderr)
                     raise
                 _print_dependency_tree(package, _deps_pkgs[package])
             else:

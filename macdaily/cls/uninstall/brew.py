@@ -35,7 +35,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         self._uninstall_opts = namespace.get('uninstall', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
-        text = f'Checking installed {self.desc[1]}'
+        text = 'Checking installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list']
@@ -44,8 +44,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -58,10 +58,10 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             print_text(context, self._file, redirect=self._vflag)
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_uninstall(self, path):
-        text = f'Uninstalling specified {self.desc[1]}'
+        text = 'Uninstalling specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         def _proc_dependency(package):
@@ -69,7 +69,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             if self._ignore_deps:
                 return _deps_pkgs
 
-            text = f'Searching dependencies of {self.desc[0]} {under}{package}{reset}'
+            text = 'Searching dependencies of {} {}{}{}'.format(self.desc[0], under, package, reset)
             print_info(text, self._file, redirect=self._vflag)
 
             argv = [path, 'deps', '--installed', '-n']
@@ -88,8 +88,8 @@ class BrewUninstall(BrewCommand, UninstallCommand):
             args = ' '.join(argv)
             print_scpt(args, self._file, redirect=self._vflag)
             with open(self._file, 'a') as file:
-                file.write(f'Script started on {date()}\n')
-                file.write(f'command: {args!r}\n')
+                file.write('Script started on {}\n'.format(date()))
+                file.write('command: {!r}\n'.format(args))
 
             try:
                 proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -101,7 +101,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                 print_text(context, self._file, redirect=self._vflag)
             finally:
                 with open(self._file, 'a') as file:
-                    file.write(f'Script done on {date()}\n')
+                    file.write('Script done on {}\n'.format(date()))
             return _deps_pkgs
 
         argv = [path, 'uninstall']
@@ -133,7 +133,7 @@ class BrewUninstall(BrewCommand, UninstallCommand):
                     continue
                 _done_pkgs.append(package)
                 argv[-1] = package
-                print_scpt(f'{args} {package}', self._file, redirect=self._qflag)
+                print_scpt('{} {}'.format(args, package), self._file, redirect=self._qflag)
                 if self._dry_run:
                     continue
                 if run(argv, self._file, timeout=self._timeout,

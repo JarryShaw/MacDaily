@@ -44,7 +44,7 @@ def cleanup(argv=None):
     logpath.mkdir(parents=True, exist_ok=True)
 
     # prepare command paras
-    filename = os.path.join(logpath, f'{logtime}-{uuid.uuid4()!s}.log')
+    filename = os.path.join(logpath, '{}-{!s}.log'.format(logtime, uuid.uuid4()))
     os.environ['MACDAILY_LOGFILE'] = filename
 
     confirm = config['Miscellaneous']['confirm']
@@ -54,20 +54,20 @@ def cleanup(argv=None):
     brew_renew = None
 
     # record program status
-    text = f'{bold}{green}|🚨|{reset} {bold}Running MacDaily version {__version__}{reset}'
+    text = '{}{}|🚨|{} {}Running MacDaily version {}{}'.format(bold, green, reset, bold, __version__, reset)
     print_term(text, filename, redirect=quiet)
     record(filename, args, today, config, redirect=verbose)
 
     # ask for password
-    text = f'{bold}{purple}|🔑|{reset} {bold}Your {under}sudo{reset}{bold} password may be necessary{reset}'
+    text = '{}{}|🔑|{} {}Your {}sudo{}{} password may be necessary{}'.format(bold, purple, reset, bold, under, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
     password = get_pass(askpass)
 
     cmd_list = list()
     for mode in {'brew', 'cask', 'npm', 'pip'}:
         # skip disabled commands
-        if (not config['Mode'].get(mode, False)) or getattr(args, f'no_{mode}', False):
-            text = f'macdaily-cleanup: {yellow}{mode}{reset}: command disabled'
+        if (not config['Mode'].get(mode, False)) or getattr(args, 'no_{}'.format(mode), False):
+            text = 'macdaily-cleanup: {}{}{}: command disabled'.format(yellow, mode, reset)
             print_term(text, filename, redirect=verbose)
             continue
 
@@ -81,7 +81,7 @@ def cleanup(argv=None):
             namespace['verbose'] = True
 
         # run command
-        cmd_cls = globals()[f'{mode.capitalize()}Cleanup']
+        cmd_cls = globals()['{}Cleanup'.format(mode.capitalize())]
         command = cmd_cls(make_namespace(namespace), filename, timeout,
                           confirm, askpass, password, disk_dir, brew_renew)
 
@@ -92,20 +92,20 @@ def cleanup(argv=None):
     # archive ancient logs
     archive = make_archive(config, 'cleanup', today, quiet=quiet, verbose=verbose, logfile=filename)
 
-    text = f'{bold}{green}|📖|{reset} {bold}MacDaily report of cleanup command{reset}'
+    text = '{}{}|📖|{} {}MacDaily report of cleanup command{}'.format(bold, green, reset, bold, reset)
     print_term(text, filename, redirect=quiet)
 
     for command in cmd_list:
-        text = f'Pruned caches of {under}{command.name}{reset}{bold}'
+        text = 'Pruned caches of {}{}{}{}'.format(under, command.name, reset, bold)
         print_misc(text, get_logfile(), redirect=quiet)
 
     if archive:
-        formatted_list = f'{reset}{bold}, {under}'.join(archive)
-        text = (f'Archived following ancient logs: {under}{formatted_list}{reset}')
+        formatted_list = '{}{}, {}'.format(reset, bold, under).join(archive)
+        text = ('Archived following ancient logs: {}{}{}'.format(under, formatted_list, reset))
         print_misc(text, filename, redirect=quiet)
 
     if len(cmd_list) == 0:  # pylint:disable=len-as-condition
-        text = f'macdaily: {purple}cleanup{reset}: no caches cleanup'
+        text = 'macdaily: {}cleanup{}: no caches cleanup'.format(purple, reset)
         print_term(text, get_logfile(), redirect=quiet)
 
     if args.show_log:
@@ -113,12 +113,12 @@ def cleanup(argv=None):
             subprocess.check_call(['open', '-a', '/Applications/Utilities/Console.app', filename])
         except subprocess.CalledProcessError:
             print_text(traceback.format_exc(), filename, redirect=verbose)
-            print(f'macdaily: {red}cleanup{reset}: cannot show log file {filename!r}', file=sys.stderr)
+            print('macdaily: {}cleanup{}: cannot show log file {!r}'.format(red, reset, filename), file=sys.stderr)
 
     mode_lst = [command.mode for command in cmd_list]
     mode_str = ', '.join(mode_lst) if mode_lst else 'none'
-    text = (f'{bold}{green}|🍺|{reset} {bold}MacDaily successfully performed cleanup process '
-            f'for {mode_str} package managers{reset}')
+    text = ('{}{}|🍺|{} {}MacDaily successfully performed cleanup process '
+            'for {} package managers{}'.format(bold, green, reset, bold, mode_str, reset))
     print_term(text, get_logfile(), redirect=quiet)
 
 

@@ -28,7 +28,7 @@ class BrewReinstall(BrewCommand, ReinstallCommand):
         self._reinstall_opts = namespace.get('reinstall', str()).split()  # pylint: disable=attribute-defined-outside-init
 
     def _check_list(self, path):
-        text = f'Checking installed {self.desc[1]}'
+        text = 'Checking installed {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._vflag)
 
         argv = [path, 'list']
@@ -37,8 +37,8 @@ class BrewReinstall(BrewCommand, ReinstallCommand):
         args = ' '.join(argv)
         print_scpt(args, self._file, redirect=self._vflag)
         with open(self._file, 'a') as file:
-            file.write(f'Script started on {date()}\n')
-            file.write(f'command: {args!r}\n')
+            file.write('Script started on {}\n'.format(date()))
+            file.write('command: {!r}\n'.format(args))
 
         try:
             proc = subprocess.check_output(argv, stderr=make_stderr(self._vflag))
@@ -56,10 +56,10 @@ class BrewReinstall(BrewCommand, ReinstallCommand):
             self._var__temp_pkgs = set(_temp_pkgs)  # pylint: disable=attribute-defined-outside-init
         finally:
             with open(self._file, 'a') as file:
-                file.write(f'Script done on {date()}\n')
+                file.write('Script done on {}\n'.format(date()))
 
     def _proc_reinstall(self, path):
-        text = f'Reinstalling specified {self.desc[1]}'
+        text = 'Reinstalling specified {}'.format(self.desc[1])
         print_info(text, self._file, redirect=self._qflag)
 
         argv = [path, 'reinstall']

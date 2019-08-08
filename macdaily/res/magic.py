@@ -50,7 +50,7 @@ def decode():
     for c in (65, 97):
         for i in range(26):
             d[chr(i+c)] = chr((i+13) % 26 + c)
-    return [f'echo "{"".join([d.get(c, c) for c in s])}"' for s in DB]
+    return ['echo "{}"'.format("".join([d.get(c, c) for c in s])) for s in DB]
 
 
 def install(formula):
@@ -82,7 +82,7 @@ def whoop_de_doo():
             COWSAY = shutil.which('cowsay')
             COWTHINK = shutil.which('cowthink')
             exec_list = [COWSAY, COWTHINK]
-            cowsay = f'{random.choice(exec_list)} -f {random.choice(cowfile())}'
+            cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
         else:
             cowsay = 'cat'
     else:
@@ -90,18 +90,18 @@ def whoop_de_doo():
             exec_list = [COWSAY]
         else:
             exec_list = [COWSAY, COWTHINK]
-        cowsay = f'{random.choice(exec_list)} -f {random.choice(cowfile())}'
+        cowsay = '{} -f {}'.format(random.choice(exec_list), random.choice(cowfile()))
 
     if LOLCAT is None:
         if install('lolcat'):
             LOLCAT = shutil.which('lolcat')
-            lolcat = f'{LOLCAT} -p {random.random()*10.0}'
+            lolcat = '{} -p {}'.format(LOLCAT, random.random()*10.0)
         else:
             lolcat = 'cat'
     else:
-        lolcat = f'{LOLCAT} -p {random.random()*10.0}'
+        lolcat = '{} -p {}'.format(LOLCAT, random.random()*10.0)
 
-    os.system(f'{fortune} | {cowsay} | {lolcat}')
+    os.system('{} | {} | {}'.format(fortune, cowsay, lolcat))
 
 
 if __name__ == '__main__':

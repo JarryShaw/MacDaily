@@ -127,9 +127,9 @@ def get_pip_parser():
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}pip freeze{reset}' command")
+                                help="options for `{}pip freeze{}' command".format(bold, reset))
     pip_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}pip uninstall <package>{reset}' command")
+                                help="options for `{}pip uninstall <package>{}' command".format(bold, reset))
 
     return pip_parser
 
@@ -156,13 +156,13 @@ def get_brew_parser():
     brew_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='delete all installed versions')
     brew_spec_group.add_argument('-b', '--include-build', action='store_true',
-                                 help=f'include the {bold}:build{reset} type dependencies')
+                                 help='include the {}:build{} type dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-o', '--include-optional', action='store_true',
-                                 help=f'include {bold}:optional{reset} dependencies')
+                                 help='include {}:optional{} dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-t', '--include-test', action='store_true',
-                                 help=f'include (non-recursive) {bold}:test{reset} dependencies')
+                                 help='include (non-recursive) {}:test{} dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-s', '--skip-recommended', action='store_true',
-                                 help=f'skip {bold}:recommended{reset} type dependencies')
+                                 help='skip {}:recommended{} type dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-r', '--include-requirements', action='store_true',
                                  help='include requirements in addition to dependencies')
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
@@ -187,9 +187,9 @@ def get_brew_parser():
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew list{reset}' command")
+                                 help="options for `{}brew list{}' command".format(bold, reset))
     brew_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew uninstall <formula>{reset}' command")
+                                 help="options for `{}brew uninstall <formula>{}' command".format(bold, reset))
 
     return brew_parser
 
@@ -235,9 +235,9 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask list{reset}' command")
+                                 help="options for `{}brew cask list{}' command".format(bold, reset))
     cask_misc_group.add_argument('-U', '--uninstall', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask uninstall <cask>{reset}' command")
+                                 help="options for `{}brew cask uninstall <cask>{}' command".format(bold, reset))
 
     return cask_parser
 
@@ -272,15 +272,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get(f'get_{parser_name}_parser')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
-                pattern = rf'.*{option}.*'
-                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_UNINSTALL))  # pylint: disable=cell-var-from-loop
+                pattern = r'.*{}.*'.format(option)
+                matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_UNINSTALL))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error(f'unrecognized arguments: {option!r} '
-                                      f"(did you mean: '{matches}')")
+                    main_parser.error('unrecognized arguments: {!r} '
+                                      "(did you mean: '{}')".format(option, matches))
                 else:
-                    main_parser.error(f'unrecognized arguments: {option!r}')
+                    main_parser.error('unrecognized arguments: {!r}'.format(option))
 
             # parse mode arguments
             parser = get_parser()

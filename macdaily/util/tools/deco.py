@@ -52,11 +52,11 @@ def beholder(func):
             return _finale(func(*args, **kwargs))
         except KeyboardInterrupt:
             if ERR_FLAG:
-                _funeral(f'macdaily: {red}error{reset}: operation interrupted')
+                _funeral('macdaily: {}error{}: operation interrupted'.format(red, reset))
             raise
         except Exception:
             if ERR_FLAG:
-                _funeral(f'macdaily: {red}error{reset}: operation failed')
+                _funeral('macdaily: {}error{}: operation failed'.format(red, reset))
             raise
     return wrapper
 
@@ -84,8 +84,8 @@ def check(func):
             except subprocess.CalledProcessError:
                 global ERR_FLAG
                 ERR_FLAG = False
-                print_term(f'macdaily: {red}error{reset}: incorrect password {dim}{password!r}{reset} for '
-                           f'{bold}{USER}{reset} ({under}{USR}{reset})', get_logfile())
+                print_term('macdaily: {}error{}: incorrect password {}{!r}{} for '
+                           '{}{}{} ({}{}{})'.format(red, reset, dim, password, reset, bold, USER, reset, under, USR, reset), get_logfile())
                 raise IncorrectPassword from None
         return password
     return wrapper
@@ -116,12 +116,12 @@ def retry(default=None):
                     if proc.exitcode == 0:
                         break
                     if proc.exitcode != 9:
-                        print_term(f'macdaily: {yellow}error{reset}: function {func.__qualname__!r} '
-                                   f'exits with exit status {proc.exitcode} on child process', get_logfile())
+                        print_term('macdaily: {}error{}: function {!r} '
+                                   'exits with exit status {} on child process'.format(yellow, reset, func.__qualname__, proc.exitcode), get_logfile())
                         raise ChildExit
                 else:
-                    print_term(f'macdaily: {red}error{reset}: function {func.__qualname__!r} '
-                               f'retry timeout after {TIMEOUT} seconds', get_logfile())
+                    print_term('macdaily: {}error{}: function {!r} '
+                               'retry timeout after {} seconds'.format(red, reset, func.__qualname__, TIMEOUT), get_logfile())
                     raise TimeExpired
                 try:
                     return QUEUE.get(block=False)

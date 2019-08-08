@@ -29,7 +29,7 @@ def kill(pid, signal):
         except OSError as error:
             with contextlib.suppress(OSError):
                 os.kill(chld, signal.SIGTERM)
-            message = f'failed to send signal to process {chld} with error message: {error!r}'
+            message = 'failed to send signal to process {} with error message: {!r}'.format(chld, error)
             warnings.showwarning(message, ResourceWarning, __file__, 29)
 
 
@@ -41,9 +41,9 @@ def predicate(filename):
 
 def record(file, args, today, config=None, redirect=False):
     # record program arguments
-    print_misc(f'{PYTHON} {PROGRAM}', file, redirect)
+    print_misc('{} {}'.format(PYTHON, PROGRAM), file, redirect)
     with open(file, 'a') as log:
-        log.writelines([f'TIME: {today!s}\n', f'FILE: {file}\n'])
+        log.writelines(['TIME: {!s}\n'.format(today), 'FILE: {}\n'.format(file)])
 
     # record parsed arguments
     print_misc('Parsing command line arguments', file, redirect)
@@ -53,22 +53,22 @@ def record(file, args, today, config=None, redirect=False):
                 for k, v, in value.items():
                     if v is None:
                         v = 'null'
-                    log.write(f'ARG: {key} -> {k} = {v}\n')
+                    log.write('ARG: {} -> {} = {}\n'.format(key, k, v))
             else:
                 if value is None:
                     value = 'null'
-                log.write(f'ARG: {key} = {value}\n')
+                log.write('ARG: {} = {}\n'.format(key, value))
 
     # record parsed configuration file
     if config is not None:
-        print_misc(f'Parsing configuration file '
-                   f'{os.path.expanduser("~/.dailyrc")!r}', file, redirect)
+        print_misc('Parsing configuration file '
+                   '{!r}'.format(os.path.expanduser("~/.dailyrc")), file, redirect)
         with open(file, 'a') as log:
             for key, value in config.items():
                 for k, v, in value.items():
                     if v is None:
                         v = 'null'
-                    log.write(f'CFG: {key} -> {k} = {v}\n')
+                    log.write('CFG: {} -> {} = {}\n'.format(key, k, v))
 
     # record parsed environment variables
     print_misc('Parsing environment variables', file, redirect)
@@ -82,8 +82,8 @@ def run_script(argv, quiet=False, verbose=False, sudo=False,  # pylint: disable=
     args = ' '.join(argv)
     print_scpt(args, logfile, verbose)
     with open(logfile, 'a') as file:
-        file.write(f'Script started on {date()}\n')
-        file.write(f'command: {args!r}\n')
+        file.write('Script started on {}\n'.format(date()))
+        file.write('command: {!r}\n'.format(args))
 
     try:
         if sudo:
@@ -101,12 +101,12 @@ def run_script(argv, quiet=False, verbose=False, sudo=False,  # pylint: disable=
             proc = subprocess.check_output(argv, stderr=make_stderr(verbose), env=env)
     except subprocess.CalledProcessError as error:
         print_text(traceback.format_exc(), logfile, redirect=verbose)
-        print_term(f"macdaily: {red}error{reset}: "
-                   f"command `{bold}{' '.join(error.cmd)!r}{reset}' failed", logfile, redirect=quiet)
+        print_term("macdaily: {}error{}: "
+                   "command `{}{!r}{}' failed".format(red, reset, bold, ' '.join(error.cmd), reset), logfile, redirect=quiet)
         raise
     else:
         context = proc.decode()
         print_text(context, logfile, redirect=verbose)
     finally:
         with open(logfile, 'a') as file:
-            file.write(f'Script done on {date()}\n')
+            file.write('Script done on {}\n'.format(date()))

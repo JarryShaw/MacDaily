@@ -39,7 +39,7 @@ def get_dependency_parser():
     genl_group.add_argument('-l', '--show-log', action='store_true',
                             help='open log in Console.app upon completion of command')
     genl_group.add_argument('-f', '--tree', action='store_true',
-                            help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
+                            help='show dependencies as a tree [requires {}DictDumper{}]'.format(under, reset))
     genl_group.add_argument('-g', '--topological', action='store_true',
                             help='show dependencies in topological order')
     genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
@@ -107,7 +107,7 @@ def get_pip_parser():
     pip_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                 help='do not run cleanup process')
     pip_genl_group.add_argument('-f', '--tree', action='store_true',
-                                help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
+                                help='show dependencies as a tree [requires {}DictDumper{}]'.format(under, reset))
     pip_genl_group.add_argument('-g', '--topological', action='store_true',
                                 help='show dependencies in topological order')
     pip_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
@@ -136,13 +136,13 @@ def get_brew_parser():
 
     brew_spec_group = brew_parser.add_argument_group(title='specification arguments')
     brew_spec_group.add_argument('-b', '--include-build', action='store_true',
-                                 help=f'include the {bold}:build{reset} type dependencies')
+                                 help='include the {}:build{} type dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-o', '--include-optional', action='store_true',
-                                 help=f'include {bold}:optional{reset} dependencies')
+                                 help='include {}:optional{} dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-t', '--include-test', action='store_true',
-                                 help=f'include (non-recursive) {bold}:test{reset} dependencies')
+                                 help='include (non-recursive) {}:test{} dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-s', '--skip-recommended', action='store_true',
-                                 help=f'skip {bold}:recommended{reset} type dependencies')
+                                 help='skip {}:recommended{} type dependencies'.format(bold, reset))
     brew_spec_group.add_argument('-r', '--include-requirements', action='store_true',
                                  help='include requirements in addition to dependencies')
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
@@ -158,7 +158,7 @@ def get_brew_parser():
     brew_genl_group.add_argument('-n', '--no-cleanup', action='store_true',
                                  help='do not run cleanup process')
     brew_genl_group.add_argument('-f', '--tree', action='store_true',
-                                 help=f'show dependencies as a tree [requires {under}DictDumper{reset}]')
+                                 help='show dependencies as a tree [requires {}DictDumper{}]'.format(under, reset))
     brew_genl_group.add_argument('-g', '--topological', action='store_true',
                                  help='show dependencies in topological order')
     brew_genl_group.add_argument('-d', '--depth', action='store', type=int, metavar='LEVEL',
@@ -197,15 +197,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get(f'get_{parser_name}_parser')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
-                pattern = rf'.*{option}.*'
-                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_DEPENDENCY))  # pylint: disable=cell-var-from-loop
+                pattern = r'.*{}.*'.format(option)
+                matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_DEPENDENCY))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error(f'unrecognized arguments: {option!r} '
-                                      f"(did you mean: '{matches}')")
+                    main_parser.error('unrecognized arguments: {!r} '
+                                      "(did you mean: '{}')".format(option, matches))
                 else:
-                    main_parser.error(f'unrecognized arguments: {option!r}')
+                    main_parser.error('unrecognized arguments: {!r}'.format(option))
 
             # parse mode arguments
             parser = get_parser()

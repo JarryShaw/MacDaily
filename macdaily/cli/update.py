@@ -116,9 +116,9 @@ def get_apm_parser():
 
     apm_misc_group = apm_parser.add_argument_group(title='miscellaneous arguments')
     apm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}apm upgrade --list{reset}' command")
+                                help="options for `{}apm upgrade --list{}' command".format(bold, reset))
     apm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}apm upgrade <plug-in>{reset}' command")
+                                help="options for `{}apm upgrade <plug-in>{}' command".format(bold, reset))
 
     return apm_parser
 
@@ -161,9 +161,9 @@ def get_gem_parser():
 
     gem_misc_group = gem_parser.add_argument_group(title='miscellaneous arguments')
     gem_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}gem outdated{reset}' command")
+                                help="options for `{}gem outdated{}' command".format(bold, reset))
     gem_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}gem update <gem>{reset}' command")
+                                help="options for `{}gem update <gem>{}' command".format(bold, reset))
 
     return gem_parser
 
@@ -201,9 +201,9 @@ def get_mas_parser():
 
     mas_misc_group = mas_parser.add_argument_group(title='miscellaneous arguments')
     mas_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}mas outdated' command{reset}")
+                                help="options for `{}mas outdated' command{}".format(bold, reset))
     mas_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}mas upgrade <application>{reset}' command")
+                                help="options for `{}mas upgrade <application>{}' command".format(bold, reset))
 
     return mas_parser
 
@@ -243,9 +243,9 @@ def get_npm_parser():
 
     npm_misc_group = npm_parser.add_argument_group(title='miscellaneous arguments')
     npm_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}npm outdated --global{reset}' command")
+                                help="options for `{}npm outdated --global{}' command".format(bold, reset))
     npm_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}npm upgrade --global <module>{reset}' command")
+                                help="options for `{}npm upgrade --global <module>{}' command".format(bold, reset))
 
     return npm_parser
 
@@ -301,9 +301,9 @@ def get_pip_parser():
 
     pip_misc_group = pip_parser.add_argument_group(title='miscellaneous arguments')
     pip_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}pip list --outdated{reset}' command")
+                                help="options for `{}pip list --outdated{}' command".format(bold, reset))
     pip_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                help=f"options for `{bold}pip install --upgrade <package>{reset}' command")
+                                help="options for `{}pip install --upgrade <package>{}' command".format(bold, reset))
 
     return pip_parser
 
@@ -330,8 +330,8 @@ def get_brew_parser():
     brew_spec_group.add_argument('-f', '--force', action='store_true',
                                  help='always do a slower, full update check even if unnecessary')
     brew_spec_group.add_argument('-m', '--merge', action='store_true',
-                                 help=(f"`{bold}git merge{reset}' is used to include updates "
-                                       f"(rather than `{bold}git rebase{reset}')"))
+                                 help=("`{}git merge{}' is used to include updates "
+                                       "(rather than `{}git rebase{}')".format(bold, reset, bold, reset)))
     brew_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='FORM',
                                  help='name of Homebrew formulae to update')
 
@@ -349,9 +349,9 @@ def get_brew_parser():
 
     brew_misc_group = brew_parser.add_argument_group(title='miscellaneous arguments')
     brew_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew outdated{reset}' command")
+                                 help="options for `{}brew outdated{}' command".format(bold, reset))
     brew_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew upgrade <formula>{reset}' command")
+                                 help="options for `{}brew upgrade <formula>{}' command".format(bold, reset))
 
     return brew_parser
 
@@ -376,14 +376,14 @@ def get_cask_parser():
 
     cask_spec_group = cask_parser.add_argument_group(title='specification arguments')
     cask_spec_group.add_argument('-f', '--force', action='store_true',
-                                 help=(f"use `{bold}--force{reset}' when running "
-                                       f"`{bold}brew cask upgrade <cask>{reset}' command"))
+                                 help=("use `{}--force{}' when running "
+                                       "`{}brew cask upgrade <cask>{}' command".format(bold, reset, bold, reset)))
     cask_spec_group.add_argument('-g', '--greedy', action='store_true',
-                                 help=(f"use `{bold}--greedy{reset}' when running "
-                                       f"`{bold}brew cask upgrade <cask>{reset}' command"))
+                                 help=("use `{}--greedy{}' when running "
+                                       "`{}brew cask upgrade <cask>{}' command".format(bold, reset, bold, reset)))
     cask_spec_group.add_argument('-m', '--merge', action='store_true',
-                                 help=(f"`{bold}git merge{reset}' is used to include updates "
-                                       f"(rather than `{bold}git rebase{reset}')"))
+                                 help=("`{}git merge{}' is used to include updates "
+                                       "(rather than `{}git rebase{}')".format(bold, reset, bold, reset)))
     cask_spec_group.add_argument('-x', '--exhaust', action='store_true',
                                  help='exhaustively check Caskroom for outdated Homebrew Casks')
     cask_spec_group.add_argument('-p', '--packages', action='append', nargs='+', default=list(), metavar='CASK',
@@ -403,9 +403,9 @@ def get_cask_parser():
 
     cask_misc_group = cask_parser.add_argument_group(title='miscellaneous arguments')
     cask_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask outdated{reset}' command")
+                                 help="options for `{}brew cask outdated{}' command".format(bold, reset))
     cask_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                 help=f"options for `{bold}brew cask upgrade <cask>{reset}' command")
+                                 help="options for `{}brew cask upgrade <cask>{}' command".format(bold, reset))
 
     return cask_parser
 
@@ -438,7 +438,7 @@ def get_system_parser():
 
     system_genl_group = system_parser.add_argument_group(title='general arguments')
     system_genl_group.add_argument('-a', '--all', action='store_true',
-                                   help=f"update all system software installed through `{bold}softwareupdate{reset}'")
+                                   help="update all system software installed through `{}softwareupdate{}'".format(bold, reset))
     system_genl_group.add_argument('-q', '--quiet', action='store_true',
                                    help='run in quiet mode, with no output information')
     system_genl_group.add_argument('-v', '--verbose', action='store_true',
@@ -448,9 +448,9 @@ def get_system_parser():
 
     system_misc_group = system_parser.add_argument_group(title='miscellaneous arguments')
     system_misc_group.add_argument('-L', '--logging', action='store', default=str(), metavar='ARG',
-                                   help=f"options for `{bold}softwareupdate --list{reset}' command")
+                                   help="options for `{}softwareupdate --list{}' command".format(bold, reset))
     system_misc_group.add_argument('-U', '--update', action='store', default=str(), metavar='ARG',
-                                   help=f"options for `{bold}softwareupdate --install <software>{reset}' command")
+                                   help="options for `{}softwareupdate --install <software>{}' command".format(bold, reset))
 
     return system_parser
 
@@ -485,15 +485,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get(f'get_{parser_name}_parser')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
-                pattern = rf'.*{option}.*'
-                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_UPDATE))  # pylint: disable=cell-var-from-loop
+                pattern = r'.*{}.*'.format(option)
+                matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_UPDATE))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error(f'unrecognized arguments: {option!r} '
-                                      f"(did you mean: '{matches}')")
+                    main_parser.error('unrecognized arguments: {!r} '
+                                      "(did you mean: '{}')".format(option, matches))
                 else:
-                    main_parser.error(f'unrecognized arguments: {option!r}')
+                    main_parser.error('unrecognized arguments: {!r}'.format(option))
 
             # parse mode arguments
             parser = get_parser()

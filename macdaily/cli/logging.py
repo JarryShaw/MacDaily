@@ -395,15 +395,15 @@ def parse_args(argv=None):
 
             # check if legal mode
             parser_name = MAP_DICT.get(option.lower(), 'null')
-            get_parser = globals().get(f'get_{parser_name}_parser')
+            get_parser = globals().get('get_{}_parser'.format(parser_name))
             if get_parser is None:
-                pattern = rf'.*{option}.*'
-                matches = f"', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_LOGGING))  # pylint: disable=cell-var-from-loop
+                pattern = r'.*{}.*'.format(option)
+                matches = "', '".join(filter(lambda s: re.match(pattern, s, re.IGNORECASE), CMD_LOGGING))  # pylint: disable=cell-var-from-loop
                 if matches:
-                    main_parser.error(f'unrecognized arguments: {option!r} '
-                                      f"(did you mean: '{matches}')")
+                    main_parser.error('unrecognized arguments: {!r} '
+                                      "(did you mean: '{}')".format(option, matches))
                 else:
-                    main_parser.error(f'unrecognized arguments: {option!r}')
+                    main_parser.error('unrecognized arguments: {!r}'.format(option))
 
             # parse mode arguments
             parser = get_parser()

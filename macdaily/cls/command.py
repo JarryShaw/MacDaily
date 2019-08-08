@@ -138,7 +138,7 @@ class Command(metaclass=abc.ABCMeta):
         self._qflag = namespace.get('quiet', False)
         self._vflag = self._qflag or (not namespace.get('verbose', False))
 
-        text = f'Running {self.cmd} command for {self.mode}'
+        text = 'Running {} command for {}'.format(self.cmd, self.mode)
         print_info(text, filename, redirect=self._qflag)
 
         # assign members
@@ -157,8 +157,8 @@ class Command(metaclass=abc.ABCMeta):
                 self._loc_exec()
                 self._run_proc()
             else:
-                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'no {bold}{self.desc[1]}{reset} to {self.act[0]}')
+                text = ('macdaily-{}: {}{}{}: '
+                        'no {}{}{} to {}'.format(self.cmd, yellow, self.mode, reset, bold, self.desc[1], reset, self.act[0]))
                 print_term(text, filename, redirect=self._qflag)
         else:
             self._pkgs = list()
@@ -242,52 +242,52 @@ class Command(metaclass=abc.ABCMeta):
 
             if _cross_check(self._var__temp_pkgs, PYTHON2):
                 version = subprocess.check_output([path, 'info', 'python@2']).splitlines()[0].split()[2][:3].decode()
-                sudo(['chown', '-R', USR, f'/usr/local/lib/python{version}'], get_logfile(), self._password,
+                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], get_logfile(), self._password,
                      timeout=self._timeout, redirect=True, verbose=False)
 
             if _cross_check(self._var__temp_pkgs, PYTHON3):
                 version = subprocess.check_output([path, 'info', 'python']).splitlines()[0].split()[2][:3].decode()
-                sudo(['chown', '-R', USR, f'/usr/local/lib/python{version}'], get_logfile(), self._password,
+                sudo(['chown', '-R', USR, '/usr/local/lib/python{}'.format(version)], get_logfile(), self._password,
                      timeout=self._timeout, redirect=True, verbose=False)
 
             return flag
 
         self._var__temp_pkgs -= self._ignore
         if not self._var__temp_pkgs:
-            text = f'macdaily-{self.cmd}: {green}{self.mode}{reset}: no {bold}{self.desc[1]}{reset} to {self.act[0]}'
+            text = 'macdaily-{}: {}{}{}: no {}{}{} to {}'.format(self.cmd, green, self.mode, reset, bold, self.desc[1], reset, self.act[0])
             print_term(text, self._file, redirect=self._qflag)
             return chown(flag=True)
 
         job = self.job[1] if self._var__temp_pkgs else self.job[0]
-        bold_pkgs = f'{reset}, {bold}'.join(self._var__temp_pkgs)
-        text = (f'macdaily-{self.cmd}: {green}{self.mode}{reset}: '
-                f'{self.desc[0]} {job} available for {bold}{bold_pkgs}{reset}')
+        bold_pkgs = '{}, {}'.format(reset, bold).join(self._var__temp_pkgs)
+        text = ('macdaily-{}: {}{}{}: '
+                '{} {} available for {}{}{}'.format(self.cmd, green, self.mode, reset, self.desc[0], job, bold, bold_pkgs, reset))
         print_term(text, self._file, redirect=self._qflag)
         if self._yes or self._quiet:
             return chown(flag=True)
         while True:
-            ans = get_input(self._confirm, f'Would you like to {self.act[0]}?',
-                            prefix=f'{self.desc[0]} {job} available for {", ".join(self._var__temp_pkgs)}.\n\n',
-                            suffix=f' ({green}y{reset}/{red}N{reset}) ')
+            ans = get_input(self._confirm, 'Would you like to {}?'.format(self.act[0]),
+                            prefix='{} {} available for {}.\n\n'.format(self.desc[0], job, ", ".join(self._var__temp_pkgs)),
+                            suffix=' ({}y{}/{}N{}) '.format(green, reset, red, reset))
             if re.match(r'[yY]', ans):
                 return chown(flag=True)
             if re.match(r'[nN]', ans):
-                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'{self.desc[0]} {job} postponed due to user cancellation')
+                text = ('macdaily-{}: {}{}{}: '
+                        '{} {} postponed due to user cancellation'.format(self.cmd, yellow, self.mode, reset, self.desc[0], job))
                 print_term(text, self._file, redirect=self._qflag)
                 return chown(flag=False)
             print('Invalid input.', file=sys.stderr)
 
     def _did_you_mean(self):
         for package in self._var__lost_pkgs:
-            pattern = rf'.*{package}.*'
-            matches = f'{reset}, {bold}'.join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
+            pattern = r'.*{}.*'.format(package)
+            matches = '{}, {}'.format(reset, bold).join(filter(lambda s: re.match(pattern, s, re.IGNORECASE),  # pylint: disable=cell-var-from-loop
                                                      self._var__real_pkgs))
-            print(f'macdaily-{self.cmd}: {red}{self.mode}{reset}: '
-                  f'no available {self.desc[0]} with the name {bold}{package!r}{reset}', file=sys.stderr)
+            print('macdaily-{}: {}{}{}: '
+                  'no available {} with the name {}{!r}{}'.format(self.cmd, red, self.mode, reset, self.desc[0], bold, package, reset), file=sys.stderr)
             if matches:
-                text = (f'macdaily-{self.cmd}: {yellow}{self.mode}{reset}: '
-                        f'did you mean any of the following {self.desc[1]}: {bold}{matches}{reset}?')
+                text = ('macdaily-{}: {}{}{}: '
+                        'did you mean any of the following {}: {}{}{}?'.format(self.cmd, yellow, self.mode, reset, self.desc[1], bold, matches, reset))
                 print_term(text, self._file, redirect=self._qflag)
         del self._var__lost_pkgs
         del self._var__real_pkgs
