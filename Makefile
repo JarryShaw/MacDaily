@@ -186,24 +186,21 @@ git-aftermath:
 
 # file new release on master
 release-master:
-	$(eval message := $(shell git log -1 --pretty=%B))
 	go run github.com/aktau/github-release release \
 	    --user JarryShaw \
 	    --repo MacDaily \
 	    --tag "v$(VERSION)" \
 	    --name "MacDaily v$(VERSION)" \
-	    --description "$(message)"
+	    --description "$$(git log -1 --pretty=%B)"
 
 # file new release on devel
 release-devel: release-download
-	$(eval suffix := $(shell shasum -a256 $(archive) | cut -c -6))
-	$(eval message := $(shell git log -1 --pretty=%B))
 	go run github.com/aktau/github-release release \
 	    --user JarryShaw \
 	    --repo MacDaily \
-	    --tag "v$(VERSION).$(suffix)-devel" \
-	    --name "MacDaily v$(VERSION).$(suffix)-devel" \
-	    --description "$(message)" \
+	    --tag "v$(VERSION).$$(shasum -a256 $(archive) | cut -c -6)-devel" \
+	    --name "MacDaily v$(VERSION).$$(shasum -a256 $(archive) | cut -c -6)-devel" \
+	    --description "$$(git log -1 --pretty=%B)" \
 	    --target "devel" \
 	    --pre-release
 
