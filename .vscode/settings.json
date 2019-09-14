@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/jarryshaw/GitHub/MacDaily/.venv/bin/python3.7",
+    "python.pythonPath": ".venv/bin/python",
     "cSpell.words": [
         "Crgle",
         "Funj",

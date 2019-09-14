@@ -83,7 +83,7 @@ update-pipenv:
 .ONESHELL:
 update-manpages:
 	set -ex
-	cd contrib
+	cd doc/rst
 	for file in $$( ls *.rst ); do \
 	    name=$${file%.rst*}; \
 	    pipenv run rst2man.py $${file} > "../src/man/$${name}.8"; \

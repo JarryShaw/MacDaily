@@ -1,0 +1,6 @@
+# September 13th, 2019
+
+- [ ] try Sphinx for documentation
+- [ ] add *docstring* for MacDaily
+- [ ] revise `macdaily.util.tools.script`, avoid directly echoing password in command line
+- [ ] consider using a global namespace like `flask.g` for variables sharing across functions

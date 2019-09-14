@@ -35,12 +35,12 @@ with open(os.path.join(os.path.dirname(__file__), 'setup.py')) as file:
 with open(os.path.join(os.path.dirname(__file__), 'setup.py'), 'w') as file:
     file.writelines(context)
 
-for rst in os.listdir(os.path.join(os.path.dirname(__file__), 'contrib')):
+for rst in os.listdir(os.path.join(os.path.dirname(__file__), 'doc', 'rst')):
     if os.path.splitext(rst)[1] != '.rst':
         continue
 
     context = list()
-    with open(os.path.join(os.path.dirname(__file__), 'contrib', rst)) as file:
+    with open(os.path.join(os.path.dirname(__file__), 'doc', 'rst', rst)) as file:
         for line in file:
             match = re.match(r":Version: (.*)", line)
             if match is None:
@@ -52,5 +52,5 @@ for rst in os.listdir(os.path.join(os.path.dirname(__file__), 'contrib')):
             else:
                 context.append(f':Version: v{__version__}\n')
 
-    with open(os.path.join(os.path.dirname(__file__), 'contrib', rst), 'w') as file:
+    with open(os.path.join(os.path.dirname(__file__), 'doc', 'rst', rst), 'w') as file:
         file.writelines(context)
