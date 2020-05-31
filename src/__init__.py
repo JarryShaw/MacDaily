@@ -10,7 +10,7 @@ import tbtrim
 
 from macdaily.util.const.macro import DEVMODE
 from macdaily.util.const.term import red, reset
-from macdaily.util.error import Error, UnsupportedOS
+from macdaily.util.exceptions import Error, UnsupportedOS
 from macdaily.util.tools.misc import predicate
 
 # set up sys.excepthook
@@ -28,11 +28,13 @@ if platform.system() != 'Darwin':
 
 # check dependencies
 if sys.version_info[:2] <= (3, 4):
+
     def test_import(module):
         try:
             importlib.import_module(module)
         except ImportError:
             print(f'macdaily: {red}error{reset}: broken dependency', file=sys.stderr)
             raise
+
     test_import('pathlib2')
     test_import('subprocess32')

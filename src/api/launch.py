@@ -14,7 +14,7 @@ from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons  
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, purple, red, reset, under
-from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.decorators import beholder
 from macdaily.util.tools.get import get_pass
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text

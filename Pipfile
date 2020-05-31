@@ -1,7 +1,17 @@
 [[source]]
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+
+[[source]]
+name = "sjtu"
+url = "https://mirrors.sjtug.sjtu.edu.cn/pypi/web/simple"
+verify_ssl = true
+
+[[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
 
 [packages]
 configupdater = "*"
@@ -16,13 +26,12 @@ pathlib2 = ">=2.3.2"
 psutil = "*"
 f2format = "*"
 requests = "*"
-"bs4" = "*"
-"html5lib" = "*"
+beautifulsoup4 = {extras = ["html5lib"],version = "*"}
 homebrew-pypi-poet = "*"
 docutils = "*"
 pygments = "*"
 ipython = "*"
-"autopep8" = "*"
+autopep8 = "*"
 pylint = "*"
 
 [requires]

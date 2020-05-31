@@ -24,7 +24,7 @@ def print_environ(file=sys.stdout, value_only=False, no_term=False,
         def print_value(environ, default=None):
             env = os.getenv(environ, default)
             if env is None:
-                value = 'null'
+                value = 'undefined'
             else:
                 value = shlex.quote(env)
             print(f'{prefix}{bold}{environ}{reset}{suffix}' % value)

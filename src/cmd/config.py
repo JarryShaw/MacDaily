@@ -14,7 +14,7 @@ import sys
 from macdaily.cmd.launch import launch_askpass, launch_confirm, launch_daemons
 from macdaily.util.const.macro import ROOT, USER
 from macdaily.util.const.term import bold, purple, reset, under
-from macdaily.util.error import ConfigNotFoundError
+from macdaily.util.exceptions import ConfigNotFoundError
 from macdaily.util.tools.get import get_boolean, get_int, get_logfile, get_pass, get_path
 from macdaily.util.tools.misc import run_script
 from macdaily.util.tools.print import print_info, print_misc, print_term, print_wrap

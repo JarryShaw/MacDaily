@@ -35,7 +35,7 @@ DEVMODE = BOOLEAN_STATES.get(os.getenv('MACDAILY_DEVMODE', 'false').strip().lowe
 
 # ansi escape pattern
 # from http://www.umich.edu/~archive/apple2/misc/programmers/vt100.codes.txt
-ANSI = r'([\x1B\x9B][\[\]\(\)#;?]*(?:(?:(?:[a-zA-Z0-9]*(?:;[-a-zA-Z0-9\\/#&.:=?%@~_]*)*)?\x07)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[0-9A-PR-TZcf-ntqry=><~])))'
+ANSI = r'([\x1B\x9B][\[\]\(\)#;?]*(?:(?:(?:[a-zA-Z0-9]*(?:;[-a-zA-Z0-9\\/#&.:=?%@~_]*)*)?\x07)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[0-9A-PR-TZcf-ntqry=><~])))'  # pylint: disable=line-too-long
 
 # script utilities
 SCRIPT = shutil.which('script')

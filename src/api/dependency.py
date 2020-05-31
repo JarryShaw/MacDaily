@@ -15,7 +15,7 @@ from macdaily.cmd.config import parse_config
 from macdaily.util.compat import pathlib, subprocess
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, pink, purple, red, reset, under, yellow
-from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.decorators import beholder
 from macdaily.util.tools.make import make_description, make_namespace
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_misc, print_term, print_text

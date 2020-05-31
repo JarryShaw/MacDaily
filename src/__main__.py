@@ -24,8 +24,8 @@ from macdaily.util.const.macro import (COMMANDS, MAP_ALL, MAP_ARCHIVE, MAP_BUNDL
                                        MAP_POSTINSTALL, MAP_REINSTALL, MAP_UNINSTALL, MAP_UPDATE)
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, reset
-from macdaily.util.error import CommandNotImplemented
-from macdaily.util.tools.deco import beholder
+from macdaily.util.exceptions import CommandNotImplemented
+from macdaily.util.tools.decorators import beholder
 from macdaily.util.tools.print import print_environ
 
 
@@ -48,7 +48,7 @@ def get_parser():
 
 
 @beholder
-def main():
+def main():  # pylint: disable=inconsistent-return-statements
     # parse args
     parser = get_parser()
     args = parser.parse_args(sys.argv[1:2] or ['--help'])

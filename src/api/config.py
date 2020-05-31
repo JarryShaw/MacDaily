@@ -10,7 +10,7 @@ from macdaily.cli.config import get_config_parser, parse_args
 from macdaily.cmd.config import make_config, parse_config
 from macdaily.util.const.macro import VERSION as __version__
 from macdaily.util.const.term import bold, green, length, red, reset, yellow
-from macdaily.util.tools.deco import beholder
+from macdaily.util.tools.decorators import beholder
 from macdaily.util.tools.misc import record
 from macdaily.util.tools.print import print_term
 

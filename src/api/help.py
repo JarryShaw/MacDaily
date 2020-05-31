@@ -13,7 +13,7 @@ from macdaily.util.const.macro import (CMD_ARCHIVE, CMD_BUNDLE,  # pylint: disab
                                        MAP_CONFIG, MAP_DEPENDENCY, MAP_HELP, MAP_INSTALL,
                                        MAP_LAUNCH, MAP_LOGGING, MAP_POSTINSTALL, MAP_REINSTALL,
                                        MAP_UNINSTALL, MAP_UPDATE, ROOT)
-from macdaily.util.error import CommandNotImplemented
+from macdaily.util.exceptions import CommandNotImplemented
 
 
 def help_(argv=None):

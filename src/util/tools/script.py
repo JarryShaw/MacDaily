@@ -4,12 +4,13 @@ import contextlib
 import getpass
 import os
 import re
+import shlex
 import sys
 import traceback
 import tty
 
 from macdaily.util.compat import subprocess
-from macdaily.util.const.macro import ANSI, ORIG_BEER, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
+from macdaily.util.const.macro import ANSI, ORIG_BEER, PWD, RESP_BEER, SCRIPT, SHELL, UNBUFFER, USER
 from macdaily.util.const.term import bold, dim, red, reset, under, yellow
 from macdaily.util.tools.get import get_logfile
 from macdaily.util.tools.make import make_stderr
@@ -25,9 +26,9 @@ def script(argv=SHELL, file='typescript', *, password=None, yes=None, prefix=Non
         argv = list(argv)
 
     with open(file, 'a') as typescript:
-        args = " ".join(argv)
+        args = ' '.join(argv)
         if password is not None:
-            args = args.replace(password, '********')
+            args = args.replace(password, PWD.pw_passwd)
         typescript.write(f'Script started on {date()}\n')
         typescript.write(f'command: {args!r}\n')
 
@@ -66,7 +67,7 @@ def sudo(argv, file, password, *, askpass=None, sethome=False, yes=None,
             return None
         nonlocal yes
 
-        sudo_argv = f"echo {password!r} | sudo --stdin --validate --prompt='Password:\n' &&"
+        sudo_argv = f"echo {shlex.quote(password)} | sudo --stdin --validate --prompt='Password:\n' &&"
         if yes is not None:
             if UNBUFFER is not None or SCRIPT is None:
                 sudo_argv = f'{sudo_argv} yes {yes} |'
@@ -111,7 +112,7 @@ def _unbuffer(argv=SHELL, file='typescript', password=None, yes=None, redirect=F
 
         text = traceback.format_exc()
         if password is not None:
-            text = text.replace(password, '********')
+            text = text.replace(password, PWD.pw_passwd)
         print_text(text, file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
@@ -147,7 +148,7 @@ def _script(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fal
 
         text = traceback.format_exc().replace('\n', '\\n')
         if password is not None:
-            text = text.replace(password, '********')
+            text = text.replace(password, PWD.pw_passwd)
         print_text(text, file, redirect=redirect)
         returncode = getattr(error, 'returncode', 1)
     # if password is not None:
@@ -185,7 +186,7 @@ def _spawn(argv=SHELL, file='typescript', password=None, yes=None, redirect=Fals
         if replace is not None:
             data = data.replace(replace, b'')
         if password is not None:
-            data = data.replace(bpwd, b'********')
+            data = data.replace(bpwd, PWD.pw_passwd.encode())
         data = data.replace(b'Password:', b'Password:\r\n')
         text = re.sub(rb'\033\[[0-9][0-9;]*m', rb'', data, flags=re.IGNORECASE)
         typescript.write(text)
@@ -264,4 +265,4 @@ def _merge(argv):
 def _replace(password):
     if password is None:
         return ''
-    return f".replace({password!r}, '********')"
+    return f".replace({password!r}, PWD.pw_passwd)"

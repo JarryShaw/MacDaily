@@ -10,7 +10,7 @@ import uuid
 from macdaily.util.compat import subprocess
 from macdaily.util.const.macro import BOOLEAN_STATES, PASS, USER, VERSION
 from macdaily.util.const.term import reset
-from macdaily.util.tools.deco import check, retry
+from macdaily.util.tools.decorators import check, retry
 
 
 def get_boolean(environ, default=False):
