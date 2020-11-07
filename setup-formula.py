@@ -1,1 +1,0 @@
-/usr/local/Homebrew/Library/Taps/jarryshaw/homebrew-tap/Generator/scripts/macdaily.py
