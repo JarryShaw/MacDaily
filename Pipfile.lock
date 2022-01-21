@@ -78,14 +78,6 @@
         }
     },
     "develop": {
-        "appnope": {
-            "hashes": [
-                "sha256:93aa393e9d6c54c5cd570ccadd8edad61ea0c4b9ea7a01409020c9aa019eb442",
-                "sha256:dd83cd4b5b460958838f6eb3000c660b1f9caf2a5b1de4264e941512f603258a"
-            ],
-            "markers": "sys_platform == 'darwin'",
-            "version": "==0.1.2"
-        },
         "astroid": {
             "hashes": [
                 "sha256:1efdf4e867d4d8ba4a9f6cf9ce07cd182c4c41de77f23814feb27ca93ca9d877",
@@ -214,11 +206,11 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:004a0d05aeecd32adec4841b6e2586d5ca35785b1477db4d8333a39333e0ce98",
-                "sha256:5b58cf977635abad74d76be49dbb2e97fddd825fb8503083d55496aa1160b854"
+                "sha256:ab564d4521ea8ceaac26c3a2c6e5ddbca15c8848fd5a5cc325f960da88d42974",
+                "sha256:c503a0dd6ccac9c8c260b211f2dd4479c042b49636b097cc9a0d55fe62dff64c"
             ],
             "index": "tuna",
-            "version": "==8.0.0"
+            "version": "==8.0.1"
         },
         "isort": {
             "hashes": [
@@ -525,6 +517,10 @@
             "index": "tuna",
             "version": "==2.27.1"
         },
+        "sanitized-package": {
+            "editable": true,
+            "path": "."
+        },
         "setuptools": {
             "hashes": [
                 "sha256:2404879cda71495fc4d5cbc445ed52fdaddf352b36e40be8dcc63147cb4edabe",
@@ -602,7 +598,7 @@
                 "sha256:4ca091dea149f945ec56afb48dae714f21e8692ef22a395223bcd328961b6a0e",
                 "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"
             ],
-            "markers": "python_version >= '3.10'",
+            "markers": "python_version >= '3.6'",
             "version": "==4.0.1"
         },
         "urllib3": {
