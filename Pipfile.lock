@@ -88,11 +88,11 @@
         },
         "astroid": {
             "hashes": [
-                "sha256:6e61b85c891ec53b07471aec5878f4ac6446a41e590ede0f2ce095f39f7d49dd",
-                "sha256:dea89d9f99f491c66ac9c04ebddf91e4acf8bd711722175fe6245c0725cc19bb"
+                "sha256:44224ad27c54d770233751315fa7f74c46fa3ee0fab7beef1065f99f09897efe",
+                "sha256:f11e74658da0f2a14a8d19776a8647900870a63de71db83713a8e77a6af52662"
             ],
             "markers": "python_full_version >= '3.7.2'",
-            "version": "==2.15.2"
+            "version": "==2.15.3"
         },
         "asttokens": {
             "hashes": [
@@ -518,11 +518,11 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297",
-                "sha256:fa7bd7bd2771287c0de303af8bfdfc731f51bd2c6a47ab69d117138893b82717"
+                "sha256:77a3299119af881904cd5ecd1ac6a66214b6e9bed1f2db16993b54adede64094",
+                "sha256:f7e36cffc4c517fbc252861b9a6e4644ca0e5abadf9a113c72d1358ad09b9500"
             ],
             "index": "tuna",
-            "version": "==2.14.0"
+            "version": "==2.15.0"
         },
         "pylint": {
             "hashes": [
@@ -558,11 +558,11 @@
         },
         "soupsieve": {
             "hashes": [
-                "sha256:49e5368c2cda80ee7e84da9dbe3e110b70a4575f196efb74e51b94549d921955",
-                "sha256:e28dba9ca6c7c00173e34e4ba57448f0688bb681b7c5e8bf4971daafc093d69a"
+                "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8",
+                "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.4"
+            "version": "==2.4.1"
         },
         "stack-data": {
             "hashes": [
