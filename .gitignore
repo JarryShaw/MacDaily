@@ -15,6 +15,8 @@ deprecated/
 __archive__/
 daemon-*.applescript
 
+Pipfile.lock
+
 # Created by https://www.gitignore.io/api/python,macos,visualstudiocode
 
 ### macOS ###
